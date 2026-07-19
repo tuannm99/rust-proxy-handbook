@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = [
+    "milestones/01-echo",
+    "milestones/02-http",
+    "milestones/03-reverse-proxy",
+    "proxy",
+    "labs/http-parser-raw",
+    "labs/epoll-echo",
+    "labs/mini-runtime",
+]
+
+[workspace.package]
+edition = "2021"
+publish = false
