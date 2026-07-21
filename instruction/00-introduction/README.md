@@ -15,9 +15,11 @@ as a dependency chain: each numbered directory assumes the ones before it.
 07 security      -> auth, rate limiting, WAF, request smuggling, IP filtering
 08 observability -> logging, metrics, tracing, profiling
 09 architecture  -> wiring it all into one process: components, config, plugins, shutdown
-11 reading-list  -> books, RFCs, and prior art worth reading alongside this
 12 testing       -> load testing, fuzzing, chaos testing for what you built
 ```
+
+(`13-algorithms/` through `21-reading-list/` are a deep-dive/appendix layer
+outside this dependency chain — see `CLAUDE.md`.)
 
 A companion Cargo workspace lives at the repo root (`labs/`, `proxy/`) —
 see the root `README.md`. `proxy/` is the actual deliverable; `labs/` are
@@ -33,7 +35,7 @@ specific `labs/` or `proxy/` crate to implement.
    in `## Practice` before moving on. Don't binge-read all 13 directories
    before writing any code — the `labs/` and `proxy/` crates are where the
    concepts actually stick.
-3. Use `11-reading-list/` as background reading in parallel, not a
+3. Use `21-reading-list/` as background reading in parallel, not a
    prerequisite — nothing in `01`-`09` requires having read a book first.
 4. Treat `12-testing/` as an exercise to run *after* a project is working,
    not before — you need a running proxy to load-test or fuzz.

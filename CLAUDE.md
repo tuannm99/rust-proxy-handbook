@@ -54,7 +54,6 @@ instruction/06-proxy/           upstream pool, load balancer, health check, retr
 instruction/07-security/        auth (JWT/mTLS), rate limiting, WAF, request smuggling, IP filtering, DDoS/volumetric mitigation
 instruction/08-observability/   logging, metrics, profiling, distributed tracing, alerting/SLOs
 instruction/09-architecture/    components, config reload, plugin system, graceful shutdown, canary/blue-green, rolling restart
-instruction/11-reading-list/    books, RFCs, open-source references
 instruction/12-testing/         load testing, fuzzing, chaos engineering, CI/static tooling
 instruction/13-algorithms/      data structures/algorithms underpinning routing, WAF, rate limiting, cache, load balancing, DDoS mitigation
 instruction/14-memory/          allocator, arena, slab allocator, object/buffer pools, fragmentation
@@ -64,11 +63,12 @@ instruction/17-performance/     CPU cache, false sharing, NUMA, memory layout, b
 instruction/18-distributed/     Raft, gossip, leader election, distributed cache — optional/advanced, beyond a single proxy instance
 instruction/19-reading-source/  structured reading of nginx/envoy/haproxy/pingora/hyper/tokio/mio/quinn source
 instruction/20-reference/       glossary, cheatsheets
+instruction/21-reading-list/    books, RFCs, open-source references
 ```
 
 Each topic is one file, named after its concept (e.g. `instruction/06-proxy/load-balancer.md`). There is deliberately no `instruction/10-projects/` — that content now lives directly in each `labs/NN-*` crate's own README (Goal + Practice) and in `proxy/README.md` for the final build. The directory number encodes prerequisite order for `00`-`12` — earlier numbers are foundational to later ones (e.g. `instruction/02-linux/epoll.md` and `instruction/03-rust/async.md` underpin `instruction/04-runtime/tokio.md`, which underpins the actual proxy work in `instruction/06-proxy/`).
 
-`13`-`20` are a deep-dive/foundations layer, not a strict continuation of the `00`-`12` sequence — they're referenced *from* earlier directories rather than only read after them (e.g. `06-proxy/load-balancer.md` cross-references `13-algorithms/` for Maglev/rendezvous hashing). When new content would duplicate an existing topic file's scope (e.g. a load-testing tool, an architecture pattern), add it to the existing directory (`12-testing/`, `09-architecture/`) instead of creating a new top-level number.
+`13`-`21` are a deep-dive/foundations layer, not a strict continuation of the `00`-`12` sequence — they're referenced *from* earlier directories rather than only read after them (e.g. `06-proxy/load-balancer.md` cross-references `13-algorithms/` for Maglev/rendezvous hashing). When new content would duplicate an existing topic file's scope (e.g. a load-testing tool, an architecture pattern), add it to the existing directory (`12-testing/`, `09-architecture/`) instead of creating a new top-level number.
 
 ## The Cargo workspace
 
@@ -134,7 +134,7 @@ concept is code-representable, and at least one production gotcha.
   specific `labs/` or `proxy/` crate path.
 ```
 
-`instruction/11-reading-list/` is different: plain annotated lists
+`instruction/21-reading-list/` is different: plain annotated lists
 (book/RFC/project name + one line on why it's relevant), no `## What to
 learn`/`## Practice` sections — keep that format if extending it.
 
