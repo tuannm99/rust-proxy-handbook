@@ -61,5 +61,5 @@ default — don't treat losing zero-copy under TLS as a bug.
 1. Write a tiny static file server using raw `libc::sendfile` and benchmark it against a naive read+write loop with `wrk` for a large file.
 2. Implement socket-to-socket relaying via `splice` for a bare TCP proxy and confirm (via `strace`) that no userspace buffer copy occurs.
 3. `mmap` a file, read from the mapping, then truncate the file from another process and observe the `SIGBUS`.
-4. Use vectored writes (`IoSlice`) in `milestones/02-http` to write a response header and body in one syscall instead of concatenating buffers.
+4. Use vectored writes (`IoSlice`) in `labs/04-static-server` to write a response header and body in one syscall instead of concatenating buffers.
 5. Read up on kTLS support in `rustls`/the `ktls` crate and write a short note on whether it's worth pursuing for `proxy`.

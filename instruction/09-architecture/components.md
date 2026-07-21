@@ -5,7 +5,7 @@ Listener -> ConnMgr -> Codec -> Router -> Modules
 ### What each stage owns
 - **Listener**: binds the socket(s), accepts connections, may do TLS termination (handing off a decrypted stream). Owns nothing about HTTP semantics.
 - **ConnMgr (connection manager)**: tracks live connections, enforces per-connection limits/timeouts, drives graceful shutdown (stop handing new connections in, let existing ones drain — see `09-architecture/graceful-shutdown.md`).
-- **Codec**: turns bytes into typed `Request`/`Response` values and back (HTTP/1.1 parsing, HTTP/2 framing) — this is where hyper sits if you use it, or your own parser if you did `labs/http-parser-raw`.
+- **Codec**: turns bytes into typed `Request`/`Response` values and back (HTTP/1.1 parsing, HTTP/2 framing) — this is where hyper sits if you use it, or your own parser if you did `labs/01-http-parser`.
 - **Router**: matches a request to a destination — a specific upstream pool, or a local handler (health endpoint, metrics endpoint). Pure decision logic, no I/O.
 - **Modules**: everything that wraps the request/response on the way through — auth, rate limiting, WAF, logging, metrics. Order matters (e.g. rate limit before auth to reject cheaply; WAF before both to reject malicious bodies early).
 

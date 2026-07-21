@@ -15,17 +15,15 @@ as a dependency chain: each numbered directory assumes the ones before it.
 07 security      -> auth, rate limiting, WAF, request smuggling, IP filtering
 08 observability -> logging, metrics, tracing, profiling
 09 architecture  -> wiring it all into one process: components, config, plugins, shutdown
-10 projects      -> 3 milestones + the final proxy itself, forcing you to apply 01-09 in order
 11 reading-list  -> books, RFCs, and prior art worth reading alongside this
 12 testing       -> load testing, fuzzing, chaos testing for what you built
 ```
 
-A companion Cargo workspace lives at the repo root (`milestones/`, `labs/`,
-`proxy/`) — see the root `README.md`. `proxy/` is the actual deliverable;
-`milestones/` are 3 progressive stages that build up to it; `labs/` are
-small raw exercises on the side. Each handbook topic's `## Practice` section
-points at a specific crate to implement; each project's `## Handbook
-prerequisites` section points back at the topics it needs.
+A companion Cargo workspace lives at the repo root (`labs/`, `proxy/`) —
+see the root `README.md`. `proxy/` is the actual deliverable; `labs/` are
+18 numbered, progressively harder exercises that build up the skills
+`proxy/` needs. Each handbook topic's `## Practice` section points at a
+specific `labs/` or `proxy/` crate to implement.
 
 ## How to use this handbook
 
@@ -33,7 +31,7 @@ prerequisites` section points back at the topics it needs.
    `04-runtime` and `05-http-stack`, not just "some Rust experience".
 2. For each topic file, read `## What to learn`, then do the linked exercise
    in `## Practice` before moving on. Don't binge-read all 13 directories
-   before writing any code — the projects in `10-projects/` are where the
+   before writing any code — the `labs/` and `proxy/` crates are where the
    concepts actually stick.
 3. Use `11-reading-list/` as background reading in parallel, not a
    prerequisite — nothing in `01`-`09` requires having read a book first.

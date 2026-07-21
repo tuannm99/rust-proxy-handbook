@@ -31,7 +31,7 @@ For I/O futures, the waker ends up stored in the reactor, keyed by the registere
 It helps to think of `poll` as "ask, don't tell": the executor asks a future "are you done yet?", and the future's only way to say "not yet, but I'll tell you when" is to stash the waker. Multiple `.poll()` calls with different wakers (e.g. across `select!` branches) must always wake the *latest* registered waker, not a stale one — this is a classic bug in hand-written futures.
 
 ## Practice
-1. In `labs/mini-runtime`, implement a `Waker` for your executor via `std::task::Wake`: `wake()` should push the task id back onto a run queue (e.g. a `VecDeque` behind a `Mutex`, or an `mpsc` channel).
+1. In the hand-rolled executor from `03-rust/async.md`'s exercise, implement a `Waker` via `std::task::Wake`: `wake()` should push the task id back onto a run queue (e.g. a `VecDeque` behind a `Mutex`, or an `mpsc` channel).
 2. Write a `Delay` future by hand (store a `Instant` deadline) that spawns a background `std::thread` to sleep then call `.wake()`, and drive it to completion on your mini executor.
 3. Deliberately implement a buggy future that drops the waker instead of storing it, run it, and observe the task never wakes — confirm you understand why.
-4. Compare your hand-rolled waker to tokio's real one by running the same future under `#[tokio::main]` and under your `mini-runtime`.
+4. Compare your hand-rolled waker to tokio's real one by running the same future under `#[tokio::main]` and under your own executor.

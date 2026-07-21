@@ -27,8 +27,8 @@ struct Route {
 An API server routes to a handler function; a reverse proxy (`06-proxy/`) routes to an *upstream pool* — the "handler" is "forward this request to service X's load balancer." The matching logic (path prefix, host header, headers-based routing) is the same problem, just with a different terminal action.
 
 ## Practice
-1. In `milestones/02-http`, implement a linear route matcher first (method + exact path), wire it into the hyper request handler.
+1. In `labs/03-router`, implement a linear route matcher first (method + exact path), wire it into the hyper request handler.
 2. Add path parameters (`/users/:id`) and wildcard segments; write tests for precedence when multiple patterns could match the same path.
 3. Add correct 404 vs 405 handling, including an `Allow` header listing the methods that *do* match the path.
 4. Refactor handlers to implement a common `Service`-like trait so middleware (start with just a logging middleware) can wrap any handler.
-5. When you reach `milestones/03-reverse-proxy`, extend the router so a matched route resolves to an upstream pool name instead of a local handler.
+5. When you reach `labs/05-reverse-proxy`, extend the router so a matched route resolves to an upstream pool name instead of a local handler.

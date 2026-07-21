@@ -80,10 +80,12 @@ this means for retry safety (idempotency).
 3. Build a `tokio::select!` with a real operation racing a timeout; confirm
    via a `Drop` impl on a guard type that the losing branch is actually
    dropped/cancelled.
-4. In `labs/mini-runtime`, implement the `Future` trait by hand for a simple
-   timer type (`poll` returns `Pending` until a deadline, `Ready(())`
-   after), then drive it with your own executor instead of tokio's.
-5. In `labs/mini-runtime`, implement a `Waker` (via `std::task::Wake` or
-   `RawWakerVTable`) and a single run-queue executor that polls a task only
-   when its waker is called — this is the mechanism `04-runtime/waker.md`
+4. In a scratch project (not part of this workspace — there's no dedicated
+   lab for a hand-rolled executor here), implement the `Future` trait by
+   hand for a simple timer type (`poll` returns `Pending` until a deadline,
+   `Ready(())` after), then drive it with your own executor instead of
+   tokio's.
+5. In that same scratch executor, implement a `Waker` (via `std::task::Wake`
+   or `RawWakerVTable`) and a single run-queue executor that polls a task
+   only when its waker is called — this is the mechanism `04-runtime/waker.md`
    and tokio's reactor both build on.

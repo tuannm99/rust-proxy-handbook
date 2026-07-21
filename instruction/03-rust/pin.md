@@ -66,9 +66,9 @@ missing bounds on the trait object, not about `Pin` itself.
 1. Write a minimal `!Unpin` self-referential struct (without async) using
    `PhantomPinned`, pin it with `Box::pin`, and observe the compiler reject
    an attempt to move it afterward.
-2. In `labs/mini-runtime`, define your `Task` type as
+2. In the hand-rolled executor from `03-rust/async.md`'s exercise, define your `Task` type as
    `Pin<Box<dyn Future<Output = ()> + Send>>` and implement the executor's
-   run-queue around it, per the file's TODOs.
+   run-queue around it.
 3. Explain in your own words (a comment is fine) why `Future::poll` takes
    `self: Pin<&mut Self>` rather than plain `&mut self` — connect it back to
    the self-referential struct shape from `03-rust/async.md`.

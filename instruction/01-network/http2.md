@@ -39,7 +39,7 @@ window and apply backpressure to the upstream read, not buffer unboundedly.
 ### Where Rust fits
 `h2` (used internally by `hyper` when the `http2` feature is enabled) is
 the de facto HTTP/2 implementation in the Rust ecosystem; `hyper-util`'s
-auto server builder in `milestones/02-http`/`milestone-03-reverse-proxy`
+auto server builder in `labs/02-http-server`/`reverse-proxy`
 negotiates HTTP/1.1 vs HTTP/2 via ALPN (see `tls.md`) so you get this "for
 free" once TLS is wired up, but you should still be able to explain what's
 happening below that abstraction.
@@ -49,7 +49,7 @@ happening below that abstraction.
 1. Capture an HTTP/2 connection with Wireshark (or `nghttp -v`) and
    identify at least 4 distinct frame types on the wire.
 2. Enable the `http2` feature on the hyper server in
-   `milestones/02-http` and confirm via `curl --http2` that it
+   `labs/02-http-server` and confirm via `curl --http2` that it
    negotiates HTTP/2 over TLS (ALPN).
 3. Send two concurrent requests over the same HTTP/2 connection with
    `curl --http2 -v` and confirm both streams complete on one TCP

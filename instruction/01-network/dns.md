@@ -61,7 +61,7 @@ how that swap needs to happen without dropping in-flight requests.
    recursive resolver's cache).
 2. Write a small standalone Rust program using `hickory-resolver` (async)
    that resolves a hostname to multiple `A` records and prints their TTLs.
-3. In `milestones/03-reverse-proxy`, resolve upstream hostnames instead
+3. In `labs/05-reverse-proxy`, resolve upstream hostnames instead
    of hardcoding IPs, and re-resolve on a timer respecting the record's TTL.
 4. Simulate a backend IP change: point a hostname at IP A, start your
    proxy, then change DNS to IP B. Measure how long your proxy takes to

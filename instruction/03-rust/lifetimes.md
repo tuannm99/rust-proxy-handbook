@@ -68,7 +68,7 @@ write these often, but recognize the syntax when a compiler error mentions
 2. Refactor a function that borrows a buffer into one that owns
    `bytes::Bytes` instead, and explain in a comment when each choice is
    correct for a request/response type moving through
-   `milestones/02-http`.
+   `labs/02-http-server`.
 3. Reproduce the "does not live long enough" error from a borrow crossing
    `tokio::spawn`, then fix it three different ways: cloning into an owned
    type, wrapping in `Arc`, and restructuring to avoid spawning at all.

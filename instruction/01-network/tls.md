@@ -23,7 +23,7 @@ universal), so a proxy can route on it but shouldn't assume it's private.
 ### ALPN (Application-Layer Protocol Negotiation)
 Negotiated inside the same handshake, ALPN is how client and server agree
 on HTTP/1.1 vs HTTP/2 (`h2`) before any HTTP bytes are exchanged — this is
-what lets `hyper-util`'s auto server in `milestones/02-http` pick the
+what lets `hyper-util`'s auto server in `labs/02-http-server` pick the
 right protocol without a separate port per version.
 
 ```rust

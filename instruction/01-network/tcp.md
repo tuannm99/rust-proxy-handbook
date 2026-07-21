@@ -68,14 +68,14 @@ another request.
 ## Practice
 
 1. Capture a handshake and a connection teardown with
-   `tcpdump -i lo port 8080` while hitting `milestones/01-echo`, and
+   `tcpdump -i lo port 8080` while hitting `labs/00-tcp-server`, and
    identify the SYN/SYN-ACK/ACK and FIN/FIN-ACK sequences.
 2. Run `ss -tn state time-wait | wc -l` while hammering
-   `milestones/03-reverse-proxy` with short-lived connections (no
+   `labs/05-reverse-proxy` with short-lived connections (no
    keep-alive), then again with connection reuse enabled — compare counts.
 3. Benchmark request latency with and without `set_nodelay(true)` on small
    request/response payloads and measure the difference.
 4. Configure TCP keepalive on the upstream client connections in
-   `milestones/03-reverse-proxy` and verify (by killing an upstream
+   `labs/05-reverse-proxy` and verify (by killing an upstream
    process without closing its socket, e.g. via `iptables` drop rules) that
    your proxy eventually detects the dead peer.

@@ -27,8 +27,8 @@ Two independent timeouts matter: how long the proxy keeps a client connection op
 TCP doesn't tell you a peer closed an idle connection until you try to use it (or a keepalive probe fires). A pool must handle "I checked out a connection but writing to it failed immediately" by retrying on a fresh connection rather than surfacing the error to the client — tie this to `06-proxy/retry.md`.
 
 ## Practice
-1. In `milestones/02-http`, verify (with `tcpdump`/logging) that two sequential requests from the same client reuse one TCP connection, and that `Connection: close` ends it.
-2. In `milestones/03-reverse-proxy`, build a small per-upstream connection pool: check out an idle connection or open a new one, return it after a successful response.
+1. In `labs/02-http-server`, verify (with `tcpdump`/logging) that two sequential requests from the same client reuse one TCP connection, and that `Connection: close` ends it.
+2. In `labs/05-reverse-proxy`, build a small per-upstream connection pool: check out an idle connection or open a new one, return it after a successful response.
 3. Add an idle-timeout eviction task that closes pooled connections older than a configurable threshold.
 4. Simulate the upstream silently closing a pooled idle connection (close it out-of-band) and verify the proxy detects the failed write and retries on a new connection instead of erroring out to the client.
 5. Measure connection-reuse's effect on p99 latency under `12-testing/load-testing.md` by comparing pooled vs. one-connection-per-request.

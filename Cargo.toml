@@ -1,13 +1,25 @@
 [workspace]
 resolver = "2"
 members = [
-    "milestones/01-echo",
-    "milestones/02-http",
-    "milestones/03-reverse-proxy",
     "proxy",
-    "labs/http-parser-raw",
-    "labs/epoll-echo",
-    "labs/mini-runtime",
+    "labs/00-tcp-server",
+    "labs/01-http-parser",
+    "labs/02-http-server",
+    "labs/03-router",
+    "labs/04-static-server",
+    "labs/05-reverse-proxy",
+    "labs/06-load-balancer",
+    "labs/07-tls",
+    "labs/08-http2",
+    "labs/09-http3",
+    "labs/10-cache",
+    "labs/11-rate-limit",
+    "labs/12-waf",
+    "labs/13-hot-reload",
+    "labs/14-plugin",
+    "labs/15-prometheus",
+    "labs/16-opentelemetry",
+    "labs/17-ebpf",
 ]
 
 [workspace.package]

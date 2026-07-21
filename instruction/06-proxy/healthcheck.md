@@ -42,7 +42,7 @@ but marking-down must be O(1) and lock-free from the balancer's read path
 — it just checks `upstream.healthy.load(Relaxed)` before/while picking.
 
 ## Practice
-1. In `milestones/03-reverse-proxy`, add an active TCP-connect probe
+1. In `labs/05-reverse-proxy`, add an active TCP-connect probe
    loop per upstream using `tokio::time::interval`.
 2. Add a consecutive-failure/-success counter and threshold before
    flipping `healthy`; log every state transition.

@@ -66,7 +66,7 @@ normal `cargo test`.
 2. Install and run `cargo miri test` against a small unsafe buffer-pool
    type; intentionally introduce an out-of-bounds write and confirm Miri
    catches it.
-3. In `labs/epoll-echo`, identify every `unsafe` call you need (socket
+3. In the raw-epoll echo server from `02-linux/epoll.md`'s exercise, identify every `unsafe` call you need (socket
    creation, `epoll_ctl`, `epoll_wait` via `libc`) and write a `// SAFETY:`
    comment for each before running the code.
 4. Find (via docs.rs or source) one real `unsafe impl Send` in a crate you

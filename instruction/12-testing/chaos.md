@@ -17,7 +17,7 @@ programmable TCP proxy: you can inject latency, bandwidth limits, and
 connection resets on a live connection via its HTTP API, and toggle them
 mid-test. It's the easiest way to test `06-proxy/retry.md`'s circuit
 breaker without touching kernel-level tools — point
-`milestones/03-reverse-proxy`'s upstream config at a toxiproxy instance
+`labs/05-reverse-proxy`'s upstream config at a toxiproxy instance
 instead of the real upstream.
 
 ### tc netem
@@ -37,7 +37,7 @@ test as an assertion against that claim (e.g. "after killing upstream A,
 and see what happens."
 
 ## Practice
-1. Put `milestones/03-reverse-proxy` in front of two upstreams routed
+1. Put `labs/05-reverse-proxy` in front of two upstreams routed
    through `toxiproxy`; inject 500ms latency on one and confirm your load
    balancer/health check notices and shifts traffic (or at minimum that p99
    reflects it if you haven't built adaptive routing yet).

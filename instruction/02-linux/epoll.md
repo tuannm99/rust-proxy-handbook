@@ -64,7 +64,7 @@ sockets (only the listener being non-blocking isn't enough) is a classic bug
 that silently reverts you to blocking I/O per-connection.
 
 ## Practice
-1. In `labs/epoll-echo`, implement a non-blocking listener and register it with `epoll_create1`/`epoll_ctl`.
+1. In a scratch project (not part of this workspace — there's no dedicated lab for raw epoll here), implement a non-blocking listener and register it with `epoll_create1`/`epoll_ctl`.
 2. Run the echo server in level-triggered mode first; confirm it works under `nc` and a simple concurrent load generator.
 3. Switch to `EPOLLET` and reproduce a stuck connection by *not* looping to EAGAIN on read — observe the hang, then fix it.
 4. Add a second registered fd (e.g. a pipe used as a shutdown signal) and dispatch on it inside the same loop.

@@ -43,7 +43,7 @@ cheap and lock-light since it happens on the hot path when a request fails,
 and must be visible to the load balancer's next pick immediately.
 
 ## Practice
-1. In `milestones/03-reverse-proxy`, define an `Upstream`/`UpstreamPool`
+1. In `labs/05-reverse-proxy`, define an `Upstream`/`UpstreamPool`
    type as above; hardcode 2-3 static upstream addresses to start.
 2. Add an atomic `active_conns` counter, incremented/decremented around each
    proxied request; expose it later to `08-observability/metrics.md`.

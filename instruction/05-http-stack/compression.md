@@ -25,8 +25,8 @@ Compression is CPU-bound; at high request rates, encoding on every request can b
 If the upstream already compressed the body (it sent `Content-Encoding: gzip`), the proxy must not compress it again — either pass it through as-is if the client accepts that encoding, or decompress-then-recompress only if the client needs a different encoding than the upstream provided.
 
 ## Practice
-1. In `milestones/02-http`, add gzip response compression gated on the request's `Accept-Encoding`, setting `Content-Encoding` and `Vary` correctly.
+1. In `labs/02-http-server`, add gzip response compression gated on the request's `Accept-Encoding`, setting `Content-Encoding` and `Vary` correctly.
 2. Make it streaming rather than buffer-the-whole-body-then-compress, and verify memory use doesn't scale with body size for a large test file.
 3. Add a minimum-size threshold below which compression is skipped, and measure the CPU cost difference under `12-testing/load-testing.md`.
 4. Add brotli and zstd as additional negotiated encodings and implement `Accept-Encoding` quality-value (`q=`) selection.
-5. In `milestones/03-reverse-proxy`, verify the proxy doesn't double-compress an already-compressed upstream response.
+5. In `labs/05-reverse-proxy`, verify the proxy doesn't double-compress an already-compressed upstream response.

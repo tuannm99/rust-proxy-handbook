@@ -11,8 +11,8 @@ backlog queue; `accept()` pulls a completed connection off that backlog and
 returns a *new* fd for that connection (the listening fd keeps listening).
 On the client side, `connect()` performs the TCP 3-way handshake. This
 maps directly onto `TcpListener::bind` + `.accept()` and `TcpStream::connect`
-in Rust, but knowing the raw syscalls is what makes `labs/epoll-echo`
-(built directly on `libc`) comprehensible.
+in Rust, but knowing the raw syscalls is what makes a raw-`libc` epoll loop
+(see `02-linux/epoll.md`'s exercise) comprehensible instead of magic.
 
 ### Blocking vs non-blocking
 A blocking socket's `read`/`write`/`accept` parks the calling thread until
@@ -59,12 +59,13 @@ bugs in a hand-rolled proxy.
 
 1. Trace `strace -f` on a simple `nc -l` session and identify the
    `socket`/`bind`/`listen`/`accept` syscalls in order.
-2. Implement `milestones/01-echo` using tokio's `TcpListener`, then
-   compare it against `labs/epoll-echo`'s raw syscall version of the same
-   thing — same behavior, very different code.
-3. In `labs/epoll-echo`, deliberately try a non-blocking `read()` before
-   data is ready and confirm you get `EAGAIN`; handle it correctly instead
-   of treating it as an error.
+2. Implement `labs/00-tcp-server` using tokio's `TcpListener`, then
+   compare it against the raw-`libc`-epoll echo server you'll build in
+   `02-linux/epoll.md`'s exercise (a scratch project, not part of this
+   workspace) — same behavior, very different code.
+3. In that raw-epoll version, deliberately try a non-blocking `read()`
+   before data is ready and confirm you get `EAGAIN`; handle it correctly
+   instead of treating it as an error.
 4. Set `SO_REUSEADDR` on your echo server and verify (via
    `SIGKILL` + immediate restart) that it no longer fails with
    "Address already in use".

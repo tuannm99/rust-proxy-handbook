@@ -27,7 +27,7 @@ Tokio budgets a number of polls per task before forcing a yield back to the sche
 A reverse proxy is fundamentally "read from one socket, write to another, repeat, times tens of thousands of connections." Tokio's job is to make that cheap: one task per connection (not one thread), non-blocking I/O multiplexed through a handful of OS threads, and a scheduler that keeps all cores busy. Getting the reactor/executor split wrong (e.g. blocking a worker thread) degrades every connection on that worker, not just the slow one.
 
 ## Practice
-1. In `labs/mini-runtime`, build a toy single-threaded executor that polls a `Vec` of futures in a loop with a no-op waker, and observe it busy-spins instead of sleeping — this is *why* a real reactor + waker exist.
-2. In `milestones/01-echo`, log which OS thread ID handles each connection (`std::thread::current().id()`) and confirm connections are spread across workers.
-3. Deliberately call a blocking `std::thread::sleep` inside an async handler in `milestone-01-echo` and observe other connections stall; fix it with `tokio::time::sleep` and again with `spawn_blocking`, and compare.
+1. In the hand-rolled executor you'll build in `03-rust/async.md`'s exercise (a scratch project, not part of this workspace), poll a `Vec` of futures in a loop with a no-op waker, and observe it busy-spins instead of sleeping — this is *why* a real reactor + waker exist.
+2. In `labs/00-tcp-server`, log which OS thread ID handles each connection (`std::thread::current().id()`) and confirm connections are spread across workers.
+3. Deliberately call a blocking `std::thread::sleep` inside an async handler in `tcp-server` and observe other connections stall; fix it with `tokio::time::sleep` and again with `spawn_blocking`, and compare.
 4. Read the tokio worker metrics (`tokio::runtime::Handle::metrics()`, requires `tokio_unstable` or the stable subset available) and print steal counts under concurrent load.

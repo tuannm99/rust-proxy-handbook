@@ -22,7 +22,7 @@ A canary is only useful if something is watching it. Compare the canary pool's e
 If upstream instances are registered dynamically (`06-proxy/service-discovery.md`), tag each instance with a version/pool label at registration time so the router can query "give me healthy stable instances" vs "give me healthy canary instances" instead of hardcoding addresses.
 
 ## Practice
-1. Extend the load balancer in `milestones/03-reverse-proxy` (or `-04-production`) to support two named pools with configurable weights.
+1. Extend the load balancer in `labs/06-load-balancer` (or `proxy`) to support two named pools with configurable weights.
 2. Implement weighted-random pool selection, verify with a test that traffic splits within a few % of the configured weight over many requests.
 3. Add per-pool RED metrics (reuse `08-observability/metrics.md` work) so stable vs canary error rate/latency are comparable side by side.
 4. Implement an automatic rollback: a background task that shifts canary weight to 0 if canary error rate exceeds stable's by a configurable multiplier for N consecutive checks.

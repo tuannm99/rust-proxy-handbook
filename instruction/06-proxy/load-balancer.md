@@ -3,6 +3,9 @@
 - Least Connection
 - Consistent Hash
 
+Deeper variants (smooth WRR internals, rendezvous hashing, Maglev) live in
+`13-algorithms/`.
+
 ## What to learn
 
 ### Round Robin (+ weighted)
@@ -61,7 +64,7 @@ without care can still skew distribution — always benchmark ring balance,
 don't assume it.
 
 ## Practice
-1. In `milestones/03-reverse-proxy`, implement Round Robin first —
+1. In `labs/06-load-balancer`, implement Round Robin first —
    confirm requests visibly cycle across 3 dummy upstreams.
 2. Add Least Connection; write a small load test that sends slow and fast
    requests to different upstreams and confirm LC routes more traffic to

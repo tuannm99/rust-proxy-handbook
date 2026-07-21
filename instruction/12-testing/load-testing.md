@@ -7,7 +7,7 @@ for custom request generation. `vegeta` (Go) reports latency as a proper
 histogram and is easier to script from CI (`echo "GET http://..." | vegeta
 attack -rate=500 | vegeta report`). `k6` is heavier but lets you script
 realistic multi-step user flows in JS. For this handbook, start with `wrk`
-or `vegeta` against `milestones/03-reverse-proxy` — you don't need
+or `vegeta` against `labs/05-reverse-proxy` — you don't need
 scripted flows to find basic bottlenecks.
 
 ### Throughput vs latency percentiles
@@ -35,9 +35,9 @@ Prefer open-loop when you want to know "what happens at 500 req/s" rather
 than "how fast can this go end to end."
 
 ## Practice
-1. Run `wrk -t4 -c100 -d30s` against `milestones/02-http` serving a
+1. Run `wrk -t4 -c100 -d30s` against `labs/02-http-server` serving a
    static file; record RPS and p50/p99.
-2. Run the same test against `milestones/03-reverse-proxy` with 2
+2. Run the same test against `labs/05-reverse-proxy` with 2
    upstreams and compare — the proxy hop should add latency, quantify how
    much.
 3. Switch to `vegeta attack -rate=200` (open-loop) against the same target

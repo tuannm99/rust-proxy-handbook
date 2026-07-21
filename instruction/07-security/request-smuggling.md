@@ -10,7 +10,7 @@ crafts a request that one parser reads as "one request" and the other
 reads as "one request plus the start of a second, smuggled request" that
 gets processed against the next unlucky client's connection (on a reused
 keep-alive/pooled connection to the upstream). This is precisely the class
-of ambiguity `05-http-stack/parser.md` and `labs/http-parser-raw` force you
+of ambiguity `05-http-stack/parser.md` and `labs/01-http-parser` force you
 to confront by hand.
 
 ### CL.TE, TE.CL, TE.TE
@@ -44,7 +44,7 @@ to confront by hand.
    you can't fully trust upstream parser consistency.
 
 ## Practice
-1. In `labs/http-parser-raw`, add a test case with both `Content-Length`
+1. In `labs/01-http-parser`, add a test case with both `Content-Length`
    and `Transfer-Encoding: chunked` present and confirm your parser rejects
    it with an error rather than picking one.
 2. Add a test with a malformed `Transfer-Encoding` value (trailing

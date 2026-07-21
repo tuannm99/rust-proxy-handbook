@@ -82,7 +82,7 @@ skips `Drop` — relevant if you ever hand a raw fd to `libc` code (see
 3. Benchmark (with a quick `std::time::Instant`) cloning a 8KB header map
    1M times vs wrapping it in `Arc` and cloning the `Arc` — confirm the
    difference is real before you believe it.
-4. In `milestones/01-echo`, decide whether your per-connection read
+4. In `labs/00-tcp-server`, decide whether your per-connection read
    buffer is owned by the task or borrowed from a pool, and justify it in a
    comment.
 5. Write a small type with a custom `Drop` impl that prints when it runs;

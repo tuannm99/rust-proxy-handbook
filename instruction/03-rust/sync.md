@@ -84,7 +84,7 @@ the first two escape hatches to reach for.
    `tokio::sync::Mutex` and again by restructuring to drop the guard first.
 3. Replace a counter protected by `Mutex<u64>` with `AtomicU64` and confirm
    with a quick benchmark that it's faster under contention.
-4. In `milestones/03-reverse-proxy`, decide whether your upstream pool
+4. In `labs/05-reverse-proxy`, decide whether your upstream pool
    is `Arc<RwLock<Vec<Upstream>>>` or owned by one task and accessed via a
    `tokio::sync::watch` channel — implement one, and write a sentence on why
    you didn't pick the other.

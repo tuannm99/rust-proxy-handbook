@@ -52,7 +52,7 @@ Gotcha: don't let concurrent requests all become the "one trial call" in
 you get a thundering herd against a barely-recovered upstream.
 
 ## Practice
-1. In `milestones/03-reverse-proxy`, add a retry wrapper around the
+1. In `labs/05-reverse-proxy`, add a retry wrapper around the
    upstream call that only retries GET/HEAD and uses the backoff+jitter
    function above, capped at 3 attempts.
 2. Add a rolling retry budget counter; force upstream failures and confirm

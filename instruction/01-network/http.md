@@ -58,9 +58,9 @@ header wins — see `07-security/request-smuggling.md`.
 2. Send a request with both `Content-Length` and
    `Transfer-Encoding: chunked` to a test server you control and observe
    how it's rejected (or isn't — try more than one HTTP library).
-3. In `milestones/02-http`, implement correct hop-by-hop header
+3. In `labs/02-http-server`, implement correct hop-by-hop header
    stripping for both the request and response path.
-4. In `milestones/03-reverse-proxy`, return `502`/`503`/`504`
+4. In `labs/05-reverse-proxy`, return `502`/`503`/`504`
    distinctly for "upstream refused connection", "no healthy upstream", and
    "upstream timed out" respectively.
 5. Read `05-http-stack/parser.md` and `07-security/request-smuggling.md` to

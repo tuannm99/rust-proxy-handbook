@@ -1,0 +1,10 @@
+[package]
+name = "http2"
+version = "0.1.0"
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "net", "io-util", "macros"] }
+hyper = { version = "1", features = ["server", "client", "http2"] }
+hyper-util = { version = "0.1", features = ["tokio", "server-auto", "client-legacy"] }

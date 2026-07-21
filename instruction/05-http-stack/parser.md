@@ -26,11 +26,11 @@ The body's length comes from exactly one of: `Content-Length`, `Transfer-Encodin
 Each chunk is `<hex-size>CRLF<data>CRLF`, terminated by a `0`-size chunk and optional trailers. A correct parser must cap chunk-size digits and total decoded size (an attacker can claim an enormous chunk size to exhaust memory), and must not treat trailer headers as equivalent to headers sent before the body.
 
 ### Why production code uses hyper instead of a hand parser
-`hyper`'s HTTP/1 codec (`h1`) has absorbed years of interop and security fixes for exactly the ambiguities above. Hand-rolling a parser is valuable for learning what those ambiguities *are*, but shipping one in `milestones/02-http` or later would mean re-discovering every smuggling CVE hyper already fixed.
+`hyper`'s HTTP/1 codec (`h1`) has absorbed years of interop and security fixes for exactly the ambiguities above. Hand-rolling a parser is valuable for learning what those ambiguities *are*, but shipping one in `labs/02-http-server` or later would mean re-discovering every smuggling CVE hyper already fixed.
 
 ## Practice
-1. In `labs/http-parser-raw`, parse the request line and headers from a raw byte buffer into a struct; reject malformed input rather than best-effort recovering.
+1. In `labs/01-http-parser`, parse the request line and headers from a raw byte buffer into a struct; reject malformed input rather than best-effort recovering.
 2. Add body framing: support `Content-Length`, then `Transfer-Encoding: chunked`, and explicitly reject a request that specifies both.
 3. Feed your parser adversarial inputs (duplicate `Content-Length` with different values, folded headers, a chunk size in scientific-notation-like garbage) and confirm it rejects each one rather than parsing "something."
-4. Fuzz `labs/http-parser-raw` (see `12-testing/fuzzing.md`) against a corpus of real HTTP/1.1 traffic captures and fix any panics.
+4. Fuzz `labs/01-http-parser` (see `12-testing/fuzzing.md`) against a corpus of real HTTP/1.1 traffic captures and fix any panics.
 5. Once you've done this by hand, read how `hyper`'s `h1` codec handles the same cases and note what it does differently from your implementation.

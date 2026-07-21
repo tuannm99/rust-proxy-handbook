@@ -30,8 +30,8 @@ Long-lived idle WebSocket connections look identical to a dead connection from t
 Unlike normal request/response where `Content-Length` bounds the work, a WebSocket connection can have one side producing messages faster than the other can consume — the proxy sits in the middle of two independently-paced streams and needs bounded buffers (not unbounded queues) so a slow client can't cause unbounded memory growth on the proxy.
 
 ## Practice
-1. In `milestones/02-http`, implement the Upgrade handshake by hand (validate headers, compute `Sec-WebSocket-Accept`) without a WebSocket crate, to see the raw mechanics.
+1. In `labs/02-http-server`, implement the Upgrade handshake by hand (validate headers, compute `Sec-WebSocket-Accept`) without a WebSocket crate, to see the raw mechanics.
 2. After sending `101`, take over the raw `TcpStream`/`Upgraded` connection and implement a trivial echo of WebSocket text frames (parse just enough framing to unmask and re-frame).
-3. In `milestones/03-reverse-proxy`, add pass-through WebSocket proxying: forward the handshake to the chosen upstream, then relay raw bytes bidirectionally with `tokio::io::copy_bidirectional`.
+3. In `labs/05-reverse-proxy`, add pass-through WebSocket proxying: forward the handshake to the chosen upstream, then relay raw bytes bidirectionally with `tokio::io::copy_bidirectional`.
 4. Add a bounded buffer/backpressure test: have a slow "client" reader and a fast upstream writer, and verify proxy memory use stays bounded rather than growing unbounded.
 5. Add ping/pong keepalive on an idle connection and verify the proxy either passes it through correctly or terminates the connection after a missed pong.

@@ -31,6 +31,6 @@ Confusingly, Rust's `tracing` crate calls its structured logging scopes "spans" 
 ## Practice
 1. In `proxy`, add `tracing-opentelemetry` + an OTLP exporter, and export the request span already created for `08-observability/logging.md`.
 2. Implement `traceparent` extraction from the inbound request and propagation to the outbound upstream call.
-3. Verify end-to-end: run the proxy in front of two chained instances of `milestones/02-http`, and confirm a single trace ID connects both spans in your tracing backend (Jaeger locally is enough).
+3. Verify end-to-end: run the proxy in front of two chained instances of `labs/02-http-server`, and confirm a single trace ID connects both spans in your tracing backend (Jaeger locally is enough).
 4. Add head-based sampling (fixed percentage) and confirm the sampling decision itself propagates via the `traceparent` flags byte so downstream hops don't re-decide independently.
 5. Break propagation on purpose (drop the header on one hop) and observe the trace fragment in the UI — this is what a real propagation bug looks like.

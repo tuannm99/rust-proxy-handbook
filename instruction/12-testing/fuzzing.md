@@ -11,7 +11,7 @@ For this handbook, `cargo-fuzz` is the more idiomatic choice since
 everything is a normal Cargo workspace.
 
 ### Fuzzing the hand-rolled parser
-`labs/http-parser-raw` is exactly the kind of code fuzzing is built for:
+`labs/01-http-parser` is exactly the kind of code fuzzing is built for:
 byte-level input, non-trivial state machine (headers, chunked encoding,
 Content-Length), and a real history of security bugs (request smuggling)
 coming from exactly this class of parser disagreeing with another parser
@@ -31,7 +31,7 @@ Use both: proptest for round-trip correctness, cargo-fuzz for "never panics
 on anything."
 
 ## Practice
-1. Add a `fuzz/` directory to `labs/http-parser-raw` with `cargo fuzz init`
+1. Add a `fuzz/` directory to `labs/01-http-parser` with `cargo fuzz init`
    and a target that calls your parser on raw bytes.
 2. Run it for a few minutes and fix any panic it finds (index out of
    bounds on truncated input is the classic first crash).
