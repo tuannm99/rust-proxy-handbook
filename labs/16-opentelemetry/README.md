@@ -1,12 +1,14 @@
 # 16-opentelemetry
 
+## Goal
+
 Export `tracing` spans as OpenTelemetry traces so a single trace ID
 connects spans across a chain of proxied requests.
 
-Handbook references:
+## Handbook references
 - `instruction/08-observability/tracing.md`
 
-Run with:
+## Run
 
 ```
 cargo run -p opentelemetry-lab

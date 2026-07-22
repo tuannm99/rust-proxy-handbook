@@ -62,8 +62,9 @@ per request — usually mitigated by batching/local caching with periodic
 sync, trading strict accuracy for latency.
 
 ## Practice
-1. In `proxy`, implement the `TokenBucket` above and
-   apply it per source IP using a `dashmap`.
+1. In `labs/11-rate-limit`, implement the `TokenBucket` above and apply it
+   per source IP using a `dashmap`; once the limiter behaves correctly in
+   isolation, wire the same type into `proxy`.
 2. Add eviction for idle per-client buckets (e.g. sweep entries untouched
    for 5 minutes) so memory doesn't grow unbounded.
 3. Load-test a single client past its limit and confirm a 429 with a

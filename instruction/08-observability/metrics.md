@@ -28,7 +28,7 @@ Gotcha: this is the single most common way a "just add a metric" PR turns into a
 Prometheus pulls (scrapes `/metrics` on an interval); OTel metrics can push to a collector, which then exports to Prometheus/Datadog/etc. A proxy typically exposes a `/metrics` endpoint for scraping — simple, no extra network dependency, and it survives the proxy being temporarily unreachable from the collector (data is just missed, not queued and lost).
 
 ## Practice
-1. In `proxy`, expose a `/metrics` endpoint (`prometheus` crate's `TextEncoder`) alongside the proxy's normal listener.
+1. In `labs/15-prometheus`, expose a `/metrics` endpoint (`prometheus` crate's `TextEncoder`) and scrape it once by hand; then add the same endpoint to `proxy` alongside its normal listener.
 2. Add RED metrics for the client-facing side: `proxy_requests_total{status}`, `proxy_request_duration_seconds` histogram.
 3. Add per-upstream RED metrics keyed by upstream *name* (from `06-proxy/upstream.md`), not by raw address/path, to avoid cardinality blowup.
 4. Add a gauge for currently-healthy upstream count, updated from the health checker in `06-proxy/healthcheck.md`.

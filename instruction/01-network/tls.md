@@ -61,9 +61,9 @@ as a config-reload concern, see `09-architecture/config.md`.
 1. Use `openssl s_client -connect host:443 -servername example.com` and
    read the handshake output to identify the negotiated cipher suite and
    TLS version.
-2. Add TLS termination to `proxy` using
-   `tokio-rustls` (already a dependency), serving a self-signed cert for
-   local testing.
+2. Do `labs/07-tls` first: terminate TLS with `tokio-rustls` on a bare
+   listener, serving a self-signed cert for local testing. Once it works
+   there, port the same setup into `proxy`.
 3. Configure ALPN so `curl --http2` and `curl --http1.1` both work against
    the same port, and confirm via `curl -v` which protocol was negotiated.
 4. Add mTLS: require and verify a client certificate, and reject

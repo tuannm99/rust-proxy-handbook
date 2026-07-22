@@ -24,7 +24,7 @@ Envoy's WASM filters are the reference design if you want to see this done for a
 Whatever mechanism you pick, decide explicitly: can a plugin see the full request/response body, or just headers? Can it short-circuit (return a response without calling upstream)? Can it fail open (pass through) or must it fail closed (reject) on plugin error? These are security-relevant decisions (see `07-security/waf.md`), not just architecture ones.
 
 ## Practice
-1. In `proxy`, define a `Module` trait (or reuse `tower::Layer`) and implement two modules behind it (e.g. logging + rate limiting) to confirm the abstraction doesn't leak implementation details between them.
+1. In `labs/14-plugin`, define a `Module` trait (or reuse `tower::Layer`) and implement two modules behind it (e.g. logging + rate limiting) to confirm the abstraction doesn't leak implementation details between them; adopt the resulting trait in `proxy`.
 2. Decide and document your fail-open/fail-closed policy per module (a WAF module should probably fail closed; a metrics module should fail open).
 3. As a stretch exercise, prototype loading one simple module as a WASM guest with `wasmtime` (e.g. a request-header-mutation plugin) and measure the added per-request latency vs the compiled-in equivalent.
 4. Compare: how many lines of "plumbing" does the WASM version need (host functions, serialization) vs the compiled `Module` trait version, for the same behavior?

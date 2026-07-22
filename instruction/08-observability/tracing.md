@@ -29,7 +29,7 @@ Tracing every request at high QPS is expensive to store and mostly redundant (th
 Confusingly, Rust's `tracing` crate calls its structured logging scopes "spans" too — and they compose well with OpenTelemetry: `tracing-opentelemetry` bridges `tracing::Span`s into OTel spans that get exported to a collector (Jaeger/Tempo/Honeycomb), so the same instrumentation you added for `08-observability/logging.md` doubles as trace data.
 
 ## Practice
-1. In `proxy`, add `tracing-opentelemetry` + an OTLP exporter, and export the request span already created for `08-observability/logging.md`.
+1. In `labs/16-opentelemetry`, get `tracing-opentelemetry` + an OTLP exporter emitting one span to a local collector; then add the same exporter to `proxy` and export the request span already created for `08-observability/logging.md`.
 2. Implement `traceparent` extraction from the inbound request and propagation to the outbound upstream call.
 3. Verify end-to-end: run the proxy in front of two chained instances of `labs/02-http-server`, and confirm a single trace ID connects both spans in your tracing backend (Jaeger locally is enough).
 4. Add head-based sampling (fixed percentage) and confirm the sampling decision itself propagates via the `traceparent` flags byte so downstream hops don't re-decide independently.

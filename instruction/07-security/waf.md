@@ -45,8 +45,9 @@ story) or shelling out to ModSecurity — rather than trusting a hand-rolled
 signature set to cover real-world attack traffic.
 
 ## Practice
-1. In `proxy`, implement the `Rule`/`RuleTarget`
-   types above with 5-10 hardcoded signatures (SQLi, XSS, path traversal).
+1. In `labs/12-waf`, implement the `Rule`/`RuleTarget` types above with
+   5-10 hardcoded signatures (SQLi, XSS, path traversal), matching with
+   `aho-corasick`; port the finished rule engine into `proxy` afterward.
 2. Add anomaly scoring: give each rule a weight, sum matches, block only
    above a threshold; log the contributing rule IDs on block.
 3. Add input normalization (URL-decode + lowercase) before matching and

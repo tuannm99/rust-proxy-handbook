@@ -1,5 +1,7 @@
 # 05-reverse-proxy
 
+## Goal
+
 A hyper-based proxy that forwards incoming requests to one of several
 upstream servers and returns their response. Done means: it round-robins
 across at least 2 upstreams, stops routing to an upstream that fails
@@ -9,14 +11,14 @@ and correctly proxies a streamed request/response body. Deeper
 load-balancing algorithms beyond basic round robin live in
 `labs/06-load-balancer`.
 
-Handbook references:
+## Handbook references
 - `instruction/06-proxy/upstream.md` — connection pooling to upstreams
 - `instruction/06-proxy/healthcheck.md` — active vs passive health checks, flapping/hysteresis
 - `instruction/06-proxy/retry.md` — retry budgets, idempotency, circuit breaker states
 - `instruction/06-proxy/service-discovery.md` — static list vs dynamic upstream membership
 - `instruction/01-network/http.md` — which headers a proxy must rewrite (`Host`, `X-Forwarded-For`, `Connection`)
 
-Run with:
+## Run
 
 ```
 cargo run -p reverse-proxy

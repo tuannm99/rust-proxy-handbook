@@ -1,6 +1,12 @@
 # mio
 
-The epoll/kqueue abstraction underneath tokio. Planned files (see `19-reading-source/README.md` for the template):
+The epoll/kqueue abstraction underneath tokio. Not written yet.
+
+Readable early alongside `tokio/` — mio is the thinner of the two and the
+closer analog to the raw-epoll exercise in `02-linux/epoll.md`, so it is
+often the better first read of the pair.
+
+Planned files (see `19-reading-source/README.md` for the template):
 
 - `architecture.md`
 - `request-flow.md`

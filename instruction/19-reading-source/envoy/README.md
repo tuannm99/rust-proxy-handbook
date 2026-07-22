@@ -1,6 +1,11 @@
 # envoy
 
-Modern C++ proxy, xDS dynamic config, observability-first design. Planned files (see `19-reading-source/README.md` for the template):
+Modern C++ proxy, xDS dynamic config, observability-first design.
+
+Not written yet. Read this project after `proxy/` works, not before — see
+`19-reading-source/README.md` for why, and for the per-project template.
+
+Planned files:
 
 - `architecture.md`
 - `request-flow.md`

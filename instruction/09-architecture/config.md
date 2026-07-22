@@ -43,7 +43,7 @@ static CONFIG: once_cell::sync::Lazy<ArcSwap<Config>> =
 Keep the last N valid configs (or at least the last one) so an operator can roll back instantly if a syntactically-valid-but-logically-wrong config causes elevated error rates — tie the decision to roll back to the error-rate metrics from `09-architecture/canary-deploy.md`/`08-observability/metrics.md`.
 
 ## Practice
-1. Define a `Config` struct with `serde` + `toml` for `proxy` (upstreams, rate limits, TLS paths).
+1. Do steps 1-4 in `labs/13-hot-reload` first, then repeat them in `proxy` against its real config. Define a `Config` struct with `serde` + `toml` (upstreams, rate limits, TLS paths).
 2. Load it once at startup behind an `ArcSwap<Config>`; have request handlers read via `.load()`.
 3. Add a SIGHUP handler that re-reads the file, validates it (fail closed on parse error or unreachable upstream), and swaps only on success.
 4. Write a test that reloads with an intentionally broken config (duplicate route) and asserts the old config is still being served afterward.
