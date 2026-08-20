@@ -5,19 +5,17 @@ application of these ideas (and `labs/01-http-parser` is where you
 implement it) — this folder is the reusable foundation underneath it,
 also applicable to `09-architecture/config.md`'s config file parsing.
 
-## Status: index only — not written, not blocking
+## Status: written, but optional for the labs
 
-Nothing in this folder is written yet, and no `labs/` crate links here, so
-it blocks nothing. `05-http-stack/parser.md` is deliberately self-contained
-for `labs/01-http-parser` — you do not need the general theory below to
-write the HTTP parser.
+The theory below is written, but no `labs/` crate strictly requires it:
+`05-http-stack/parser.md` is deliberately self-contained for
+`labs/01-http-parser`. Read this folder when you reach `labs/13-hot-reload`
+and decide to write your own config format rather than leaning on `serde` +
+`toml` — that is the point where lexer/AST/visitor stop being theory
+(`config-parser.md` makes that "do you even need a parser?" call
+explicitly). Otherwise treat it as background that deepens the HTTP parser.
 
-When to come back: while doing `labs/13-hot-reload`, if you decide to write
-your own config format rather than leaning on `serde` + `toml`. That is the
-point where lexer/AST/visitor stop being theory. Otherwise treat this as
-optional background.
-
-## Planned topics
+## Files
 
 - `lexer.md` — tokenizing raw bytes/text into a token stream
 - `parser.md` — turning a token stream into structured data (recursive descent vs parser combinators)

@@ -19,7 +19,7 @@ That restriction buys three things at once:
   no coalescing, no splitting.
 - **Cache locality.** Objects of the same type are contiguous, so iterating
   active connections touches consecutive cache lines (the CPU-cache side of
-  this is planned in `17-performance/README.md`).
+  this is covered in `17-performance/cpu-cache.md`).
 
 This originated in the Solaris kernel and is how Linux allocates its own
 fixed-size objects (`task_struct`, inodes, socket buffers) — the same

@@ -5,21 +5,19 @@ actually behave, distinct from the syscall-level zero-copy techniques in
 `02-linux/zerocopy.md` (which this folder cross-references rather than
 duplicates).
 
-## Status: index only — not written, not blocking
+## Status: written, but read it profile-first
 
-Nothing here is written yet and no `labs/` crate links to it. Two files
-reference it in passing — `14-memory/fragmentation.md` (struct size classes)
-and `14-memory/slab-allocator.md` (cache locality) — and both stand on their
-own without it.
+The content below is written and cross-referenced from
+`14-memory/fragmentation.md` (struct size classes) and
+`14-memory/slab-allocator.md` (cache locality). Read it **after**
+profiling (`08-observability/profiling.md`) points a flamegraph at a hot
+path worth optimizing — every file here opens by insisting on that. Reading
+about cache lines and false sharing before you have a measurement pointing
+at them produces micro-optimizations of code that was never the
+bottleneck. The natural trigger is `proxy` under
+`12-testing/load-testing.md` load, not any particular lab.
 
-When to come back: **after** profiling (`08-observability/profiling.md`)
-shows a hot path worth optimizing. Reading about cache lines and false
-sharing before you have a flamegraph pointing at them produces
-micro-optimizations of code that was never the bottleneck. The natural
-trigger is `proxy` under `12-testing/load-testing.md` load, not any
-particular lab.
-
-## Planned topics
+## Files
 
 - `cpu-cache.md` — cache lines, L1/L2/L3, why data layout affects hot-path latency
 - `false-sharing.md` — two unrelated atomics on the same cache line silently serializing your "lock-free" code

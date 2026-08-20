@@ -33,8 +33,8 @@ occupies an 80-byte slot; 15 bytes are wasted and unreachable.
 
 Usually minor — unless your hot-path struct sits just past a boundary. A
 129-byte connection struct takes a 160-byte slot, wasting 24% at 100k
-connections. This is why struct field reordering (planned in
-`17-performance/README.md`) is not micro-optimization at scale: shrinking a
+connections. This is why struct field reordering
+(`17-performance/memory-layout.md`) is not micro-optimization at scale: shrinking a
 struct below a size-class boundary is a step-function win, not a linear one.
 
 ### Why memory does not return to the OS
