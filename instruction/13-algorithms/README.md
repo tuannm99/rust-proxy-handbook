@@ -22,6 +22,11 @@ These are the ones a `labs/` exercise currently depends on:
 - `count-min-sketch.md` — approximate frequency in fixed memory, error bounds, decay
 - `regex-engine.md` — backtracking vs automata, ReDoS, lazy DFA, `RegexSet`
 - `slab.md` — intrusive free list, generational handles, the shrink problem
+- `sliding-window.md` — fixed window's boundary-burst bug, sliding log, the two-counter approximation
+- `leaky-bucket.md` — meter form (token bucket's mirror image) vs queue form (output smoothing)
+- `lfu.md` — O(1) frequency-bucket structure, the stale-winner problem, aging
+- `arc.md` — T1/T2/B1/B2, adapting the recency/frequency split from ghost-list hits
+- `tinylfu.md` — admission over eviction, count-min-sketch frequency, doorkeeper, W-TinyLFU's LRU window
 
 ## Planned
 
@@ -32,5 +37,3 @@ These are the ones a `labs/` exercise currently depends on:
 - `hashmap.md` — open addressing vs chaining, used everywhere
 - `skiplist.md` — ordered structure alternative to balanced trees
 - `bloom-filter.md` / `hyperloglog.md` — probabilistic membership/cardinality at scale, used by `07-security/ddos.md`
-- `sliding-window.md` / `leaky-bucket.md` — the rate limiting algorithms `token-bucket.md` contrasts against
-- `lfu.md` / `arc.md` / `tinylfu.md` — the eviction policies `lru.md` introduces in outline

@@ -1,4 +1,4 @@
-// THE deliverable: the complete production L7 proxy. See instruction/10-projects/project-04.md.
+// THE deliverable: the complete production L7 proxy. See proxy/README.md.
 //
 // TODO:
 // - load config from file, support hot reload (see instruction/09-architecture/config.md)
