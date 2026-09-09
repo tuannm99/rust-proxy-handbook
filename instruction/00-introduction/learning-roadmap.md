@@ -28,6 +28,40 @@ you should be able to *do*, not just recite, before moving to the next one.
 10. **Production** (`proxy/README.md`) — run `12-testing/`'s load
     test and chaos exercises against your own proxy and survive them.
 
+## Read + code map
+
+One row per `labs/` crate, in build order: read its handbook references
+first, then implement it. This table mirrors each crate's own README —
+it's the one-page version so the whole `labs/` → `proxy/` path is visible
+without opening 18 files.
+
+| Lab | Read first | Then code |
+| --- | --- | --- |
+| `labs/00-tcp-server` | `01-network/socket.md`, `01-network/tcp.md`, `03-rust/ownership.md`, `03-rust/async.md`, `04-runtime/tokio.md`, `02-linux/epoll.md` | TCP echo server |
+| `labs/01-http-parser` | `05-http-stack/parser.md`, `07-security/request-smuggling.md` | hand-written HTTP/1.1 parser, no hyper |
+| `labs/02-http-server` | `05-http-stack/parser.md`, `05-http-stack/keepalive.md`, `01-network/http.md`, `01-network/http2.md` | hyper/hyper-util plain HTTP server |
+| `labs/03-router` | `05-http-stack/router.md` | method+path routing |
+| `labs/04-static-server` | `05-http-stack/static.md`, `02-linux/zerocopy.md` | streaming static files |
+| `labs/05-reverse-proxy` | `06-proxy/upstream.md`, `06-proxy/healthcheck.md`, `06-proxy/retry.md`, `06-proxy/service-discovery.md`, `01-network/http.md` | hyper client forwarding to an upstream pool |
+| `labs/06-load-balancer` | `06-proxy/load-balancer.md`, `13-algorithms/smooth-wrr.md`, `13-algorithms/rendezvous-hash.md`, `13-algorithms/maglev.md` | RR/least-conn/consistent-hash/smooth-WRR/Maglev |
+| `labs/07-tls` | `01-network/tls.md` | tokio-rustls termination, ALPN |
+| `labs/08-http2` | `01-network/http2.md` | multiplexing/flow-control specifics |
+| `labs/09-http3` | `01-network/http3.md`, `19-reading-source/quinn/` | QUIC via `quinn` |
+| `labs/10-cache` | `05-http-stack/cache.md`, `13-algorithms/lru.md`, `13-algorithms/lfu.md`, `13-algorithms/arc.md`, `13-algorithms/tinylfu.md` | HTTP response caching + eviction policy |
+| `labs/11-rate-limit` | `07-security/ratelimit.md`, `13-algorithms/token-bucket.md`, `13-algorithms/sliding-window.md`, `13-algorithms/leaky-bucket.md` | token bucket / sliding window / leaky bucket |
+| `labs/12-waf` | `07-security/waf.md`, `13-algorithms/aho-corasick.md` | rule-based filtering |
+| `labs/13-hot-reload` | `09-architecture/config.md` | config reload without dropping connections |
+| `labs/14-plugin` | `09-architecture/plugin.md` | request/response middleware |
+| `labs/15-prometheus` | `08-observability/metrics.md` | metrics export |
+| `labs/16-opentelemetry` | `08-observability/tracing.md` | distributed tracing export |
+| `labs/17-ebpf` | `16-kernel/ebpf.md`, `16-kernel/xdp.md`, `07-security/ddos.md` | XDP/eBPF packet filtering |
+| `proxy/` | `01-network/tls.md`, `01-network/proxy-protocol.md`, `07-security/*.md`, `08-observability/*.md`, `09-architecture/*.md` (see `proxy/README.md`) | the final L7 proxy, combining every lab above |
+
+Paths above are relative to `instruction/` unless prefixed `labs/` or
+`proxy/`. If a crate's own README ever drifts from this table, the
+crate's README wins — update this table to match, not the other way
+around.
+
 ## Deep-dive layer (13-20)
 
 `13-algorithms/` through `20-reference/` are not a phase 11+ to work
@@ -37,6 +71,55 @@ as you need them (e.g. implementing Maglev in phase 6 sends you to
 which is worth returning to after phase 10: reading `pingora`'s source
 once you've built your own proxy will make far more sense than reading it
 cold.
+
+### If you want to read the deep-dive layer straight through anyway
+
+The pull-it-in-when-needed order above is the default, but if you'd
+rather work through `13-algorithms/` and `14-memory/` end to end once
+(most of it is short, and having seen it once makes the "as needed"
+callouts land faster later), this is a reasonable internal order — each
+row only depends on rows above it:
+
+| # | File | Depends on |
+| --- | --- | --- |
+| 1 | `13-algorithms/hashmap.md` | — |
+| 2 | `13-algorithms/dfa.md` | — |
+| 3 | `13-algorithms/fsm.md` | `dfa.md` |
+| 4 | `13-algorithms/trie.md` | — |
+| 5 | `13-algorithms/radix-tree.md` | `trie.md` |
+| 6 | `13-algorithms/ring-buffer.md` | — |
+| 7 | `13-algorithms/heap.md` | — |
+| 8 | `13-algorithms/priority-queue.md` | `ring-buffer.md`, `heap.md` |
+| 9 | `13-algorithms/skiplist.md` | — |
+| 10 | `13-algorithms/slab.md` | — |
+| 11 | `13-algorithms/lru.md` | `slab.md` |
+| 12 | `13-algorithms/lfu.md` | — |
+| 13 | `13-algorithms/arc.md` | `lru.md`, `lfu.md` |
+| 14 | `13-algorithms/count-min-sketch.md` | — |
+| 15 | `13-algorithms/bloom-filter.md` | — |
+| 16 | `13-algorithms/hyperloglog.md` | — |
+| 17 | `13-algorithms/tinylfu.md` | `count-min-sketch.md`, `bloom-filter.md`, `lru.md` |
+| 18 | `13-algorithms/token-bucket.md` | — |
+| 19 | `13-algorithms/sliding-window.md` | — |
+| 20 | `13-algorithms/leaky-bucket.md` | `token-bucket.md` |
+| 21 | `13-algorithms/consistent-hash.md` | — |
+| 22 | `13-algorithms/rendezvous-hash.md` | `consistent-hash.md` |
+| 23 | `13-algorithms/maglev.md` | `consistent-hash.md` |
+| 24 | `13-algorithms/smooth-wrr.md` | — |
+| 25 | `13-algorithms/regex-engine.md` | `dfa.md` |
+| 26 | `13-algorithms/aho-corasick.md` | `regex-engine.md` |
+| 27 | `14-memory/allocator.md` | — |
+| 28 | `14-memory/arena.md` | — |
+| 29 | `14-memory/object-pool.md` | — |
+| 30 | `14-memory/buffer-pool.md` | `object-pool.md` |
+| 31 | `14-memory/slab-allocator.md` | `13-algorithms/slab.md`, `allocator.md` |
+| 32 | `14-memory/fragmentation.md` | `allocator.md`, `arena.md`, `object-pool.md` |
+
+`15-parser/`, `16-kernel/`, `17-performance/`, and `18-distributed/` each
+state their own internal order and reading trigger in their own
+`README.md` — read those four `README.md`s for the same kind of ordering
+once you get there; it isn't repeated here to avoid the two copies
+drifting apart.
 
 ## What to learn
 
