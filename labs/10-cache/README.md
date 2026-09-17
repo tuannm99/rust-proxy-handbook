@@ -7,6 +7,7 @@ An in-memory HTTP response cache keyed by method+URI (folding in
 
 ## Handbook references
 - `instruction/05-http-stack/cache.md` — proxy caching semantics
+- `instruction/05-http-stack/cache-stampede.md` — single-flight coalescing, stale-while-revalidate
 - `instruction/13-algorithms/lru.md`, `lfu.md`, `arc.md`, `tinylfu.md` — eviction algorithms
 
 ## Run

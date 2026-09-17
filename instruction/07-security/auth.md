@@ -1,47 +1,12 @@
-# JWT & mTLS
+# Authentication
+
+Where auth sits in a proxy's pipeline, and what the proxy does with an
+identity once it has one. The two mechanisms have their own files:
+`07-security/jwt.md` (bearer tokens) and `07-security/mtls.md` (client
+certificates). They are frequently combined — mTLS authenticating the
+calling *service*, a JWT authenticating the *user* on top of it.
 
 ## What to learn
-### JWT validation
-A JWT is a signed, base64url-encoded JSON structure (`header.payload.signature`).
-Validating one at the proxy edge means: verify the signature against a
-known key (HS256 shared secret or RS256/ES256 public key — never accept
-`alg: none`, and never let the token's own `alg` header pick the
-verification algorithm), then check claims: `exp` (expired?), `nbf` (not
-yet valid?), `aud`/`iss` (issued for this service?).
-
-```rust
-struct Claims {
-    exp: u64,
-    nbf: Option<u64>,
-    aud: String,
-    sub: String,
-}
-
-fn validate_claims(claims: &Claims, expected_aud: &str, now: u64) -> Result<(), &'static str> {
-    if claims.exp <= now { return Err("expired"); }
-    if let Some(nbf) = claims.nbf { if now < nbf { return Err("not yet valid"); } }
-    if claims.aud != expected_aud { return Err("wrong audience"); }
-    Ok(())
-}
-```
-Gotcha: signature verification and claim checks are two separate steps —
-a library that "parses" a JWT without you explicitly calling verify may
-hand you claims from a token whose signature was never checked. In Rust,
-prefer a maintained crate (`jsonwebtoken`) over hand-rolling HMAC/RSA.
-
-### mTLS at the proxy layer
-With mutual TLS, the proxy's TLS server (see `01-network/tls.md`) requests
-and verifies a client certificate during the handshake, before any HTTP
-request is even parsed. The proxy checks the cert chains to a trusted CA
-and optionally checks specific fields (CN/SAN) against an allowlist. This
-authenticates the *connection*, not necessarily the end user — often
-combined with JWT for user-level identity on top of service-level mTLS.
-
-Gotcha: client cert verification happens at the TLS layer (rustls
-`WebPkiClientVerifier` or similar) — if you check certs only after
-accepting the connection at the HTTP layer, you've already spent
-resources on an unauthenticated peer, which is itself a DoS vector.
-
 ### Where auth belongs in the pipeline
 Auth should run as early as possible in the component pipeline (see
 `09-architecture/components.md`: right after routing determines which
@@ -49,13 +14,116 @@ route's auth policy applies, before any upstream call or expensive
 processing like WAF body inspection). Reject unauthenticated/invalid
 requests before they consume upstream capacity.
 
+"After routing" is not an accident — the policy is per route, so you must
+know the route before you know which policy applies. That ordering has a
+consequence worth planning for: anything running *before* routing (IP
+filtering, connection limits) cannot depend on identity, and anything that
+needs identity necessarily runs after the router has already done work.
+
+### Fail closed on an unconfigured route
+A request that matches no route, or matches a route whose auth policy was
+never configured, must not fall through to "no auth required" — that turns
+a config typo into an open door.
+
+Make the policy type non-optional so the compiler forces a decision:
+
+```rust
+enum AuthPolicy {
+    Public,             // a variant you write deliberately
+    Jwt { audience: String },
+    MutualTls { allowed_sans: Vec<String> },
+    Both { .. },
+}
+
+struct Route {
+    // ...
+    auth: AuthPolicy,   // not Option<AuthPolicy>
+}
+```
+Gotcha: this is the difference between "we forgot to configure auth" being
+a compile error and being a production incident. `Option<AuthPolicy>` with
+a `None => allow` arm is the same bug written in a way that looks
+deliberate.
+
+### Passing identity upstream — and stripping it first
+This is the proxy-specific half of auth, and the most commonly botched.
+Once the proxy validates identity, upstreams need to know who the caller
+is, conventionally via a header (`X-User-Id`, `X-Auth-Subject`). Upstreams
+then trust that header, because "the proxy set it."
+
+Which means: **if a client can send that header and the proxy passes it
+through, the client is authenticated as anyone.** The attacker doesn't
+break your JWT validation — they just skip it, sending `X-User-Id: admin`
+with no token at all, and your proxy dutifully forwards it.
+
+The rule is unconditional: strip every identity header from the inbound
+request *before* auth runs, then set it yourself from validated claims.
+Strip on an allowlist basis (remove anything in your identity namespace),
+not a denylist of headers you remembered.
+
+```rust
+// before auth, unconditionally:
+for name in IDENTITY_HEADERS {          // X-User-Id, X-Auth-*, etc.
+    req.headers_mut().remove(name);
+}
+// after successful validation:
+req.headers_mut().insert("x-user-id", claims.sub.parse()?);
+```
+Gotcha: this is the same trust-boundary bug as `X-Forwarded-For` in
+`07-security/ip-filtering.md`. Any header your infrastructure treats as
+trusted must be stripped at the edge, every time, on every path —
+including error paths and any route that skips auth.
+
+Gotcha: stripping must happen at a single, early point, alongside
+hop-by-hop header removal (`05-http-stack/hop-by-hop-headers.md`), not
+inside the auth module. A route configured `Public` skips the auth module
+entirely — and if stripping lived there, that route forwards forged
+identity headers straight through.
+
+### Comparing secrets takes constant time
+Any path that compares a static API key, an HMAC digest, or a shared
+secret must use a constant-time comparison (`subtle`'s `ConstantTimeEq`),
+not `==`. A short-circuiting compare returns faster the earlier it finds a
+mismatch, which leaks the correct prefix through timing — recoverable one
+byte at a time.
+
+Gotcha: a good JWT crate already does this inside signature verification.
+The vulnerable code is almost always the hand-written fallback path — the
+"simple API key" auth someone added for an internal integration.
+
+### Authentication is not authorization
+The proxy answering "who is this?" does not answer "may they do this?"
+Coarse authorization (this route requires this scope or this SAN) belongs
+at the edge because it lets you reject cheaply; fine-grained
+authorization (may this user edit *this* document) requires data only the
+upstream has.
+
+Gotcha: a proxy that enforces coarse rules can lull upstreams into
+skipping their own checks — and then an internal caller that bypasses the
+proxy has no enforcement at all. Treat edge authorization as defense in
+depth, and say so explicitly to the teams behind it.
+
 ## Practice
-1. In `proxy`, add JWT validation using the
-   `jsonwebtoken` crate: verify signature + `exp`/`aud`, reject otherwise
-   with 401.
-2. Configure the proxy's TLS listener (see `01-network/tls.md`) to require
-   and verify a client certificate for one route, using `tokio-rustls`.
-3. Add a pipeline stage ordering test: confirm an invalid JWT is rejected
-   before the request reaches the upstream-selection code.
-4. (Stretch) Support two auth modes per route (JWT-only vs mTLS-only vs
-   both) driven by config (see `09-architecture/config.md`).
+Build these in order.
+
+1. Make route auth policy a non-optional enum. **Done when** adding a new
+   route without specifying a policy fails to compile rather than
+   defaulting to public.
+2. Add identity-header stripping at the same early point as hop-by-hop
+   stripping, and injection after successful validation. **Done when** a
+   request carrying `X-User-Id: admin` and no token is rejected with 401
+   and the upstream receives no `X-User-Id` at all — write the
+   passthrough version first and confirm the upstream sees `admin`, so
+   you've seen the hole.
+3. Verify stripping on the paths that skip auth. **Done when** a route
+   configured `Public` still strips forged identity headers, and so does
+   the 404 path.
+4. Implement the mechanisms: `07-security/jwt.md` for bearer tokens,
+   `07-security/mtls.md` for client certs. **Done when** a route
+   configured `Both` requires a valid cert *and* a valid token.
+5. Add a constant-time comparison to any static-secret path. **Done when**
+   a timing test over many samples cannot distinguish a wrong-first-byte
+   key from a wrong-last-byte key.
+6. Add a pipeline-ordering test. **Done when** it proves an invalid JWT is
+   rejected before upstream selection *and* before WAF body inspection
+   runs.
