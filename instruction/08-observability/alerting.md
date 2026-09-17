@@ -1,31 +1,19 @@
-# Alerting & SLOs
+# Alerting
 
 What actually pages a human, vs what's just a line on a dashboard.
+The SLIs and error budgets it all rests on are in
+`08-observability/slo.md`.
 
 ## What to learn
-### SLI, SLO, and error budget
-An **SLI** (service level indicator) is a measured ratio, e.g. `successful_requests / total_requests` or the fraction of requests under 300ms. An **SLO** is a target for that SLI over a window, e.g. "99.9% of requests succeed over 30 days." The **error budget** is `1 - SLO`: over 30 days at 99.9%, you're allowed ~43 minutes of full downtime (or an equivalent smear of partial failures) before you've spent the whole budget. The budget reframes reliability work as a resource to spend deliberately, not an abstract goal — burn it responding to a real incident, not by over-alerting on noise.
+### What this is built on
+Every alert below fires on an **error budget burn rate**, which only means
+something once you have an SLI and an SLO to derive it from — including
+the decisions about whether 4xx counts, whether a slow success is a
+success, and which requests are even valid. A proxy also needs two
+separate SLIs, because "the proxy failed" and "the upstream failed" have
+different owners.
 
-Defining the SLI precisely is most of the work, and the definition has to
-survive an argument during an incident. Write it as *good events / valid
-events* and pin down both halves:
-- **Are 4xx errors yours?** Usually not — a client sending malformed
-  requests shouldn't burn your budget. But a 429 you emitted because you
-  were overloaded (`07-security/ddos.md`) *is* your failure wearing a
-  client-error status code.
-- **Is a slow success a success?** For a latency SLO, no — define "good"
-  as "succeeded *and* under threshold", with the threshold matching a
-  histogram bucket edge (`08-observability/metrics.md`) so it's an exact
-  count rather than an interpolation.
-- **Which requests are valid?** Health checks, your own synthetic probes,
-  and scrapes of `/metrics` should be excluded, or a quiet night of
-  nothing but health checks reports 100% availability.
-
-Gotcha: a proxy has at least two distinct SLIs and conflating them makes
-the error budget useless. "The proxy did its job" (it routed, it didn't
-5xx on its own account) and "the end-to-end request succeeded" (which
-includes the upstream's failures) are different numbers with different
-owners. Measure both; page the proxy team on the first.
+See `08-observability/slo.md`; this file assumes those exist.
 
 ### Alert on symptoms, not causes
 Page on what the *user* experiences (elevated error rate, elevated p99 latency, the proxy itself down) — not on every internal condition that *might* cause a symptom (one of three upstreams unhealthy, one retry occurred, GC pause of 50ms). If the load balancer in `06-proxy/load-balancer.md` and health checks in `06-proxy/healthcheck.md` are doing their job, losing one upstream shouldn't page anyone; losing all of them should. Cause-level signals still matter — keep them as metrics/dashboards (`08-observability/metrics.md`) for root-causing an incident after the symptom-level alert already woke someone up.
@@ -113,36 +101,31 @@ rotations.
 ## Practice
 Build these in order.
 
-1. Define two SLIs for `proxy` — proxy-caused failures and end-to-end
-   failures — with explicit rules for 4xx, 429-under-load, and excluded
-   health-check traffic. **Done when** both are recording rules over the
-   counters from `08-observability/metrics.md`, and you can state which
+1. Work through `08-observability/slo.md` first. **Done when** two SLIs
+   and their targets exist as recording rules, and you can state which
    team each one pages.
-2. Add a latency SLO whose threshold matches a histogram bucket edge.
-   **Done when** "fraction of requests under threshold" is an exact
-   bucket ratio rather than a `histogram_quantile` interpolation.
-3. Write the burn-rate ladder (14.4x/1h, 6x/6h, 1x/3d) with matching short
+2. Write the burn-rate ladder (14.4x/1h, 6x/6h, 1x/3d) with matching short
    windows, referencing the SLO target from a single recording rule.
    **Done when** changing the target in one place moves every threshold.
-4. Add request-count floors. **Done when** a simulated 3am with 5 requests
+3. Add request-count floors. **Done when** a simulated 3am with 5 requests
    and 1 error does not page.
-5. Add missing-data alerting and an external synthetic probe. **Done
+4. Add missing-data alerting and an external synthetic probe. **Done
    when** killing `proxy` outright pages within your target window —
    test this, because "the alert that fires when everything is dead" is
    the one most likely to be broken.
-6. Verify the alerting path's independence. **Done when** you can state
+5. Verify the alerting path's independence. **Done when** you can state
    what your notification delivery depends on, and confirm none of it
    routes through the proxy being monitored.
-7. Add ticket-level alerts for certificate expiry, config reload failure,
+6. Add ticket-level alerts for certificate expiry, config reload failure,
    and fd/pool saturation. **Done when** a cert 7 days from expiry and a
    deliberately broken config reload each produce a ticket without paging
    anyone.
-8. Run a chaos test (`12-testing/chaos.md`) under load
+7. Run a chaos test (`12-testing/chaos.md`) under load
    (`12-testing/load-testing.md`). **Done when** the burn-rate page fires
    within the expected window, the correct SLI moves (proxy vs end-to-end,
    depending on which fault you injected), and everything clears after the
    fault is removed.
-9. Write the runbook for each page: what it means, first three checks,
+8. Write the runbook for each page: what it means, first three checks,
    and how to mitigate. **Done when** the runbook link is in the alert
    definition itself and someone unfamiliar with the system could follow
    it.

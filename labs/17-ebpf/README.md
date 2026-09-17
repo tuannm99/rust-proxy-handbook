@@ -8,7 +8,7 @@ mitigation.
 
 ## Handbook references
 - `instruction/16-kernel/ebpf.md`, `instruction/16-kernel/xdp.md` — the kernel-side deep dive
-- `instruction/07-security/ddos.md`
+- `instruction/07-security/ddos.md`, `instruction/07-security/slowloris.md`, `instruction/07-security/load-shedding.md`
 
 ## Run
 

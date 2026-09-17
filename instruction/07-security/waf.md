@@ -37,45 +37,19 @@ attackers who vary encoding/casing/whitespace, so signatures need
 normalization (URL-decode, lowercase, collapse whitespace) applied
 consistently before matching.
 
-### Normalization, and why it's where WAFs actually fail
-Normalization is not a preprocessing detail — it *is* the security
-boundary, and getting it subtly different from the upstream's own parsing
-is how essentially every real WAF bypass works.
+### Normalization is where WAFs actually fail
+Signatures match bytes, so whoever decides *which* bytes get matched
+decides whether the WAF works. Getting that subtly different from the
+upstream's own parsing — decode depth, Unicode, charset, which of two
+same-named parameters counts — is how essentially every real WAF bypass
+works, and it is a permanent structural gap rather than a bug you fix
+once.
 
-**Decode depth.** You URL-decode once; the attacker sends `%252e%252e%252f`,
-which decodes once to `%2e%2e%2f` (no match) and twice to `../`. If the
-upstream framework decodes twice, it sees traversal and you didn't.
-Decoding repeatedly until stable has the opposite failure (you now flag
-input the upstream treats literally), which is a false positive, not a
-breach — usually the better error to make. Either way, know how many times
-your upstream decodes; matching that is the actual requirement.
-
-**Case and Unicode.** `<ScRiPt>` is handled by lowercasing. Unicode is not:
-full-width characters, homoglyphs, and overlong UTF-8 encodings can all
-reach an upstream that normalizes them and a WAF that didn't. Normalize
-Unicode (NFKC) before matching if any upstream in your fleet does.
-
-**Charset and content-type.** A body declared `charset=utf-16` that your
-WAF scans as UTF-8 is, to your rules, meaningless noise — and to a
-framework honoring the declared charset, a clean SQLi payload.
-
-Gotcha: this class has a name worth knowing — *impedance mismatch* or
-parser differential. It's the same structural weakness as HTTP request
-smuggling (`request-smuggling.md`): two components parse the same bytes
-differently, and the attacker lives in the gap. A WAF is an entire product
-category built on re-parsing input that something else will parse again,
-so the gap is permanent; you narrow it, you don't close it.
-
-### Parameter semantics differ too
-`?id=1&id=2' OR '1'='1` is one request with two `id` values. PHP takes the
-last, Rails takes the last, ASP.NET concatenates them with a comma, many
-Rust/Go routers take the first. A WAF that inspects only the first value
-misses a payload the upstream will execute; one that inspects only the
-last misses the reverse.
-
-Inspect *every* occurrence of *every* parameter, and inspect the raw query
-string as well. Same for duplicate headers, and for JSON bodies with
-duplicate keys, where behavior varies by parser (`15-parser/`).
+This is a large enough topic to live on its own, and it is shared with
+routing (`05-http-stack/router.md`) and framing
+(`07-security/request-smuggling.md`): see
+`07-security/normalization.md`. Nothing else in this file works if that
+doesn't.
 
 ### Body inspection: the cost and the hard limit
 Inspecting a body means having the whole body, which means buffering it —
@@ -162,29 +136,25 @@ Build these in order.
 1. In `labs/12-waf`, implement `Rule`/`RuleTarget` with 5-10 hardcoded
    signatures (SQLi, XSS, path traversal). **Done when** an obvious
    payload in the query string is blocked and ordinary traffic passes.
-2. Write bypass tests *before* adding normalization: mixed case
-   (`<ScRiPt>`), double URL-encoding (`%252e%252e%252f`), and a duplicate
-   parameter where the payload is in the second value. **Done when** all
-   three get through — you need the failing baseline.
-3. Add normalization (URL-decode to a documented depth, lowercase, NFKC)
-   and all-occurrences parameter inspection. **Done when** all three tests
-   from step 2 are caught, and you can state how many decode passes your
-   upstream does.
-4. Add anomaly scoring with per-rule weights and a threshold; log
+2. Work through `07-security/normalization.md`'s exercises against this
+   rule engine. **Done when** the mixed-case, double-encoded, and
+   duplicate-parameter bypasses are all caught, and the router and WAF
+   read one shared canonical form.
+3. Add anomaly scoring with per-rule weights and a threshold; log
    contributing rule IDs on block. **Done when** a single medium-weight
    match passes and two together block, with both rule IDs in the log
    line.
-5. Add detection-only mode as a flag on the same code path. **Done when**
+4. Add detection-only mode as a flag on the same code path. **Done when**
    a would-block request is logged with its score and forwarded unchanged,
    and flipping one config value enforces it.
-6. Add body inspection with a shared buffer limit and fail-closed
+5. Add body inspection with a shared buffer limit and fail-closed
    behavior. **Done when** a payload inside the limit is caught, an
    oversized body gets 413 rather than passing uninspected, and the
    oversized case increments its own metric.
-7. Add an Aho-Corasick literal prefilter in front of a `RegexSet`. **Done
+6. Add an Aho-Corasick literal prefilter in front of a `RegexSet`. **Done
    when** you can report the fraction of benign requests that never reach
    a regex, and a benchmark at 10 / 100 / 1000 rules shows latency roughly
    flat instead of linear in rule count.
-8. Benchmark the WAF stage on vs off under load, as its own metric. **Done
+7. Benchmark the WAF stage on vs off under load, as its own metric. **Done
    when** you have p50 and p99 numbers for the stage alone, on both small
    and large bodies, and can point at which rules dominate.

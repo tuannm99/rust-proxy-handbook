@@ -1,4 +1,8 @@
-# Retry & Circuit Breaker
+# Retry
+
+Recovering an individual failed request. The layer above — deciding an
+upstream should stop receiving requests at all — is
+`06-proxy/circuit-breaker.md`.
 
 ## What to learn
 ### Idempotency: the rule that comes before any retry logic
@@ -116,32 +120,16 @@ affinity matters, prefer failing over to the ring's *next* node
 deterministically (so all clients of that key agree on the fallback) over
 picking a random other upstream.
 
-### Circuit breaker states
-A circuit breaker stops calling a consistently-failing upstream entirely
-for a cool-down period, instead of retrying into it forever.
+### When retrying stops being the answer
+A retry handles an individual blip. When blips become the norm, retrying
+into a failing upstream is just load it can't absorb — the layer above is
+a circuit breaker, which stops calling that upstream entirely for a
+cool-down period and fails fast instead.
 
-```rust
-enum CircuitState {
-    Closed,                                 // normal, calls pass through
-    Open { until: std::time::Instant },     // failing fast, no calls made
-    HalfOpen,                               // one trial call allowed
-}
-```
-Transitions: `Closed -> Open` after N consecutive failures; `Open ->
-HalfOpen` once `until` elapses; `HalfOpen -> Closed` on a successful trial
-call, `HalfOpen -> Open` (with `until` reset, usually backed off further)
-on a failed one.
-
-Gotcha: don't let concurrent requests all become the "one trial call" in
-`HalfOpen` — gate it with a `compare_exchange` or a semaphore of size 1, or
-you get a thundering herd against a barely-recovered upstream.
-
-A consecutive-failure trigger is the simplest, and it is noisy at low
-traffic: an upstream receiving 3 requests per minute trips on 3 unlucky
-failures spread over a minute. Prefer a failure *rate* over a rolling
-window with a minimum-request-count floor ("open only if ≥20 requests in
-the window and >50% failed"), so low-traffic upstreams don't trip on
-coincidence.
+The one thing to get right from the retry side: **retries must respect the
+circuit**, skipping hosts whose circuit is open rather than treating
+"circuit open" as another failure to retry past. See
+`06-proxy/circuit-breaker.md`.
 
 ### Hedged requests: the tail-latency variant
 Retries fire on failure. **Hedging** fires on *slowness*: if a request
@@ -183,11 +171,9 @@ Build these in order.
    forcing 100% upstream failure causes retries to stop within one window
    (rather than tripling load), and traffic to a second, healthy pool
    still retries normally.
-6. Implement `CircuitState` per upstream with a rate-based trigger and a
-   minimum request count. **Done when** logs show `Closed -> Open ->
-   HalfOpen -> Closed` on a recovering upstream, a single-request-per-
-   minute upstream does *not* trip on 3 scattered failures, and a
-   concurrent load test shows exactly one trial call in `HalfOpen`.
+6. Work through `06-proxy/circuit-breaker.md`'s exercises, then make
+   retries circuit-aware. **Done when** a retry skips a host with an open
+   circuit rather than spending an attempt on it.
 7. (Stretch) Add hedging on GET at the measured p95. **Done when** p99
    latency under a load test with one deliberately slow upstream drops
    measurably, and total request count to upstreams rises by only a few

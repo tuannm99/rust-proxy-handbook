@@ -13,8 +13,10 @@ load-balancing algorithms beyond basic round robin live in
 
 ## Handbook references
 - `instruction/06-proxy/upstream.md` — connection pooling to upstreams
-- `instruction/06-proxy/healthcheck.md` — active vs passive health checks, flapping/hysteresis
-- `instruction/06-proxy/retry.md` — retry budgets, idempotency, circuit breaker states
+- `instruction/06-proxy/healthcheck.md` — active probing, probe depth, deep-check correlated failure
+- `instruction/06-proxy/outlier-detection.md` — passive detection, flap damping, slow start
+- `instruction/06-proxy/retry.md` — retry budgets, idempotency, backoff, hedging
+- `instruction/06-proxy/circuit-breaker.md` — tripping on a failure rate, half-open gating
 - `instruction/06-proxy/service-discovery.md` — static list vs dynamic upstream membership
 - `instruction/01-network/http.md` — which headers a proxy must rewrite (`Host`, `X-Forwarded-For`, `Connection`)
 

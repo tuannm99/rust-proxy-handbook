@@ -1,142 +1,49 @@
-# JWT & mTLS
+# Authentication
+
+Where auth sits in a proxy's pipeline, and what the proxy does with an
+identity once it has one. The two mechanisms have their own files:
+`07-security/jwt.md` (bearer tokens) and `07-security/mtls.md` (client
+certificates). They are frequently combined — mTLS authenticating the
+calling *service*, a JWT authenticating the *user* on top of it.
 
 ## What to learn
-### JWT validation
-A JWT is a signed, base64url-encoded JSON structure (`header.payload.signature`).
-Validating one at the proxy edge means: verify the signature against a
-known key (HS256 shared secret or RS256/ES256 public key — never accept
-`alg: none`, and never let the token's own `alg` header pick the
-verification algorithm), then check claims: `exp` (expired?), `nbf` (not
-yet valid?), `aud`/`iss` (issued for this service?).
+### Where auth belongs in the pipeline
+Auth should run as early as possible in the component pipeline (see
+`09-architecture/components.md`: right after routing determines which
+route's auth policy applies, before any upstream call or expensive
+processing like WAF body inspection). Reject unauthenticated/invalid
+requests before they consume upstream capacity.
+
+"After routing" is not an accident — the policy is per route, so you must
+know the route before you know which policy applies. That ordering has a
+consequence worth planning for: anything running *before* routing (IP
+filtering, connection limits) cannot depend on identity, and anything that
+needs identity necessarily runs after the router has already done work.
+
+### Fail closed on an unconfigured route
+A request that matches no route, or matches a route whose auth policy was
+never configured, must not fall through to "no auth required" — that turns
+a config typo into an open door.
+
+Make the policy type non-optional so the compiler forces a decision:
 
 ```rust
-struct Claims {
-    exp: u64,
-    nbf: Option<u64>,
-    aud: String,
-    sub: String,
+enum AuthPolicy {
+    Public,             // a variant you write deliberately
+    Jwt { audience: String },
+    MutualTls { allowed_sans: Vec<String> },
+    Both { .. },
 }
 
-fn validate_claims(claims: &Claims, expected_aud: &str, now: u64) -> Result<(), &'static str> {
-    if claims.exp <= now { return Err("expired"); }
-    if let Some(nbf) = claims.nbf { if now < nbf { return Err("not yet valid"); } }
-    if claims.aud != expected_aud { return Err("wrong audience"); }
-    Ok(())
+struct Route {
+    // ...
+    auth: AuthPolicy,   // not Option<AuthPolicy>
 }
 ```
-Gotcha: signature verification and claim checks are two separate steps —
-a library that "parses" a JWT without you explicitly calling verify may
-hand you claims from a token whose signature was never checked. In Rust,
-prefer a maintained crate (`jsonwebtoken`) over hand-rolling HMAC/RSA.
-
-### Algorithm confusion, concretely
-"Never let the token's own `alg` header pick the verification algorithm"
-deserves the actual attack, because it explains the shape of the fix.
-
-Your service verifies RS256 with a *public* key — public by definition,
-so the attacker has it. The attacker rewrites the header to
-`{"alg":"HS256"}` and signs the token using that public key's bytes as the
-HMAC secret. A verifier that reads `alg` from the token and dispatches on
-it then calls "HMAC-verify with the configured key", the key material
-matches, and the forged token validates. One header change turns a
-signature check into a rubber stamp.
-
-The fix is not "reject `alg: none`" — it's to pin the accepted algorithm
-in *your* configuration and ignore the token's claim about itself
-entirely. `jsonwebtoken`'s `Validation { algorithms: vec![Algorithm::RS256], .. }`
-does this; the failure mode appears when someone "helpfully" passes the
-parsed header's algorithm into the validator.
-
-Gotcha: the same rule extends to every attacker-controlled header field.
-`kid` (key ID) is used to select a key — if you use it as a filesystem
-path or a database key without validation, it's path traversal or
-injection with extra steps. `jku`/`x5u` name a *URL* to fetch keys from;
-honoring them is a server-side request forgery primitive that also lets
-the attacker supply the verification key. Accept `kid` only as a lookup
-into a fixed key set; never honor `jku`/`x5u`.
-
-### Key rotation and JWKS
-Production identity providers rotate signing keys and publish them at a
-JWKS endpoint. The proxy fetches that key set, caches it, and looks up the
-right key by `kid`. Two failure modes follow directly:
-
-**The unknown-kid stampede.** When rotation happens, tokens arrive with a
-`kid` you don't have, and the natural implementation refetches JWKS to
-find it. An attacker who sends tokens with random `kid` values then drives
-one outbound JWKS fetch per request — you've built a request amplifier
-pointed at your identity provider, which will start rate-limiting you, at
-which point *all* auth fails. Rate-limit the refetch itself (at most one
-per N seconds regardless of how many unknown kids arrive) and serve a 401
-in the meantime.
-
-**Fetch failure.** If JWKS is unreachable, fail static on the cached key
-set (`06-proxy/service-discovery.md` — same principle): keep validating
-with the last known good keys rather than rejecting all traffic. A
-rotation you missed will produce 401s for genuinely new tokens; an empty
-key cache produces 401s for *everything*.
-
-### Clock skew
-`exp` and `nbf` are absolute timestamps compared against your clock, and
-your clock disagrees with the issuer's. Without leeway, a token minted
-milliseconds ago fails `nbf` on a server running a couple of seconds
-behind, and the resulting 401s are intermittent, unreproducible, and
-correlate with nothing an application developer can see.
-
-Allow a small leeway (30-60 seconds is conventional) on both `exp` and
-`nbf`. Note the asymmetry in risk: leeway on `nbf` costs nothing, leeway
-on `exp` extends the life of an expired token by that much — which is
-fine at 60 seconds and not fine at an hour.
-
-Gotcha: the leeway hides clock drift rather than fixing it. Monitor actual
-skew (`08-observability/metrics.md`); a server drifting past your leeway
-fails every token at once, and you want the alert before that.
-
-### Revocation: the thing JWT can't do
-A stateless signed token is valid until `exp` because validating it
-requires no server state — that is the entire performance argument for
-JWT, and it means you cannot revoke one. A compromised token, a logged-out
-session, a fired employee: all still authenticate until expiry.
-
-The practical answers, in increasing cost: keep `exp` short (minutes, with
-a refresh token flow for renewal), maintain a denylist of revoked `jti`
-values (which reintroduces shared state, but only for the small set of
-explicitly revoked tokens), or accept the window deliberately and document
-it. Choosing "short expiry" is not a cop-out — it's the standard answer —
-but it must be an actual decision, because the default of a 24-hour `exp`
-means a 24-hour compromise window.
-
-### mTLS at the proxy layer
-With mutual TLS, the proxy's TLS server (see `01-network/tls.md`) requests
-and verifies a client certificate during the handshake, before any HTTP
-request is even parsed. The proxy checks the cert chains to a trusted CA
-and optionally checks specific fields (CN/SAN) against an allowlist. This
-authenticates the *connection*, not necessarily the end user — often
-combined with JWT for user-level identity on top of service-level mTLS.
-
-Gotcha: client cert verification happens at the TLS layer (rustls
-`WebPkiClientVerifier` or similar) — if you check certs only after
-accepting the connection at the HTTP layer, you've already spent
-resources on an unauthenticated peer, which is itself a DoS vector.
-
-Gotcha: "chains to a trusted CA" is a weaker statement than it sounds. If
-the trusted CA issues certs to anyone (a public CA, or a corporate CA used
-fleet-wide), then *any* valid cert authenticates, and you've verified that
-the client exists rather than that it's authorized. Pin on specific
-SAN/CN values, or use a dedicated CA that signs only for this trust
-domain.
-
-Gotcha: certificates expire, and an expired *client* cert fails at
-handshake time with an error that never reaches your HTTP-layer logging.
-Track certificate expiry as a metric with an alert well before the date
-(`08-observability/alerting.md`); "the client cert expired overnight" is a
-top-tier cause of morning outages, and the signal is invisible unless you
-went looking for it.
-
-Gotcha: revocation for mTLS has the same problem JWT does, with worse
-ergonomics — CRLs are large and stale, OCSP adds a network dependency to
-the handshake path. Short-lived client certs (hours, auto-renewed, as SPIFFE
-and most service meshes do) sidestep it the same way short `exp` does for
-JWT.
+Gotcha: this is the difference between "we forgot to configure auth" being
+a compile error and being a production incident. `Option<AuthPolicy>` with
+a `None => allow` arm is the same bug written in a way that looks
+deliberate.
 
 ### Passing identity upstream — and stripping it first
 This is the proxy-specific half of auth, and the most commonly botched.
@@ -163,60 +70,60 @@ for name in IDENTITY_HEADERS {          // X-User-Id, X-Auth-*, etc.
 req.headers_mut().insert("x-user-id", claims.sub.parse()?);
 ```
 Gotcha: this is the same trust-boundary bug as `X-Forwarded-For` in
-`ip-filtering.md`. Any header your infrastructure treats as trusted must
-be stripped at the edge, every time, on every path — including error
-paths and any route that skips auth.
+`07-security/ip-filtering.md`. Any header your infrastructure treats as
+trusted must be stripped at the edge, every time, on every path —
+including error paths and any route that skips auth.
 
-### Where auth belongs in the pipeline
-Auth should run as early as possible in the component pipeline (see
-`09-architecture/components.md`: right after routing determines which
-route's auth policy applies, before any upstream call or expensive
-processing like WAF body inspection). Reject unauthenticated/invalid
-requests before they consume upstream capacity.
+Gotcha: stripping must happen at a single, early point, alongside
+hop-by-hop header removal (`05-http-stack/hop-by-hop-headers.md`), not
+inside the auth module. A route configured `Public` skips the auth module
+entirely — and if stripping lived there, that route forwards forged
+identity headers straight through.
 
-Gotcha: "fail closed" must be the default for an unrouted request. A
-request that matches no route, or matches a route with no auth policy
-configured, must not fall through to "no auth required" — that turns a
-config typo into an open door. Make the policy type non-optional so the
-compiler forces a decision (`Public` is a variant you write deliberately,
-not the absence of configuration).
+### Comparing secrets takes constant time
+Any path that compares a static API key, an HMAC digest, or a shared
+secret must use a constant-time comparison (`subtle`'s `ConstantTimeEq`),
+not `==`. A short-circuiting compare returns faster the earlier it finds a
+mismatch, which leaks the correct prefix through timing — recoverable one
+byte at a time.
 
-Gotcha: comparisons of secrets (static API keys, HMAC digests) must be
-constant-time (`subtle`'s `ConstantTimeEq`), not `==`. A short-circuiting
-compare leaks the correct prefix through timing, one byte at a time.
-Signature verification inside a good JWT crate already handles this; your
-hand-written API-key fallback path does not.
+Gotcha: a good JWT crate already does this inside signature verification.
+The vulnerable code is almost always the hand-written fallback path — the
+"simple API key" auth someone added for an internal integration.
+
+### Authentication is not authorization
+The proxy answering "who is this?" does not answer "may they do this?"
+Coarse authorization (this route requires this scope or this SAN) belongs
+at the edge because it lets you reject cheaply; fine-grained
+authorization (may this user edit *this* document) requires data only the
+upstream has.
+
+Gotcha: a proxy that enforces coarse rules can lull upstreams into
+skipping their own checks — and then an internal caller that bypasses the
+proxy has no enforcement at all. Treat edge authorization as defense in
+depth, and say so explicitly to the teams behind it.
 
 ## Practice
 Build these in order.
 
-1. In `proxy`, add JWT validation with `jsonwebtoken`: pinned algorithm,
-   signature + `exp`/`aud`, 401 otherwise. **Done when** a valid token
-   passes and a token with a tampered payload fails.
-2. Mount the algorithm-confusion attack against your own endpoint: take
-   your RS256 public key, sign a token with it as an HS256 secret, and
-   send it. **Done when** it is rejected — and, to prove the test is real,
-   temporarily configure the validator to accept the token's own `alg` and
-   watch the forged token succeed.
-3. Add JWKS fetching with `kid` lookup, a refetch rate limit, and
-   fail-static on fetch failure. **Done when** 1000 requests with random
-   `kid` values produce at most one outbound JWKS fetch, and blackholing
-   the JWKS endpoint leaves existing keys working.
-4. Add clock-skew leeway and a skew metric. **Done when** a token minted
-   2 seconds in the future validates, and your metric reports the actual
-   offset against the issuer.
-5. Add identity-header stripping before auth and injection after. **Done
-   when** a request carrying `X-User-Id: admin` and no token is rejected
-   with 401 and the upstream receives no `X-User-Id` at all — write the
-   passthrough version first and confirm the upstream sees `admin`, so
-   you've seen the hole.
-6. Make route auth policy a non-optional enum. **Done when** adding a new
+1. Make route auth policy a non-optional enum. **Done when** adding a new
    route without specifying a policy fails to compile rather than
    defaulting to public.
-7. Configure the TLS listener to require and verify a client cert for one
-   route (`01-network/tls.md`), pinned to a specific SAN. **Done when** a
-   cert from the right CA but wrong SAN is rejected, and cert expiry is
-   exported as a metric.
-8. Add a pipeline-ordering test. **Done when** it proves an invalid JWT is
+2. Add identity-header stripping at the same early point as hop-by-hop
+   stripping, and injection after successful validation. **Done when** a
+   request carrying `X-User-Id: admin` and no token is rejected with 401
+   and the upstream receives no `X-User-Id` at all — write the
+   passthrough version first and confirm the upstream sees `admin`, so
+   you've seen the hole.
+3. Verify stripping on the paths that skip auth. **Done when** a route
+   configured `Public` still strips forged identity headers, and so does
+   the 404 path.
+4. Implement the mechanisms: `07-security/jwt.md` for bearer tokens,
+   `07-security/mtls.md` for client certs. **Done when** a route
+   configured `Both` requires a valid cert *and* a valid token.
+5. Add a constant-time comparison to any static-secret path. **Done when**
+   a timing test over many samples cannot distinguish a wrong-first-byte
+   key from a wrong-last-byte key.
+6. Add a pipeline-ordering test. **Done when** it proves an invalid JWT is
    rejected before upstream selection *and* before WAF body inspection
    runs.

@@ -88,27 +88,16 @@ paper over. Pushing backpressure into the kernel is the whole point;
 accepting connections you cannot serve just relocates the failure into
 your own memory.
 
-### Slow-client attacks (Slowloris) need a data-rate floor, not just a total timeout
-An attacker that sends one byte every 10 seconds can hold a connection open indefinitely under a naive "no total timeout" policy. The fix is a *minimum data rate* enforced on the read side — e.g. "must receive at least N bytes within T seconds of connecting, and again after every read" — not just a fixed overall deadline, which a well-paced slow client can dodge. Tie the header-read phase specifically to this: `05-http-stack/parser.md` and `labs/01-http-parser` are where a request actually gets slow-fed one byte at a time.
+### Slow-client attacks
+An attacker that sends one byte every 10 seconds can hold a connection
+open indefinitely under a naive "no total timeout" policy, at essentially
+zero cost to themselves — the worst cost asymmetry in this file. The
+family has three members (slow headers, slow body, slow read), and the
+defense is a minimum data *rate* per phase rather than a total deadline a
+well-paced attacker simply waits out.
 
-The family has three members, and defending only the first is common:
-- **Slow headers** (classic Slowloris): headers dribbled in forever.
-  Defended by a header-phase deadline plus a byte-rate floor.
-- **Slow body** (R-U-Dead-Yet): a large `Content-Length` sent at one byte
-  per interval. Needs the same floor applied to the body phase, and
-  interacts with any body buffering you do for WAF (`waf.md`) or retries
-  (`06-proxy/retry.md`) — those buffers are held for the entire slow
-  upload.
-- **Slow read**: the attacker sends a normal request for a large response,
-  then reads the response at one byte per interval, pinning your send
-  buffers and any response you've buffered. This one is invisible to every
-  request-side timeout you have; it needs a write-side progress deadline.
-
-Gotcha: a byte-rate floor must not break legitimate slow clients — mobile
-networks are genuinely slow, and a hard floor set from datacenter testing
-will disconnect real users. Set it low enough to be obviously abnormal
-(tens of bytes per second), and combine it with a phase deadline rather
-than relying on rate alone.
+See `07-security/slowloris.md` for the three variants and the rate-floor
+design.
 
 ### Layer 7: the expensive-endpoint flood
 The most efficient attack is usually not volumetric at all — it's finding
@@ -149,26 +138,14 @@ a legitimately large upload. See `05-http-stack/compression.md` for the
 response-side mirror of this.
 
 ### Load shedding beats queueing
-When arriving work exceeds capacity, the two options are to queue it or
-reject it. Queueing feels kinder and is worse: the queue grows, latency
-grows with it, and by the time a request reaches the front, the client has
-already timed out and retried (`06-proxy/retry.md`) — so you spend your
-remaining capacity computing answers nobody is listening for. That is the
-death spiral, and it's self-sustaining once entered.
+When arriving work exceeds capacity, queueing the excess turns an overload
+into a latency death spiral — by the time a queued request is served, its
+client has timed out and retried. Rejecting immediately, cheaply, and as
+early in the pipeline as possible is what keeps useful throughput from
+collapsing.
 
-Shed early instead: reject with 503 *immediately* when a concurrency or
-queue-depth limit is hit, and shed cheapest-first (reject before auth,
-before WAF, before the upstream call). The useful refinement is to bound
-by *time* rather than count — CoDel-style, drop requests that have already
-waited longer than a target — since a fixed queue depth is the wrong limit
-when latency varies. Google's answer to the same problem is to shed by
-request priority, so health checks and paying customers survive while
-bulk traffic is dropped first.
-
-Gotcha: a shed response must be cheap and must not retry. Returning 503
-with `Retry-After` and ensuring your own retry logic doesn't retry *shed*
-responses is what keeps shedding from amplifying the load it exists to
-reduce.
+See `07-security/load-shedding.md` for the shed-vs-queue argument,
+time-based bounds, priority shedding, and adaptive concurrency limits.
 
 ### Pushing decisions down the stack
 Everything above runs after a TCP (and often TLS) handshake you already
@@ -197,23 +174,17 @@ Build these in order.
    `ulimit -n` to a small number and flooding connections produces backoff
    and clean rejections rather than a 100%-CPU spin — watch `top` to
    confirm.
-4. Add minimum-data-rate enforcement to the header phase, then the body
-   phase. **Done when** a client sending one byte every few seconds is
-   disconnected in both phases, and a simulated slow-but-legitimate mobile
-   client (a few KB/s) is not.
-5. Write the three slow-client attackers (slow headers, slow body, slow
-   read) as test clients. **Done when** all three are shed, and normal
-   traffic load-tested concurrently (`12-testing/load-testing.md`) shows no
-   p99 degradation while they run.
-6. Add a decompression limit on request bodies with both an absolute cap
+4. Work through `07-security/slowloris.md`'s exercises. **Done when** all
+   three slow-client variants are shed and a genuinely slow legitimate
+   client is not.
+5. Add a decompression limit on request bodies with both an absolute cap
    and a ratio cap. **Done when** a gzip bomb is rejected having allocated
    only up to your cap (measure RSS during the test to prove it), and a
    legitimately compressible 50 MB body still works.
-7. Add per-route concurrency caps and load shedding with a time-based
-   queue bound. **Done when** overloading one expensive route returns 503
-   quickly instead of queueing, other routes keep serving normally, and
-   your own retry logic does not retry the shed responses.
-8. Write down, in `proxy`'s README, which attack classes `proxy` mitigates
+6. Work through `07-security/load-shedding.md`'s exercises. **Done when**
+   overloading one expensive route returns 503 quickly instead of
+   queueing, and other routes keep serving normally.
+7. Write down, in `proxy`'s README, which attack classes `proxy` mitigates
    itself vs which require infrastructure in front of it. **Done when**
    the boundary is explicit — this is the actual design decision, not a
    detail to skip.

@@ -98,35 +98,14 @@ request method quirks, the port in `Host`, whether the path had a trailing
 slash, and anything your own proxy adds before forwarding. The systematic
 way to find them is to vary one input at a time and diff the response.
 
-### Cache stampede, and why single-flight is mandatory
-A popular entry expires. In the next millisecond, 1,000 concurrent
-requests all find a miss, and all 1,000 go to the origin — which was the
-exact thing the cache existed to prevent, delivered at the worst possible
-moment. Worse, the origin slows under that load, so the window stays open
-longer and more requests pile in.
+### Cache stampede
+When a popular entry expires, every concurrent request for it misses at
+once and they all go to the origin — the cache doing maximum damage at the
+moment it stops helping. Request coalescing (single-flight) plus
+`stale-while-revalidate` removes it entirely, and a cold start after a
+restart is the same problem for every key at once.
 
-The fix is **request coalescing** (single-flight): the first request for a
-key becomes the one that fetches; everyone else waits on its result.
-
-```rust
-// one in-flight fetch per key; the rest await the same shared future
-enum Entry {
-    Ready(CachedResponse),
-    InFlight(tokio::sync::broadcast::Sender<CachedResponse>),
-}
-```
-
-nginx spells this `proxy_cache_lock`; it is not an optimization but a
-requirement for any cache in front of an origin that can be overwhelmed.
-Combine it with `stale-while-revalidate` and the stampede disappears
-entirely: the waiting requests get the stale copy immediately while one
-background fetch refreshes it.
-
-Gotcha: the coalescing map is keyed by attacker-influenced data, so bound
-it, and put a timeout on the wait — a hung origin fetch must not park a
-thousand requests forever. On fetch failure, every waiter needs to be
-woken with the error rather than left waiting for a result that will never
-come.
+See `05-http-stack/cache-stampede.md`.
 
 ### Invalidation
 Time-based expiry (`max-age`) is the easy case. Explicit invalidation (origin pushes a purge, or a write invalidates a related read) is the hard case every real cache eventually needs — plan for a purge-by-key or purge-by-prefix mechanism from the start rather than bolting it on later.
@@ -164,14 +143,11 @@ Build these in order.
    revalidation via conditional requests. **Done when** a stale entry
    triggers exactly one conditional request and a `304` refreshes it
    without transferring the body.
-5. Reproduce a stampede: cache a slow origin response, expire it, and fire
-   500 concurrent requests. **Done when** you can show ~500 origin hits.
-   Then add single-flight coalescing and **done when** the same test
-   produces exactly one.
-6. Add `stale-while-revalidate` and `stale-if-error`. **Done when**
-   expired content is served instantly while a background refresh runs,
-   and taking the origin fully offline still serves cached content rather
-   than 5xx.
+5. Work through `05-http-stack/cache-stampede.md`'s exercises. **Done
+   when** 500 concurrent requests for one expired key produce exactly one
+   origin hit, and `stale-while-revalidate` means none of them wait.
+6. Add `stale-if-error`. **Done when** taking the origin fully offline
+   still serves cached content rather than 5xx.
 7. Mount a cache-poisoning attack: make the origin reflect a header you
    forward but don't key on, poison an entry, and fetch it as a different
    client. **Done when** the attack works, and then **done again when**

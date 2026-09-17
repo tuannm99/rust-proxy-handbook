@@ -49,10 +49,10 @@ instruction/01-network/        DNS, HTTP/1/2/3, sockets, TCP, TLS, PROXY protoco
 instruction/02-linux/          epoll, io_uring, memory, signals, zero-copy
 instruction/03-rust/           ownership, lifetimes, unsafe, sync, async, pin
 instruction/04-runtime/        tokio internals, waker/poll
-instruction/05-http-stack/      parser, router, cache, compression, static files, websocket, keep-alive, vhost/SNI routing, gRPC
-instruction/06-proxy/           upstream pool, load balancer, health check, retry/circuit breaker, service discovery
-instruction/07-security/        auth (JWT/mTLS), rate limiting, WAF, request smuggling, IP filtering, DDoS/volumetric mitigation
-instruction/08-observability/   logging, metrics, profiling, distributed tracing, alerting/SLOs
+instruction/05-http-stack/      parser, hop-by-hop headers, router, cache (+ stampede), compression, static files, websocket, keep-alive, vhost/SNI routing, gRPC
+instruction/06-proxy/           upstream pool, load balancer, health check, outlier detection, retry, circuit breaker, service discovery
+instruction/07-security/        auth, JWT, mTLS, input normalization, rate limiting, WAF, request smuggling, IP filtering, DDoS, slowloris, load shedding
+instruction/08-observability/   logging, metrics, profiling, distributed tracing, SLOs, alerting
 instruction/09-architecture/    components, config reload, plugin system, graceful shutdown, canary/blue-green, rolling restart
 instruction/12-testing/         load testing, fuzzing, chaos engineering, CI/static tooling
 instruction/13-algorithms/      data structures/algorithms underpinning routing, WAF, rate limiting, cache, load balancing, DDoS mitigation
@@ -66,7 +66,7 @@ instruction/20-reference/       glossary, cheatsheets
 instruction/21-reading-list/    books, RFCs, open-source references
 ```
 
-Each topic is one file, named after its concept (e.g. `instruction/06-proxy/load-balancer.md`). There is deliberately no `instruction/10-projects/` — that content now lives directly in each `labs/NN-*` crate's own README (Goal + Practice) and in `proxy/README.md` for the final build. The directory number encodes prerequisite order for `00`-`12` — earlier numbers are foundational to later ones (e.g. `instruction/02-linux/epoll.md` and `instruction/03-rust/async.md` underpin `instruction/04-runtime/tokio.md`, which underpins the actual proxy work in `instruction/06-proxy/`).
+Each topic is one file, named after its concept (e.g. `instruction/06-proxy/load-balancer.md`); when a subtopic grows past roughly 1,500 words or is cross-referenced from several places, split it into its own file and leave a short pointer behind rather than letting one file carry two concepts. Every numbered directory carries a `README.md` index listing its files with one-line descriptions and a suggested reading order. There is deliberately no `instruction/10-projects/` — that content now lives directly in each `labs/NN-*` crate's own README (Goal + Practice) and in `proxy/README.md` for the final build. The directory number encodes prerequisite order for `00`-`12` — earlier numbers are foundational to later ones (e.g. `instruction/02-linux/epoll.md` and `instruction/03-rust/async.md` underpin `instruction/04-runtime/tokio.md`, which underpins the actual proxy work in `instruction/06-proxy/`).
 
 `13`-`21` are a deep-dive/foundations layer, not a strict continuation of the `00`-`12` sequence — they're referenced *from* earlier directories rather than only read after them (e.g. `06-proxy/load-balancer.md` cross-references `13-algorithms/` for Maglev/rendezvous hashing). When new content would duplicate an existing topic file's scope (e.g. a load-testing tool, an architecture pattern), add it to the existing directory (`12-testing/`, `09-architecture/`) instead of creating a new top-level number.
 
