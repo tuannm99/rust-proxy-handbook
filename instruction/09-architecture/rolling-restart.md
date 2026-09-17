@@ -24,18 +24,122 @@ fn bind_reuseport(addr: SocketAddr) -> std::io::Result<std::net::TcpListener> {
 ```
 Gotcha: `SO_REUSEPORT` distributes *new* connections across all bound processes essentially at random — during the overlap window the old (draining) process can still receive brand-new connections unless it's also refusing them at the application layer, which partially defeats the purpose. Keep the overlap window short.
 
+Gotcha, and this is the one that silently costs you connections: the
+kernel assigns an incoming connection to a listener **at SYN time**, by
+hashing the 4-tuple, and it lands in *that* listener's accept queue. When
+the old process closes its listening socket, connections sitting in its
+accept queue — already completed handshakes the client believes are
+established — are reset, not redistributed. So the draining process must
+keep calling `accept()` and serving what's already queued for a moment
+after it stops being the preferred target, rather than closing the
+listener the instant it decides to drain. This is the same
+"stop-accepting is not free" lesson as the pre-stop delay in
+`09-architecture/graceful-shutdown.md`, one layer down.
+
 ### Socket handoff via `exec` (the nginx pattern)
 The alternative nginx uses for `SIGUSR2`-triggered binary upgrades: the old master process keeps its listening file descriptor open, spawns the new binary and passes that fd down to it (inherited across `exec`, or handed over a Unix domain socket via `SCM_RIGHTS`), and the new process starts accepting on the *same* socket — not a second one. There is no overlap window and no reliance on `SO_REUSEPORT` at all; only one process ever owns the fd at a time, but it changes hands without ever closing it.
+
+Gotcha: "inherited across `exec`" requires clearing `FD_CLOEXEC` on that
+descriptor — Rust sets close-on-exec on sockets it creates by default, and
+forgetting to clear it produces a new process that starts, finds no
+inherited listener, and either exits or binds a fresh socket with a gap.
+Pass the fd number to the child explicitly (an environment variable is the
+usual channel) rather than assuming a convention.
+
+Gotcha: nginx's full version of this keeps the old master alive
+indefinitely so a failed upgrade can be rolled back by signaling the new
+one to exit and the old one to resume accepting. That rollback path is the
+actual reason the pattern is more complex than `SO_REUSEPORT` — if you
+don't implement rollback, you've paid the complexity without the benefit.
 
 ### systemd socket activation
 If systemd is available (even without a full orchestrator/Kubernetes), a `.socket` unit can own the listening socket independently of the `.service` unit. Systemd opens and holds the socket; `systemctl restart` on the service just restarts the process, and the kernel queues incoming connections in the socket backlog for the few hundred milliseconds the process is down — no `SO_REUSEPORT` or fd-passing code needed in the proxy at all, at the cost of depending on systemd being present.
 
+Gotcha: this works because the kernel's accept queue absorbs the gap — so
+it works only if the gap is shorter than the queue takes to fill. At high
+connection rates a slow-starting process (TLS certs to load, config to
+validate, caches to build) overflows the backlog and connections are
+refused anyway. Measure your startup-to-accepting time and compare it
+against your connection rate times your backlog depth
+(`16-kernel/tcp-stack.md`) before trusting it.
+
 ### What must hold true regardless of technique
 The new process must pass its own readiness check (config parsed, upstreams reachable — tie to `06-proxy/healthcheck.md`) *before* the old one is signaled to drain, or a bad new binary/config takes the whole proxy down instead of just failing to deploy. Long-lived connections (WebSocket, `05-http-stack/websocket.md`) held by the old process need the same drain deadline as `graceful-shutdown.md` — a rolling restart doesn't make that problem go away, it just adds "and don't refuse new connections while draining."
 
+### The restart loses state, and the state mattered
+Zero *dropped connections* is not the same as zero impact, because
+everything the old process accumulated in memory is gone. Each of these is
+covered elsewhere; together they are why a "successful" zero-downtime
+restart can still show up as a spike on every dashboard:
+- **The response cache is empty** (`05-http-stack/cache.md`). Every entry
+  is a miss, all at once — a self-inflicted cache stampede against the
+  origin at exactly the moment you'd like things to be calm. Request
+  coalescing is what keeps this survivable.
+- **Rate limiter buckets reset** (`07-security/ratelimit.md`). Every
+  client silently receives a fresh budget; a client you were actively
+  throttling is unthrottled. An attacker who can trigger restarts gets a
+  limit reset on demand.
+- **Circuit breakers reset** (`06-proxy/retry.md`). The new process
+  doesn't know an upstream is broken and will send traffic into it to
+  find out, re-learning at the cost of real requests.
+- **Connection pools are cold** (`06-proxy/upstream.md`). The first
+  requests pay handshake latency, including TLS, so p99 spikes for tens of
+  seconds after the handoff.
+- **Health state is unknown.** Until the first probe cycle completes, the
+  new process either treats every upstream as healthy (and sends traffic
+  to dead ones) or as unhealthy (and serves nothing) — decide which, and
+  prefer making readiness wait for one full probe cycle.
+
+Gotcha: the fix for most of these is to make readiness mean *warm*, not
+merely *started* — complete one health-check cycle and pre-open a few
+pooled connections before declaring ready. The cache is the exception;
+warming it generally isn't worth it, but knowing the miss spike is coming
+means not mistaking it for a regression.
+
+### Verifying it honestly
+A load test that reports only HTTP status codes will happily declare
+success while connections are being reset, because a reset connection
+often produces no status code at all — the request simply vanishes from
+the result set, or is counted in a category nobody reads. Measure at the
+connection level: count connection errors, resets, and refusals
+separately from non-2xx responses, and assert all three are zero across
+the handover.
+
 ## Practice
-1. In `proxy`, implement the `SO_REUSEPORT` bind helper and manually run two instances bound to the same port; confirm (via a per-instance log line) that the kernel is distributing connections across both.
-2. Wire a readiness check the new process must pass (successful upstream health check) before it signals "ready to take traffic" — don't send `SIGTERM` to the old process until then.
-3. Write a small restart script: start new process, wait for readiness, `SIGTERM` the old process (reusing the drain logic from `graceful-shutdown.md`), confirm old process exits after draining.
-4. Load-test through the restart (`12-testing/load-testing.md`) and confirm zero failed requests across the handover — any failures mean the overlap window or drain deadline is wrong.
-5. Optional: write a systemd `.socket` + `.service` unit pair for `proxy` and compare — confirm `systemctl restart` alone achieves the same zero-dropped-connection result with none of the `SO_REUSEPORT` code.
+Build these in order.
+
+1. Implement the `SO_REUSEPORT` bind helper in `proxy` and run two
+   instances on one port. **Done when** per-instance logging shows the
+   kernel distributing new connections across both.
+2. Add a readiness check the new process must pass — config parsed, certs
+   loaded, one full health-check cycle completed, a few pooled upstream
+   connections opened. **Done when** a process with a broken config or
+   unreachable upstreams never reports ready.
+3. Write the restart script: start new, wait for readiness, `SIGTERM` the
+   old (reusing the drain from `09-architecture/graceful-shutdown.md`),
+   confirm it exits after draining. **Done when** a bad new binary leaves
+   the old one serving, untouched.
+4. Make the draining process keep accepting its already-queued connections
+   before closing the listener. **Done when** a load test at high
+   connection rate through the handover shows zero resets — run it without
+   this step first and count them, because they're invisible unless you
+   look for them.
+5. Load-test through a restart measuring connection-level errors
+   separately (`12-testing/load-testing.md`). **Done when** connection
+   refusals, resets, and non-2xx are all zero across the handover.
+6. Measure the state-loss cost. **Done when** you have a chart of origin
+   request rate (cache misses), p99 latency (cold pools), and upstream
+   error rate (reset circuit breakers) across a restart — and have decided
+   which of them you'll mitigate.
+7. (Stretch) Implement fd handoff via `SCM_RIGHTS` or `exec` inheritance,
+   including clearing `FD_CLOEXEC`. **Done when** the new process accepts
+   on the identical socket with no overlap window — verify with
+   `ss -tlnp` that only one process owns the listener at any moment.
+8. (Stretch) Add the rollback path: if the new process fails readiness
+   after taking over, signal it to exit and have the old one resume.
+   **Done when** a deliberately broken upgrade rolls back automatically
+   with zero dropped connections.
+9. Optional: write a systemd `.socket` + `.service` pair and compare.
+   **Done when** `systemctl restart` achieves the same zero-dropped result
+   with none of the above code — and you've measured your startup time
+   against your backlog depth to know the limits of that approach.
