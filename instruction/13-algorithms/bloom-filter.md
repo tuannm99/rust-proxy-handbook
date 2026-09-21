@@ -38,8 +38,8 @@ round numbers and hope.
 - **TinyLFU's doorkeeper** (`13-algorithms/tinylfu.md`): a key must appear
   twice before it's counted in the frequency sketch, and the Bloom
   filter is the cheap first-appearance check.
-- **A first-pass IP/rule blocklist check** (`07-security/waf.md`,
-  `07-security/ip-filtering.md`): checking a large deny-list is often
+- **A first-pass IP/rule blocklist check** (`07-security/06-waf.md`,
+  `07-security/08-ip-filtering.md`): checking a large deny-list is often
   dominated by "the common case is not on the list" — a Bloom filter in
   front of the real lookup answers "definitely not blocked" for most
   traffic in O(k) with no memory access outside the filter itself, and

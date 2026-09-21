@@ -1,6 +1,6 @@
 # Binary Heap
 
-`06-proxy/load-balancer.md`'s least-outstanding-requests variant needs to
+`06-proxy/02-load-balancer.md`'s least-outstanding-requests variant needs to
 always know which upstream currently has the fewest in-flight requests.
 A binary heap is the structure that answers "what's the minimum" in
 O(log n) per update instead of scanning every upstream on every request.
@@ -58,7 +58,7 @@ children per sift-down step instead of 2. For small `d` (4, sometimes 8)
 this is a net win in practice because it does fewer cache-line-crossing
 jumps for a similar total comparison count; production priority-queue
 implementations (some OS schedulers, some LB implementations) use d-ary
-heaps specifically for this reason. See `17-performance/cpu-cache.md`
+heaps specifically for this reason. See `17-performance/01-cpu-cache.md`
 before micro-tuning `d` — measure first.
 
 ## Practice

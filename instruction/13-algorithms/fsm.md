@@ -16,7 +16,7 @@ behavior to the transitions themselves — which is what an HTTP/1.1
 connection actually is: `Idle -> ReadingRequestLine -> ReadingHeaders ->
 ReadingBody -> Idle` (keep-alive) or `-> Closed`, with real work
 happening on each edge, not just a yes/no at the end. See
-`05-http-stack/parser.md` and `05-http-stack/keepalive.md` for the
+`05-http-stack/01-parser.md` and `05-http-stack/04-keepalive.md` for the
 concrete states; this file is about how to encode the machine itself.
 
 ### Enum + match: the common case
@@ -60,7 +60,7 @@ impl HeadersRead {
 ```
 `Idle` simply has no `read_body` method — calling it out of order doesn't
 compile, rather than panicking or silently misbehaving in production. See
-`03-rust/ownership.md` for why consuming `self` (not `&self`) is what
+`03-rust/01-ownership.md` for why consuming `self` (not `&self`) is what
 makes this pattern actually enforce one-way transitions.
 
 ### Choosing between them
@@ -79,7 +79,7 @@ validating the request is fully read).
    confirm every state has a defined transition for every byte class it
    can see.
 2. Rewrite the keep-alive connection lifecycle from
-   `05-http-stack/keepalive.md` (idle → reading → responding → idle/closed)
+   `05-http-stack/04-keepalive.md` (idle → reading → responding → idle/closed)
    as a typestate chain; try to call a method out of order and confirm it
    fails to compile.
 3. Pick one state transition your enum-based parser handles with a

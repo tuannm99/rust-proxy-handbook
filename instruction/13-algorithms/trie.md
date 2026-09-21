@@ -1,6 +1,6 @@
 # Trie (Prefix Tree)
 
-`05-http-stack/router.md` covers matching method+path at the proxy level.
+`05-http-stack/03-router.md` covers matching method+path at the proxy level.
 This file covers the structure a real router's matching is built on:
 lookup by shared prefix, which is exactly what a path (`/users/:id/posts`)
 is made of.

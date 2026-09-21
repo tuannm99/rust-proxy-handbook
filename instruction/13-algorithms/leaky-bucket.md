@@ -1,6 +1,6 @@
 # Leaky Bucket
 
-`07-security/ratelimit.md` introduces leaky bucket as "a queue that drains
+`07-security/07-ratelimit.md` introduces leaky bucket as "a queue that drains
 at a constant rate." This file covers the two ways that sentence actually
 gets implemented, because they behave very differently under load.
 

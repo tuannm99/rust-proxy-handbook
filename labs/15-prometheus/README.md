@@ -6,7 +6,7 @@ Export request count, latency histogram, and upstream error count as
 Prometheus metrics on a `/metrics` endpoint.
 
 ## Handbook references
-- `instruction/08-observability/metrics.md`
+- `instruction/08-observability/02-metrics.md`
 
 ## Run
 

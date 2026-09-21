@@ -1,6 +1,6 @@
 # LRU and Cache Eviction
 
-`05-http-stack/cache.md` covers HTTP caching semantics (freshness, `Vary`,
+`05-http-stack/07-cache.md` covers HTTP caching semantics (freshness, `Vary`,
 invalidation). This file covers the eviction policy underneath: what to
 throw away when the cache is full.
 
@@ -23,7 +23,7 @@ struct Node<K, V> {
 
 Gotcha: writing this with `Rc<RefCell<Node>>` produces reference cycles
 that never free, and writing it with raw pointers means real `unsafe`
-(see `03-rust/unsafe.md`). The idiomatic Rust answer is an arena — store
+(see `03-rust/03-unsafe.md`). The idiomatic Rust answer is an arena — store
 nodes in a `Vec` and use `usize` indices as links, which makes the whole
 structure safe, compact, and cache-friendly. This is the same technique as
 `13-algorithms/slab.md`; a slab is the natural backing store for an LRU.
@@ -54,7 +54,7 @@ eviction, a hand sweeps the circle: if the bit is set, clear it and move
 on; if clear, evict. Entries touched since the last sweep survive one
 round, approximating recency closely enough for most workloads at a
 fraction of the coordination cost. This is what the Linux page cache uses
-(`16-kernel/page-cache.md`).
+(`16-kernel/08-page-cache.md`).
 
 ### LRU's blind spot: scans
 A single pass over a large set of one-shot items (a crawler walking every

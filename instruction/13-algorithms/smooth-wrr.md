@@ -1,6 +1,6 @@
 # Smooth Weighted Round Robin
 
-The algorithm behind nginx's `weight=` directive. `06-proxy/load-balancer.md`
+The algorithm behind nginx's `weight=` directive. `06-proxy/02-load-balancer.md`
 introduces WRR and says picks should be "interleaved rather than bursty" —
 this file is how that interleaving is actually produced.
 
@@ -52,7 +52,7 @@ gets added in step 1. On a failed request to an upstream it decrements
 that upstream's `effective_weight`; on success it increments it back,
 capped at the configured `weight`. The result is a load balancer that
 gradually sheds traffic from a degrading upstream and gradually restores
-it — without any active health check (`06-proxy/healthcheck.md`) firing.
+it — without any active health check (`06-proxy/03-healthcheck.md`) firing.
 
 This is *passive* health checking expressed purely as weight arithmetic,
 and it composes: the smooth-WRR selection loop is unchanged, it just reads

@@ -7,8 +7,8 @@ receive path, ahead of the userspace proxy — relevant to volumetric DDoS
 mitigation.
 
 ## Handbook references
-- `instruction/16-kernel/ebpf.md`, `instruction/16-kernel/xdp.md` — the kernel-side deep dive
-- `instruction/07-security/ddos.md`, `instruction/07-security/slowloris.md`, `instruction/07-security/load-shedding.md`
+- `instruction/16-kernel/09-ebpf.md`, `instruction/16-kernel/10-xdp.md` — the kernel-side deep dive
+- `instruction/07-security/09-ddos.md`, `instruction/07-security/10-slowloris.md`, `instruction/07-security/11-load-shedding.md`
 
 ## Run
 

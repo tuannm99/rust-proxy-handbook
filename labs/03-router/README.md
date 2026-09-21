@@ -8,7 +8,7 @@ path with the wrong method gets 405, and path params/trailing slashes are
 handled deliberately, not by accident.
 
 ## Handbook references
-- `instruction/05-http-stack/router.md` — matching method+path, trailing slashes, path params
+- `instruction/05-http-stack/03-router.md` — matching method+path, trailing slashes, path params
 
 ## Run
 

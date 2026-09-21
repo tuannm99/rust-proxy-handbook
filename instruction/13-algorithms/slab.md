@@ -3,7 +3,7 @@
 Fixed-size object storage with O(1) insert and remove, addressed by
 integer index instead of pointer. The data structure behind connection
 tables, LRU nodes, and arena-based graphs.
-`14-memory/slab-allocator.md` covers the allocator-level view; this file
+`14-memory/05-slab-allocator.md` covers the allocator-level view; this file
 covers the data structure you actually use in Rust.
 
 ## What to learn
@@ -14,7 +14,7 @@ one entry per active connection, one node per LRU entry. The obvious
 shapes all have problems: `HashMap<Id, T>` hashes on every access and
 scatters allocations; `Vec<T>` invalidates every index on removal;
 `Rc<RefCell<T>>` graphs leak on cycles; raw pointers mean `unsafe`
-(`03-rust/unsafe.md`).
+(`03-rust/03-unsafe.md`).
 
 A slab is a `Vec` of slots where **removal does not shift anything** — the
 freed slot joins a free list, so every outstanding index stays valid. You
@@ -74,7 +74,7 @@ A slab never shrinks on its own: after a traffic spike creates 100k
 connection slots, the `Vec` stays 100k slots wide even at 100 active
 connections. For a long-running proxy that is a permanent memory
 high-water mark set by your worst spike
-(see `14-memory/fragmentation.md`).
+(see `14-memory/06-fragmentation.md`).
 
 Compacting means moving occupied entries into low slots, which invalidates
 their indices — precisely the property the slab exists to provide. The

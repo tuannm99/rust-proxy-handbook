@@ -38,7 +38,7 @@ hash function (FxHash, a raw FNV, anything without a per-process random
 seed), an attacker who knows the hash algorithm can choose inputs that
 all collide, degrading every operation toward the collision-chain
 length — O(n) per lookup instead of O(1), turning a hash map into a
-denial-of-service vector on its own (`07-security/ddos.md`).
+denial-of-service vector on its own (`07-security/09-ddos.md`).
 
 Rust's default hasher (SipHash, keyed with a random seed generated per
 process at startup) is specifically DoS-resistant against this: without

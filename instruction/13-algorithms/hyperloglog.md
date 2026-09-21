@@ -4,7 +4,7 @@
 appeared." HyperLogLog answers a different question in similarly tiny
 fixed memory: "how many *distinct* keys have appeared" — cardinality
 estimation, useful for "how many distinct attacker IPs hit us in the last
-minute" (`07-security/ddos.md`) without ever storing the set of IPs.
+minute" (`07-security/09-ddos.md`) without ever storing the set of IPs.
 
 ## What to learn
 
@@ -70,5 +70,5 @@ oldest bucket as time advances.
    true union cardinality.
 4. Add time-bucket rotation (one HLL per minute, merge the last 5 for a
    windowed count) and use it as a distinct-IP-rate signal alongside
-   `07-security/ddos.md`'s volumetric detection; test it against a
+   `07-security/09-ddos.md`'s volumetric detection; test it against a
    simulated distributed flood from many synthetic source IPs.

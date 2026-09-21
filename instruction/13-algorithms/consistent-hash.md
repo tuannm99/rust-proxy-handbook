@@ -1,6 +1,6 @@
 # Consistent Hashing
 
-`06-proxy/load-balancer.md` covers the ring lookup and why removal remaps
+`06-proxy/02-load-balancer.md` covers the ring lookup and why removal remaps
 only ~1/N of keys. This file covers what that summary skips: virtual node
 sizing, the balance problem, and bounded loads.
 

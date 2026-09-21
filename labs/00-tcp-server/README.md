@@ -10,11 +10,11 @@ and a client half-closing its write side still gets its pending echoes
 flushed before the connection is torn down.
 
 ## Handbook references
-- `instruction/01-network/socket.md` — bind/listen/accept, `SO_REUSEADDR`
-- `instruction/01-network/tcp.md` — 3-way handshake, byte-stream framing (short reads/writes)
-- `instruction/03-rust/ownership.md`, `instruction/03-rust/async.md` — one owned task per connection
-- `instruction/04-runtime/tokio.md` — multi-threaded scheduler, `tokio::spawn` per connection
-- `instruction/02-linux/epoll.md` — what tokio's reactor is doing under the hood (read this alongside the lab, there's no separate raw-epoll lab in this workspace)
+- `instruction/01-network/01-socket.md` — bind/listen/accept, `SO_REUSEADDR`
+- `instruction/01-network/02-tcp.md` — 3-way handshake, byte-stream framing (short reads/writes)
+- `instruction/03-rust/01-ownership.md`, `instruction/03-rust/05-async.md` — one owned task per connection
+- `instruction/04-runtime/01-tokio.md` — multi-threaded scheduler, `tokio::spawn` per connection
+- `instruction/02-linux/01-epoll.md` — what tokio's reactor is doing under the hood (read this alongside the lab, there's no separate raw-epoll lab in this workspace)
 
 ## Run
 

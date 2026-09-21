@@ -1,6 +1,6 @@
 # Sliding Window Rate Limiting
 
-`07-security/ratelimit.md` and `13-algorithms/token-bucket.md` cover token
+`07-security/07-ratelimit.md` and `13-algorithms/token-bucket.md` cover token
 bucket and leaky bucket. This file covers the other family: limiting by
 counting requests in a moving time window instead of modeling a bucket.
 

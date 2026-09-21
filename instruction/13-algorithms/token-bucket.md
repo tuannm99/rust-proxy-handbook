@@ -1,13 +1,13 @@
 # Token Bucket
 
-`07-security/ratelimit.md` covers the policy question — per-client vs
+`07-security/07-ratelimit.md` covers the policy question — per-client vs
 global, distributed limiting, when to use leaky bucket instead. This file
 covers making the counter itself correct and fast.
 
 ## What to learn
 
 ### Lazy refill and the state you actually need
-The refill-on-read formulation in `07-security/ratelimit.md` (tokens +
+The refill-on-read formulation in `07-security/07-ratelimit.md` (tokens +
 elapsed × rate, capped at capacity) is the right one: no background timer
 per key, and state is just a token count plus a timestamp. Two details
 decide whether it is correct:
@@ -51,7 +51,7 @@ integer/duration arithmetic sidesteps this entirely.
 The naive `Mutex<HashMap<IpAddr, TokenBucket>>` serializes every request in
 the proxy on one lock. Two fixes, in order:
 
-1. **Shard the map** — `dashmap`, as `07-security/ratelimit.md` suggests,
+1. **Shard the map** — `dashmap`, as `07-security/07-ratelimit.md` suggests,
    which shards internally so different keys rarely contend.
 2. **Make the bucket itself lock-free** — pack GCRA's TAT into an
    `AtomicU64` (nanoseconds since a fixed epoch) and update with a
@@ -66,7 +66,7 @@ and the decrement must be one atomic operation.
 ### Unbounded key growth
 A per-source-IP map is attacker-controlled: spoofed or distributed sources
 create an entry each, and the map is a memory-exhaustion vector
-(`07-security/ddos.md`). Bound it, by one of:
+(`07-security/09-ddos.md`). Bound it, by one of:
 - **Sweep idle entries.** A bucket at full capacity carries no
   information — deleting it is equivalent to keeping it. Sweep anything
   untouched for a few refill intervals.

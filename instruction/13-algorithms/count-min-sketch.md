@@ -2,7 +2,7 @@
 
 Approximate frequency counting in fixed memory. How you answer "how many
 requests has this IP sent" for millions of IPs without a map that grows
-with the attacker's budget (`07-security/ddos.md`).
+with the attacker's budget (`07-security/09-ddos.md`).
 
 ## What to learn
 

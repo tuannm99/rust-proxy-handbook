@@ -1,7 +1,7 @@
 # Aho-Corasick
 
 Multi-pattern string matching in one pass. The algorithm that makes a WAF
-(`07-security/waf.md`) affordable: match 5000 signatures against a request
+(`07-security/06-waf.md`) affordable: match 5000 signatures against a request
 body in the time a naive loop matches one.
 
 ## What to learn
@@ -67,7 +67,7 @@ automaton fully, then swap the `Arc` — never mutate a live one.
 ### Normalization must happen before matching
 Aho-Corasick matches bytes literally. `<ScRiPt>` does not match `<script`,
 and `%2e%2e%2f` does not match `../`. The normalization pipeline from
-`07-security/waf.md` — URL-decode, lowercase, collapse whitespace — is what
+`07-security/06-waf.md` — URL-decode, lowercase, collapse whitespace — is what
 makes literal matching viable, and it must be applied identically to the
 patterns at build time and the input at match time.
 
@@ -76,7 +76,7 @@ pattern reintroduces the O(P × n) cost you adopted this algorithm to avoid.
 Watch for double-decoding too — decoding `%252e` twice yields `.`, and
 whether an attacker can exploit that depends on what the *upstream* does,
 which is the same class of parser-mismatch bug as
-`07-security/request-smuggling.md`.
+`07-security/05-request-smuggling.md`.
 
 ### Where the literal-match boundary is
 Aho-Corasick handles literal strings, not regex. Real WAF rules need both:
