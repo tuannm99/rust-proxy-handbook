@@ -12,13 +12,13 @@ returns a *new* fd for that connection (the listening fd keeps listening).
 On the client side, `connect()` performs the TCP 3-way handshake. This
 maps directly onto `TcpListener::bind` + `.accept()` and `TcpStream::connect`
 in Rust, but knowing the raw syscalls is what makes a raw-`libc` epoll loop
-(see `02-linux/01-epoll.md`'s exercise) comprehensible instead of magic.
+(see `02-linux/06-epoll.md`'s exercise) comprehensible instead of magic.
 
 ### Blocking vs non-blocking
 A blocking socket's `read`/`write`/`accept` parks the calling thread until
 data/connections are ready. A non-blocking socket returns `EWOULDBLOCK`/
 `EAGAIN` immediately instead — which is the foundation an event loop
-(epoll, see `02-linux/01-epoll.md`) is built on: register the fd, block on
+(epoll, see `02-linux/06-epoll.md`) is built on: register the fd, block on
 *many* fds at once in `epoll_wait`, and only call `read`/`write` when told
 the fd is ready. Tokio's `TcpListener`/`TcpStream` are non-blocking
 underneath and integrate with its reactor automatically.
@@ -61,7 +61,7 @@ bugs in a hand-rolled proxy.
    `socket`/`bind`/`listen`/`accept` syscalls in order.
 2. Implement `labs/00-tcp-server` using tokio's `TcpListener`, then
    compare it against the raw-`libc`-epoll echo server you'll build in
-   `02-linux/01-epoll.md`'s exercise (a scratch project, not part of this
+   `02-linux/06-epoll.md`'s exercise (a scratch project, not part of this
    workspace) — same behavior, very different code.
 3. In that raw-epoll version, deliberately try a non-blocking `read()`
    before data is ready and confirm you get `EAGAIN`; handle it correctly

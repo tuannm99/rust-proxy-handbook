@@ -4,7 +4,7 @@ gRPC is HTTP/2 with a specific framing convention on top — proxying it correct
 
 ## What to learn
 ### gRPC's message framing inside HTTP/2 DATA frames
-Each gRPC message is a 1-byte compression flag, a 4-byte big-endian length prefix, then that many bytes of protobuf payload — all carried inside ordinary HTTP/2 `DATA` frames (see `01-network/05-http2.md`). A proxy forwarding gRPC does not need to understand protobuf or even this framing; it only needs to forward `DATA` frames faithfully, byte-for-byte, without doing anything an HTTP/1.1-oriented code path might reflexively do (buffering the whole body to compute `Content-Length`, for instance — gRPC bodies are length-prefixed per-message, not once for the whole stream, and are often unbounded/streaming).
+Each gRPC message is a 1-byte compression flag, a 4-byte big-endian length prefix, then that many bytes of protobuf payload — all carried inside ordinary HTTP/2 `DATA` frames (see `01-network/11-http2.md`). A proxy forwarding gRPC does not need to understand protobuf or even this framing; it only needs to forward `DATA` frames faithfully, byte-for-byte, without doing anything an HTTP/1.1-oriented code path might reflexively do (buffering the whole body to compute `Content-Length`, for instance — gRPC bodies are length-prefixed per-message, not once for the whole stream, and are often unbounded/streaming).
 
 Gotcha: gRPC has its own per-message compression (that 1-byte flag),
 negotiated with `grpc-encoding`/`grpc-accept-encoding`. It is *not*
@@ -69,7 +69,7 @@ RPCs. Decide per content-type, not globally, or your first bidi-streaming
 customer discovers it for you.
 
 ### Load balancing gRPC is not the same problem as load balancing HTTP/1.1
-A gRPC client typically opens one long-lived HTTP/2 connection and multiplexes many independent RPCs over it (see `01-network/05-http2.md`'s multiplexing). A load balancer that picks an upstream *per connection* (like a plain L4/TCP balancer, or a naive `06-proxy/02-load-balancer.md` implementation written with one-request-per-connection HTTP/1.1 in mind) sends every RPC on that connection to the same upstream forever, defeating load balancing entirely once a client connects. Correct gRPC load balancing has to be aware of individual HTTP/2 streams and pick an upstream per-RPC, not per-connection.
+A gRPC client typically opens one long-lived HTTP/2 connection and multiplexes many independent RPCs over it (see `01-network/11-http2.md`'s multiplexing). A load balancer that picks an upstream *per connection* (like a plain L4/TCP balancer, or a naive `06-proxy/02-load-balancer.md` implementation written with one-request-per-connection HTTP/1.1 in mind) sends every RPC on that connection to the same upstream forever, defeating load balancing entirely once a client connects. Correct gRPC load balancing has to be aware of individual HTTP/2 streams and pick an upstream per-RPC, not per-connection.
 
 Gotcha: this interacts badly with scaling events. Long-lived connections
 pinned to a subset of upstreams means new upstreams added by autoscaling

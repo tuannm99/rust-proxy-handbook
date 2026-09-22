@@ -33,7 +33,7 @@ dies with an OOM whose RSS looks far below the limit, this is the first
 thing to check.
 
 ### Zero-copy depends on it entirely
-`sendfile()` and `splice()` (see `02-linux/05-zerocopy.md`) move data from the
+`sendfile()` and `splice()` (see `02-linux/10-zerocopy.md`) move data from the
 page cache to a socket without copying through user space. That is only
 fast on a cache *hit* — on a miss the syscall blocks on disk I/O, and in an
 async runtime that blocks the whole worker thread

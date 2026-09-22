@@ -1,4 +1,4 @@
-// Config hot reload. See instruction/09-architecture/config.md.
+// Config hot reload. See instruction/09-architecture/03-config.md.
 
 #[tokio::main]
 async fn main() {

@@ -67,7 +67,7 @@ pair in async code is a leak waiting for its first cancellation.
 ### Connection reuse to upstreams
 Opening a fresh TCP (+ TLS) connection per proxied request is expensive:
 one RTT for the TCP handshake, one or two more for TLS
-(`01-network/07-tls.md`), paid before a single request byte moves. Keep a
+(`01-network/13-tls.md`), paid before a single request byte moves. Keep a
 small per-upstream connection pool and reuse idle connections
 (`hyper-util`'s `client-legacy` pool does this for you, but you should know
 why it exists).
@@ -77,7 +77,7 @@ connection carries exactly one request at a time, so N concurrent requests
 to an upstream need N connections. An HTTP/2 connection carries many
 concurrent streams, so the same N requests may need only one — bounded by
 the upstream's advertised `SETTINGS_MAX_CONCURRENT_STREAMS`
-(`01-network/05-http2.md`), past which new streams queue behind finished ones
+(`01-network/11-http2.md`), past which new streams queue behind finished ones
 rather than opening a second connection unless you explicitly allow it.
 
 ### Sizing the pool

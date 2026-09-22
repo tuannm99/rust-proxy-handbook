@@ -78,7 +78,7 @@ while a more carefully crafted prefix gets the attacker something useful.
 
 ### Downgrade smuggling (H2.CL / H2.TE)
 The modern variant, and the one most relevant to a proxy that terminates
-HTTP/2 and speaks HTTP/1.1 upstream (`01-network/05-http2.md`). HTTP/2 frames
+HTTP/2 and speaks HTTP/1.1 upstream (`01-network/11-http2.md`). HTTP/2 frames
 carry their own explicit lengths, so there is no ambiguity *in* HTTP/2 —
 but `content-length` still exists as an ordinary header, and an attacker
 can send an HTTP/2 request whose declared `content-length` disagrees with

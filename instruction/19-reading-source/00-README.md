@@ -20,7 +20,7 @@ folder.
 
 Two exceptions worth reading early, and both are already pointed at from
 where they matter: tokio's reactor after the raw-epoll exercise
-(`02-linux/01-epoll.md`, Practice step 6) and `hyper`'s `h1` codec after your
+(`02-linux/06-epoll.md`, Practice step 6) and `hyper`'s `h1` codec after your
 own parser (`05-http-stack/01-parser.md`, Practice step 8). Those work early
 precisely because you have just built the thing being compared.
 
@@ -46,4 +46,4 @@ Each project subfolder is planned to eventually hold:
 - `hyper/` — the HTTP library `labs/02-http-server` onward is built on
 - `tokio/` — the async runtime underneath everything in this workspace
 - `mio/` — the epoll/kqueue abstraction underneath tokio
-- `quinn/` — QUIC/HTTP-3 implementation, relevant once `01-network/06-http3.md` is in scope
+- `quinn/` — QUIC/HTTP-3 implementation, relevant once `01-network/12-http3.md` is in scope

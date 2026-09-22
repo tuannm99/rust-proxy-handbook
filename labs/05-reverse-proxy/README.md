@@ -18,7 +18,7 @@ load-balancing algorithms beyond basic round robin live in
 - `instruction/06-proxy/05-retry.md` — retry budgets, idempotency, backoff, hedging
 - `instruction/06-proxy/06-circuit-breaker.md` — tripping on a failure rate, half-open gating
 - `instruction/06-proxy/07-service-discovery.md` — static list vs dynamic upstream membership
-- `instruction/01-network/04-http.md` — which headers a proxy must rewrite (`Host`, `X-Forwarded-For`, `Connection`)
+- `instruction/01-network/10-http.md` — which headers a proxy must rewrite (`Host`, `X-Forwarded-For`, `Connection`)
 
 ## Run
 

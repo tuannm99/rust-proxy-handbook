@@ -12,7 +12,7 @@ headers are handled correctly.
 - `instruction/05-http-stack/01-parser.md` — do `labs/01-http-parser` first so hyper's API makes sense
 - `instruction/05-http-stack/04-keepalive.md` — persistent connections, when a connection can't be reused
 - `instruction/05-http-stack/02-hop-by-hop-headers.md` — which headers must not be forwarded
-- `instruction/01-network/04-http.md`, `instruction/01-network/05-http2.md` — status codes/headers, h1 vs h2
+- `instruction/01-network/10-http.md`, `instruction/01-network/11-http2.md` — status codes/headers, h1 vs h2
 
 ## Run
 

@@ -1,4 +1,4 @@
-// Rate limiting. See instruction/07-security/ratelimit.md, instruction/13-algorithms/token-bucket.md, instruction/13-algorithms/sliding-window.md.
+// Rate limiting. See instruction/07-security/07-ratelimit.md, instruction/13-algorithms/token-bucket.md, instruction/13-algorithms/sliding-window.md.
 
 #[tokio::main]
 async fn main() {

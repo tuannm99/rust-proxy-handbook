@@ -92,7 +92,7 @@ Multiplexing changes the shape but not the principle. An attacker can open
 many streams on one connection and leave them incomplete, or manipulate
 flow-control windows to make the server hold data it cannot send. HTTP/2's
 `SETTINGS_MAX_CONCURRENT_STREAMS` bounds the first; per-connection memory
-accounting bounds the second. See `01-network/05-http2.md`, which also covers
+accounting bounds the second. See `01-network/11-http2.md`, which also covers
 Rapid Reset — the inverse attack, where streams are opened and cancelled
 as fast as possible.
 

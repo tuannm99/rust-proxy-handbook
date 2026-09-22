@@ -1,12 +1,12 @@
 # mTLS (Mutual TLS)
 
 Authenticating the *connection* with a client certificate, before any HTTP
-request is parsed. `01-network/07-tls.md` covers the handshake mechanics;
+request is parsed. `01-network/13-tls.md` covers the handshake mechanics;
 `07-security/01-auth.md` covers how this combines with request-level identity.
 
 ## What to learn
 ### mTLS at the proxy layer
-With mutual TLS, the proxy's TLS server (see `01-network/07-tls.md`) requests
+With mutual TLS, the proxy's TLS server (see `01-network/13-tls.md`) requests
 and verifies a client certificate during the handshake, before any HTTP
 request is even parsed. The proxy checks the cert chains to a trusted CA
 and optionally checks specific fields (CN/SAN) against an allowlist. This
@@ -69,7 +69,7 @@ only the proxy to set it.
 ## Practice
 Build these in order.
 
-1. Configure `proxy`'s TLS listener (`01-network/07-tls.md`) to require and
+1. Configure `proxy`'s TLS listener (`01-network/13-tls.md`) to require and
    verify a client certificate for one route, using `tokio-rustls`.
    **Done when** a client with no cert is rejected at handshake, before
    any request is parsed.

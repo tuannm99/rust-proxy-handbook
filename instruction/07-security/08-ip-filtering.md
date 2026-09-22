@@ -65,7 +65,7 @@ it under a lock — request-path reads should never block on a list update.
 
 ### Trusting forwarded-for headers only from known proxies
 `X-Forwarded-For` (or the PROXY protocol header, see
-`01-network/08-proxy-protocol.md`) is client-supplied data unless you strip
+`01-network/14-proxy-protocol.md`) is client-supplied data unless you strip
 and re-set it yourself at a trust boundary. If your proxy blindly trusts
 whatever `X-Forwarded-For` value arrives, any client can claim to be
 `127.0.0.1` or an allowlisted internal IP and bypass IP filtering entirely.
@@ -182,7 +182,7 @@ Build these in order.
    table. **Done when** a banned client is rejected before the rate
    limiter runs, the ban expires on schedule, and filling the table with
    1M synthetic addresses plateaus in memory instead of growing.
-7. (Stretch) Wire PROXY protocol v2 parsing (`01-network/08-proxy-protocol.md`)
+7. (Stretch) Wire PROXY protocol v2 parsing (`01-network/14-proxy-protocol.md`)
    as a structured alternative to XFF. **Done when** the real client IP is
    recovered from the binary header and a connection *without* the
    expected header on a PROXY-protocol listener is rejected rather than

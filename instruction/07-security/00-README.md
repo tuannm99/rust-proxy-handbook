@@ -6,7 +6,9 @@ request says and what the upstream will think it says.
 
 ## Files
 
-**Identity**
+**Identity** (read `01-network/06-crypto-basics.md` first if "signature,"
+"public key," or "certificate chain" aren't already precise terms —
+`02-jwt.md` and `03-mtls.md` both assume it)
 - `01-auth.md` — where auth sits in the pipeline, propagating identity upstream, and stripping forged identity headers
 - `02-jwt.md` — signature and claim validation, algorithm confusion, JWKS rotation, revocation
 - `03-mtls.md` — client certificates, CA scoping, expiry as a scheduled outage

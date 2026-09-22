@@ -1,6 +1,9 @@
 # TLS
 
-Handshake, SNI, ALPN, mTLS, session resumption.
+Handshake, SNI, ALPN, mTLS, session resumption. If "asymmetric
+encryption," "certificate chain," or "digital signature" aren't already
+precise terms, read `01-network/06-crypto-basics.md` first — this file
+assumes them.
 
 ## What to learn
 
@@ -47,7 +50,7 @@ handshake on a new connection, cutting a round trip. For a proxy, this
 matters most under high connection churn — resumption support (and its
 key rotation) directly affects tail latency for clients reconnecting
 frequently. Gotcha: 0-RTT-style resumption reintroduces replay risk similar
-to QUIC 0-RTT (`06-http3.md`) — apply the same "only for idempotent requests"
+to QUIC 0-RTT (`12-http3.md`) — apply the same "only for idempotent requests"
 caution.
 
 ### Certificate management
