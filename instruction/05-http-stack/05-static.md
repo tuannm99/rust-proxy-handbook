@@ -3,7 +3,7 @@
 ## What to learn
 
 ### Zero-copy file sending
-Naively serving a static file means: read the whole file into a userspace buffer, then write that buffer to the socket — two copies and two context switches more than necessary. `sendfile(2)` (see `02-linux/10-zerocopy.md`) copies data kernel-to-kernel, bypassing userspace entirely; on Linux, `tokio-uring`/`io_uring` (`02-linux/07-io_uring.md`) can do the same asynchronously with less syscall overhead than epoll-based `sendfile`.
+Naively serving a static file means: read the whole file into a userspace buffer, then write that buffer to the socket — two copies and two context switches more than necessary. `sendfile(2)` (see `02-linux/11-zerocopy.md`) copies data kernel-to-kernel, bypassing userspace entirely; on Linux, `tokio-uring`/`io_uring` (`02-linux/08-io_uring.md`) can do the same asynchronously with less syscall overhead than epoll-based `sendfile`.
 
 Gotcha: `sendfile` is fast on a page-cache *hit* and blocking on a miss
 (`16-kernel/08-page-cache.md`). In an async runtime, a blocking `sendfile` on

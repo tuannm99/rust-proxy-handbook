@@ -35,7 +35,7 @@ memory and kernel scheduling overhead (`02-processes-and-threads.md`).
 The alternative is non-blocking sockets plus a mechanism to ask the
 kernel "tell me which of these thousand fds actually have something
 ready" in one call, instead of polling each one yourself — that
-mechanism is `epoll` (`02-linux/06-epoll.md`), and it's the entire
+mechanism is `epoll` (`02-linux/07-epoll.md`), and it's the entire
 foundation tokio's reactor is built on (`04-runtime/01-tokio.md`).
 
 This is the literal reason `labs/00-tcp-server`'s done-criteria insists
@@ -44,7 +44,7 @@ actually feel the difference this section describes, not just read about
 it.
 
 ### The event loop pattern, one level up from epoll itself
-Whether you hand-roll it (the exercise in `02-linux/06-epoll.md`) or let
+Whether you hand-roll it (the exercise in `02-linux/07-epoll.md`) or let
 tokio do it for you, the shape is always: register interest in a set of
 fds, block *once* on "tell me when any of them are ready" rather than
 blocking per-fd, and dispatch to whatever logic owns each ready fd when
@@ -78,7 +78,7 @@ handler does nothing but write a byte to a pipe/eventfd (or increment an
 atomic — both are on the async-signal-safe list), and your actual
 reload/shutdown logic runs later, on a normal thread, woken by that
 write through the same event-loop mechanism described above. `tokio::signal`
-implements exactly this pattern for you; `02-linux/09-signals.md` covers
+implements exactly this pattern for you; `02-linux/10-signals.md` covers
 the specific signals (`SIGHUP`, `SIGTERM`) a proxy cares about and the
 API.
 
