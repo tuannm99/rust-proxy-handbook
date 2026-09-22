@@ -2,7 +2,7 @@
 
 ## What to learn
 ### SIGTERM vs SIGKILL, and why the proxy must handle SIGTERM itself
-Orchestrators (systemd, Kubernetes) send `SIGTERM` first and give the process a grace period before `SIGKILL` (which cannot be caught — it's an instant hard stop). If the proxy doesn't catch `SIGTERM` and act on it, it either dies immediately mid-request (dropped connections) or gets hard-killed after the grace period expires, which is the same outcome. See `02-linux/04-signals.md`.
+Orchestrators (systemd, Kubernetes) send `SIGTERM` first and give the process a grace period before `SIGKILL` (which cannot be caught — it's an instant hard stop). If the proxy doesn't catch `SIGTERM` and act on it, it either dies immediately mid-request (dropped connections) or gets hard-killed after the grace period expires, which is the same outcome. See `02-linux/09-signals.md`.
 
 Gotcha: as PID 1 in a container, the default signal dispositions don't
 apply — the kernel does not kill PID 1 for signals it hasn't explicitly
@@ -80,7 +80,7 @@ which ones were accepted and which it must retry elsewhere. The graceful
 form is two `GOAWAY` frames — one with the maximum stream ID to announce
 intent (letting in-flight streams finish while the client stops opening
 new ones), then a final one with the real last-processed ID
-(`01-network/05-http2.md`).
+(`01-network/11-http2.md`).
 
 Gotcha: an idle keep-alive connection is the same race as
 `05-http-stack/04-keepalive.md`'s close/request collision, now happening

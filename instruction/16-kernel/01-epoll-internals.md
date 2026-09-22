@@ -1,6 +1,6 @@
 # epoll Internals
 
-`02-linux/01-epoll.md` covers using epoll from the application side,
+`02-linux/06-epoll.md` covers using epoll from the application side,
 including the edge-triggered `EAGAIN` bug. This file covers what's
 happening inside the kernel that makes epoll's API shape — and that bug
 — make sense.
@@ -38,7 +38,7 @@ to read." If you don't drain the socket down to `EAGAIN` on that one
 notification, no new transition happens (the socket was already ready,
 it stays ready, but nothing re-triggers), and epoll never tells you again
 even though unread data is sitting there. This is the exact mechanism
-behind the missed-wakeup bug `02-linux/01-epoll.md`'s exercise has you
+behind the missed-wakeup bug `02-linux/06-epoll.md`'s exercise has you
 reproduce — now in terms of *why* the kernel behaves that way rather
 than just observing the symptom.
 
@@ -56,7 +56,7 @@ multiple listening sockets) on the same address.
 1. Read `/proc/<pid>/fdinfo/<epfd>` for a running `labs/00-tcp-server`
    to see the registered fds and their event masks — confirm it matches
    what your code actually registered.
-2. Reproduce the edge-triggered missed-wakeup bug from `02-linux/01-epoll.md`
+2. Reproduce the edge-triggered missed-wakeup bug from `02-linux/06-epoll.md`
    again, but this time explain the fix in terms of the ready-list
    mechanics above: why draining to `EAGAIN` is what generates the next
    transition rather than just "the documented right thing to do."

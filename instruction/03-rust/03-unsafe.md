@@ -37,7 +37,7 @@ unsafe { buf.set_len(len); }
   in a hot parsing loop (usually not worth it before profiling proves it).
 - FFI into `libc` for `epoll_ctl`/`epoll_wait`, raw socket options
   (`setsockopt` for `SO_REUSEPORT`, `TCP_NODELAY`), or `io_uring` — see
-  `02-linux/01-epoll.md`, `02-linux/02-io_uring.md`.
+  `02-linux/06-epoll.md`, `02-linux/07-io_uring.md`.
 - `Vec::set_len` after writing into spare capacity obtained via
   `spare_capacity_mut`, to avoid zero-initializing a read buffer before a
   `read()` syscall fills it.
@@ -66,7 +66,7 @@ normal `cargo test`.
 2. Install and run `cargo miri test` against a small unsafe buffer-pool
    type; intentionally introduce an out-of-bounds write and confirm Miri
    catches it.
-3. In the raw-epoll echo server from `02-linux/01-epoll.md`'s exercise, identify every `unsafe` call you need (socket
+3. In the raw-epoll echo server from `02-linux/06-epoll.md`'s exercise, identify every `unsafe` call you need (socket
    creation, `epoll_ctl`, `epoll_wait` via `libc`) and write a `// SAFETY:`
    comment for each before running the code.
 4. Find (via docs.rs or source) one real `unsafe impl Send` in a crate you

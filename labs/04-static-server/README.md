@@ -9,7 +9,7 @@ traversal. Done means: large files don't spike memory usage, missing files
 
 ## Handbook references
 - `instruction/05-http-stack/05-static.md` — streaming files, `Content-Type` from extension, range requests
-- `instruction/02-linux/05-zerocopy.md` — get correctness first with `tokio::fs`, then try `sendfile`
+- `instruction/02-linux/10-zerocopy.md` — get correctness first with `tokio::fs`, then try `sendfile`
 
 ## Run
 

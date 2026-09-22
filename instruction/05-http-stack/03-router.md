@@ -80,7 +80,7 @@ traffic splitting.
 
 Gotcha: `Host` is not one thing. In HTTP/1.1 it's the `Host` header; in
 HTTP/2 and HTTP/3 it's the `:authority` pseudo-header; and under TLS
-there's also the SNI name from the handshake (`01-network/07-tls.md`), which
+there's also the SNI name from the handshake (`01-network/13-tls.md`), which
 the client chose *before* sending any of them. These can all disagree —
 an attacker connects with SNI `public.example.com` and sends `Host:
 admin.internal`. Decide which one is authoritative for routing, validate

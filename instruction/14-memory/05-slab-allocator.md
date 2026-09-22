@@ -61,7 +61,7 @@ and it appears as steadily growing memory rather than as a crash.
 ### Where this actually belongs in a proxy
 You almost certainly should not write a global slab allocator. jemalloc and
 mimalloc already implement size-class allocation with per-CPU caches, and
-swapping the global allocator (`02-linux/03-memory.md`) gets you most of the
+swapping the global allocator (`02-linux/08-memory.md`) gets you most of the
 benefit for one line of code.
 
 What is worth hand-rolling is a **typed pool** for the few objects

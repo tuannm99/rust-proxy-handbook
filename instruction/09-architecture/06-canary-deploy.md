@@ -76,7 +76,7 @@ Worth knowing so a green canary isn't mistaken for proof:
   (`06-proxy/01-upstream.md`), and thundering herds only appear near capacity
   — which a 1% canary is nowhere near.
 - **Time-dependent bugs.** A daily batch, a certificate expiry
-  (`01-network/07-tls.md`), a month-boundary calculation.
+  (`01-network/13-tls.md`), a month-boundary calculation.
 - **Anything downstream.** If the canary shares upstreams and a database
   with stable, it can't reveal a problem in the shared dependency — and
   can *cause* one that harms stable traffic too.

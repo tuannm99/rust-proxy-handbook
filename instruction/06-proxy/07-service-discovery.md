@@ -20,7 +20,7 @@ Resolve a DNS name (often an SRV record, which also carries port + weight,
 unlike plain A/AAAA) on an interval and diff the result against the
 current pool. Cheap, dependency-free, but bounded by DNS TTL — you cannot
 react faster than the TTL, and stale resolver caches (see
-`01-network/03-dns.md`) can leave you pointed at a decommissioned upstream
+`01-network/09-dns.md`) can leave you pointed at a decommissioned upstream
 briefly after a change.
 
 Gotcha, and this is the classic one: **resolving once at startup is not

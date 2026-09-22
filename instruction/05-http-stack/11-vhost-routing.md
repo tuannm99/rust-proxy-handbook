@@ -4,7 +4,7 @@ Routing to different backends by *which site* a request is for, not just its pat
 
 ## What to learn
 ### Host-header routing (post-TLS, HTTP layer)
-`03-router.md` covers matching path and method within one backend's route table. A proxy fronting multiple sites/tenants first has to pick *which* route table to use at all, based on the `Host` header (HTTP/1.1) or the `:authority` pseudo-header (HTTP/2, see `01-network/05-http2.md`) — both carry the same information, just framed differently. This lookup happens after TLS termination, since the header is inside the encrypted request.
+`03-router.md` covers matching path and method within one backend's route table. A proxy fronting multiple sites/tenants first has to pick *which* route table to use at all, based on the `Host` header (HTTP/1.1) or the `:authority` pseudo-header (HTTP/2, see `01-network/11-http2.md`) — both carry the same information, just framed differently. This lookup happens after TLS termination, since the header is inside the encrypted request.
 
 ```rust
 use std::collections::HashMap;
@@ -96,7 +96,7 @@ three practical concerns follow:
   `07-security/01-auth.md` multiplied by tenant count.
 
 ### Wildcard/multi-domain certs interact with both
-A wildcard cert (`*.example.com`) or a SAN cert covering many hostnames lets one TLS-terminating instance answer for many vhosts under one handshake — simplifying Host-header routing (one cert, many `Host` values) but making SNI routing moot for those hostnames (they're all the same backend by definition). See `01-network/07-tls.md` for the handshake mechanics this depends on.
+A wildcard cert (`*.example.com`) or a SAN cert covering many hostnames lets one TLS-terminating instance answer for many vhosts under one handshake — simplifying Host-header routing (one cert, many `Host` values) but making SNI routing moot for those hostnames (they're all the same backend by definition). See `01-network/13-tls.md` for the handshake mechanics this depends on.
 
 ### Isolation between tenants, not just routing
 Routing separates tenants' *traffic*; it does nothing to separate their

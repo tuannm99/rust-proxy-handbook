@@ -3,7 +3,7 @@
 ## What to learn
 
 ### Persistent connections
-In HTTP/1.0, every request opened a new TCP connection by default — expensive given the TCP handshake (`01-network/02-tcp.md`) and, for HTTPS, a full TLS handshake too (`01-network/07-tls.md`). HTTP/1.1 makes connections persistent by default: after a response, the same connection stays open for the next request unless either side sends `Connection: close`.
+In HTTP/1.0, every request opened a new TCP connection by default — expensive given the TCP handshake (`01-network/08-tcp.md`) and, for HTTPS, a full TLS handshake too (`01-network/13-tls.md`). HTTP/1.1 makes connections persistent by default: after a response, the same connection stays open for the next request unless either side sends `Connection: close`.
 
 ### Hop-by-hop headers: what a proxy must strip
 Keep-alive state is per connection, and so is a whole set of headers that
@@ -19,7 +19,7 @@ See `05-http-stack/02-hop-by-hop-headers.md` — including the part where
 happen before your own trusted headers are applied.
 
 ### Pipelining (and why it's effectively dead)
-Pipelining means sending multiple requests on a connection without waiting for each response — allowed by the spec but responses must still come back strictly in order (head-of-line blocking), and a single misbehaving intermediary in the path can corrupt the stream. Essentially no production HTTP/1.1 client pipelines anymore; HTTP/2's multiplexed streams (`01-network/05-http2.md`) solve the same problem correctly instead.
+Pipelining means sending multiple requests on a connection without waiting for each response — allowed by the spec but responses must still come back strictly in order (head-of-line blocking), and a single misbehaving intermediary in the path can corrupt the stream. Essentially no production HTTP/1.1 client pipelines anymore; HTTP/2's multiplexed streams (`01-network/11-http2.md`) solve the same problem correctly instead.
 
 Gotcha: "no client pipelines" is not a reason for your *server* side to
 mishandle it. If bytes for a second request arrive while you're still
@@ -101,7 +101,7 @@ The mitigation on the response path is to announce it in advance — send
 client knows not to reuse the connection rather than finding out by
 failure. HTTP/2 solves it properly with `GOAWAY`, which names the last
 stream ID the server will process, letting the client retry anything above
-it safely (`01-network/05-http2.md`); this is also the mechanism graceful
+it safely (`01-network/11-http2.md`); this is also the mechanism graceful
 shutdown depends on (`09-architecture/04-graceful-shutdown.md`).
 
 Gotcha: clients still race, and some don't honor `Connection: close`

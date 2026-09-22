@@ -1,6 +1,6 @@
 # The Kernel TCP Stack
 
-`01-network/02-tcp.md` covers TCP from the application's side (the
+`01-network/08-tcp.md` covers TCP from the application's side (the
 handshake, byte-stream framing). This file covers what the kernel is
 doing underneath — the state machine and buffers a proxy's connection
 count and traffic pattern actually stress.
@@ -26,7 +26,7 @@ receive buffer up to a max as throughput demands it — good for a single
 high-throughput connection, but multiply that max by connection count: a
 proxy holding 100,000 idle-ish connections at even a modest 64 KB buffer
 each is 6.4 GB of kernel memory that never shows up in your process's own
-RSS accounting (`02-linux/03-memory.md`). Watch `/proc/net/sockstat` and
+RSS accounting (`02-linux/08-memory.md`). Watch `/proc/net/sockstat` and
 `ss -m`, not just your process's memory metrics, when diagnosing memory
 under high connection counts.
 

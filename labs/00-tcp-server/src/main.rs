@@ -1,4 +1,4 @@
-// TCP Echo Server. See instruction/01-network/socket.md, instruction/01-network/tcp.md, instruction/03-rust/async.md, instruction/04-runtime/tokio.md.
+// TCP Echo Server. See instruction/01-network/07-socket.md, instruction/01-network/08-tcp.md, instruction/03-rust/05-async.md, instruction/04-runtime/01-tokio.md.
 
 use std::time::Duration;
 

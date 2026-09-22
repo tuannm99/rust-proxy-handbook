@@ -5,10 +5,17 @@ you should be able to *do*, not just recite, before moving to the next one.
 
 1. **Networking** (`01-network/`) — read a TCP or TLS packet capture in
    Wireshark and explain what's happening; explain why HTTP/2 needs one TCP
-   connection where HTTP/1.1 needed six.
+   connection where HTTP/1.1 needed six. If terms like "port," "packet,"
+   "handshake," or "certificate" don't already have a precise meaning,
+   start with `01-network/01-fundamentals.md` — it's the one group of
+   files in this handbook written as a from-scratch primer rather than
+   assuming a baseline.
 2. **Linux** (`02-linux/`) — explain the difference between level-triggered
    and edge-triggered epoll from having hit the edge-triggered EAGAIN bug
-   yourself in the raw-epoll exercise in `02-linux/01-epoll.md`.
+   yourself in the raw-epoll exercise in `02-linux/06-epoll.md`. Same note
+   as above: `02-linux/01-fundamentals.md` first if "syscall," "file
+   descriptor," "kernel space," or "container" aren't already precise to
+   you.
 3. **Rust** (`03-rust/`) — explain why `Pin` exists without reciting the
    docs; know when to reach for `Arc<Mutex<T>>` vs `Arc<RwLock<T>>` vs an
    atomic.
@@ -37,16 +44,16 @@ without opening 18 files.
 
 | Lab | Read first | Then code |
 | --- | --- | --- |
-| `labs/00-tcp-server` | `01-network/01-socket.md`, `01-network/02-tcp.md`, `03-rust/01-ownership.md`, `03-rust/05-async.md`, `04-runtime/01-tokio.md`, `02-linux/01-epoll.md` | TCP echo server |
+| `labs/00-tcp-server` | `01-network/01-fundamentals.md`, `02-linux/01-fundamentals.md` (if needed), `01-network/07-socket.md`, `01-network/08-tcp.md`, `03-rust/01-ownership.md`, `03-rust/05-async.md`, `04-runtime/01-tokio.md`, `02-linux/06-epoll.md` | TCP echo server |
 | `labs/01-http-parser` | `05-http-stack/01-parser.md`, `07-security/05-request-smuggling.md` | hand-written HTTP/1.1 parser, no hyper |
-| `labs/02-http-server` | `05-http-stack/01-parser.md`, `05-http-stack/04-keepalive.md`, `05-http-stack/02-hop-by-hop-headers.md`, `01-network/04-http.md`, `01-network/05-http2.md` | hyper/hyper-util plain HTTP server |
+| `labs/02-http-server` | `05-http-stack/01-parser.md`, `05-http-stack/04-keepalive.md`, `05-http-stack/02-hop-by-hop-headers.md`, `01-network/10-http.md`, `01-network/11-http2.md` | hyper/hyper-util plain HTTP server |
 | `labs/03-router` | `05-http-stack/03-router.md` | method+path routing |
-| `labs/04-static-server` | `05-http-stack/05-static.md`, `02-linux/05-zerocopy.md` | streaming static files |
-| `labs/05-reverse-proxy` | `06-proxy/01-upstream.md`, `06-proxy/03-healthcheck.md`, `06-proxy/04-outlier-detection.md`, `06-proxy/05-retry.md`, `06-proxy/06-circuit-breaker.md`, `06-proxy/07-service-discovery.md`, `01-network/04-http.md` | hyper client forwarding to an upstream pool |
+| `labs/04-static-server` | `05-http-stack/05-static.md`, `02-linux/10-zerocopy.md` | streaming static files |
+| `labs/05-reverse-proxy` | `06-proxy/01-upstream.md`, `06-proxy/03-healthcheck.md`, `06-proxy/04-outlier-detection.md`, `06-proxy/05-retry.md`, `06-proxy/06-circuit-breaker.md`, `06-proxy/07-service-discovery.md`, `01-network/10-http.md` | hyper client forwarding to an upstream pool |
 | `labs/06-load-balancer` | `06-proxy/02-load-balancer.md`, `13-algorithms/smooth-wrr.md`, `13-algorithms/rendezvous-hash.md`, `13-algorithms/maglev.md` | RR/least-conn/consistent-hash/smooth-WRR/Maglev |
-| `labs/07-tls` | `01-network/07-tls.md` | tokio-rustls termination, ALPN |
-| `labs/08-http2` | `01-network/05-http2.md` | multiplexing/flow-control specifics |
-| `labs/09-http3` | `01-network/06-http3.md`, `19-reading-source/quinn/` | QUIC via `quinn` |
+| `labs/07-tls` | `01-network/13-tls.md` | tokio-rustls termination, ALPN |
+| `labs/08-http2` | `01-network/11-http2.md` | multiplexing/flow-control specifics |
+| `labs/09-http3` | `01-network/12-http3.md`, `19-reading-source/quinn/` | QUIC via `quinn` |
 | `labs/10-cache` | `05-http-stack/07-cache.md`, `05-http-stack/08-cache-stampede.md`, `13-algorithms/lru.md`, `13-algorithms/lfu.md`, `13-algorithms/arc.md`, `13-algorithms/tinylfu.md` | HTTP response caching + eviction policy |
 | `labs/11-rate-limit` | `07-security/07-ratelimit.md`, `07-security/11-load-shedding.md`, `13-algorithms/token-bucket.md`, `13-algorithms/sliding-window.md`, `13-algorithms/leaky-bucket.md` | token bucket / sliding window / leaky bucket |
 | `labs/12-waf` | `07-security/06-waf.md`, `07-security/04-normalization.md`, `13-algorithms/aho-corasick.md` | rule-based filtering |
@@ -55,7 +62,7 @@ without opening 18 files.
 | `labs/15-prometheus` | `08-observability/02-metrics.md` | metrics export |
 | `labs/16-opentelemetry` | `08-observability/03-tracing.md` | distributed tracing export |
 | `labs/17-ebpf` | `16-kernel/09-ebpf.md`, `16-kernel/10-xdp.md`, `07-security/09-ddos.md`, `07-security/10-slowloris.md` | XDP/eBPF packet filtering |
-| `proxy/` | `01-network/07-tls.md`, `01-network/08-proxy-protocol.md`, `07-security/*.md`, `08-observability/*.md`, `09-architecture/*.md` (see `proxy/00-README.md`) | the final L7 proxy, combining every lab above |
+| `proxy/` | `01-network/13-tls.md`, `01-network/14-proxy-protocol.md`, `07-security/*.md`, `08-observability/*.md`, `09-architecture/*.md` (see `proxy/00-README.md`) | the final L7 proxy, combining every lab above |
 
 Every numbered directory also has a `00-README.md` index listing its files
 with one-line descriptions and a suggested reading order — start there
@@ -128,7 +135,7 @@ drifting apart.
 ## What to learn
 
 Each phase's *specific* subtopics live in that phase's own directory
-(`01-network/03-dns.md`, `01-network/04-http.md`, ... — see `CLAUDE.md` for the
+(`01-network/09-dns.md`, `01-network/10-http.md`, ... — see `CLAUDE.md` for the
 full file list) rather than being duplicated here. This file is the
 one-page map; the topic files are the actual curriculum.
 

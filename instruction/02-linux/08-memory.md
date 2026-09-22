@@ -24,7 +24,7 @@ against RSS, not virtual size, so watch actual resident memory, not what
 ### Page cache and static files
 The kernel keeps recently-read file data in RAM as the page cache, backing
 both `read()` and `mmap()`. This is why `sendfile()` (see
-`02-linux/05-zerocopy.md`) is fast for repeatedly-served static assets — the
+`02-linux/10-zerocopy.md`) is fast for repeatedly-served static assets — the
 data is often already resident, and the kernel copies page-cache-to-socket
 without round-tripping through your process's userspace buffers at all. This
 directly informs how `05-http-stack/05-static.md` should serve files: let the

@@ -20,8 +20,8 @@ failed in-flight requests (only refused new ones).
 
 ## What to learn
 
-- `instruction/01-network/07-tls.md` — handshake, SNI, ALPN (also decides h1 vs h2), session resumption
-- `instruction/01-network/08-proxy-protocol.md` — preserving real client IP when this proxy sits behind another LB
+- `instruction/01-network/13-tls.md` — handshake, SNI, ALPN (also decides h1 vs h2), session resumption
+- `instruction/01-network/14-proxy-protocol.md` — preserving real client IP when this proxy sits behind another LB
 - `instruction/07-security/01-auth.md`, `jwt.md`, `mtls.md` — pipeline position, identity propagation, the two mechanisms
 - `instruction/07-security/07-ratelimit.md`, `instruction/07-security/06-waf.md`, `instruction/07-security/04-normalization.md` — token/leaky bucket, rule-based filtering, parser differentials
 - `instruction/07-security/05-request-smuggling.md`, `instruction/07-security/08-ip-filtering.md` — parser ambiguity attacks, allow/deny lists

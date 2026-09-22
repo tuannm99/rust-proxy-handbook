@@ -16,7 +16,7 @@ QUIC multiplexes independent streams the same way HTTP/2 does, but because
 loss recovery happens per-stream inside QUIC (not per-connection the way
 TCP retransmission does), a lost packet on one stream doesn't stall the
 other streams. This fixes the TCP-level HOL blocking that HTTP/2 over TCP
-still has (see `05-http2.md`).
+still has (see `11-http2.md`).
 
 ### Connection migration and 0-RTT
 QUIC connections are identified by a Connection ID, not a
@@ -31,7 +31,7 @@ non-idempotent requests — a proxy accepting 0-RTT data must treat it as
 QUIC doesn't layer TLS on top the way TCP+TLS does — the QUIC handshake
 *is* a TLS 1.3 handshake carried in QUIC transport parameters, so there's
 no cleartext QUIC. This means every HTTP/3 deployment needs the same
-cert/SNI/ALPN machinery as `07-tls.md`, just carried differently on the wire.
+cert/SNI/ALPN machinery as `13-tls.md`, just carried differently on the wire.
 
 ### One UDP socket, many connections
 The operational shift is bigger than "UDP instead of TCP". With TCP,

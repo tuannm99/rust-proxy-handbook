@@ -56,6 +56,6 @@ overhead is actually your bottleneck, not a default.
 ## Practice
 1. Read the `io-uring` crate docs and write a minimal program that reads a file with a single SQE/CQE round trip.
 2. Extend it to submit multiple reads before reaping any completions, and observe the batching in `strace`.
-3. Port the raw-epoll echo server from `02-linux/01-epoll.md`'s exercise from epoll to `tokio-uring` and compare code complexity and behavior under connection churn.
+3. Port the raw-epoll echo server from `02-linux/06-epoll.md`'s exercise from epoll to `tokio-uring` and compare code complexity and behavior under connection churn.
 4. Check `uname -r` on your dev machine and any target deployment environment; confirm whether io_uring is even available/enabled there.
 5. Write down, in your own words, why `proxy` should default to tokio's epoll-based reactor rather than io_uring.
