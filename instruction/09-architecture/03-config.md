@@ -5,7 +5,7 @@
 A production L7 proxy is fronting live traffic; a config change (new upstream, updated rate limit) that requires a restart means a connection drop for every in-flight request. Hot reload means: load new config, validate it, atomically swap it in for new requests, while existing requests keep running against whatever config they started with (or the new one, if the field doesn't affect in-flight requests).
 
 ### SIGHUP as the reload trigger
-The Unix convention (nginx, most daemons) is: `SIGHUP` = "reload config," `SIGTERM` = "shut down gracefully" (see `02-linux/09-signals.md`, `09-architecture/04-graceful-shutdown.md`). Listen for it with `tokio::signal::unix::signal(SignalKind::hangup())` rather than blocking signal handling — this keeps the reload async and non-disruptive to in-flight I/O.
+The Unix convention (nginx, most daemons) is: `SIGHUP` = "reload config," `SIGTERM` = "shut down gracefully" (see `02-linux/10-signals.md`, `09-architecture/04-graceful-shutdown.md`). Listen for it with `tokio::signal::unix::signal(SignalKind::hangup())` rather than blocking signal handling — this keeps the reload async and non-disruptive to in-flight I/O.
 
 ```rust
 use tokio::signal::unix::{signal, SignalKind};

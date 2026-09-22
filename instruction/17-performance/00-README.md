@@ -2,7 +2,7 @@
 
 Hardware-level performance tuning — how the CPU and memory subsystem
 actually behave, distinct from the syscall-level zero-copy techniques in
-`02-linux/10-zerocopy.md` (which this folder cross-references rather than
+`02-linux/11-zerocopy.md` (which this folder cross-references rather than
 duplicates).
 
 ## Status: written, but read it profile-first
@@ -27,4 +27,4 @@ bottleneck. The natural trigger is `proxy` under
 - `06-simd.md` — vectorized operations, where they show up in a proxy (header parsing, checksums)
 
 Zero-copy I/O (`sendfile`/`splice`/`mmap`) is covered in
-`02-linux/10-zerocopy.md`, not duplicated here.
+`02-linux/11-zerocopy.md`, not duplicated here.

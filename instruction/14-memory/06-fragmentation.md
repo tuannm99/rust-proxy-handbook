@@ -52,7 +52,7 @@ Gotcha: glibc's malloc is particularly reluctant to return memory, and its
 per-thread arenas multiply the effect — each thread gets its own arena, so
 a proxy with 16 worker threads can hold 16 separate high-water marks.
 `MALLOC_ARENA_MAX` bounds this, and switching to jemalloc or mimalloc
-(`02-linux/08-memory.md` covers the `#[global_allocator]` swap) usually helps
+(`02-linux/09-memory.md` covers the `#[global_allocator]` swap) usually helps
 more than any tuning of glibc.
 
 ### The structural fixes
