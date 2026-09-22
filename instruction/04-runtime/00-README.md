@@ -1,6 +1,6 @@
 # Async Runtime
 
-Phase 4. How tokio turns `02-linux/06-epoll.md`'s readiness notifications and
+Phase 4. How tokio turns `02-linux/07-epoll.md`'s readiness notifications and
 `03-rust/05-async.md`'s state machines into a working scheduler — and what
 that means for code you write on top of it.
 
