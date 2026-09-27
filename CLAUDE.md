@@ -70,6 +70,43 @@ Each topic is one file, named after its concept (e.g. `instruction/06-proxy/02-l
 
 `13`-`21` are a deep-dive/foundations layer, not a strict continuation of the `00`-`12` sequence — they're referenced *from* earlier directories rather than only read after them (e.g. `06-proxy/02-load-balancer.md` cross-references `13-algorithms/` for Maglev/rendezvous hashing). When new content would duplicate an existing topic file's scope (e.g. a load-testing tool, an architecture pattern), add it to the existing directory (`12-testing/`, `09-architecture/`) instead of creating a new top-level number.
 
+### Bilingual mirror: `instruction-vi/`
+
+`instruction-vi/` is a Vietnamese mirror of `instruction/` — same numbered
+directories, same filenames, same section structure (`## What to learn`,
+`## Practice`, subtopic headings), one Vietnamese file per English file at
+the identical relative path. It exists so a Vietnamese-speaking reader gets
+the same handbook, not a lighter summary.
+
+Rules when adding or editing content:
+- `instruction/` (English) is the source of truth. Write or edit the
+  English file first; the Vietnamese file always mirrors it, never the
+  other way around. Adding a new topic file means adding both
+  `instruction/<path>.md` and `instruction-vi/<path>.md` in the same change.
+- Translate prose only. Code blocks, shell commands, file paths, crate/
+  function/type names, and cross-reference paths (e.g. `` `06-proxy/01-upstream.md` ``)
+  stay byte-for-byte identical to the English file — a reader following a
+  link from a Vietnamese file lands on the Vietnamese file at that same
+  relative path, since the directory structure mirrors 1:1.
+- Keep standard CS/Rust/networking terms in English rather than forcing an
+  awkward Vietnamese translation — this matches how Vietnamese engineers
+  actually write and read technical material. Examples: `thread`, `socket`,
+  `buffer`, `cache`, `kernel`, `syscall`, `future`, `async/await`, `poll`,
+  `waker`, `borrow checker`, `lifetime`, `ownership`, `trait`, `generic`,
+  `closure`, `iterator`, `panic`, `unsafe`, `pointer`, `heap`, `stack`,
+  `backpressure`, `load balancer`, `connection pool`, `health check`,
+  `circuit breaker`, `rate limiting`, `handshake`, `packet`, `frame`,
+  `stream`, `keep-alive`, `mutex`, `channel`, `actor`, `builder`, `newtype`,
+  `sealed trait`, `semver`, `FFI`, `ABI`. Translate the connecting
+  explanation (the "why," the gotcha, the production consequence) into
+  natural Vietnamese; don't translate the jargon noun just because a
+  dictionary has a word for it.
+- `00-README.md` index files get translated too (one-line descriptions,
+  reading order prose) — the index is part of the handbook, not scaffolding.
+- `labs/*/README.md`, `proxy/README.md`, the repo-root `README.md`, and
+  `CLAUDE.md` itself are not part of this mirror unless separately asked
+  for — the bilingual mirror covers `instruction/` only.
+
 ## The Cargo workspace
 
 **`proxy/` (package `proxy`) is the actual deliverable — the single,

@@ -15,7 +15,7 @@ flushed before the connection is torn down.
 - `instruction/01-network/08-tcp.md` — 3-way handshake, byte-stream framing (short reads/writes)
 - `instruction/03-rust/01-ownership.md`, `instruction/03-rust/05-async.md` — one owned task per connection
 - `instruction/04-runtime/01-tokio.md` — multi-threaded scheduler, `tokio::spawn` per connection
-- `instruction/02-linux/06-epoll.md` — what tokio's reactor is doing under the hood (read this alongside the lab, there's no separate raw-epoll lab in this workspace)
+- `instruction/02-linux/07-epoll.md` — what tokio's reactor is doing under the hood (read this alongside the lab, there's no separate raw-epoll lab in this workspace)
 
 ## Run
 
