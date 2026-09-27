@@ -35,3 +35,7 @@ multi-node cache hoặc CDN.
 Consistent hashing được bao quát trong [`13-algorithms/consistent-hash.md`](../13-algorithms/consistent-hash.md),
 và discovery cho single-service-instance trong
 [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md) — không lặp lại ở đây.
+
+Với lý thuyết hình thức đằng sau vì sao mỗi file ở trên chọn eventual
+consistency, hay một lease TTL, hay một quorum, theo đúng cách nó chọn —
+CAP theorem và kết quả bất khả thi FLP — xem [`22-theory/09-cap-flp.md`](../22-theory/09-cap-flp.md).

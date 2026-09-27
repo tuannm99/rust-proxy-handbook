@@ -29,3 +29,7 @@ here closest to real proxy work). Come back only if you extend past
 Consistent hashing is covered in [`13-algorithms/consistent-hash.md`](../13-algorithms/consistent-hash.md), and
 single-service-instance discovery in [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md) — not
 duplicated here.
+
+For the formal theory behind why every file above chooses eventual
+consistency, or a lease TTL, or a quorum, the way it does — CAP theorem
+and the FLP impossibility result — see [`22-theory/09-cap-flp.md`](../22-theory/09-cap-flp.md).

@@ -20,6 +20,8 @@ bạn đã tune bằng cảm tính.
 - [`05-congestion-control-math.md`](05-congestion-control-math.md) — tăng trưởng theo cấp số của slow start, AIMD, công thức throughput, vì sao Cubic/BBR tồn tại
 - [`06-queueing-theory.md`](06-queueing-theory.md) — Little's Law, M/M/1, vì sao "80% CPU" không phải là "20% headroom", trực giác Pollaczek-Khinchine
 - [`07-crypto-math.md`](07-crypto-math.md) — cấu trúc round của AES, Diffie-Hellman, RSA, vì sao hash là một chiều
+- [`08-amdahls-law.md`](08-amdahls-law.md) — trần speedup do phần tuần tự quyết định, cách đóng khung lại của Gustafson, vì sao tokio nhắm throughput thay vì parallelism mỗi request
+- [`09-cap-flp.md`](09-cap-flp.md) — CAP theorem chọn hai trong ba dưới partition, kết quả bất khả thi FLP, vì sao mọi hệ thống consensus thật dựa vào timeout
 
 ## Nối lại với đâu
 
@@ -29,6 +31,8 @@ bạn đã tune bằng cảm tính.
 - [`05-congestion-control-math.md`](05-congestion-control-math.md) → [`01-network/08-tcp.md`](../01-network/08-tcp.md)
 - [`06-queueing-theory.md`](06-queueing-theory.md) → [`07-security/11-load-shedding.md`](../07-security/11-load-shedding.md)
 - [`07-crypto-math.md`](07-crypto-math.md) → [`01-network/06-crypto-basics.md`](../01-network/06-crypto-basics.md), [`01-network/13-tls.md`](../01-network/13-tls.md)
+- [`08-amdahls-law.md`](08-amdahls-law.md) → [`04-runtime/03-runtime-config.md`](../04-runtime/03-runtime-config.md), [`04-runtime/05-runtime-comparisons.md`](../04-runtime/05-runtime-comparisons.md), [`17-performance/`](../17-performance)
+- [`09-cap-flp.md`](09-cap-flp.md) → [`18-distributed/`](../18-distributed) (cả bốn file)
 
 Mỗi file thực dụng ở trên chỉ trỏ về đây cho người đọc muốn có lý thuyết;
 không file nào giả định bạn đã đọc thư mục này trước.

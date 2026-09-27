@@ -66,7 +66,9 @@ số core thêm overhead lập lịch mà không có chỗ nào cho các thread 
 thực sự chạy song song. Ngoại lệ chủ đích phổ biến duy nhất: dành riêng
 một core cho việc khác — một thread chuyên scrape metrics, hoặc chừa
 khoảng trống trên một host dùng chung — bằng cách đặt `worker_threads`
-bằng số core trừ một.
+bằng số core trừ một. Với lý do hình thức vì sao thêm worker ngừng có ích
+— trần phần-tuần-tự của Amdahl's Law, và vì sao workload của một proxy
+gần chế độ của Gustafson hơn là của Amdahl — xem [`22-theory/08-amdahls-law.md`](../22-theory/08-amdahls-law.md).
 
 ## Practice
 1. Chạy [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) dưới cả `flavor = "multi_thread"` (mặc

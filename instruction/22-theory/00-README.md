@@ -20,6 +20,8 @@ already tuned by feel.
 - [`05-congestion-control-math.md`](05-congestion-control-math.md) — slow start's exponential growth, AIMD, the throughput formula, why Cubic/BBR exist
 - [`06-queueing-theory.md`](06-queueing-theory.md) — Little's Law, M/M/1, why "80% CPU" is not "20% headroom," the Pollaczek-Khinchine intuition
 - [`07-crypto-math.md`](07-crypto-math.md) — AES's round structure, Diffie-Hellman, RSA, why hashes are one-way
+- [`08-amdahls-law.md`](08-amdahls-law.md) — the serial-fraction ceiling on speedup, Gustafson's reframing, why tokio targets throughput over per-request parallelism
+- [`09-cap-flp.md`](09-cap-flp.md) — CAP theorem's pick-two-under-partition, the FLP impossibility result, why every real consensus system relies on timeouts
 
 ## Where this connects back
 
@@ -29,6 +31,8 @@ already tuned by feel.
 - [`05-congestion-control-math.md`](05-congestion-control-math.md) → [`01-network/08-tcp.md`](../01-network/08-tcp.md)
 - [`06-queueing-theory.md`](06-queueing-theory.md) → [`07-security/11-load-shedding.md`](../07-security/11-load-shedding.md)
 - [`07-crypto-math.md`](07-crypto-math.md) → [`01-network/06-crypto-basics.md`](../01-network/06-crypto-basics.md), [`01-network/13-tls.md`](../01-network/13-tls.md)
+- [`08-amdahls-law.md`](08-amdahls-law.md) → [`04-runtime/03-runtime-config.md`](../04-runtime/03-runtime-config.md), [`04-runtime/05-runtime-comparisons.md`](../04-runtime/05-runtime-comparisons.md), [`17-performance/`](../17-performance)
+- [`09-cap-flp.md`](09-cap-flp.md) → [`18-distributed/`](../18-distributed) (all four files)
 
 Each practical file above only points here for the reader who wants the
 theory; it never assumes you've read this directory first.
