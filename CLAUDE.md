@@ -70,6 +70,22 @@ Each topic is one file, named after its concept (e.g. `instruction/06-proxy/02-l
 
 `13`-`21` are a deep-dive/foundations layer, not a strict continuation of the `00`-`12` sequence — they're referenced *from* earlier directories rather than only read after them (e.g. `06-proxy/02-load-balancer.md` cross-references `13-algorithms/` for Maglev/rendezvous hashing). When new content would duplicate an existing topic file's scope (e.g. a load-testing tool, an architecture pattern), add it to the existing directory (`12-testing/`, `09-architecture/`) instead of creating a new top-level number.
 
+### Dual-track directories: `01-network/`, `02-linux/`, `03-rust/`
+
+These three directories double as a light tutorial, not just a reference
+— each one's `00-README.md` has a "How to read this directory" section
+(right before `## Files`) offering two explicit tracks: a beginner track
+that says "read every file in numeric order, front to back, doing
+`## Practice` before moving on" (the directory works as one continuous
+tutorial in this mode), and an experienced-reader track that says "treat
+this as a reference — skip the Fundamentals-style group and jump straight
+to whichever file covers your actual gap." When adding a file to one of
+these three directories, update that "How to read this directory" section
+if the new file changes which track it belongs to (e.g. a new from-scratch
+primer file extends the beginner-only group). Other directories don't get
+this treatment — they're reference material pulled in as needed, not a
+sequential tutorial, and already say so in their own READMEs.
+
 ### Bilingual mirror: `instruction-vi/`
 
 `instruction-vi/` is a Vietnamese mirror of `instruction/` — same numbered

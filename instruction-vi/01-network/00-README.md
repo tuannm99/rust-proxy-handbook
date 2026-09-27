@@ -4,6 +4,24 @@ Phase 1 của lộ trình học. Các giao thức mà một proxy phải nói, t
 cho tới HTTP/3 — đọc trước `02-linux/` và `05-http-stack/`, hai phần giả
 định bạn đã biết một connection và một request thực sự là gì.
 
+## Cách đọc thư mục này
+
+Hai cách dùng, tùy vào bạn đang ở đâu:
+
+- **Chưa có nền tảng networking:** đọc mọi file dưới đây theo thứ tự, từ
+  `01-fundamentals.md` đến `14-proxy-protocol.md`, làm `## Practice` của
+  mỗi file trước khi qua file kế tiếp. Coi cả thư mục này như một tutorial
+  liên tục — các file sau giả định bạn đã nắm mọi file trước đó, đừng nhảy
+  cóc dù tên file nghe có vẻ quen.
+- **Đã thoải mái với socket, TCP, và HTTP:** dùng thư mục này như một tài
+  liệu tra cứu — nhảy thẳng tới file nào bù đắp đúng lỗ hổng của bạn, theo
+  thứ tự bất kỳ. Nhóm Fundamentals dưới đây là một primer từ con số 0 mà
+  bạn chắc không cần. `05-proxy-taxonomy.md` và `06-crypto-basics.md` vẫn
+  đáng đọc dù nền tảng bạn mạnh, vì chúng là cách đóng khung riêng của
+  handbook này (`proxy/` nằm ở đâu, và vốn từ vựng crypto mà `13-tls.md`
+  giả định bạn đã biết) chứ không phải kiến thức networking chung bạn đã
+  có sẵn từ nơi khác.
+
 ## Files
 
 **Fundamentals** (bắt đầu từ đây nếu "port," "packet," "handshake," "NAT,"

@@ -9,6 +9,27 @@ câu chuyện dispatch/generics của type system, error handling, iterators/
 closures, smart pointers, các concurrency pattern ngoài raw lock, macro,
 API design, FFI/ABI, và memory representation.
 
+## Cách đọc thư mục này
+
+Thư mục này vẫn giả định bạn đã biết syntax Rust (biến, struct, enum,
+`match`, generic cơ bản) — nó không phải một primer "học Rust từ số 0".
+Thứ nó dạy từ đầu là các phần quyết định Rust *ở mức proxy-grade* có đúng
+hay không. Từ đó, có hai cách dùng:
+
+- **Mới với async/unsafe/systems Rust:** đọc mọi file dưới đây theo thứ
+  tự, từ `01-ownership.md` đến `18-async-traits.md`, làm `## Practice`
+  của mỗi file trước khi qua file kế tiếp. Coi nó như một tutorial liên
+  tục — mỗi nhóm được xây trực tiếp trên nhóm trước (các nhóm dưới đây nói
+  rõ điều đó), và `04-runtime/` giả định bạn đã nắm hết.
+- **Đã thoải mái với `Arc<Mutex<_>>`, `async`/`.await`, và `unsafe` cơ
+  bản:** nhảy thẳng tới nhóm thứ ba, "Kỹ năng kỹ thuật systems/backend"
+  (`11-concurrency-patterns.md` đến `18-async-traits.md`) — đó là phần
+  một Rust developer đang làm việc ít có khả năng đã biết nhất, vì nó đặc
+  thù cho việc xây production system chứ không phải sự thông thạo Rust
+  chung. Chỉ ghé qua hai nhóm đầu cho đúng file bạn còn thiếu (ví dụ
+  `06-pin.md` nếu `Pin` chưa bao giờ "click", `08-error-handling.md` nếu
+  bạn chưa từng thiết kế một error type hướng ra ngoài cho một library).
+
 ## Các file
 
 **Ngôn ngữ cốt lõi và memory model** (đọc theo thứ tự ở lần đầu — mọi thứ
@@ -33,6 +54,9 @@ file này):
 - `13-api-design-and-modules.md` — visibility như một hợp đồng, newtype, builder, sealed trait, semver
 - `14-ffi-and-abi.md` — `repr(C)`, `extern "C"`, ownership qua ranh giới FFI, vì sao plugin là `dyn Trait` chứ không phải `dylib`
 - `15-memory-layout.md` — `repr(Rust)` vs `repr(C)`, size/align/padding, niche optimization, layout của enum
+- `16-testing-idioms.md` — cấu trúc unit/integration/doctest, mock qua trait, table-driven test, `proptest`, `criterion`
+- `17-cargo-workspace.md` — `Cargo.toml` của workspace, `[workspace.dependencies]`, feature-flag unification, codegen bằng `build.rs`
+- `18-async-traits.md` — vì sao `async fn` trong một trait không tự nhiên `dyn`-compatible, cách sửa boxed-future, `async-trait`, chi phí allocation mỗi lần gọi
 
 ## Đi tiếp đến đâu
 
@@ -48,4 +72,12 @@ là nền cho mọi thiết kế pluggable-strategy (load balancer, plugin syste
 `11-concurrency-patterns.md` là nền cho connection pool trong
 `06-proxy/01-upstream.md` và rate limiter trong `07-security/07-ratelimit.md`,
 `15-memory-layout.md` là điều kiện tiên quyết cho các thiết kế allocator/
-arena/slab trong `14-memory/` và công việc cache-layout trong `17-performance/`.
+arena/slab trong `14-memory/` và công việc cache-layout trong
+`17-performance/`. `16-testing-idioms.md` là phần tương ứng ở mức kỹ năng
+Rust của công việc hạ tầng load/fuzz/chaos trong `12-testing/`;
+`17-cargo-workspace.md` giải thích chính hình dạng `Cargo.toml` của repo
+này và là nền cho bước codegen `build.rs` của
+`05-http-stack/10-grpc.md`; `18-async-traits.md` là gotcha cụ thể đằng sau
+trait middleware của `09-architecture/02-plugin.md` và trait strategy của
+`06-proxy/02-load-balancer.md` ngay khi một trong hai cần vừa async vừa
+`dyn`-dispatch.

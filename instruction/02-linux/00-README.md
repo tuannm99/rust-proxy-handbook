@@ -3,6 +3,23 @@
 Phase 2. The syscall-level machinery a proxy runs on — what tokio is doing
 underneath, and what the kernel will and won't do for you.
 
+## How to read this directory
+
+Two ways to use it, depending on where you're starting from:
+
+- **No OS/systems background yet:** read every file below in order,
+  `01-fundamentals.md` through `11-zerocopy.md`, doing each file's
+  `## Practice` before moving to the next. Treat the whole directory as
+  one tutorial — the Kernel mechanisms group assumes the Fundamentals
+  group, so don't skip ahead.
+- **Already comfortable with processes, syscalls, and epoll/select:** skip
+  the entire Fundamentals group and start at `07-epoll.md` — that's where
+  this directory stops being generic OS knowledge and starts being the
+  specific mechanisms (`epoll`, `io_uring`, zero-copy) a proxy actually
+  leans on. Jump between files in the Kernel mechanisms group in whatever
+  order matches your gaps; they don't depend on each other as tightly as
+  the Fundamentals group does.
+
 ## Files
 
 **Fundamentals** (start here if "syscall," "file descriptor," "kernel

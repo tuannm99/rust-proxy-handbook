@@ -4,6 +4,24 @@ Phase 1 of the learning path. The protocols a proxy speaks, from the
 socket up to HTTP/3 — read before `02-linux/` and `05-http-stack/`, which
 assume you know what a connection and a request actually are.
 
+## How to read this directory
+
+Two ways to use it, depending on where you're starting from:
+
+- **No networking background yet:** read every file below in order,
+  `01-fundamentals.md` through `14-proxy-protocol.md`, doing each file's
+  `## Practice` before moving to the next. Treat the whole directory as
+  one tutorial — later files assume everything before them, so don't skip
+  ahead even if a filename sounds familiar.
+- **Already comfortable with sockets, TCP, and HTTP:** use this directory
+  as a reference instead — jump straight to whichever file covers your
+  gap, in any order. The Fundamentals group below is a from-scratch
+  primer you likely don't need. `05-proxy-taxonomy.md` and
+  `06-crypto-basics.md` are worth reading anyway even with a strong
+  background, since they're this handbook's own framing (where `proxy/`
+  sits, and the crypto vocabulary `13-tls.md` assumes) rather than general
+  networking knowledge you'd already have from elsewhere.
+
 ## Files
 
 **Fundamentals** (start here if "port," "packet," "handshake," "NAT," or

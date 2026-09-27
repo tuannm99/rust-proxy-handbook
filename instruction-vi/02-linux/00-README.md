@@ -3,6 +3,22 @@
 Phase 2. Cơ chế cấp syscall mà proxy chạy trên đó — tokio đang làm gì bên
 dưới, và kernel sẽ/sẽ không làm gì cho bạn.
 
+## Cách đọc thư mục này
+
+Hai cách dùng, tùy vào bạn đang ở đâu:
+
+- **Chưa có nền tảng OS/systems:** đọc mọi file dưới đây theo thứ tự, từ
+  `01-fundamentals.md` đến `11-zerocopy.md`, làm `## Practice` của mỗi
+  file trước khi qua file kế tiếp. Coi cả thư mục này như một tutorial
+  liên tục — nhóm Kernel mechanisms giả định bạn đã nắm nhóm Fundamentals,
+  đừng nhảy cóc.
+- **Đã thoải mái với process, syscall, và epoll/select:** bỏ qua hẳn nhóm
+  Fundamentals và bắt đầu từ `07-epoll.md` — đó là điểm thư mục này ngừng
+  là kiến thức OS chung và bắt đầu là các cơ chế cụ thể (`epoll`,
+  `io_uring`, zero-copy) mà một proxy thực sự dựa vào. Nhảy giữa các file
+  trong nhóm Kernel mechanisms theo thứ tự bất kỳ khớp với lỗ hổng của
+  bạn; chúng không phụ thuộc chặt vào nhau như nhóm Fundamentals.
+
 ## Files
 
 **Fundamentals** (bắt đầu từ đây nếu "syscall," "file descriptor,"
