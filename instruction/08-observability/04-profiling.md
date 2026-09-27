@@ -71,7 +71,7 @@ bpftrace -e 'tracepoint:syscalls:sys_enter_read /pid == $1/ { @start[tid] = nsec
 ```
 
 ### Where a Rust proxy's time actually goes
-1. Syscalls (epoll_wait/read/write) — see `02-linux/06-epoll.md`, `02-linux/10-zerocopy.md` for how to reduce these.
+1. Syscalls (epoll_wait/read/write) — see `02-linux/07-epoll.md`, `02-linux/11-zerocopy.md` for how to reduce these.
 2. Allocation — every `Vec<u8>`/`String` clone on the hot path costs; profile with `heaptrack` or `dhat` (via the `dhat` crate) alongside CPU profiling.
 3. TLS — handshake CPU cost is real at high connection-churn (short-lived connections re-handshake constantly); session resumption (`01-network/13-tls.md`) matters more than micro-optimizing the parser.
 Gotcha: profiling a debug build is close to meaningless — always profile `--release`, and profile under realistic concurrent load (see `12-testing/01-load-testing.md`), not a single curl request.

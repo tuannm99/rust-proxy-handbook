@@ -139,8 +139,8 @@ happening below that abstraction.
    to a client that reads slowly (or stops reading entirely), and confirm
    your proxy's memory stays flat instead of buffering the whole body.
 6. Set `SETTINGS_MAX_CONCURRENT_STREAMS` low (e.g. 2), open more streams
-   than that, and observe how the peer is held back; then reproduce Rapid
-   Reset by opening and immediately resetting streams in a loop and confirm
-   the concurrency limit alone does *not* stop you.
-7. Trigger `GOAWAY` by shutting the server down mid-request and confirm
-   in-flight streams below the last-stream-ID complete rather than erroring.
+   than that, and observe how the peer is held back; reproduce Rapid Reset
+   by opening and immediately resetting streams in a loop and confirm the
+   concurrency limit alone does *not* stop you; then trigger `GOAWAY` by
+   shutting the server down mid-request and confirm in-flight streams below
+   the last-stream-ID complete rather than erroring.

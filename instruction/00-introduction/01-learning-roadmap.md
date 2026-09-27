@@ -12,7 +12,7 @@ you should be able to *do*, not just recite, before moving to the next one.
    assuming a baseline.
 2. **Linux** (`02-linux/`) — explain the difference between level-triggered
    and edge-triggered epoll from having hit the edge-triggered EAGAIN bug
-   yourself in the raw-epoll exercise in `02-linux/06-epoll.md`. Same note
+   yourself in the raw-epoll exercise in `02-linux/07-epoll.md`. Same note
    as above: `02-linux/01-fundamentals.md` first if "syscall," "file
    descriptor," "kernel space," or "container" aren't already precise to
    you.
@@ -44,11 +44,11 @@ without opening 18 files.
 
 | Lab | Read first | Then code |
 | --- | --- | --- |
-| `labs/00-tcp-server` | `01-network/01-fundamentals.md`, `02-linux/01-fundamentals.md` (if needed), `01-network/07-socket.md`, `01-network/08-tcp.md`, `03-rust/01-ownership.md`, `03-rust/05-async.md`, `04-runtime/01-tokio.md`, `02-linux/06-epoll.md` | TCP echo server |
+| `labs/00-tcp-server` | `01-network/01-fundamentals.md`, `02-linux/01-fundamentals.md` (if needed), `01-network/07-socket.md`, `01-network/08-tcp.md`, `03-rust/01-ownership.md`, `03-rust/05-async.md`, `04-runtime/01-tokio.md`, `02-linux/07-epoll.md` | TCP echo server |
 | `labs/01-http-parser` | `05-http-stack/01-parser.md`, `07-security/05-request-smuggling.md` | hand-written HTTP/1.1 parser, no hyper |
 | `labs/02-http-server` | `05-http-stack/01-parser.md`, `05-http-stack/04-keepalive.md`, `05-http-stack/02-hop-by-hop-headers.md`, `01-network/10-http.md`, `01-network/11-http2.md` | hyper/hyper-util plain HTTP server |
 | `labs/03-router` | `05-http-stack/03-router.md` | method+path routing |
-| `labs/04-static-server` | `05-http-stack/05-static.md`, `02-linux/10-zerocopy.md` | streaming static files |
+| `labs/04-static-server` | `05-http-stack/05-static.md`, `02-linux/11-zerocopy.md` | streaming static files |
 | `labs/05-reverse-proxy` | `06-proxy/01-upstream.md`, `06-proxy/03-healthcheck.md`, `06-proxy/04-outlier-detection.md`, `06-proxy/05-retry.md`, `06-proxy/06-circuit-breaker.md`, `06-proxy/07-service-discovery.md`, `01-network/10-http.md` | hyper client forwarding to an upstream pool |
 | `labs/06-load-balancer` | `06-proxy/02-load-balancer.md`, `13-algorithms/smooth-wrr.md`, `13-algorithms/rendezvous-hash.md`, `13-algorithms/maglev.md` | RR/least-conn/consistent-hash/smooth-WRR/Maglev |
 | `labs/07-tls` | `01-network/13-tls.md` | tokio-rustls termination, ALPN |

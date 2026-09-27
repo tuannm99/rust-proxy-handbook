@@ -3,7 +3,7 @@
 ## Status: the one exception to "not a tutorial"
 
 Same exception as `01-network/01-fundamentals.md`, for the same reason:
-`06-epoll.md`, `08-memory.md`, `09-signals.md`, and `10-zerocopy.md` all
+`07-epoll.md`, `09-memory.md`, `10-signals.md`, and `11-zerocopy.md` all
 open by assuming you already know what a syscall, a file descriptor, and
 a process's address space are. This file and its five siblings exist to
 make sure that's true before you hit them. Skip the whole group if it
@@ -29,9 +29,9 @@ when the kernel needs to interrupt you rather than wait to be asked
   them is the reason `03-rust/04-sync.md` exists.
 - **`03-kernel-and-syscalls.md`** — the user space/kernel space boundary,
   what a syscall costs, and file descriptors — the integer handle
-  everything in `02-linux/06-epoll.md` is built around.
+  everything in `02-linux/07-epoll.md` is built around.
 - **`04-memory-basics.md`** — the minimum needed to make
-  `02-linux/08-memory.md`'s opening paragraph land as familiar rather
+  `02-linux/09-memory.md`'s opening paragraph land as familiar rather
   than new, plus where RAM sits relative to cache and disk.
 - **`05-blocking-io-and-signals.md`** — why a syscall can block a thread,
   why event loops exist as the alternative, and what a signal is (an

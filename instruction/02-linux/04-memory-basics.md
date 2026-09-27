@@ -1,7 +1,7 @@
 # Memory Basics
 
 Part of the from-scratch fundamentals series — see `02-linux/01-fundamentals.md`
-for the full index. Deliberately brief: `02-linux/08-memory.md` is where
+for the full index. Deliberately brief: `02-linux/09-memory.md` is where
 virtual memory, overcommit, the page cache, and NUMA get developed in
 real depth — this file exists only so that development doesn't start
 from zero.
@@ -19,7 +19,7 @@ virtual address `0x1000` for completely different data, safely, because
 the kernel's page tables map each process's `0x1000` to different
 physical memory.
 
-That's genuinely all you need here to make `02-linux/08-memory.md`'s
+That's genuinely all you need here to make `02-linux/09-memory.md`'s
 opening paragraph — "every process gets its own virtual address space;
 the kernel's page tables map virtual pages to physical frames" — land as
 a restatement rather than new information.
@@ -30,7 +30,7 @@ slowest/largest/cheapest: CPU **registers**, then **cache** (L1/L2/L3, a
 handful of MB, built into the CPU), then **RAM** (gigabytes, still
 volatile — lost on power-off), then **disk/SSD** (much larger, much
 slower, persistent). Each level acts as a cache for the level below it:
-RAM caches disk content (`08-memory.md`'s page cache section is exactly
+RAM caches disk content (`09-memory.md`'s page cache section is exactly
 this), CPU cache caches RAM content.
 
 The number that matters most in practice: an L1 cache hit is roughly
@@ -39,7 +39,7 @@ tens of *microseconds*; a spinning disk seek is *milliseconds* —
 each step down is roughly 1-2 orders of magnitude slower. This is the
 entire motivation behind `17-performance/01-cpu-cache.md`'s existence
 (data layout choices that keep hot data in cache) and behind why
-`02-linux/08-memory.md`'s page cache matters so much for a proxy serving
+`02-linux/09-memory.md`'s page cache matters so much for a proxy serving
 static files: a cache hit there is a RAM access; a miss is a disk access,
 100-1000x slower.
 
@@ -62,14 +62,14 @@ A proxy's entire performance profile is a memory-hierarchy story:
 keeping a hot route table small enough to stay cache-resident
 (`17-performance/01-cpu-cache.md`), letting the kernel's page cache
 absorb repeated static-file reads instead of re-implementing that cache
-yourself (`08-memory.md`), and avoiding unnecessary heap allocation on
+yourself (`09-memory.md`), and avoiding unnecessary heap allocation on
 the request hot path (`14-memory/02-arena.md`, `14-memory/03-object-pool.md`)
 are all different instances of "keep data as close to the top of this
 hierarchy as you can, for as long as you can."
 
 ## Practice
 1. Run `free -h` and identify total RAM, used, and "available" (not the
-   same as "free" — `08-memory.md` explains why once you get there).
+   same as "free" — `09-memory.md` explains why once you get there).
 2. Write a small Rust program that allocates a large `Vec<u8>` with
    `with_capacity` (reserves virtual memory) versus one that additionally
    writes to every byte (forces physical pages to back it) — watch

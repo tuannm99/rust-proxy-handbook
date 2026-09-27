@@ -1,6 +1,6 @@
 # io_uring Internals
 
-`02-linux/07-io_uring.md` covers using `io_uring` from the application side.
+`02-linux/08-io_uring.md` covers using `io_uring` from the application side.
 This file covers the submission/completion mechanics underneath that
 make it different in kind from epoll, not just a faster version of it.
 

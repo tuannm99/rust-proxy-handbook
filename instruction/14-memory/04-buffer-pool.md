@@ -25,7 +25,7 @@ roll a size-classed pool over `BytesMut::with_capacity`) so a checked-out
 buffer composes with the rest of the stack without an extra copy.
 
 ### Where pooling doesn't apply at all: true zero-copy paths
-`02-linux/10-zerocopy.md`'s `sendfile`/`splice` move data from the page
+`02-linux/11-zerocopy.md`'s `sendfile`/`splice` move data from the page
 cache directly to a socket without it ever entering a userspace buffer —
 there's nothing to pool on that path, because userspace never holds the
 bytes. Buffer pooling matters for the paths that *do* copy through
@@ -54,5 +54,5 @@ allocation-size histograms.
    `14-memory/06-fragmentation.md`'s method) with and without the pool under
    sustained concurrent load.
 4. Identify which of `proxy`'s I/O paths are true zero-copy
-   (`02-linux/10-zerocopy.md`) and confirm pooling has no effect on those,
+   (`02-linux/11-zerocopy.md`) and confirm pooling has no effect on those,
    versus which paths copy through userspace and do benefit.

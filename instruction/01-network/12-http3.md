@@ -117,7 +117,7 @@ rather than a baseline requirement.
    being routed from the same socket.
 6. Check `net.core.rmem_max` on your machine, then drive the endpoint hard
    enough to see drops in `netstat -su`; raise the buffer and confirm the
-   drop counter stops climbing.
-7. Compare CPU per megabyte transferred between your QUIC endpoint and a
-   plain TCP+TLS transfer of the same data — quantify the gap for yourself
-   rather than taking the claim on faith.
+   drop counter stops climbing. Then compare CPU per megabyte transferred
+   between your QUIC endpoint and a plain TCP+TLS transfer of the same
+   data — quantify the gap for yourself rather than taking the claim on
+   faith.

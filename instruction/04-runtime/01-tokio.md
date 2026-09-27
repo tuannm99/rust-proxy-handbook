@@ -5,7 +5,7 @@ Reactor, executor, scheduler.
 ## What to learn
 
 ### Reactor
-The reactor owns the OS event source (epoll on Linux, see `02-linux/06-epoll.md`) and turns readiness events into wakeups. Every `TcpStream`/`TcpListener` registers its fd with the reactor once; when epoll reports the fd readable, the reactor finds the `Waker` associated with the task blocked on that fd and calls `.wake()`. The reactor does not run your code — it only decides *when* a task deserves another `poll()`.
+The reactor owns the OS event source (epoll on Linux, see `02-linux/07-epoll.md`) and turns readiness events into wakeups. Every `TcpStream`/`TcpListener` registers its fd with the reactor once; when epoll reports the fd readable, the reactor finds the `Waker` associated with the task blocked on that fd and calls `.wake()`. The reactor does not run your code — it only decides *when* a task deserves another `poll()`.
 
 ### Executor & work-stealing scheduler
 Tokio's multi-threaded executor runs N worker threads, each with a local run queue, plus a global injection queue. Idle workers steal tasks from busy workers' queues instead of blocking, which keeps CPUs busy without a central lock on every schedule. `tokio::spawn` puts a task on the current worker's local queue; cheap, but it means a burst of spawns from one connection can starve other workers until the next steal.
