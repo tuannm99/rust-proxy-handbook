@@ -57,7 +57,7 @@ Chỉ chấp nhận một header PROXY protocol từ các kết nối bạn th�
 tưởng (tức là dải IP của LB upstream đã biết của bạn) — nếu không, bất kỳ
 ai tiếp cận trực tiếp được listener của bạn đều có thể *giả mạo* địa chỉ
 client theo cùng cách một `X-Forwarded-For` không được validate có thể bị
-giả mạo ở tầng HTTP (xem `07-security/08-ip-filtering.md`). Quyết định
+giả mạo ở tầng HTTP (xem [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)). Quyết định
 theo từng listener xem PROXY protocol có được kỳ vọng hay không; đừng
 chấp nhận nó vô điều kiện trên một listener công khai.
 
@@ -65,13 +65,13 @@ chấp nhận nó vô điều kiện trên một listener công khai.
 
 1. Gửi thủ công một dòng PROXY v1 thô bằng `nc` phía trước một test
    server và xác nhận server có thể parse ra địa chỉ client gốc từ đó.
-2. Implement phát hiện/parse v1 trong đường accept-kết nối của `proxy`,
+2. Implement phát hiện/parse v1 trong đường accept-kết nối của [`proxy`](../../proxy),
    expose IP client thật cho phần còn lại của request pipeline (logging,
    rate limiting, WAF).
 3. Thêm hỗ trợ v2 (nhị phân) và test cả hai format trên cùng một
    listener.
 4. Thêm một kiểm tra trusted-source: chỉ tôn trọng một header PROXY nếu
    IP của peer đang kết nối nằm trong một danh sách cho phép (gắn với
-   `07-security/08-ip-filtering.md`).
+   [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)).
 5. Giải thích vì sao một client không bao giờ nên có khả năng gửi trực
    tiếp một header PROXY protocol và được tin tưởng.

@@ -2,7 +2,7 @@
 
 What actually pages a human, vs what's just a line on a dashboard.
 The SLIs and error budgets it all rests on are in
-`08-observability/05-slo.md`.
+[`08-observability/05-slo.md`](05-slo.md).
 
 ## What to learn
 ### What this is built on
@@ -13,23 +13,23 @@ success, and which requests are even valid. A proxy also needs two
 separate SLIs, because "the proxy failed" and "the upstream failed" have
 different owners.
 
-See `08-observability/05-slo.md`; this file assumes those exist.
+See [`08-observability/05-slo.md`](05-slo.md); this file assumes those exist.
 
 ### Alert on symptoms, not causes
-Page on what the *user* experiences (elevated error rate, elevated p99 latency, the proxy itself down) — not on every internal condition that *might* cause a symptom (one of three upstreams unhealthy, one retry occurred, GC pause of 50ms). If the load balancer in `06-proxy/02-load-balancer.md` and health checks in `06-proxy/03-healthcheck.md` are doing their job, losing one upstream shouldn't page anyone; losing all of them should. Cause-level signals still matter — keep them as metrics/dashboards (`08-observability/02-metrics.md`) for root-causing an incident after the symptom-level alert already woke someone up.
+Page on what the *user* experiences (elevated error rate, elevated p99 latency, the proxy itself down) — not on every internal condition that *might* cause a symptom (one of three upstreams unhealthy, one retry occurred, GC pause of 50ms). If the load balancer in [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md) and health checks in [`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md) are doing their job, losing one upstream shouldn't page anyone; losing all of them should. Cause-level signals still matter — keep them as metrics/dashboards ([`08-observability/02-metrics.md`](02-metrics.md)) for root-causing an incident after the symptom-level alert already woke someone up.
 
 ### The exceptions: things that are invisible until it's too late
 "Symptoms only" has a specific and important class of exceptions —
 conditions with no symptom *now* and a guaranteed one later. These are
 worth a ticket-level alert precisely because waiting for the symptom means
 waiting for the outage:
-- **Certificate expiry** (`01-network/13-tls.md`,
-  `05-http-stack/11-vhost-routing.md`) — alert weeks out, per certificate.
+- **Certificate expiry** ([`01-network/13-tls.md`](../01-network/13-tls.md),
+  [`05-http-stack/11-vhost-routing.md`](../05-http-stack/11-vhost-routing.md)) — alert weeks out, per certificate.
   The symptom is total failure at an exactly predictable moment.
-- **Config reload failures** (`09-architecture/03-config.md`) — the proxy
+- **Config reload failures** ([`09-architecture/03-config.md`](../09-architecture/03-config.md)) — the proxy
   keeps running on old config and looks perfectly healthy while diverging
   from what operators think is deployed.
-- **Disk filling** with logs (`08-observability/01-logging.md`), fd count
+- **Disk filling** with logs ([`08-observability/01-logging.md`](01-logging.md)), fd count
   approaching its limit, and connection-pool saturation trending up.
 - **Error budget burn rate**, which is the generalization of all of these:
   not broken now, on track to be.
@@ -101,7 +101,7 @@ rotations.
 ## Practice
 Build these in order.
 
-1. Work through `08-observability/05-slo.md` first. **Done when** two SLIs
+1. Work through [`08-observability/05-slo.md`](05-slo.md) first. **Done when** two SLIs
    and their targets exist as recording rules, and you can state which
    team each one pages.
 2. Write the burn-rate ladder (14.4x/1h, 6x/6h, 1x/3d) with matching short
@@ -110,7 +110,7 @@ Build these in order.
 3. Add request-count floors. **Done when** a simulated 3am with 5 requests
    and 1 error does not page.
 4. Add missing-data alerting and an external synthetic probe. **Done
-   when** killing `proxy` outright pages within your target window —
+   when** killing [`proxy`](../../proxy) outright pages within your target window —
    test this, because "the alert that fires when everything is dead" is
    the one most likely to be broken.
 5. Verify the alerting path's independence. **Done when** you can state
@@ -120,8 +120,8 @@ Build these in order.
    and fd/pool saturation. **Done when** a cert 7 days from expiry and a
    deliberately broken config reload each produce a ticket without paging
    anyone.
-7. Run a chaos test (`12-testing/03-chaos.md`) under load
-   (`12-testing/01-load-testing.md`). **Done when** the burn-rate page fires
+7. Run a chaos test ([`12-testing/03-chaos.md`](../12-testing/03-chaos.md)) under load
+   ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)). **Done when** the burn-rate page fires
    within the expected window, the correct SLI moves (proxy vs end-to-end,
    depending on which fault you injected), and everything clears after the
    fault is removed.

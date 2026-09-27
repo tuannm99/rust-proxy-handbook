@@ -23,14 +23,14 @@ Giá trị `nice` ánh xạ tới trọng số quyết định `vruntime` của 
 nhanh thế nào (một task priority cao hơn có `vruntime` tăng chậm hơn trên
 mỗi đơn vị thời gian CPU thực, nên nó "được nợ" CPU lâu hơn). Điều này
 thay đổi *bao nhiêu* CPU một task nhận được so với các task khác, không
-phải một đảm bảo về latency — một process `proxy` chạy priority cao trên
+phải một đảm bảo về latency — một process [`proxy`](../../proxy) chạy priority cao trên
 một máy rảnh rỗi hành xử giống hệt như chạy priority bình thường; sự khác
 biệt chỉ hiện ra khi có thứ khác thực sự đang tranh giành CPU.
 
 ### CPU affinity: chống lại chi phí migration, không chỉ là fairness
 Một task di chuyển giữa các core mất trạng thái cache L1/L2 còn nóng trên
-core cũ và bắt đầu lạnh trên core mới (`17-performance/01-cpu-cache.md`,
-`17-performance/03-numa.md`). Pin worker thread của một proxy vào các core
+core cũ và bắt đầu lạnh trên core mới ([`17-performance/01-cpu-cache.md`](../17-performance/01-cpu-cache.md),
+[`17-performance/03-numa.md`](../17-performance/03-numa.md)). Pin worker thread của một proxy vào các core
 cụ thể (`taskset`, hoặc `sched_setaffinity` từ trong chương trình) đánh
 đổi sự tự do của CFS trong việc cân bằng tải qua mọi core lấy việc thực
 thi nhất quán, cache-nóng trên một tập cố định — một lợi ích tail-latency
@@ -53,8 +53,8 @@ không giải thích được. Kiểm tra độ dài run-queue của `vmstat`/`m
 latency là vấn đề của tokio hay của ứng dụng.
 
 ## Practice
-1. Chạy `proxy` (hoặc một crate trong `labs/`) dưới
-   `12-testing/01-load-testing.md` trên một host bạn cố tình oversubscribe
+1. Chạy [`proxy`](../../proxy) (hoặc một crate trong [`labs/`](../../labs)) dưới
+   [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md) trên một host bạn cố tình oversubscribe
    (khởi chạy đủ process nền CPU-bound để vượt số core) và quan sát tác
    động lên p99 latency so với một host không tải.
 2. Kiểm tra cột run-queue của `vmstat 1` trong bài test đó và xác nhận nó

@@ -2,7 +2,7 @@
 
 ## What to learn
 ### SIGTERM vs SIGKILL, and why the proxy must handle SIGTERM itself
-Orchestrators (systemd, Kubernetes) send `SIGTERM` first and give the process a grace period before `SIGKILL` (which cannot be caught — it's an instant hard stop). If the proxy doesn't catch `SIGTERM` and act on it, it either dies immediately mid-request (dropped connections) or gets hard-killed after the grace period expires, which is the same outcome. See `02-linux/10-signals.md`.
+Orchestrators (systemd, Kubernetes) send `SIGTERM` first and give the process a grace period before `SIGKILL` (which cannot be caught — it's an instant hard stop). If the proxy doesn't catch `SIGTERM` and act on it, it either dies immediately mid-request (dropped connections) or gets hard-killed after the grace period expires, which is the same outcome. See [`02-linux/10-signals.md`](../02-linux/10-signals.md).
 
 Gotcha: as PID 1 in a container, the default signal dispositions don't
 apply — the kernel does not kill PID 1 for signals it hasn't explicitly
@@ -65,7 +65,7 @@ SIGTERM ──► [ keep serving, ~5-15s ]  ──► stop accepting ──► d
 ```
 
 Gotcha: this interacts with your own service discovery
-(`06-proxy/07-service-discovery.md`). If the proxy registers itself, active
+([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)). If the proxy registers itself, active
 deregistration as the first drain step shortens the window a lot — but it
 never eliminates it, because other components still cache the old
 membership. Keep the delay even when you deregister actively.
@@ -80,18 +80,18 @@ which ones were accepted and which it must retry elsewhere. The graceful
 form is two `GOAWAY` frames — one with the maximum stream ID to announce
 intent (letting in-flight streams finish while the client stops opening
 new ones), then a final one with the real last-processed ID
-(`01-network/11-http2.md`).
+([`01-network/11-http2.md`](../01-network/11-http2.md)).
 
 Gotcha: an idle keep-alive connection is the same race as
-`05-http-stack/04-keepalive.md`'s close/request collision, now happening
+[`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md)'s close/request collision, now happening
 across your whole connection table at once. Announcing (`Connection:
 close` / `GOAWAY`) before closing is what turns "client sees a reset" into
 "client opens a new connection elsewhere."
 
 ### Long-lived connections need a different policy
 "Let in-flight requests finish" assumes requests finish. A WebSocket
-(`05-http-stack/09-websocket.md`), a server-streaming gRPC call
-(`05-http-stack/10-grpc.md`), or an SSE stream may be minutes or hours from
+([`05-http-stack/09-websocket.md`](../05-http-stack/09-websocket.md)), a server-streaming gRPC call
+([`05-http-stack/10-grpc.md`](../05-http-stack/10-grpc.md)), or an SSE stream may be minutes or hours from
 completing, and waiting for them means never shutting down.
 
 They need an explicit policy, decided per connection type: send a
@@ -102,7 +102,7 @@ A clean protocol-level close lets clients reconnect to another instance
 immediately; a reset makes them retry blindly and often more slowly.
 
 ### Deadlines and forced cancellation
-Always bound the drain with a timeout (`tokio::time::timeout`). A single stuck upstream connection (hung TCP, slowloris-style client) must not block shutdown forever — after the deadline, cancel remaining tasks and exit anyway, logging which requests were force-cancelled so it's visible in `08-observability/01-logging.md`, not silent.
+Always bound the drain with a timeout (`tokio::time::timeout`). A single stuck upstream connection (hung TCP, slowloris-style client) must not block shutdown forever — after the deadline, cancel remaining tasks and exit anyway, logging which requests were force-cancelled so it's visible in [`08-observability/01-logging.md`](../08-observability/01-logging.md), not silent.
 
 Gotcha: the total of your pre-stop delay plus your drain deadline must be
 **less** than the orchestrator's grace period
@@ -115,7 +115,7 @@ two numbers in two different repositories and they *will* drift.
 Shutdown isn't just connections. Anything buffered in the name of
 performance is unflushed data at exit:
 - **Log and trace buffers** — `tracing_appender`'s non-blocking writer and
-  the OTLP batch exporter (`08-observability/03-tracing.md`) both hold
+  the OTLP batch exporter ([`08-observability/03-tracing.md`](../08-observability/03-tracing.md)) both hold
   records in memory. Losing exactly the records from the shutdown window
   is losing the evidence for whatever caused the shutdown.
 - **Metrics** — a final scrape won't happen, so any counter movement since
@@ -123,7 +123,7 @@ performance is unflushed data at exit:
   metrics; know that it exists before concluding a deploy caused a drop to
   zero.
 - **Upstream connections** — close pooled idle connections explicitly
-  (`06-proxy/01-upstream.md`) rather than letting the process exit drop them,
+  ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)) rather than letting the process exit drop them,
   so upstreams see clean closes instead of resets.
 
 Gotcha: flush ordering matters — flush telemetry *last*, after the drain
@@ -132,7 +132,7 @@ completes, so the shutdown's own events are included.
 ## Practice
 Build these in order.
 
-1. Register `SIGTERM` and `SIGINT` handlers in `proxy`, with a second
+1. Register `SIGTERM` and `SIGINT` handlers in [`proxy`](../../proxy), with a second
    signal forcing immediate exit. **Done when** `docker stop` triggers the
    drain log line — verify while running as PID 1, since that's where the
    default-disposition trap lives.
@@ -144,7 +144,7 @@ Build these in order.
    requests. **Done when** a deliberately hung upstream doesn't prevent
    exit, and the cancelled requests are named in the logs.
 4. Load-test while sending `SIGTERM` mid-test
-   (`12-testing/01-load-testing.md`). **Done when** in-flight requests see
+   ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)). **Done when** in-flight requests see
    zero connection resets. Expect to still see errors from *newly
    arriving* requests at this stage — that's step 5.
 5. Add the pre-stop delay and re-run step 4 behind a load balancer (or a
@@ -162,6 +162,6 @@ Build these in order.
 8. Flush telemetry after the drain. **Done when** log lines and spans from
    requests completed during shutdown still reach their backends, and
    pooled upstream connections are closed cleanly rather than reset.
-9. If you built service discovery (`06-proxy/07-service-discovery.md`),
+9. If you built service discovery ([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)),
    deregister as the very first drain step. **Done when** metrics show
    inbound request rate falling to zero *before* the listener closes.

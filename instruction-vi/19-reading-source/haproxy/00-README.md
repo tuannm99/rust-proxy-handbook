@@ -2,8 +2,8 @@
 
 Load balancer L4/L7 đã qua thử lửa, event loop tối thiểu allocation.
 
-Chưa được viết. Đọc dự án này sau khi `proxy/` chạy được, không phải
-trước — xem `19-reading-source/00-README.md` để biết vì sao, và để xem
+Chưa được viết. Đọc dự án này sau khi [`proxy/`](../../../proxy) chạy được, không phải
+trước — xem [`19-reading-source/00-README.md`](../00-README.md) để biết vì sao, và để xem
 template cho từng dự án.
 
 Các file dự kiến:

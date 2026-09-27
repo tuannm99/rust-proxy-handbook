@@ -1,6 +1,6 @@
 # TinyLFU / W-TinyLFU
 
-`13-algorithms/lru.md` giới thiệu TinyLFU sơ lược như "một cửa sổ admission
+[`13-algorithms/lru.md`](lru.md) giới thiệu TinyLFU sơ lược như "một cửa sổ admission
 LRU nhỏ đứng trước một cache chính dựa trên tần suất." File này là phần
 đào sâu: đây là thiết kế eviction/admission mà đa số cache Rust và JVM
 production thực sự dùng (`moka`, Caffeine), và đáng để hiểu vì sao nó
@@ -26,7 +26,7 @@ cứ thứ gì đang có sẵn và "ấm", nên chúng bị từ chối ngay ở
 Lưu một counter chính xác cho mỗi key (như LFU thường làm) tốn bộ nhớ tỷ
 lệ với số lượng key khác nhau từng thấy, điều này không bị chặn trên với
 một cache của proxy. Thay vào đó, TinyLFU dùng một count-min sketch
-(`13-algorithms/count-min-sketch.md`) — kích thước cố định, nhỏ (vài bit
+([`13-algorithms/count-min-sketch.md`](count-min-sketch.md)) — kích thước cố định, nhỏ (vài bit
 cho mỗi key dự kiến), với sai số overestimation bị chặn trên và không có
 allocation nào cho mỗi key.
 
@@ -44,7 +44,7 @@ Gotcha: nếu không có aging định kỳ, các counter của sketch chỉ tă
 cuối cùng bão hòa, lúc đó bộ ước tính mất hết khả năng phân biệt — mọi key
 đủ phổ biến đều trông "phổ biến vô hạn" như nhau. Hãy chia đôi mọi counter
 trong sketch mỗi khi `total_increments` vượt `reset_threshold`. Đây chính
-là vấn đề aging mà `13-algorithms/lfu.md` gặp phải với counter chính xác,
+là vấn đề aging mà [`13-algorithms/lfu.md`](lfu.md) gặp phải với counter chính xác,
 nhưng được giải quyết ở đây bằng cách reset định kỳ một cấu trúc kích
 thước cố định thay vì decay một map ngày càng lớn.
 
@@ -95,9 +95,9 @@ của chính Caffeine) gần như không tốn gì về hit rate trong khi tốn
 nhiều về bộ nhớ và CPU so với ARC hay LFU lý tưởng.
 
 ## Practice
-1. Trong `labs/10-cache`, implement bộ ước tính tần suất dựa trên
+1. Trong [`labs/10-cache`](../../labs/10-cache), implement bộ ước tính tần suất dựa trên
    count-min-sketch với chia đôi định kỳ, rồi nối nó vào một kiểm tra
-   admission đứng trước LRU đã có (`13-algorithms/lru.md`) làm main cache
+   admission đứng trước LRU đã có ([`13-algorithms/lru.md`](lru.md)) làm main cache
    — đây là TinyLFU chưa có phần sửa cold-start theo windowed.
 2. Tái hiện vấn đề cold-start có chủ đích: đưa vào một key hoàn toàn mới
    sắp trở nên rất hot, và xác nhận admission chỉ-dựa-tần-suất từ chối nó
@@ -107,7 +107,7 @@ nhiều về bộ nhớ và CPU so với ARC hay LFU lý tưởng.
 3. Thêm doorkeeper Bloom filter và đo chất lượng sketch (so sánh tần suất
    ước tính với tần suất thật cho một tập key đã biết) có và không có nó,
    trên một trace bị chi phối bởi các key chỉ trúng một lần.
-4. Chạy lại cùng bài so sánh ba workload bạn dùng cho `13-algorithms/arc.md`
+4. Chạy lại cùng bài so sánh ba workload bạn dùng cho [`13-algorithms/arc.md`](arc.md)
    (tập hot ổn định, scan định kỳ, độ phổ biến thay đổi) trên
    implementation W-TinyLFU của bạn, và so sánh cả hit rate *lẫn* mức dùng
    bộ nhớ với ARC và LRU thuần trên cùng trace.

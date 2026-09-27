@@ -1,7 +1,7 @@
 # Cache Stampede
 
 Sự cố nơi một cache, đúng vào lúc nó ngừng giúp ích, chủ động làm mọi thứ
-tệ hơn. `05-http-stack/07-cache.md` bao quát semantics caching HTTP; file
+tệ hơn. [`05-http-stack/07-cache.md`](07-cache.md) bao quát semantics caching HTTP; file
 này bao quát bài toán concurrency bên dưới bất kỳ cache nào, và vì sao
 single-flight là một yêu cầu chứ không phải một tối ưu.
 
@@ -17,7 +17,7 @@ biến, spike càng tệ — nên các entry mà cache của bạn bảo vệ t�
 là những cái gây đau nhất khi hết hạn.
 
 Gotcha: đây không chỉ là vấn đề hết hạn. Một cold start
-(`09-architecture/05-rolling-restart.md` — mỗi lần restart làm rỗng một
+([`09-architecture/05-rolling-restart.md`](../09-architecture/05-rolling-restart.md) — mỗi lần restart làm rỗng một
 cache trong memory), một lần purge, hay một lần eviction dưới áp lực
 memory đều tạo ra cùng điều kiện miss-đồng-thời, cho mọi key cùng lúc
 thay vì một.
@@ -45,7 +45,7 @@ này đã cũ và việc thiếu nó là một sự cố lặp đi lặp lại.
 
 Gotcha: bên chờ cần một **timeout**. Một lần fetch origin bị treo không
 được để hàng nghìn request chờ vô thời hạn — mỗi bên chờ nên tự bỏ cuộc
-theo deadline riêng (request timeout của `06-proxy/01-upstream.md`) và tự
+theo deadline riêng (request timeout của [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)) và tự
 quyết định fail hay thử tự fetch.
 
 Gotcha: khi fetch **thất bại**, mọi bên chờ phải được đánh thức kèm lỗi.
@@ -53,15 +53,15 @@ Một leader trả về sớm — một panic, một nhánh chưa xử lý, mộ
 drop do client hủy — để lại các bên chờ bị chặn trên một kết quả sẽ không
 bao giờ đến. Cấu trúc leader sao cho việc thông báo xảy ra trong một
 `Drop` guard, cùng kỷ luật với connection counter của
-`06-proxy/01-upstream.md`.
+[`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md).
 
 Gotcha: map in-flight được key theo dữ liệu attacker có thể ảnh hưởng,
 nên nó cần cùng giới hạn như bất kỳ map nào tương tự
-(`13-algorithms/count-min-sketch.md`).
+([`13-algorithms/count-min-sketch.md`](../13-algorithms/count-min-sketch.md)).
 
 ### Serve stale trong khi refresh
 Single-flight giảm N lần fetch xuống một, nhưng các bên chờ vẫn phải chờ.
-Với `stale-while-revalidate` (`05-http-stack/07-cache.md`) việc chờ biến
+Với `stale-while-revalidate` ([`05-http-stack/07-cache.md`](07-cache.md)) việc chờ biến
 mất hoàn toàn: serve ngay bản stale cho tất cả mọi người, refresh một lần
 ở nền, swap nó vào khi xong.
 
@@ -73,7 +73,7 @@ nguội, không chỉ stale — mới phải chờ.
 Gotcha: một lần refresh nền mà không ai chờ vẫn cần một timeout, một
 đường xử lý lỗi, và một giới hạn số lượng chạy đồng thời. Nếu không, một
 lần origin sập để lại một đống task refresh ngày càng lớn, mỗi cái giữ
-một connection (`06-proxy/01-upstream.md`), tất cả đều vô ích.
+một connection ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)), tất cả đều vô ích.
 
 ### Dàn trải hết hạn để không đồng bộ hóa
 Các key được điền cùng lúc sẽ hết hạn cùng lúc. Điền một cache từ cold
@@ -83,8 +83,8 @@ bạn.
 
 Thêm jitter vào TTL lúc lưu (±10% là đủ) để việc hết hạn dàn trải ra trên
 một cửa sổ thay vì rơi đồng loạt. Đây là cùng vấn đề đồng bộ hóa như chu
-kỳ probe (`06-proxy/03-healthcheck.md`) và retry storm
-(`06-proxy/05-retry.md`), với cùng cách sửa.
+kỳ probe ([`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)) và retry storm
+([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)), với cùng cách sửa.
 
 ### Negative caching
 Một origin trả về 404 hoặc 500 cho một key nóng, không được cache, nhận
@@ -100,7 +100,7 @@ dung.
 ## Practice
 Làm theo thứ tự này.
 
-1. Trong `labs/10-cache`, tái tạo stampede: cache một response origin cố
+1. Trong [`labs/10-cache`](../../labs/10-cache), tái tạo stampede: cache một response origin cố
    tình chậm, làm nó hết hạn, và bắn 500 request đồng thời. **Xong khi**
    bạn có thể chỉ ra khoảng 500 lần chạm origin bằng một counter phía
    origin.

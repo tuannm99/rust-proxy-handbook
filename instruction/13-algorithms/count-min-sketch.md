@@ -2,7 +2,7 @@
 
 Approximate frequency counting in fixed memory. How you answer "how many
 requests has this IP sent" for millions of IPs without a map that grows
-with the attacker's budget (`07-security/09-ddos.md`).
+with the attacker's budget ([`07-security/09-ddos.md`](../07-security/09-ddos.md)).
 
 ## What to learn
 
@@ -61,7 +61,7 @@ query the estimate, and if it exceeds a threshold, insert the key into a
 bounded min-heap of the worst offenders. The sketch handles unbounded
 cardinality in fixed memory; the heap holds only the keys that matter.
 
-This is also how TinyLFU (`13-algorithms/lru.md`) estimates access
+This is also how TinyLFU ([`13-algorithms/lru.md`](lru.md)) estimates access
 frequency for cache admission in a few bits per key.
 
 ### Decay: counts must forget
@@ -93,7 +93,7 @@ incompatible with sliding-window schemes that subtract.
    `ε × N` for the ε you sized for.
 2. Show the failure mode: replace the `d` independent hashes with
    `hash(key) + i` and re-run step 1; measure how much the error degrades.
-3. In `labs/11-rate-limit`, add a sketch-based global heavy-hitter detector
+3. In [`labs/11-rate-limit`](../../labs/11-rate-limit), add a sketch-based global heavy-hitter detector
    alongside the exact per-IP buckets. Compare memory at 1M distinct source
    IPs.
 4. Add periodic halving; verify a burst-then-idle key drops below the

@@ -4,7 +4,7 @@
 
 ### Vì sao Pin tồn tại: self-referential future
 Desugar một `async fn` thành một struct state machine (xem
-`03-rust/05-async.md`) có thể sinh ra một struct borrow từ chính các field
+[`03-rust/05-async.md`](05-async.md)) có thể sinh ra một struct borrow từ chính các field
 của nó — ví dụ một local variable ở một phần của hàm được borrow bởi một
 biểu thức `.await` sau đó trong cùng hàm, cả hai đều được lưu trong cùng
 struct được sinh ra. Một struct như vậy không bao giờ được phép di chuyển
@@ -68,13 +68,13 @@ trait object, không phải do bản thân `Pin`.
 1. Viết một struct self-referential `!Unpin` tối giản (không dùng async)
    bằng `PhantomPinned`, pin nó bằng `Box::pin`, và quan sát compiler từ
    chối một nỗ lực di chuyển nó sau đó.
-2. Trong bài tập executor tự viết từ `03-rust/05-async.md`, định nghĩa
+2. Trong bài tập executor tự viết từ [`03-rust/05-async.md`](05-async.md), định nghĩa
    type `Task` của bạn là `Pin<Box<dyn Future<Output = ()> + Send>>` và
    implement run-queue của executor xoay quanh nó.
 3. Giải thích bằng lời của bạn (một comment cũng được) vì sao
    `Future::poll` nhận `self: Pin<&mut Self>` thay vì `&mut self` thông
    thường — liên hệ lại với hình dạng struct self-referential từ
-   `03-rust/05-async.md`.
+   [`03-rust/05-async.md`](05-async.md).
 4. Đọc docs của thư viện chuẩn cho `Pin::get_mut` và `Pin::new_unchecked`
    và viết ra, chính xác, invariant nào mà `new_unchecked` yêu cầu bạn tự
-   tay giữ đúng (đây là unsafe — xem `03-rust/03-unsafe.md`).
+   tay giữ đúng (đây là unsafe — xem [`03-rust/03-unsafe.md`](03-unsafe.md)).

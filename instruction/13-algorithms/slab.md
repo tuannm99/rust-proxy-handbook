@@ -3,7 +3,7 @@
 Fixed-size object storage with O(1) insert and remove, addressed by
 integer index instead of pointer. The data structure behind connection
 tables, LRU nodes, and arena-based graphs.
-`14-memory/05-slab-allocator.md` covers the allocator-level view; this file
+[`14-memory/05-slab-allocator.md`](../14-memory/05-slab-allocator.md) covers the allocator-level view; this file
 covers the data structure you actually use in Rust.
 
 ## What to learn
@@ -14,13 +14,13 @@ one entry per active connection, one node per LRU entry. The obvious
 shapes all have problems: `HashMap<Id, T>` hashes on every access and
 scatters allocations; `Vec<T>` invalidates every index on removal;
 `Rc<RefCell<T>>` graphs leak on cycles; raw pointers mean `unsafe`
-(`03-rust/03-unsafe.md`).
+([`03-rust/03-unsafe.md`](../03-rust/03-unsafe.md)).
 
 A slab is a `Vec` of slots where **removal does not shift anything** — the
 freed slot joins a free list, so every outstanding index stays valid. You
 get array-speed access, stable handles, one contiguous allocation, and no
 `unsafe`. This is why `Slab<T>` shows up under connection registries and
-why an arena-backed LRU (`13-algorithms/lru.md`) is the idiomatic Rust
+why an arena-backed LRU ([`13-algorithms/lru.md`](lru.md)) is the idiomatic Rust
 implementation.
 
 ### The free list lives inside the slots
@@ -74,7 +74,7 @@ A slab never shrinks on its own: after a traffic spike creates 100k
 connection slots, the `Vec` stays 100k slots wide even at 100 active
 connections. For a long-running proxy that is a permanent memory
 high-water mark set by your worst spike
-(see `14-memory/06-fragmentation.md`).
+(see [`14-memory/06-fragmentation.md`](../14-memory/06-fragmentation.md)).
 
 Compacting means moving occupied entries into low slots, which invalidates
 their indices — precisely the property the slab exists to provide. The
@@ -91,12 +91,12 @@ proxy is already under stress.
 2. Reproduce the stale-handle bug: hold an index across a remove+insert
    cycle and observe it reading the new occupant. Then add generation
    counters and confirm the same access now returns `None`.
-3. Use it in `labs/05-reverse-proxy` as the connection registry, keyed by a
+3. Use it in [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) as the connection registry, keyed by a
    generational handle rather than an address.
 4. Compare against `HashMap<u64, T>` for 100k insert/remove/lookup cycles —
    measure both time and peak memory.
 5. Demonstrate the shrink problem: grow to 100k entries, remove all but
    100, and show the memory does not return. Add a capacity bound and the
    test that rejects insertion past it.
-6. Back the LRU from `13-algorithms/lru.md` with your slab instead of a
+6. Back the LRU from [`13-algorithms/lru.md`](lru.md) with your slab instead of a
    bare `Vec`.

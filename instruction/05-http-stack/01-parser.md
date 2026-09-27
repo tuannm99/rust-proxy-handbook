@@ -20,7 +20,7 @@ fn parse_header_line(line: &str) -> Option<(&str, &str)> {
 ```
 
 ### Body framing: the part that actually matters
-The body's length comes from exactly one of: `Content-Length`, `Transfer-Encoding: chunked`, or "read until connection close" (responses only). If a message has *both* `Content-Length` and `Transfer-Encoding`, or multiple conflicting `Content-Length` values, the message is ambiguous — RFC 9112 §6.3 says to reject it, not "pick one." Getting this wrong is exactly how request smuggling happens (see `07-security/05-request-smuggling.md`).
+The body's length comes from exactly one of: `Content-Length`, `Transfer-Encoding: chunked`, or "read until connection close" (responses only). If a message has *both* `Content-Length` and `Transfer-Encoding`, or multiple conflicting `Content-Length` values, the message is ambiguous — RFC 9112 §6.3 says to reject it, not "pick one." Getting this wrong is exactly how request smuggling happens (see [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md)).
 
 ### Chunked transfer-encoding
 Each chunk is `<hex-size>CRLF<data>CRLF`, terminated by a `0`-size chunk and optional trailers. A correct parser must cap chunk-size digits and total decoded size (an attacker can claim an enormous chunk size to exhaust memory), and must not treat trailer headers as equivalent to headers sent before the body.
@@ -51,7 +51,7 @@ feeds one byte at a time (n reads × n bytes rescanned). For a learning
 parser that is acceptable and worth measuring; production parsers either
 cap header size tightly enough that n² is bounded, or keep an explicit
 state machine with a resume offset. Note the interaction with
-`07-security/09-ddos.md`: the byte-at-a-time feed *is* the Slowloris attack,
+[`07-security/09-ddos.md`](../07-security/09-ddos.md): the byte-at-a-time feed *is* the Slowloris attack,
 so the read-side data-rate floor and this parser bound defend the same
 hole from two sides.
 
@@ -70,7 +70,7 @@ well-behaved client disconnect.
 Gotcha: after `Complete { consumed }`, the leftover bytes must be moved to
 the front of the buffer (or tracked with a read cursor) before the next
 read. Forgetting this is the classic pipelining bug — the second request
-on a keep-alive connection (`05-http-stack/04-keepalive.md`) is parsed from a
+on a keep-alive connection ([`05-http-stack/04-keepalive.md`](04-keepalive.md)) is parsed from a
 buffer still containing the first one's tail.
 
 ### Limits are part of the parser, not a wrapper around it
@@ -99,19 +99,19 @@ Gotcha: header names are case-insensitive, so comparison must be too, but
 `to_lowercase()` per header per request allocates on the hot path. Compare
 with `eq_ignore_ascii_case` against a static, and note that
 `str::to_lowercase` does full Unicode case folding — wrong *and* slow for
-what is defined as an ASCII token. This is where `03-rust/01-ownership.md`'s
+what is defined as an ASCII token. This is where [`03-rust/01-ownership.md`](../03-rust/01-ownership.md)'s
 borrow-don't-clone discipline pays off: a parsed request should borrow
 slices of the input buffer, not own copies of every field.
 
 ### Why production code uses hyper instead of a hand parser
-`hyper`'s HTTP/1 codec (`h1`) has absorbed years of interop and security fixes for exactly the ambiguities above. Hand-rolling a parser is valuable for learning what those ambiguities *are*, but shipping one in `labs/02-http-server` or later would mean re-discovering every smuggling CVE hyper already fixed.
+`hyper`'s HTTP/1 codec (`h1`) has absorbed years of interop and security fixes for exactly the ambiguities above. Hand-rolling a parser is valuable for learning what those ambiguities *are*, but shipping one in [`labs/02-http-server`](../../labs/02-http-server) or later would mean re-discovering every smuggling CVE hyper already fixed.
 
 ## Practice
-1. In `labs/01-http-parser`, parse the request line and headers from a raw `&[u8]` buffer into a struct that *borrows* from it; reject malformed input rather than best-effort recovering.
+1. In [`labs/01-http-parser`](../../labs/01-http-parser), parse the request line and headers from a raw `&[u8]` buffer into a struct that *borrows* from it; reject malformed input rather than best-effort recovering.
 2. Make the entry point return `ParseStatus` (complete + consumed count, or partial). Test it by feeding a request one byte at a time and asserting it returns `Partial` until the final byte.
 3. Add body framing: support `Content-Length`, then `Transfer-Encoding: chunked`, and explicitly reject a request that specifies both.
 4. Write the buffer loop around it: handle leftover bytes after a complete message, and prove pipelining works by parsing two requests out of one buffer in a single read. Then assert EOF mid-request is an error while EOF at a message boundary is not.
 5. Enforce the limits from above (header count, sizes, chunk size) and write one rejection test per limit, asserting the correct status code rather than just "an error".
 6. Feed your parser adversarial inputs (duplicate `Content-Length` with different values, folded headers, a bare `\n`, a chunk size of `0x` followed by garbage, a header name with a trailing space) and confirm it rejects each one rather than parsing "something."
-7. Fuzz `labs/01-http-parser` (see `12-testing/02-fuzzing.md`) against a corpus of real HTTP/1.1 traffic captures and fix any panics.
+7. Fuzz [`labs/01-http-parser`](../../labs/01-http-parser) (see [`12-testing/02-fuzzing.md`](../12-testing/02-fuzzing.md)) against a corpus of real HTTP/1.1 traffic captures and fix any panics.
 8. Once you've done this by hand, read `httparse`'s API and `hyper`'s `h1` codec for the same cases, and note what they do differently from your implementation.

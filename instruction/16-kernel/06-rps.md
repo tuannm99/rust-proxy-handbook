@@ -1,6 +1,6 @@
 # RPS (Receive Packet Steering)
 
-`16-kernel/05-rss.md` covers spreading packet processing across cores in
+[`16-kernel/05-rss.md`](05-rss.md) covers spreading packet processing across cores in
 hardware. RPS is the kernel's software equivalent, for NICs that don't
 give you enough hardware queues to do it there — common on cloud VMs
 with single-queue virtio-net interfaces.
@@ -39,7 +39,7 @@ echo 2048 > /sys/class/net/eth0/queues/rx-0/rps_flow_cnt
 ```
 
 ### When it actually matters for a proxy
-Check `ethtool -l` first (per `16-kernel/05-rss.md`'s exercise): if the NIC
+Check `ethtool -l` first (per [`16-kernel/05-rss.md`](05-rss.md)'s exercise): if the NIC
 already exposes multiple hardware queues with RSS properly spread across
 cores, RPS adds IPI overhead for no benefit — it's a fallback for when
 hardware steering isn't available or isn't sufficient (a single-queue
@@ -62,8 +62,8 @@ spending cycles on IPIs."
    (or few) hardware queues — the scenario RPS is actually for.
 2. Enable RPS by setting `rps_cpus` for the receive queue, and RFS via
    the flow-table sysctls above.
-3. Drive sustained load at `proxy` and compare per-core CPU distribution
+3. Drive sustained load at [`proxy`](../../proxy) and compare per-core CPU distribution
    and throughput/latency with RPS on versus off.
-4. If you have access to a multi-queue NIC from `16-kernel/05-rss.md`'s
+4. If you have access to a multi-queue NIC from [`16-kernel/05-rss.md`](05-rss.md)'s
    exercise, compare RPS's achieved core distribution and overhead
    against RSS's hardware-based result on the same workload.

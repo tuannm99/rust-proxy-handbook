@@ -22,14 +22,14 @@ struct UpstreamPool {
 Gotcha: don't wrap the whole `Vec` in a `Mutex` if you only need to flip a
 health flag — a `Mutex<Vec<Upstream>>` serializes every request's upstream
 pick behind one lock. Use atomics per-upstream and `arc-swap`/`RwLock` only
-for pool membership changes (see `07-service-discovery.md`).
+for pool membership changes (see [`07-service-discovery.md`](07-service-discovery.md)).
 
 `Ordering::Relaxed` is the right choice for `healthy` and `active_conns`
 specifically because neither flag *publishes* other data — a reader only
 needs the value itself, not a guarantee about what was written before it.
 The moment a flag guards other fields ("healthy means `last_probe_result`
 is valid"), `Relaxed` is wrong and you need `Release`/`Acquire`; see
-`03-rust/04-sync.md`.
+[`03-rust/04-sync.md`](../03-rust/04-sync.md).
 
 ### Keeping `active_conns` honest under cancellation
 The counter is only useful if it's exactly balanced, and the naive version
@@ -43,9 +43,9 @@ upstream.active_conns.fetch_sub(1, Ordering::Relaxed);  // <-- ...this never run
 
 In an async proxy, a client disconnecting mid-request drops the task, and
 a dropped future simply stops at its last `.await` — the decrement after
-it never executes (`03-rust/05-async.md`: drop *is* cancel). Every cancelled
+it never executes ([`03-rust/05-async.md`](../03-rust/05-async.md): drop *is* cancel). Every cancelled
 request permanently inflates the count. Least-connection balancing
-(`02-load-balancer.md`) then routes *away* from a perfectly healthy upstream
+([`02-load-balancer.md`](02-load-balancer.md)) then routes *away* from a perfectly healthy upstream
 forever, and the failure is silent: no error, no log, just steadily skewed
 traffic that looks like an algorithm bug.
 
@@ -61,13 +61,13 @@ impl Drop for ConnGuard {
 }
 ```
 Gotcha: this is the same class of bug as an unreturned object-pool entry
-(`14-memory/03-object-pool.md`) — any manual "increment, do work, decrement"
+([`14-memory/03-object-pool.md`](../14-memory/03-object-pool.md)) — any manual "increment, do work, decrement"
 pair in async code is a leak waiting for its first cancellation.
 
 ### Connection reuse to upstreams
 Opening a fresh TCP (+ TLS) connection per proxied request is expensive:
 one RTT for the TCP handshake, one or two more for TLS
-(`01-network/13-tls.md`), paid before a single request byte moves. Keep a
+([`01-network/13-tls.md`](../01-network/13-tls.md)), paid before a single request byte moves. Keep a
 small per-upstream connection pool and reuse idle connections
 (`hyper-util`'s `client-legacy` pool does this for you, but you should know
 why it exists).
@@ -77,7 +77,7 @@ connection carries exactly one request at a time, so N concurrent requests
 to an upstream need N connections. An HTTP/2 connection carries many
 concurrent streams, so the same N requests may need only one — bounded by
 the upstream's advertised `SETTINGS_MAX_CONCURRENT_STREAMS`
-(`01-network/11-http2.md`), past which new streams queue behind finished ones
+([`01-network/11-http2.md`](../01-network/11-http2.md)), past which new streams queue behind finished ones
 rather than opening a second connection unless you explicitly allow it.
 
 ### Sizing the pool
@@ -91,7 +91,7 @@ capacity.
 Sizing the other direction is equally wrong: an unbounded pool lets a
 traffic spike open thousands of sockets to one upstream, and every one of
 them consumes an fd on your side and a kernel socket buffer on both sides
-(`16-kernel/03-tcp-stack.md`). The upstream's own accept backlog, not your
+([`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md)). The upstream's own accept backlog, not your
 pool, then becomes the thing that fails.
 
 Gotcha: idle timeout must be *shorter* than the upstream's own keep-alive
@@ -114,11 +114,11 @@ Note what "almost certainly" is doing there: the upstream may in fact have
 read the request, acted on it, and died before responding, in which case
 the retry duplicates a side effect. Browsers and most HTTP clients accept
 that risk for reused connections; a payment proxy should not. Decide
-deliberately, and see `05-retry.md` for the general idempotency rule this is
+deliberately, and see [`05-retry.md`](05-retry.md) for the general idempotency rule this is
 an exception to.
 
 Gotcha: the retry-once-on-fresh-connection path must not consume the
-retry budget from `05-retry.md` — it's a connection-liveness retry, not a
+retry budget from [`05-retry.md`](05-retry.md) — it's a connection-liveness retry, not a
 failure retry, and counting it against the budget means an upstream with
 aggressive keep-alive reaping exhausts your budget during normal operation.
 
@@ -135,7 +135,7 @@ one is a common source of both hung requests and spurious failures:
   Necessary because a malicious or broken upstream can trickle one byte
   just under the read timeout forever, keeping the request alive
   indefinitely (the upstream-side mirror of the Slowloris attack in
-  `07-security/09-ddos.md`).
+  [`07-security/09-ddos.md`](../07-security/09-ddos.md)).
 
 Gotcha: the total request timeout must account for streaming responses. A
 30s total timeout silently breaks a legitimate large file download or an
@@ -161,7 +161,7 @@ are defensible; spinning is not.
 Build these in order — each step's exit criterion is what makes the next
 one meaningful.
 
-1. In `labs/05-reverse-proxy`, define `Upstream`/`UpstreamPool` as above
+1. In [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), define `Upstream`/`UpstreamPool` as above
    with 2-3 hardcoded static addresses. **Done when** a request is
    forwarded to one of them and the response reaches the client unchanged.
 2. Add `active_conns` with an RAII `ConnGuard`. **Done when** a test that

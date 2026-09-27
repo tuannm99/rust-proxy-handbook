@@ -39,7 +39,7 @@ Gotcha: that mechanism is attacker-controlled. A client sending
 downstream component depended on — or, in the reverse arrangement, to
 strip a security header your own infrastructure adds. The defense is
 ordering: strip hop-by-hop headers first, then apply your own trusted
-headers (`07-security/01-auth.md`'s identity injection), so nothing the
+headers ([`07-security/01-auth.md`](../07-security/01-auth.md)'s identity injection), so nothing the
 client said can remove them.
 
 Gotcha: the `Connection` value is a comma-separated list written by the
@@ -54,10 +54,10 @@ you are actually about to send — not copied from what arrived.
 A proxy that forwards `Transfer-Encoding: chunked` unchanged while writing
 a body it framed differently has manufactured a disagreement between its
 own framing and what it told the upstream to expect. That is exactly the
-desync in `07-security/05-request-smuggling.md`, self-inflicted.
+desync in [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md), self-inflicted.
 
 The same applies when you change the body: compressing a response while
-streaming (`05-http-stack/06-compression.md`) invalidates the inbound
+streaming ([`05-http-stack/06-compression.md`](06-compression.md)) invalidates the inbound
 `Content-Length`, and forwarding it anyway produces the same class of bug
 from the opposite direction.
 
@@ -70,16 +70,16 @@ then deliberately re-adds them for the upstream leg.
 Gotcha: this is the most common way a working proxy loses WebSocket
 support during a refactor — someone adds correct hop-by-hop stripping and
 the upgrade path silently stops working, because nothing re-adds the
-headers. `05-http-stack/09-websocket.md` covers the upgrade flow; the header
+headers. [`05-http-stack/09-websocket.md`](09-websocket.md) covers the upgrade flow; the header
 handling is a special case of this file.
 
 ### End-to-end headers you should still not blindly forward
 Hop-by-hop is a spec concept; there's a second, larger set that is
 end-to-end by spec but should not cross your trust boundary:
 - **Identity headers** your infrastructure trusts (`X-User-Id`,
-  `X-Auth-*`) — `07-security/01-auth.md`.
+  `X-Auth-*`) — [`07-security/01-auth.md`](../07-security/01-auth.md).
 - **`X-Forwarded-For` / `Forwarded`** from untrusted peers —
-  `07-security/08-ip-filtering.md`.
+  [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md).
 - **Anything you set yourself** downstream of this point, or a client can
   pre-set it and win.
 
@@ -90,7 +90,7 @@ reads anything.
 
 ### Do it once, before anything reads headers
 Put both strips in a single stage at the front of the pipeline
-(`09-architecture/01-components.md`), before routing, auth, WAF, or logging.
+([`09-architecture/01-components.md`](../09-architecture/01-components.md)), before routing, auth, WAF, or logging.
 A strip that happens inside the auth module doesn't protect routes
 configured `Public`; a strip that happens after logging means forged
 headers appear in your logs as though they were real.
@@ -98,7 +98,7 @@ headers appear in your logs as though they were real.
 ## Practice
 Build these in order.
 
-1. In `labs/05-reverse-proxy`, implement hop-by-hop stripping including
+1. In [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), implement hop-by-hop stripping including
    `Connection`-named headers, as one stage at the front of the pipeline.
    **Done when** a request with `Connection: X-Secret` and an `X-Secret`
    header reaches the upstream with neither.
@@ -115,6 +115,6 @@ Build these in order.
 5. Re-add upgrade headers for the upstream leg. **Done when** a WebSocket
    still works end-to-end after step 1 — this is the regression that
    hop-by-hop stripping classically causes.
-6. Fuzz the `Connection` header (`12-testing/02-fuzzing.md`) with many
+6. Fuzz the `Connection` header ([`12-testing/02-fuzzing.md`](../12-testing/02-fuzzing.md)) with many
    entries, empty entries, and malformed names. **Done when** none of it
    panics or causes unbounded work.

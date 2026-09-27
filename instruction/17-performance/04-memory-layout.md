@@ -2,7 +2,7 @@
 
 Struct field ordering, padding, and `#[repr]` — how the same fields can
 occupy very different amounts of memory, and why that reaches into
-`13-algorithms/slab.md` and `14-memory/06-fragmentation.md`.
+[`13-algorithms/slab.md`](../13-algorithms/slab.md) and [`14-memory/06-fragmentation.md`](../14-memory/06-fragmentation.md).
 
 ## What to learn
 
@@ -24,17 +24,17 @@ does, to minimize padding automatically. So you usually do *not* hand-order
 fields for size — the compiler already did. The reason to care is the
 exceptions: `#[repr(C)]` (for FFI or a wire format) freezes declaration
 order, and then the `Bad`/`Good` distinction above is back in your hands.
-The eBPF map structs in `16-kernel/09-ebpf.md` and any struct you memcpy onto
+The eBPF map structs in [`16-kernel/09-ebpf.md`](../16-kernel/09-ebpf.md) and any struct you memcpy onto
 the wire are `repr(C)` and must be ordered deliberately.
 
 ### Why size crosses into fragmentation and slabs
 This is the payoff, not a micro-optimization. Allocators round to size
-classes (`14-memory/06-fragmentation.md`): a 129-byte struct takes a 160-byte
+classes ([`14-memory/06-fragmentation.md`](../14-memory/06-fragmentation.md)): a 129-byte struct takes a 160-byte
 slot. Shrinking that struct below 128 — by removing padding, or by the
 hot/cold split below — moves it to the 128 class and saves 32 bytes *per
 instance*. At 100k connections that is a step-function 3 MB, and it also
-means more objects per slab page (`13-algorithms/slab.md`), i.e. better
-cache density on the hot path (`17-performance/01-cpu-cache.md`). Size is
+means more objects per slab page ([`13-algorithms/slab.md`](../13-algorithms/slab.md)), i.e. better
+cache density on the hot path ([`17-performance/01-cpu-cache.md`](01-cpu-cache.md)). Size is
 leverage on three subsystems at once.
 
 ### Hot/cold splitting
@@ -62,28 +62,28 @@ discriminants for free. `Option<&T>` is the same size as `&T` because null
 is the `None` niche; `Option<NonZeroU32>` is 4 bytes, not 8. This means
 using `NonZero*` and references instead of sentinel values (`u32::MAX`
 means "none") can shrink a struct with zero code change. Reach for it in
-the arena/index structures (`13-algorithms/lru.md`, `15-parser/03-ast.md`)
+the arena/index structures ([`13-algorithms/lru.md`](../13-algorithms/lru.md), [`15-parser/03-ast.md`](../15-parser/03-ast.md))
 where a "none" link is common.
 
 Gotcha: `#[repr(packed)]` (remove *all* padding) is almost never the
 answer — it creates unaligned fields, and taking a reference to one is
 undefined behavior, so it turns a size win into a soundness hazard
-(`03-rust/03-unsafe.md`). Use field ordering and `NonZero` niches, not
+([`03-rust/03-unsafe.md`](../03-rust/03-unsafe.md)). Use field ordering and `NonZero` niches, not
 `packed`.
 
 ## Practice
 1. Use `std::mem::size_of` and `#[repr(C)]` to reproduce the `Bad`/`Good`
    difference, then remove `repr(C)` and confirm Rust already packs it —
    proving you rarely need to hand-order.
-2. Print `size_of` for a real `proxy` per-connection struct; check whether
-   it sits just past a size-class boundary (`14-memory/06-fragmentation.md`)
+2. Print `size_of` for a real [`proxy`](../../proxy) per-connection struct; check whether
+   it sits just past a size-class boundary ([`14-memory/06-fragmentation.md`](../14-memory/06-fragmentation.md))
    and whether shrinking it crosses back under one.
 3. Do a hot/cold split on that struct, measure the hot-path benchmark
-   (`17-performance/01-cpu-cache.md`), and keep the change only if the number
+   ([`17-performance/01-cpu-cache.md`](01-cpu-cache.md)), and keep the change only if the number
    moves.
 4. Replace a `u32::MAX`-means-none link in an arena structure with
    `Option<NonZeroU32>` and confirm the struct got smaller with no runtime
    change.
 5. Verify the fragmentation link: allocate 100k of the struct before and
    after shrinking it under a size-class boundary and compare RSS, tying
-   this back to `13-algorithms/slab.md`'s objects-per-page.
+   this back to [`13-algorithms/slab.md`](../13-algorithms/slab.md)'s objects-per-page.

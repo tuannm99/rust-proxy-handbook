@@ -11,7 +11,7 @@ reject it. Queueing feels kinder and is the one that fails.
 
 The queue grows, so latency grows with it. By the time a queued request
 reaches the front, the client has already timed out and — worse — retried
-(`06-proxy/05-retry.md`), which added *more* load. You are now spending your
+([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)), which added *more* load. You are now spending your
 remaining capacity computing answers that nobody is listening for, which
 reduces effective capacity, which lengthens the queue. That loop is
 self-sustaining: throughput of *useful* work collapses toward zero while
@@ -24,8 +24,8 @@ cause is gone.
 
 ### Shed early, shed cheap
 A rejected request should cost as little as possible — that is the whole
-point (`07-security/09-ddos.md`'s cost asymmetry). So shedding belongs early
-in the pipeline (`09-architecture/01-components.md`): before auth, before
+point ([`07-security/09-ddos.md`](09-ddos.md)'s cost asymmetry). So shedding belongs early
+in the pipeline ([`09-architecture/01-components.md`](../09-architecture/01-components.md)): before auth, before
 WAF body inspection, before the upstream call.
 
 ```rust
@@ -41,7 +41,7 @@ if inflight.load(Ordering::Relaxed) > shed_threshold {
 Gotcha: a 503 that costs a database lookup, a full structured log line
 with request context, and a rendered error page gives an attacker a
 *better* cost ratio than being served. Keep the shed path allocation-free
-where you can, and sample the logging (`08-observability/01-logging.md`)
+where you can, and sample the logging ([`08-observability/01-logging.md`](../08-observability/01-logging.md))
 rather than writing a line per rejection.
 
 Gotcha: make sure your own retry logic does not retry shed responses.
@@ -63,17 +63,21 @@ Gotcha: measure the wait from when the request *arrived*, not from when
 you started working on it. The whole point is to notice time spent
 waiting, and a timer started at dequeue sees none of it.
 
+For the formal queueing theory behind this (Little's Law, why an M/M/1
+queue's wait time blows up as utilization approaches 1, and why "80% CPU"
+is not "20% headroom"), see [`22-theory/06-queueing-theory.md`](../22-theory/06-queueing-theory.md).
+
 ### Shed the right requests
 Once you accept that something must be dropped, which something is a
 design decision:
-- **By priority.** Health checks (`06-proxy/03-healthcheck.md`) and critical
+- **By priority.** Health checks ([`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)) and critical
   paths survive; bulk or batch traffic is dropped first. This requires a
   priority to exist on the request, which means classifying it at the
   edge — by route, by client tier, by an explicit header from trusted
   callers.
 - **By cost.** Expensive routes shed sooner, so one costly endpoint
   can't consume the capacity of everything else
-  (`07-security/09-ddos.md`'s expensive-endpoint section). Per-route
+  ([`07-security/09-ddos.md`](09-ddos.md)'s expensive-endpoint section). Per-route
   concurrency caps are the simplest form of this.
 - **Randomly.** The default, and fine when you have no better signal —
   but it means your most important traffic is dropped at the same rate as
@@ -98,7 +102,7 @@ The limit tracks real capacity without anyone tuning it.
 
 Gotcha: adaptive limiting needs a stable latency signal to work from, so
 it behaves badly when latency is naturally bimodal (cache hits at 1ms,
-misses at 200ms — `05-http-stack/07-cache.md`). Apply it per route, or per
+misses at 200ms — [`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)). Apply it per route, or per
 class of work with similar cost, rather than globally.
 
 ### Telling the client the truth
@@ -107,17 +111,17 @@ try again in N seconds" rather than "this failed." A well-behaved client
 then backs off instead of retrying immediately.
 
 Gotcha: distinguish shed 503s from upstream-failure 503s in your metrics
-(`08-observability/02-metrics.md`). They have completely different causes and
+([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)). They have completely different causes and
 remedies, and a single `status="503"` counter hides which one is
 happening. This distinction also matters for your SLI — a 503 you emitted
 because you were overloaded is your failure, and belongs in the error
-budget (`08-observability/06-alerting.md`).
+budget ([`08-observability/06-alerting.md`](../08-observability/06-alerting.md)).
 
 ## Practice
 Build these in order.
 
 1. Add a concurrency counter and a static shed threshold at the front of
-   `proxy`'s pipeline, returning 503 with `Retry-After`. **Done when**
+   [`proxy`](../../proxy)'s pipeline, returning 503 with `Retry-After`. **Done when**
    load beyond the threshold is rejected immediately rather than queueing.
 2. Prove the queueing failure first, so the fix has a baseline. **Done
    when** you can show, with an unbounded queue, that p99 latency climbs

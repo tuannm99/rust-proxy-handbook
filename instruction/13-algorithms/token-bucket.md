@@ -1,13 +1,13 @@
 # Token Bucket
 
-`07-security/07-ratelimit.md` covers the policy question — per-client vs
+[`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) covers the policy question — per-client vs
 global, distributed limiting, when to use leaky bucket instead. This file
 covers making the counter itself correct and fast.
 
 ## What to learn
 
 ### Lazy refill and the state you actually need
-The refill-on-read formulation in `07-security/07-ratelimit.md` (tokens +
+The refill-on-read formulation in [`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) (tokens +
 elapsed × rate, capped at capacity) is the right one: no background timer
 per key, and state is just a token count plus a timestamp. Two details
 decide whether it is correct:
@@ -51,7 +51,7 @@ integer/duration arithmetic sidesteps this entirely.
 The naive `Mutex<HashMap<IpAddr, TokenBucket>>` serializes every request in
 the proxy on one lock. Two fixes, in order:
 
-1. **Shard the map** — `dashmap`, as `07-security/07-ratelimit.md` suggests,
+1. **Shard the map** — `dashmap`, as [`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) suggests,
    which shards internally so different keys rarely contend.
 2. **Make the bucket itself lock-free** — pack GCRA's TAT into an
    `AtomicU64` (nanoseconds since a fixed epoch) and update with a
@@ -66,15 +66,15 @@ and the decrement must be one atomic operation.
 ### Unbounded key growth
 A per-source-IP map is attacker-controlled: spoofed or distributed sources
 create an entry each, and the map is a memory-exhaustion vector
-(`07-security/09-ddos.md`). Bound it, by one of:
+([`07-security/09-ddos.md`](../07-security/09-ddos.md)). Bound it, by one of:
 - **Sweep idle entries.** A bucket at full capacity carries no
   information — deleting it is equivalent to keeping it. Sweep anything
   untouched for a few refill intervals.
-- **Cap the map** and evict LRU (`13-algorithms/lru.md`) past the cap.
+- **Cap the map** and evict LRU ([`13-algorithms/lru.md`](lru.md)) past the cap.
 - **Fixed-size approximate counting.** Hash keys into a fixed array of
   buckets and accept that collisions merge two clients' limits — bounded
   memory by construction, at the cost of occasional false rejections. A
-  count-min sketch (`13-algorithms/count-min-sketch.md`) is the principled
+  count-min sketch ([`13-algorithms/count-min-sketch.md`](count-min-sketch.md)) is the principled
   version.
 
 Gotcha: sweeping on a timer while requests concurrently touch the map
@@ -83,7 +83,7 @@ a bucket a request is mid-way through updating and hand that client a free
 reset. Check-and-remove must be atomic against the update path.
 
 ## Practice
-1. In `labs/11-rate-limit`, implement both the float token bucket and GCRA
+1. In [`labs/11-rate-limit`](../../labs/11-rate-limit), implement both the float token bucket and GCRA
    behind one trait; assert they accept/reject identically across a
    scripted request timeline including idle gaps.
 2. Write the idle-accumulation test: leave a bucket untouched for 60x the

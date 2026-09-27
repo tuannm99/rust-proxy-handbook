@@ -2,7 +2,7 @@
 
 Khôi phục một request thất bại đơn lẻ. Lớp phía trên — quyết định một
 upstream nên ngừng nhận request hoàn toàn — là
-`06-proxy/06-circuit-breaker.md`.
+[`06-proxy/06-circuit-breaker.md`](06-circuit-breaker.md).
 
 ## What to learn
 ### Idempotency: quy tắc đến trước mọi logic retry
@@ -18,7 +18,7 @@ Gotcha: "idempotent theo RFC" và "idempotent ở upstream này" là hai khẳng
 upstream phát ra một webhook hoặc giảm inventory ở mỗi lần gọi, retry nó
 vẫn có một side effect thấy được. Chính sách retry dựa trên method là một
 mặc định hợp lý, không phải một bằng chứng — hãy làm nó override được
-theo từng route (`05-http-stack/03-router.md`) để một team biết endpoint
+theo từng route ([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)) để một team biết endpoint
 của họ không an toàn có thể tắt nó đi.
 
 ### Ràng buộc đặc thù của proxy: bạn có thể không retry được chút nào
@@ -111,7 +111,7 @@ thứ gì làm nó hỏng khó mà được sửa trong vài micro giây sau đ�
 một upstream *khác* trong pool, và loại upstream đã fail khỏi tập ứng
 viên cho request đó.
 
-Gotcha: điều này xung đột với consistent hashing (`02-load-balancer.md`)
+Gotcha: điều này xung đột với consistent hashing ([`02-load-balancer.md`](02-load-balancer.md))
 khi affinity mang tính chất bắt buộc — một cache phía upstream hoặc một
 session có trạng thái nghĩa là upstream "khác" đó là một cold miss hoặc
 thẳng thừng là một lỗi. Khi affinity quan trọng, ưu tiên failover tới node
@@ -127,7 +127,7 @@ thay vào đó.
 
 Điều duy nhất cần làm đúng từ phía retry: **retry phải tôn trọng
 circuit**, bỏ qua các host có circuit mở thay vì coi "circuit open" là
-một failure khác để retry vượt qua. Xem `06-proxy/06-circuit-breaker.md`.
+một failure khác để retry vượt qua. Xem [`06-proxy/06-circuit-breaker.md`](06-circuit-breaker.md).
 
 ### Hedged request: biến thể cho tail latency
 Retry bắn khi failure. **Hedging** bắn khi *chậm*: nếu một request chưa
@@ -141,14 +141,14 @@ Gotcha: hedging thừa hưởng mọi ràng buộc ở trên *và* thêm một c
 bản sao đang bay đồng thời, nên một hedge không idempotent còn tệ hơn hẳn
 một retry không idempotent (cả hai bản sao đều có thể thành công). Chỉ
 hedge các request idempotent, hedge ở một ngưỡng suy ra từ latency đo được
-(`08-observability/02-metrics.md`), và tính hedge vào retry budget — nếu
+([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)), và tính hedge vào retry budget — nếu
 không một regression latency trên toàn hạm đội sẽ biến thành mọi request
 được gửi hai lần, đúng lúc capacity đang thiếu.
 
 ## Practice
 Xây theo thứ tự.
 
-1. Trong `labs/05-reverse-proxy`, thêm một retry wrapper chỉ retry
+1. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), thêm một retry wrapper chỉ retry
    GET/HEAD, dùng hàm backoff ở trên giới hạn 3 lần thử, và gửi mỗi retry
    tới một upstream *khác*. **Xong khi** kill một upstream giữa lúc load
    test tạo ra zero lỗi thấy được ở client, và log cho thấy retry rơi vào
@@ -167,7 +167,7 @@ Xây theo thứ tự.
    **Xong khi** ép 100% upstream fail khiến retry ngừng trong vòng một
    cửa sổ (thay vì nhân ba load), và traffic tới một pool khỏe mạnh khác
    vẫn retry bình thường.
-6. Đi qua các bài tập của `06-proxy/06-circuit-breaker.md`, rồi làm cho
+6. Đi qua các bài tập của [`06-proxy/06-circuit-breaker.md`](06-circuit-breaker.md), rồi làm cho
    retry nhận biết circuit. **Xong khi** một retry bỏ qua một host có
    circuit mở thay vì tiêu tốn một lần thử vào nó.
 7. (Stretch) Thêm hedging trên GET ở p95 đo được. **Xong khi** p99 latency

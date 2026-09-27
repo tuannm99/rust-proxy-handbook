@@ -15,7 +15,7 @@ Topics:
 initial sequence numbers before any application data flows. This round
 trip is pure latency overhead your proxy pays on every new upstream
 connection — it's the core argument for connection pooling/reuse to
-upstreams (see `06-proxy/01-upstream.md`) instead of dialing fresh per request.
+upstreams (see [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)) instead of dialing fresh per request.
 
 ### TIME_WAIT and socket lifecycle
 The side that sends the first `FIN` (active closer) ends up in `TIME_WAIT`
@@ -46,7 +46,9 @@ Algorithms like Cubic (Linux default) or BBR trade off differently under
 loss vs latency-based congestion signals. A proxy doesn't implement this
 itself (it's kernel/TCP-stack territory) but a *new* connection always
 starts from a small congestion window — which is why connection reuse to
-upstreams matters for throughput, not just latency.
+upstreams matters for throughput, not just latency. For the actual growth
+math behind slow start and AIMD, and why Cubic/BBR exist, see
+[`22-theory/05-congestion-control-math.md`](../22-theory/05-congestion-control-math.md).
 
 ### Flow control
 Distinct from congestion control: flow control (the TCP receive window)
@@ -61,21 +63,21 @@ TCP keepalive (`SO_KEEPALIVE` + `TCP_KEEPIDLE`/`TCP_KEEPINTVL`/
 `TCP_KEEPCNT`) periodically probes an idle connection to detect a dead peer
 that never sent a `FIN` (e.g. the machine crashed, or a NAT/firewall
 silently dropped the mapping). This is distinct from *application-level*
-HTTP keep-alive (`05-http-stack/04-keepalive.md`) — TCP keepalive detects a
+HTTP keep-alive ([`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md)) — TCP keepalive detects a
 dead peer, HTTP keep-alive decides whether to reuse a connection for
 another request.
 
 ## Practice
 
 1. Capture a handshake and a connection teardown with
-   `tcpdump -i lo port 8080` while hitting `labs/00-tcp-server`, and
+   `tcpdump -i lo port 8080` while hitting [`labs/00-tcp-server`](../../labs/00-tcp-server), and
    identify the SYN/SYN-ACK/ACK and FIN/FIN-ACK sequences.
 2. Run `ss -tn state time-wait | wc -l` while hammering
-   `labs/05-reverse-proxy` with short-lived connections (no
+   [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) with short-lived connections (no
    keep-alive), then again with connection reuse enabled — compare counts.
 3. Benchmark request latency with and without `set_nodelay(true)` on small
    request/response payloads and measure the difference.
 4. Configure TCP keepalive on the upstream client connections in
-   `labs/05-reverse-proxy` and verify (by killing an upstream
+   [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) and verify (by killing an upstream
    process without closing its socket, e.g. via `iptables` drop rules) that
    your proxy eventually detects the dead peer.

@@ -34,7 +34,7 @@ Probe depth is a real design decision, not a detail:
 - **TCP connect** proves the kernel accepted a connection. It does *not*
   prove any application is behind the socket — a process stuck in an
   infinite loop, or one whose accept backlog is being drained by the
-  kernel alone, still passes (`16-kernel/03-tcp-stack.md`).
+  kernel alone, still passes ([`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md)).
 - **HTTP GET `/healthz` returning 200** proves the HTTP server loop is
   alive and scheduling work. It does not prove the upstream can serve
   *real* requests if `/healthz` is a static handler that touches nothing.
@@ -76,7 +76,7 @@ Gotcha: fail-open is right for a *shared* dependency and wrong for a
 per-upstream one. If upstreams fail independently (bad deploy on one host,
 one disk full), panic mode sends traffic to genuinely dead hosts. Deep
 checks should test dependencies the upstream owns exclusively; shared
-dependencies belong in an alert (`08-observability/06-alerting.md`), not in a
+dependencies belong in an alert ([`08-observability/06-alerting.md`](../08-observability/06-alerting.md)), not in a
 per-host health verdict.
 
 ### Passive detection, damping, and slow start
@@ -85,7 +85,7 @@ bad upstream faster than any probe interval, thresholds keep a single blip
 from draining a host, and a ramp keeps a recovered host from being
 stampeded the instant it comes back.
 
-All three live in `06-proxy/04-outlier-detection.md`. The division: this file
+All three live in [`06-proxy/04-outlier-detection.md`](04-outlier-detection.md). The division: this file
 is "we went and asked"; that one is "we noticed from the traffic we were
 already sending, and we damped our reaction."
 
@@ -100,12 +100,12 @@ together.
 Jitter the interval per upstream (a random offset on the first tick is
 enough) so probes spread across the window instead of hammering in
 lockstep — the same synchronization problem as retry storms in
-`05-retry.md`, with the same fix.
+[`05-retry.md`](05-retry.md), with the same fix.
 
 ## Practice
 Build these in order.
 
-1. In `labs/05-reverse-proxy`, add an active TCP-connect probe loop per
+1. In [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), add an active TCP-connect probe loop per
    upstream with `tokio::time::interval`, bounded by `tokio::time::timeout`
    and using `MissedTickBehavior::Delay`. **Done when** a dummy upstream
    you `kill -STOP` (not kill — stopped, so the socket stays open) is
@@ -123,7 +123,7 @@ Build these in order.
 5. Measure probe cost. **Done when** you can state the requests per second
    your probes generate at your fleet size, and it is a number you are
    willing to pay.
-6. Work through `06-proxy/04-outlier-detection.md` for passive detection,
+6. Work through [`06-proxy/04-outlier-detection.md`](04-outlier-detection.md) for passive detection,
    flap damping, and slow start. **Done when** an upstream that fails real
    requests is ejected before the next probe fires, and a recovered one
    ramps back rather than being stampeded.

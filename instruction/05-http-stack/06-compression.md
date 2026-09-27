@@ -9,12 +9,12 @@ Gotcha: the quality level dominates this comparison, and the top levels
 are traps for dynamic content. Brotli quality 11 can be an order of
 magnitude slower to encode than quality 4-5 for a few percent better
 ratio — fine when you compress once at build time and serve forever
-(`05-http-stack/05-static.md`'s content-hashed assets), never worth it when
+([`05-http-stack/05-static.md`](05-static.md)'s content-hashed assets), never worth it when
 compressing a per-request response. Use high quality for precompressed
 static files, low-to-middle for anything dynamic.
 
 ### Negotiation via Accept-Encoding
-The client lists what it can decode, optionally with quality weights: `Accept-Encoding: gzip, br;q=0.8`. The server (or proxy) picks one it supports, sets `Content-Encoding` on the response, and must add `Vary: Accept-Encoding` so any cache in front of it (see `05-http-stack/07-cache.md`) doesn't serve a gzip response to a client that only asked for brotli.
+The client lists what it can decode, optionally with quality weights: `Accept-Encoding: gzip, br;q=0.8`. The server (or proxy) picks one it supports, sets `Content-Encoding` on the response, and must add `Vary: Accept-Encoding` so any cache in front of it (see [`05-http-stack/07-cache.md`](07-cache.md)) doesn't serve a gzip response to a client that only asked for brotli.
 
 Gotcha: handle the q-value edge cases, because they're how the negotiation
 gets subtly wrong. `q=0` means explicitly *not* acceptable, not "lowest
@@ -54,12 +54,12 @@ no longer know the compressed length until you're done. You must remove
 `Content-Length` and switch to chunked transfer encoding (HTTP/1.1) or
 rely on frame lengths (HTTP/2). Forwarding a stale `Content-Length`
 alongside a compressed body is precisely the framing disagreement that
-`07-security/05-request-smuggling.md` is about — this is one of the most
+[`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md) is about — this is one of the most
 common ways a proxy manufactures one by accident.
 
 Gotcha: flushing is a latency/ratio trade. A compressor that never flushes
 buffers data for better ratios, which stalls streaming responses (SSE,
-long-poll, `05-http-stack/09-websocket.md`-adjacent patterns) — the client
+long-poll, [`05-http-stack/09-websocket.md`](09-websocket.md)-adjacent patterns) — the client
 waits for output that's sitting in the compressor. Flush at meaningful
 boundaries for streaming content types; don't for bulk downloads.
 
@@ -68,7 +68,7 @@ Compression is CPU-bound; at high request rates, encoding on every request can b
 
 Gotcha: compression is also the classic way to accidentally block an async
 runtime. Compressing a large buffer synchronously inside a task holds the
-worker thread for the whole operation (`03-rust/05-async.md`'s cooperative
+worker thread for the whole operation ([`03-rust/05-async.md`](../03-rust/05-async.md)'s cooperative
 scheduling), stalling every other connection on it. Either use a streaming
 encoder that yields between chunks, or push large compressions to
 `spawn_blocking`.
@@ -100,15 +100,15 @@ conditional risk.
 If the upstream already compressed the body (it sent `Content-Encoding: gzip`), the proxy must not compress it again — either pass it through as-is if the client accepts that encoding, or decompress-then-recompress only if the client needs a different encoding than the upstream provided.
 
 Gotcha: when you *do* decompress an upstream response, you've taken on the
-decompression-bomb risk from `07-security/09-ddos.md` — bound the
+decompression-bomb risk from [`07-security/09-ddos.md`](../07-security/09-ddos.md) — bound the
 decompressed size and the expansion ratio, and stream rather than
 materializing the whole thing. The same applies to compressed *request*
-bodies you decompress for WAF inspection (`07-security/06-waf.md`).
+bodies you decompress for WAF inspection ([`07-security/06-waf.md`](../07-security/06-waf.md)).
 
 ## Practice
 Build these in order.
 
-1. In `labs/02-http-server`, add gzip response compression gated on
+1. In [`labs/02-http-server`](../../labs/02-http-server), add gzip response compression gated on
    `Accept-Encoding`, setting `Content-Encoding` and `Vary`. **Done when**
    a client sending `Accept-Encoding: gzip` gets a compressed body that
    `curl --compressed` decodes correctly, and one sending nothing gets
@@ -125,11 +125,11 @@ Build these in order.
    `*`. **Done when** `gzip;q=0, br` selects brotli, `*;q=0` is handled
    deliberately, and your selection logic has a test per edge case.
 5. Measure the CPU cost. **Done when** you have throughput numbers at
-   brotli quality 4 vs 11 under load (`12-testing/01-load-testing.md`) and
+   brotli quality 4 vs 11 under load ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)) and
    can state the ratio gained for the CPU spent.
-6. Cache compressed bytes for cacheable responses (`05-http-stack/07-cache.md`).
+6. Cache compressed bytes for cacheable responses ([`05-http-stack/07-cache.md`](07-cache.md)).
    **Done when** repeat requests for the same resource compress zero times.
-7. In `labs/05-reverse-proxy`, handle an already-compressed upstream
+7. In [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), handle an already-compressed upstream
    response. **Done when** a gzip'd upstream body is passed through
    untouched for a gzip-accepting client, and transcoded exactly once for
    a brotli-only client — with a bounded decompression step.

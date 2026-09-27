@@ -1,13 +1,15 @@
 # Crypto Basics: Encryption, Hashing, Signatures, PKI
 
-Part of the from-scratch fundamentals series — see `01-network/01-fundamentals.md`
-for the full index. `01-network/13-tls.md` opens with "negotiate a
+Part of the from-scratch fundamentals series — see [`01-network/01-fundamentals.md`](01-fundamentals.md)
+for the full index. [`01-network/13-tls.md`](13-tls.md) opens with "negotiate a
 cipher suite, exchange (EC)DHE key shares, derive session keys" and
-`07-security/02-jwt.md`/`07-security/03-mtls.md`/`07-security/01-auth.md`
+[`07-security/02-jwt.md`](../07-security/02-jwt.md)/[`07-security/03-mtls.md`](../07-security/03-mtls.md)/[`07-security/01-auth.md`](../07-security/01-auth.md)
 all lean on "signature," "public key," and "certificate chain" — none of
 that is readable without this. This file doesn't teach cryptography as a
 field; it teaches the five building blocks well enough that TLS's
-handshake and JWT's signature scheme stop being magic.
+handshake and JWT's signature scheme stop being magic. For the actual math
+underneath these building blocks (AES's round structure, Diffie-Hellman,
+RSA), see [`22-theory/07-crypto-math.md`](../22-theory/07-crypto-math.md).
 
 ## What to learn
 
@@ -34,7 +36,7 @@ over the wire at all — at the cost of being computationally much more
 expensive than symmetric encryption, too slow to use for bulk traffic.
 
 **Key exchange** algorithms (Diffie-Hellman and its elliptic-curve
-variant, ECDHE — the "(EC)DHE" in `13-tls.md`'s opening line) are a
+variant, ECDHE — the "(EC)DHE" in [`13-tls.md`](13-tls.md)'s opening line) are a
 clever asymmetric-adjacent trick: both sides exchange public values over
 the open wire, and each independently *computes* the same shared secret
 from their own private value and the other side's public value — an
@@ -47,7 +49,7 @@ Neither building block alone is both fast and distribution-friendly, so
 TLS uses both, in sequence: **asymmetric** key exchange (ECDHE) during
 the handshake to agree on a shared secret without transmitting it, then
 **symmetric** encryption (AES/ChaCha20) using that derived secret for all
-the actual request/response traffic. This is why `13-tls.md`'s cipher
+the actual request/response traffic. This is why [`13-tls.md`](13-tls.md)'s cipher
 suite name has multiple parts (e.g.
 `TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256`) — it's naming the key-exchange
 algorithm, the signature algorithm (next section), and the symmetric
@@ -64,8 +66,8 @@ often in this handbook.
 
 Hashing alone gives you *integrity checking* (did this data change?) but
 not *authenticity* (did it come from who I think it did? — anyone can
-hash anything). `13-algorithms/count-min-sketch.md` and
-`13-algorithms/hashmap.md`'s hash functions solve a different problem
+hash anything). [`13-algorithms/count-min-sketch.md`](../13-algorithms/count-min-sketch.md) and
+[`13-algorithms/hashmap.md`](../13-algorithms/hashmap.md)'s hash functions solve a different problem
 entirely (distributing keys across buckets) and are explicitly *not*
 held to cryptographic one-way-ness — don't conflate a hash function used
 for a hash table with a *cryptographic* hash function used for security;
@@ -78,7 +80,7 @@ cryptographic hash function with a secret key, producing a digest that
 only someone holding the same secret could have produced — this is what
 gives you authenticity on top of plain hashing's integrity. HMAC is what
 "HS256" means in a JWT's algorithm name
-(`07-security/02-jwt.md`): HMAC using SHA-256, with the shared secret
+([`07-security/02-jwt.md`](../07-security/02-jwt.md)): HMAC using SHA-256, with the shared secret
 being whatever key your service and the token issuer agreed on out of
 band.
 
@@ -92,7 +94,7 @@ having access to the private key themselves. This is what "RS256" and
 verified with a public key rather than a shared secret.
 
 The practical difference from HMAC that matters for
-`07-security/02-jwt.md`'s algorithm-confusion attack: an HMAC secret must
+[`07-security/02-jwt.md`](../07-security/02-jwt.md)'s algorithm-confusion attack: an HMAC secret must
 stay equally secret on both the signer's and verifier's side (whoever
 can verify can also forge), while a signature's public key is *meant* to
 be public — anyone can verify, only the private key holder can sign.
@@ -105,7 +107,7 @@ transmitting it," but leaves a gap: when your browser gets a public key
 from a server, how does it know that key actually belongs to
 `example.com` and not to an attacker in the middle? A **certificate**
 answers this: it's a public key plus an identity (a hostname, in
-`13-tls.md`'s SNI-matched case) plus a **digital signature** — signed not
+[`13-tls.md`](13-tls.md)'s SNI-matched case) plus a **digital signature** — signed not
 by the server itself, but by a **Certificate Authority (CA)**, a third
 party your browser/OS already trusts.
 
@@ -115,14 +117,14 @@ certificates, which sign the actual **leaf** (server) certificates your
 proxy presents. Verifying a certificate means walking this chain — leaf
 signed by intermediate, intermediate signed by a root you already
 trust — using the signature-verification mechanism from the previous
-section at every step. `07-security/03-mtls.md`'s "chains to a trusted
+section at every step. [`07-security/03-mtls.md`](../07-security/03-mtls.md)'s "chains to a trusted
 CA is weaker than it sounds" gotcha is entirely about this: the CA
 vouches for *an identity*, not for *authorization* — anyone that CA will
 sign for gets a valid chain.
 
 **PKI** (public key infrastructure) is just the umbrella term for this
 whole system: the CAs, the certificates, the chain-of-trust verification,
-and the tooling (ACME/Let's Encrypt, referenced in `13-tls.md`'s
+and the tooling (ACME/Let's Encrypt, referenced in [`13-tls.md`](13-tls.md)'s
 certificate management section) that issues and renews them.
 
 ## Practice
@@ -138,7 +140,7 @@ certificate management section) that issues and renews them.
 3. Compute `sha256sum` on a file, change one byte, and recompute — confirm
    the digest changes completely rather than by a small amount (the
    avalanche property of a good hash function).
-4. Read `07-security/02-jwt.md`'s "Algorithm confusion, concretely"
+4. Read [`07-security/02-jwt.md`](../07-security/02-jwt.md)'s "Algorithm confusion, concretely"
    section now that HMAC vs signature is fresh, and explain in your own
    words why treating an RSA public key as an HMAC secret lets an
    attacker forge a token — tie it back to "anyone can verify a

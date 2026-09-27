@@ -1,6 +1,6 @@
 # Addressing: IP, Ports, CIDR, NAT
 
-Part of the from-scratch fundamentals series — see `01-network/01-fundamentals.md`
+Part of the from-scratch fundamentals series — see [`01-network/01-fundamentals.md`](01-fundamentals.md)
 for the full index. This file covers how a specific process on a specific
 machine gets identified well enough that a packet can find it.
 
@@ -33,8 +33,8 @@ picking from that pool and releasing it when the connection closes.
 Gotcha, and a real production one: a proxy that opens many short-lived
 outbound connections to the same upstream can exhaust its own ephemeral
 port pool (roughly 28,000 available by default) faster than `TIME_WAIT`
-releases them — this is the practical reason `06-proxy/01-upstream.md`
-and `01-network/08-tcp.md` push so hard toward connection reuse rather
+releases them — this is the practical reason [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)
+and [`01-network/08-tcp.md`](08-tcp.md) push so hard toward connection reuse rather
 than dial-per-request.
 
 ### A socket, precisely
@@ -44,7 +44,7 @@ identified by *four* values together (the "4-tuple"): source IP, source
 port, destination IP, destination port. That's why one server process
 listening on one port can serve thousands of simultaneous clients — each
 client's 4-tuple is different even though the server's IP and port are
-fixed. `01-network/07-socket.md` covers the actual API that creates one.
+fixed. [`01-network/07-socket.md`](07-socket.md) covers the actual API that creates one.
 
 ### CIDR notation: describing a block of addresses
 An IPv4 address is 32 bits, written as four decimal octets
@@ -61,8 +61,8 @@ part), leaving the rest free (the "host" part).
 IPv6 addresses are 128 bits, written as eight groups of hex digits
 (`2001:db8::1`, with `::` collapsing one run of zero groups), and use the
 same slash notation (`2001:db8::/64`). You'll need this fluently for
-`07-security/08-ip-filtering.md` (allow/deny lists) and
-`07-security/07-ratelimit.md` (why keying a rate limiter on a full IPv6
+[`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md) (allow/deny lists) and
+[`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) (why keying a rate limiter on a full IPv6
 address hands an attacker 2^64 free identities inside their own `/64` —
 covered in depth there).
 
@@ -86,8 +86,8 @@ public internet. Two shapes matter here:
 Why this matters for a proxy specifically: by the time a connection
 reaches your listening socket, `peer_addr()` may already be several NAT
 hops removed from the actual client — this is *exactly* the problem
-`01-network/14-proxy-protocol.md` and the `X-Forwarded-For` discussion in
-`07-security/08-ip-filtering.md` exist to solve, and it's why "just trust
+[`01-network/14-proxy-protocol.md`](14-proxy-protocol.md) and the `X-Forwarded-For` discussion in
+[`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md) exist to solve, and it's why "just trust
 the socket's peer address" is naive the moment there's any load balancer,
 NAT gateway, or CDN in front of you.
 
@@ -100,7 +100,7 @@ its default gateway, and every router along the path makes the same
 local, one-hop decision. `ip route` (Linux) or `route -n` shows your
 machine's routing table; `traceroute`/`mtr` shows the hop-by-hop path a
 packet actually takes to reach somewhere. This is background for
-understanding *why* latency accumulates hop by hop (`04-latency-throughput.md`)
+understanding *why* latency accumulates hop by hop ([`04-latency-throughput.md`](04-latency-throughput.md))
 rather than something you'll implement — routing is exclusively the
 kernel/router's job, never an application's.
 
@@ -109,14 +109,14 @@ kernel/router's job, never an application's.
    address(es); run `ip route` and identify your default gateway.
 2. Run `traceroute example.com` (or `mtr` for a live view) and count the
    hops; compare that hop count against the RTT you measured in
-   `04-latency-throughput.md`'s exercises.
+   [`04-latency-throughput.md`](04-latency-throughput.md)'s exercises.
 3. Compute, by hand, how many addresses `10.0.0.0/8` and `2001:db8::/64`
    each cover, then verify with a CIDR calculator.
 4. If you're behind NAT (almost everyone is, at home), visit a
    "what's my IP" site and compare the address it reports against your
    machine's own address from step 1 — they'll differ; that gap is your
    router's SNAT in action.
-5. In `labs/00-tcp-server`, connect two different clients simultaneously
+5. In [`labs/00-tcp-server`](../../labs/00-tcp-server), connect two different clients simultaneously
    and log each connection's full 4-tuple (`local_addr()` +
    `peer_addr()`) — confirm they differ only in source port if both
    clients are on the same machine.

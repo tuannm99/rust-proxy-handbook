@@ -38,7 +38,7 @@ Two consequences:
   nothing to the flamegraph. If your proxy is slow because it's waiting,
   the flamegraph will look perfectly healthy and tell you nothing.
 
-Use traces (`08-observability/03-tracing.md`) for causality and latency
+Use traces ([`08-observability/03-tracing.md`](03-tracing.md)) for causality and latency
 attribution; use flamegraphs for "what is burning CPU." They answer
 different questions and mixing them up wastes a lot of time.
 
@@ -52,12 +52,12 @@ For async specifically, `tokio-console` is the targeted instrument: it
 shows per-task poll counts, poll durations, and — the key signal — tasks
 whose individual polls take a long time. A poll that runs for
 milliseconds is a task blocking the executor thread
-(`03-rust/05-async.md`'s cooperative scheduling), which stalls every other
+([`03-rust/05-async.md`](../03-rust/05-async.md)'s cooperative scheduling), which stalls every other
 connection on that worker. Common culprits in a proxy: a synchronous file
-read (`05-http-stack/05-static.md`), a large compression
-(`05-http-stack/06-compression.md`), regex over a large body
-(`07-security/06-waf.md`), or a synchronous log write
-(`08-observability/01-logging.md`).
+read ([`05-http-stack/05-static.md`](../05-http-stack/05-static.md)), a large compression
+([`05-http-stack/06-compression.md`](../05-http-stack/06-compression.md)), regex over a large body
+([`07-security/06-waf.md`](../07-security/06-waf.md)), or a synchronous log write
+([`08-observability/01-logging.md`](01-logging.md)).
 
 Gotcha: a blocked executor thread shows up as *latency on unrelated
 requests*, which is why it's so hard to diagnose from request-level data
@@ -71,14 +71,14 @@ bpftrace -e 'tracepoint:syscalls:sys_enter_read /pid == $1/ { @start[tid] = nsec
 ```
 
 ### Where a Rust proxy's time actually goes
-1. Syscalls (epoll_wait/read/write) — see `02-linux/07-epoll.md`, `02-linux/11-zerocopy.md` for how to reduce these.
+1. Syscalls (epoll_wait/read/write) — see [`02-linux/07-epoll.md`](../02-linux/07-epoll.md), [`02-linux/11-zerocopy.md`](../02-linux/11-zerocopy.md) for how to reduce these.
 2. Allocation — every `Vec<u8>`/`String` clone on the hot path costs; profile with `heaptrack` or `dhat` (via the `dhat` crate) alongside CPU profiling.
-3. TLS — handshake CPU cost is real at high connection-churn (short-lived connections re-handshake constantly); session resumption (`01-network/13-tls.md`) matters more than micro-optimizing the parser.
-Gotcha: profiling a debug build is close to meaningless — always profile `--release`, and profile under realistic concurrent load (see `12-testing/01-load-testing.md`), not a single curl request.
+3. TLS — handshake CPU cost is real at high connection-churn (short-lived connections re-handshake constantly); session resumption ([`01-network/13-tls.md`](../01-network/13-tls.md)) matters more than micro-optimizing the parser.
+Gotcha: profiling a debug build is close to meaningless — always profile `--release`, and profile under realistic concurrent load (see [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)), not a single curl request.
 
 Gotcha: allocation shows up in a CPU profile as `malloc`/`free` frames,
 but the *cost* of a bad allocation pattern is often fragmentation and RSS
-growth over days (`14-memory/06-fragmentation.md`), which no 30-second
+growth over days ([`14-memory/06-fragmentation.md`](../14-memory/06-fragmentation.md)), which no 30-second
 profile can see. Track allocated-vs-resident as a gauge in parallel.
 
 ### Continuous profiling beats profiling during an incident
@@ -90,7 +90,7 @@ Pyroscope) sample at low frequency all the time, so you can look at a
 profile from *last Tuesday at 03:14* when the incident actually happened.
 
 Gotcha: expose that endpoint on the internal listener, not the public one
-(same reasoning as `/metrics` in `08-observability/02-metrics.md`) — a
+(same reasoning as `/metrics` in [`08-observability/02-metrics.md`](02-metrics.md)) — a
 profiling endpoint is both an information leak and a CPU cost anyone can
 trigger.
 
@@ -108,10 +108,10 @@ Build these in order.
 
 1. Configure the build for profiling (`debug = true` in release,
    `force-frame-pointers`) and confirm permissions. **Done when**
-   `cargo flamegraph` against `proxy` under load produces a graph with
+   `cargo flamegraph` against [`proxy`](../../proxy) under load produces a graph with
    deep, symbolized Rust frames — not a flat one.
 2. Profile under realistic concurrent load from
-   `12-testing/01-load-testing.md`. **Done when** you can name the top three
+   [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md). **Done when** you can name the top three
    widest frames and classify each as syscall (expected), allocation
    (fixable), or logic (expected).
 3. Introduce a deliberate per-request `header.clone()` on the hot path and
@@ -120,7 +120,7 @@ Build these in order.
 4. Demonstrate the async attribution problem. **Done when** you can show
    that a slow *upstream* (inject 200ms of delay) does not widen anything
    in the flamegraph, and explain from the profile alone why it doesn't.
-5. Run `tokio-console` against `proxy`. **Done when** you can identify the
+5. Run `tokio-console` against [`proxy`](../../proxy). **Done when** you can identify the
    task with the longest individual poll duration — then add a synchronous
    10ms operation inside a handler and watch it become the worst offender.
 6. Measure the damage a blocking poll does. **Done when** you can show
@@ -132,8 +132,8 @@ Build these in order.
    means time is being spent before your instrumentation starts.
 8. Compare TLS vs plaintext profiles. **Done when** you can quantify
    handshake CPU cost per connection and show it falling once session
-   resumption is enabled (`01-network/13-tls.md`).
+   resumption is enabled ([`01-network/13-tls.md`](../01-network/13-tls.md)).
 9. (Stretch) Expose `pprof-rs` on the internal listener and capture
-   profiles continuously during a chaos test (`12-testing/03-chaos.md`).
+   profiles continuously during a chaos test ([`12-testing/03-chaos.md`](../12-testing/03-chaos.md)).
    **Done when** you can retrieve the profile from the exact minute a
    fault was injected, after the fact.

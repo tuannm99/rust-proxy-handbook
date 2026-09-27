@@ -1,14 +1,14 @@
 # Slab Allocator
 
 Cấp phát theo size-class cố định: câu trả lời ở mức allocator cho
-fragmentation. `13-algorithms/slab.md` nói về cấu trúc dữ liệu Rust bạn tự
+fragmentation. [`13-algorithms/slab.md`](../13-algorithms/slab.md) nói về cấu trúc dữ liệu Rust bạn tự
 viết; file này nói về chiến lược cấp phát đứng sau nó.
 
 ## What to learn
 
 ### Ý tưởng
 Một allocator tổng quát phải phục vụ mọi kích thước, đó là điều khiến nó
-dễ bị fragmentation (`14-memory/06-fragmentation.md`). Một slab allocator
+dễ bị fragmentation ([`14-memory/06-fragmentation.md`](06-fragmentation.md)). Một slab allocator
 từ bỏ tính tổng quát: nó chỉ phục vụ đúng một kích thước object, từ các
 vùng đã được cắt sẵn ("slab") chia thành các slot bằng nhau.
 
@@ -19,7 +19,7 @@ Sự giới hạn đó mang lại ba thứ cùng lúc:
   kích thước, không coalescing, không splitting.
 - **Cache locality.** Các object cùng loại nằm liền kề nhau, nên duyệt qua
   các connection đang hoạt động chạm vào các cache line liên tiếp (khía
-  cạnh CPU cache của việc này được nói ở `17-performance/01-cpu-cache.md`).
+  cạnh CPU cache của việc này được nói ở [`17-performance/01-cpu-cache.md`](../17-performance/01-cpu-cache.md)).
 
 Ý tưởng này bắt nguồn từ kernel Solaris và là cách Linux cấp phát các
 object kích thước cố định của chính nó (`task_struct`, inode, socket
@@ -33,7 +33,7 @@ hoặc vài page, được cắt thành N slot. Slab được theo dõi theo tr�
 các slab đang dùng dở được lấp đầy thay vì mọi slab đều nửa vơi nửa đầy.
 Chỉ những slab empty mới có thể được trả lại cho OS.
 
-Giống trong `13-algorithms/slab.md`, free list được xâu chuỗi xuyên qua
+Giống trong [`13-algorithms/slab.md`](../13-algorithms/slab.md), free list được xâu chuỗi xuyên qua
 chính các slot trống, nên không tốn thêm bộ nhớ.
 
 Gotcha: cấp phát từ slab partial trước, và thứ tự của free list quan trọng
@@ -64,12 +64,12 @@ xứng này chính là bug bạn sẽ gặp, và nó xuất hiện dưới dạn
 ### Chỗ này thực sự thuộc về đâu trong một proxy
 Gần như chắc chắn bạn không nên tự viết một slab allocator toàn cục.
 jemalloc và mimalloc đã implement cấp phát theo size-class với per-CPU
-cache, và chỉ cần đổi global allocator (`02-linux/09-memory.md`) là bạn đã
+cache, và chỉ cần đổi global allocator ([`02-linux/09-memory.md`](../02-linux/09-memory.md)) là bạn đã
 có phần lớn lợi ích chỉ với một dòng code.
 
 Thứ đáng để tự viết là một **typed pool** cho số ít object được cấp phát
 một lần mỗi connection hoặc mỗi request — connection state và buffer I/O
-(buffer pooling chuyên dụng được lên kế hoạch trong `14-memory/00-README.md`).
+(buffer pooling chuyên dụng được lên kế hoạch trong [`14-memory/00-README.md`](00-README.md)).
 Đó là những object có kích thước đã biết, churn cao, và đủ sống lâu để
 việc pooling loại bỏ hoàn toàn allocator khỏi hot path — đây là một chiến
 thắng khác và lớn hơn so với việc chỉ làm cho allocation rẻ hơn.
@@ -86,7 +86,7 @@ Một pool không giới hạn biến một đợt tăng traffic thành một m�
 nhớ vĩnh viễn. Giới hạn kích thước pool và để các allocation vượt quá giới
 hạn rơi xuống global allocator (giảm hiệu năng, không giảm tính đúng đắn),
 và export kích thước cùng hit rate của pool dưới dạng metric
-(`08-observability/02-metrics.md`) để giới hạn được tune dựa trên dữ liệu.
+([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)) để giới hạn được tune dựa trên dữ liệu.
 
 ## Practice
 1. Implement một slab allocator một size-class: cắt một page thành các
@@ -105,5 +105,5 @@ và export kích thước cùng hit rate của pool dưới dạng metric
    lên. Sau đó thêm một đường flush hoặc remote-free và xác nhận nó ổn
    định lại.
 6. Xây một buffer pool có giới hạn, có type, cho các buffer đọc theo từng
-   connection của `proxy`, với reset-on-release, và export metric
+   connection của [`proxy`](../../proxy), với reset-on-release, và export metric
    size/hit-rate. So sánh số lượng allocation dưới tải có và không có nó.

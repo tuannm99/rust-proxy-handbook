@@ -3,10 +3,10 @@
 ## What to learn
 
 ### Zero-copy file sending
-Naively serving a static file means: read the whole file into a userspace buffer, then write that buffer to the socket — two copies and two context switches more than necessary. `sendfile(2)` (see `02-linux/11-zerocopy.md`) copies data kernel-to-kernel, bypassing userspace entirely; on Linux, `tokio-uring`/`io_uring` (`02-linux/08-io_uring.md`) can do the same asynchronously with less syscall overhead than epoll-based `sendfile`.
+Naively serving a static file means: read the whole file into a userspace buffer, then write that buffer to the socket — two copies and two context switches more than necessary. `sendfile(2)` (see [`02-linux/11-zerocopy.md`](../02-linux/11-zerocopy.md)) copies data kernel-to-kernel, bypassing userspace entirely; on Linux, `tokio-uring`/`io_uring` ([`02-linux/08-io_uring.md`](../02-linux/08-io_uring.md)) can do the same asynchronously with less syscall overhead than epoll-based `sendfile`.
 
 Gotcha: `sendfile` is fast on a page-cache *hit* and blocking on a miss
-(`16-kernel/08-page-cache.md`). In an async runtime, a blocking `sendfile` on
+([`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md)). In an async runtime, a blocking `sendfile` on
 a cold file stalls the entire worker thread and every other connection it
 was multiplexing — so the "obvious optimization" turns a slow file read
 into a latency spike across unrelated requests. This is exactly why
@@ -34,11 +34,11 @@ Two mitigations worth knowing: cache metadata (and even open file
 descriptors) for hot files, the way nginx's `open_file_cache` does, so
 repeat requests skip the syscalls entirely; and bound static-file
 concurrency separately from overall request concurrency
-(`07-security/09-ddos.md`), so a cold-filesystem stall can't consume the
+([`07-security/09-ddos.md`](../07-security/09-ddos.md)), so a cold-filesystem stall can't consume the
 whole process.
 
 Gotcha: an fd cache is bounded by `ulimit -n` and must evict
-(`13-algorithms/lru.md`), and it must key on something that detects file
+([`13-algorithms/lru.md`](../13-algorithms/lru.md)), and it must key on something that detects file
 replacement (device + inode, not path) — a deploy that swaps a file
 leaves you serving the old fd's contents forever.
 
@@ -91,7 +91,7 @@ to resolve relative to an opened root directory using `openat2` with
 `RESOLVE_BENEATH` (or `cap-std`, which wraps this pattern in Rust), so the
 kernel enforces containment atomically instead of you checking a string.
 
-Gotcha: the same normalization discussion as `05-http-stack/03-router.md`
+Gotcha: the same normalization discussion as [`05-http-stack/03-router.md`](03-router.md)
 applies here, and if the router already normalized the path, the static
 handler must not decode it *again* — a double decode reintroduces
 traversal from `%252e%252e%252f`. Decode exactly once, at a documented
@@ -127,7 +127,7 @@ attachment` for anything uploaded.
 ## Practice
 Build these in order.
 
-1. In `labs/04-static-server`, serve files from a root directory with
+1. In [`labs/04-static-server`](../../labs/04-static-server), serve files from a root directory with
    `tokio::fs::read` plus a response body. **Done when** a known file is
    returned with the correct `Content-Type` from an extension table.
 2. Write traversal tests before hardening: `../../../etc/passwd`,

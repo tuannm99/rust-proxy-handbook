@@ -2,7 +2,7 @@
 
 Thứ thực sự page một con người, so với thứ chỉ là một dòng trên dashboard.
 Các SLI và error budget mà mọi thứ ở đây dựa vào nằm trong
-`08-observability/05-slo.md`.
+[`08-observability/05-slo.md`](05-slo.md).
 
 ## What to learn
 ### Cái này được xây trên nền tảng nào
@@ -13,7 +13,7 @@ công không, và request nào thậm chí là hợp lệ. Một proxy cũng c�
 riêng biệt, vì "proxy thất bại" và "upstream thất bại" có chủ sở hữu khác
 nhau.
 
-Xem `08-observability/05-slo.md`; file này giả định những thứ đó đã tồn
+Xem [`08-observability/05-slo.md`](05-slo.md); file này giả định những thứ đó đã tồn
 tại.
 
 ### Alert theo triệu chứng, không theo nguyên nhân
@@ -21,11 +21,11 @@ Page dựa trên những gì *người dùng* trải nghiệm (tỉ lệ lỗi t
 latency tăng cao, bản thân proxy sập) — không phải mọi điều kiện nội bộ
 *có thể* gây ra một triệu chứng (một trong ba upstream không healthy, một
 lần retry đã xảy ra, một lần GC pause 50ms). Nếu load balancer trong
-`06-proxy/02-load-balancer.md` và health check trong
-`06-proxy/03-healthcheck.md` đang làm đúng việc của chúng, mất một
+[`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md) và health check trong
+[`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md) đang làm đúng việc của chúng, mất một
 upstream không nên page ai cả; mất tất cả thì nên. Các tín hiệu ở mức
 nguyên nhân vẫn quan trọng — hãy giữ chúng như metrics/dashboard
-(`08-observability/02-metrics.md`) để tìm nguyên nhân gốc của một sự cố
+([`08-observability/02-metrics.md`](02-metrics.md)) để tìm nguyên nhân gốc của một sự cố
 sau khi alert ở mức triệu chứng đã đánh thức ai đó rồi.
 
 ### Các ngoại lệ: những thứ vô hình cho tới khi đã quá muộn
@@ -33,14 +33,14 @@ sau khi alert ở mức triệu chứng đã đánh thức ai đó rồi.
 kiện không có triệu chứng *ngay bây giờ* nhưng chắc chắn sẽ có sau này.
 Chúng đáng để có một alert mức ticket chính xác vì chờ triệu chứng nghĩa
 là chờ sự cố xảy ra:
-- **Chứng chỉ hết hạn** (`01-network/13-tls.md`,
-  `05-http-stack/11-vhost-routing.md`) — alert trước vài tuần, theo từng
+- **Chứng chỉ hết hạn** ([`01-network/13-tls.md`](../01-network/13-tls.md),
+  [`05-http-stack/11-vhost-routing.md`](../05-http-stack/11-vhost-routing.md)) — alert trước vài tuần, theo từng
   chứng chỉ. Triệu chứng là thất bại toàn bộ tại một thời điểm dự đoán
   được chính xác.
-- **Config reload thất bại** (`09-architecture/03-config.md`) — proxy vẫn
+- **Config reload thất bại** ([`09-architecture/03-config.md`](../09-architecture/03-config.md)) — proxy vẫn
   chạy trên config cũ và trông hoàn toàn healthy trong khi lệch dần khỏi
   cái mà người vận hành nghĩ là đang được deploy.
-- **Ổ đĩa đầy dần** vì log (`08-observability/01-logging.md`), số fd tiến
+- **Ổ đĩa đầy dần** vì log ([`08-observability/01-logging.md`](01-logging.md)), số fd tiến
   gần giới hạn, và độ bão hòa connection pool đang có xu hướng tăng.
 - **Error budget burn rate**, là dạng tổng quát hóa của tất cả những cái
   trên: chưa hỏng bây giờ, nhưng đang trên đà hỏng.
@@ -130,7 +130,7 @@ on-call khác nhau.
 ## Practice
 Xây dựng theo thứ tự sau.
 
-1. Làm qua `08-observability/05-slo.md` trước. **Xong khi** hai SLI và
+1. Làm qua [`08-observability/05-slo.md`](05-slo.md) trước. **Xong khi** hai SLI và
    target của chúng tồn tại dưới dạng recording rule, và bạn có thể nói
    mỗi cái page team nào.
 2. Viết thang burn-rate (14.4x/1h, 6x/6h, 1x/3ngày) với window ngắn tương
@@ -139,7 +139,7 @@ Xây dựng theo thứ tự sau.
 3. Thêm sàn số-lượng-request. **Xong khi** một mô phỏng 3 giờ sáng với 5
    request và 1 lỗi không page.
 4. Thêm alert dữ liệu-thiếu và một probe synthetic bên ngoài. **Xong khi**
-   kill hẳn `proxy` page trong khoảng thời gian mục tiêu của bạn — hãy
+   kill hẳn [`proxy`](../../proxy) page trong khoảng thời gian mục tiêu của bạn — hãy
    test điều này, vì "alert bắn khi mọi thứ đã chết" là cái dễ bị hỏng
    nhất.
 5. Kiểm chứng tính độc lập của đường đi alert. **Xong khi** bạn có thể nói
@@ -149,8 +149,8 @@ Xây dựng theo thứ tự sau.
    độ bão hòa fd/pool. **Xong khi** một chứng chỉ còn 7 ngày là hết hạn và
    một config reload bị cố tình làm hỏng mỗi cái tạo ra một ticket mà
    không page ai.
-7. Chạy một chaos test (`12-testing/03-chaos.md`) dưới tải
-   (`12-testing/01-load-testing.md`). **Xong khi** page burn-rate bắn
+7. Chạy một chaos test ([`12-testing/03-chaos.md`](../12-testing/03-chaos.md)) dưới tải
+   ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)). **Xong khi** page burn-rate bắn
    trong khoảng thời gian mong đợi, đúng SLI di chuyển (proxy hay
    end-to-end, tùy fault nào bạn tiêm vào), và mọi thứ hết cảnh báo sau
    khi fault được gỡ bỏ.

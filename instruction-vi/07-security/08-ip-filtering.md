@@ -53,18 +53,18 @@ thể lộ ra ở đầu bên kia trông như một địa chỉ public bất k�
 Scan tuyến tính qua các CIDR thì ổn với chục entry trong config viết tay, và
 sai với một threat-intel feed có 100k block phải evaluate trên mỗi request.
 Cấu trúc đúng là một prefix trie trên các bit địa chỉ — chính là cấu trúc
-của `13-algorithms/radix-tree.md` với key cố định 32 hoặc 128 bit, cho
+của [`13-algorithms/radix-tree.md`](../13-algorithms/radix-tree.md) với key cố định 32 hoặc 128 bit, cho
 lookup O(độ dài prefix) không phụ thuộc kích thước danh sách. Crate
 `ip_network_table` implement cái này; FIB của kernel cũng làm y hệt cho
 routing.
 
 Gotcha: rebuild trie khi config reload và swap nó atomic (pattern `ArcSwap`
-của `06-proxy/07-service-discovery.md`) thay vì mutate nó dưới lock — các
+của [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)) thay vì mutate nó dưới lock — các
 request-path read không bao giờ nên block chờ một lần update danh sách.
 
 ### Chỉ tin forwarded-for header từ các proxy đã biết
 `X-Forwarded-For` (hoặc header PROXY protocol, xem
-`01-network/14-proxy-protocol.md`) là dữ liệu do client cung cấp trừ khi
+[`01-network/14-proxy-protocol.md`](../01-network/14-proxy-protocol.md)) là dữ liệu do client cung cấp trừ khi
 chính bạn strip và set lại nó ở một trust boundary. Nếu proxy tin mù quáng
 bất kỳ giá trị `X-Forwarded-For` nào tới, client nào cũng có thể tự nhận là
 `127.0.0.1` hoặc một IP internal nằm trong allowlist và bypass hoàn toàn IP
@@ -99,7 +99,7 @@ Gotcha: header `Forwarded: for=...;proto=...;by=...` của RFC 7239 là bản
 chuẩn hóa của cùng ý tưởng này, với quy tắc quoting riêng. Nếu bạn nhận cả
 hai, phải đảm bảo chúng không thể mâu thuẫn — attacker cung cấp một cái và
 CDN cung cấp cái khác là một dạng khác của parser differential
-(`05-request-smuggling.md`).
+([`05-request-smuggling.md`](05-request-smuggling.md)).
 
 ### Lưu ý về IP spoofing
 Spoof source IP trên TCP là khó trong thực tế (bắt tay 3 bước nghĩa là một
@@ -124,7 +124,7 @@ chung và yếu khi dùng như vậy:
 Vậy: allowlist mạnh (một tập ngắn, đã biết các peer, ví dụ endpoint admin
 hoặc tích hợp đối tác), denylist yếu và tạm thời. Coi một entry denylist
 như một công cụ rate-limiting hoặc incident-response có TTL, không phải một
-control an ninh vĩnh viễn, và kết hợp nó với `07-security/07-ratelimit.md`
+control an ninh vĩnh viễn, và kết hợp nó với [`07-security/07-ratelimit.md`](07-ratelimit.md)
 vốn degrade nhẹ nhàng hơn nhiều với các địa chỉ được chia sẻ.
 
 ### Ban động, và chặn giới hạn nó
@@ -136,7 +136,7 @@ Có hai ràng buộc để làm việc này an toàn. Mọi entry cần một **
 phút đến vài giờ), vừa vì địa chỉ được chia sẻ vừa vì một autoban list vĩnh
 viễn cuối cùng sẽ tự gây ra outage. Và bảng phải **bị chặn giới hạn** — nó
 được key bằng dữ liệu do attacker kiểm soát, nên một map không giới hạn là
-vector cạn kiệt bộ nhớ được mô tả trong `13-algorithms/count-min-sketch.md`.
+vector cạn kiệt bộ nhớ được mô tả trong [`13-algorithms/count-min-sketch.md`](../13-algorithms/count-min-sketch.md).
 Chặn giới hạn nó và evict (LRU, hoặc TTL cũ nhất trước) thay vì cho nó lớn
 mãi.
 
@@ -148,15 +148,15 @@ vô dụng chống lại một cuộc flood, nơi chi phí trên mỗi kết n�
 chính là thứ attacker đang chi budget của bạn để tạo ra.
 
 Block theo dạng volumetric nên thuộc về lớp thấp hơn: `nftables`/`ipset`
-trong kernel, hoặc XDP ở driver (`16-kernel/10-xdp.md`), nơi một packet bị
+trong kernel, hoặc XDP ở driver ([`16-kernel/10-xdp.md`](../16-kernel/10-xdp.md)), nơi một packet bị
 drop trước khi stack cấp một socket. Vai trò của proxy là *quyết định* (nó
 có context ứng dụng) và đẩy quyết định đó xuống, chính là feedback loop mà
-`07-security/09-ddos.md` và `labs/17-ebpf` xây dựng.
+[`07-security/09-ddos.md`](09-ddos.md) và [`labs/17-ebpf`](../../labs/17-ebpf) xây dựng.
 
 ## Practice
 Làm theo thứ tự này.
 
-1. Trong `proxy`, implement CIDR allow/deny trên địa chỉ TCP peer thật,
+1. Trong [`proxy`](../../proxy), implement CIDR allow/deny trên địa chỉ TCP peer thật,
    dùng `ipnet`, cho cả v4 và v6. **Xong khi** một rule `/0` không panic và
    các rule theo family match đúng.
 2. Bind một listener dual-stack và connect qua IPv4. **Xong khi** bạn đã
@@ -170,7 +170,7 @@ Làm theo thứ tự này.
 4. Fuzz parser XFF với input malformed (không phải IP, v6 kèm port trong
    ngoặc, 10k entry, whitespace nhúng vào). **Xong khi** không cái nào
    panic, allocate không giới hạn, hoặc cho ra verdict được tin — xem
-   `12-testing/02-fuzzing.md`.
+   [`12-testing/02-fuzzing.md`](../12-testing/02-fuzzing.md).
 5. Đổi CIDR matching tuyến tính thành prefix trie và load một danh sách
    100k entry. **Xong khi** latency match trên mỗi request bằng nhau giữa
    danh sách 10 entry và 100k entry, và một config reload swap bảng mà
@@ -180,7 +180,7 @@ Làm theo thứ tự này.
    khi rate limiter chạy, ban hết hạn đúng lịch, và lấp bảng với 1M địa chỉ
    giả plateau về bộ nhớ thay vì tăng mãi.
 7. (Stretch) Nối parsing PROXY protocol v2
-   (`01-network/14-proxy-protocol.md`) như một lựa chọn thay thế có cấu
+   ([`01-network/14-proxy-protocol.md`](../01-network/14-proxy-protocol.md)) như một lựa chọn thay thế có cấu
    trúc cho XFF. **Xong khi** IP client thật được lấy lại từ header binary
    và một kết nối *không có* header mong đợi trên một listener PROXY
    protocol bị reject thay vì bị parse như HTTP.

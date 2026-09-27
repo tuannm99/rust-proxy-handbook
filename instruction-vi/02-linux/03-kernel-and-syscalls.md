@@ -1,7 +1,7 @@
 # Kernel Space, Syscalls, and File Descriptors
 
 Một phần của chuỗi fundamentals từ-con-số-0 — xem
-`02-linux/01-fundamentals.md` để có index đầy đủ.
+[`02-linux/01-fundamentals.md`](01-fundamentals.md) để có index đầy đủ.
 
 ## What to learn
 
@@ -11,7 +11,7 @@ file, gửi packet, cấp phát memory, tạo socket — nó thực hiện một
 **syscall**: một yêu cầu có kiểm soát, được định nghĩa rõ ràng, chuyển
 CPU sang kernel mode, để kernel làm công việc có đặc quyền, rồi chuyển
 lại. `bind()`, `listen()`, `accept()`, `read()`, `write()` — mọi thứ
-trong `01-network/07-socket.md` — đều là syscall, hoặc các wrapper mỏng
+trong [`01-network/07-socket.md`](../01-network/07-socket.md) — đều là syscall, hoặc các wrapper mỏng
 quanh chúng.
 
 ```rust
@@ -28,12 +28,12 @@ quyền memory khác, kiểm tra yêu cầu, làm việc, rồi chuyển lại. 
 bước nào trong đó "miễn phí" như một lời gọi hàm thuần túy, dù từ góc nhìn
 của Rust một wrapper syscall *trông* giống hệt một lời gọi hàm khác.
 
-Đây là lý do cụ thể khiến `01-network/07-socket.md`, `02-linux/11-zerocopy.md`,
+Đây là lý do cụ thể khiến [`01-network/07-socket.md`](../01-network/07-socket.md), [`02-linux/11-zerocopy.md`](11-zerocopy.md),
 và phần thảo luận về vectored I/O trong file đó quan tâm đến *số lượng*
 syscall, không chỉ số byte di chuyển — `writev` với ba buffer tốn một
 context switch; ba lời gọi `write` riêng lẻ tốn ba. Ở request rate cao,
 overhead syscall là một phần CPU thật, đo được, chính là thứ mà flamegraph
-trong `08-observability/04-profiling.md` cho bạn thấy khi profile của một
+trong [`08-observability/04-profiling.md`](../08-observability/04-profiling.md) cho bạn thấy khi profile của một
 proxy bị chi phối bởi các frame syscall thay vì logic của chính bạn.
 
 ### File descriptor: mọi thứ đều là một con số
@@ -45,11 +45,11 @@ bảng mà kernel giữ *theo từng process*, và mỗi entry trỏ tới objec
 của kernel (một file đang mở, trạng thái kết nối của một socket, v.v.)
 cùng với một offset và một số flag.
 
-Sự thống nhất này là lý do `02-linux/07-epoll.md` có thể đăng ký một
+Sự thống nhất này là lý do [`02-linux/07-epoll.md`](07-epoll.md) có thể đăng ký một
 listening socket, một client socket, *và* một pipe thuần trên cùng một
 epoll instance với cùng một API — với epoll, chúng chỉ là các fd có thể
-trở nên "ready." Đây cũng là lý do `06-proxy/01-upstream.md` và
-`07-security/09-ddos.md` nói về giới hạn fd (`ulimit -n`) như một trần
+trở nên "ready." Đây cũng là lý do [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md) và
+[`07-security/09-ddos.md`](../07-security/09-ddos.md) nói về giới hạn fd (`ulimit -n`) như một trần
 tài nguyên cứng: mỗi socket đang mở, dù vào hay ra, tiêu tốn một entry
 trong bảng theo-process đó, và bảng có một giới hạn tối đa được cấu hình.
 
@@ -70,7 +70,7 @@ thực sự quan trọng là kernel object đứng sau con số đó là gì và
 fd (trong process này hoặc process khác, sau một `fork()`) hiện đang tham
 chiếu tới nó — object chỉ thực sự được giải phóng khi tham chiếu cuối
 cùng bị đóng. Đây là nền tảng cho một gotcha bạn sẽ gặp trực tiếp trong
-`09-architecture/04-graceful-shutdown.md`: drop handle của bạn tới một
+[`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md): drop handle của bạn tới một
 socket không nhất thiết có nghĩa kết nối bên dưới đóng ngay lập tức nếu
 thứ khác vẫn còn tham chiếu tới nó.
 
@@ -83,7 +83,7 @@ non-root** là một phân biệt về *quyền* do kernel enforce, hoàn toàn 
 trong user mode — process của root vẫn chạy ở user mode và vẫn thực hiện
 cùng những syscall, nhưng các kiểm tra quyền của kernel (ví dụ "process
 này có được bind port 443 không," ghi chú về well-known-ports trong
-`01-network/02-addressing.md`) cho phép nhiều syscall trong số đó thành
+[`01-network/02-addressing.md`](../01-network/02-addressing.md)) cho phép nhiều syscall trong số đó thành
 công hơn.
 
 ## Practice
@@ -92,7 +92,7 @@ công hơn.
    terminal khác trong khi nó chạy) và xác nhận fd 0/1/2 có mặt; mở một
    file và một kết nối TCP trong chương trình và xem các entry số mới
    xuất hiện.
-2. `strace -c` một lần chạy `labs/00-tcp-server` xử lý vài request và đọc
+2. `strace -c` một lần chạy [`labs/00-tcp-server`](../../labs/00-tcp-server) xử lý vài request và đọc
    bảng tổng hợp — xác định syscall nào chiếm ưu thế về số lượng, và nối
    ít nhất ba trong số đó về lại các dòng trong code của bạn.
 3. Viết một chương trình mở 5 file mà không đóng bất kỳ file nào, in số

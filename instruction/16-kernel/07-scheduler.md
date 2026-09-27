@@ -15,21 +15,24 @@ gets preference; running advances its `vruntime`, which eventually makes
 it not the minimum anymore, and something else runs. This is "fair"
 scheduling, not "first ready, first run" — no task is guaranteed to run
 within any specific bound, only that CPU time is being distributed
-proportionally to weight over time.
+proportionally to weight over time. For the classical scheduling
+algorithms (FCFS, SJF, round-robin, MLFQ) and the metrics used to judge
+them that CFS is a distant, more sophisticated relative of, see
+[`22-theory/04-cpu-scheduling.md`](../22-theory/04-cpu-scheduling.md).
 
 ### `nice`/priority controls weight, not a hard guarantee
 `nice` values map to weights that scale how fast a task's `vruntime`
 accrues (a higher-priority task's `vruntime` grows more slowly per unit
 of wall-clock CPU time, so it stays "owed" CPU longer). This shifts *how
 much* CPU a task gets relative to others, not a latency guarantee — a
-`proxy` process at high priority on an idle machine behaves identically
+[`proxy`](../../proxy) process at high priority on an idle machine behaves identically
 to one at normal priority; the difference only shows up when something
 else is actually contending for the CPU.
 
 ### CPU affinity: fighting migration cost, not just fairness
 A task migrating between cores loses its warm L1/L2 cache state on the
-old core and starts cold on the new one (`17-performance/01-cpu-cache.md`,
-`17-performance/03-numa.md`). Pinning a proxy's worker threads to specific
+old core and starts cold on the new one ([`17-performance/01-cpu-cache.md`](../17-performance/01-cpu-cache.md),
+[`17-performance/03-numa.md`](../17-performance/03-numa.md)). Pinning a proxy's worker threads to specific
 cores (`taskset`, or `sched_setaffinity` from within the program) trades
 away CFS's freedom to load-balance across all cores for consistent,
 warm-cache execution on a fixed set — a real tail-latency win at the
@@ -51,7 +54,7 @@ metrics before concluding a latency spike is a tokio or application
 problem.
 
 ## Practice
-1. Run `proxy` (or a `labs/` crate) under `12-testing/01-load-testing.md`
+1. Run [`proxy`](../../proxy) (or a [`labs/`](../../labs) crate) under [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)
    on a host you've deliberately oversubscribed (spin up enough
    CPU-bound background processes to exceed the core count) and observe
    the effect on p99 latency versus an unloaded host.

@@ -25,10 +25,10 @@ resident thật, không phải những gì `Vec::with_capacity` "đã reserve."
 ### Page cache và static file
 Kernel giữ dữ liệu file vừa đọc trong RAM dưới dạng page cache, backing
 cả `read()` và `mmap()`. Đây là lý do `sendfile()` (xem
-`02-linux/11-zerocopy.md`) nhanh cho các static asset được phục vụ lặp
+[`02-linux/11-zerocopy.md`](11-zerocopy.md)) nhanh cho các static asset được phục vụ lặp
 lại — dữ liệu thường đã resident sẵn, và kernel copy page-cache-tới-socket
 mà hoàn toàn không đi vòng qua buffer userspace của process bạn. Điều
-này ảnh hưởng trực tiếp tới cách `05-http-stack/05-static.md` nên phục vụ
+này ảnh hưởng trực tiếp tới cách [`05-http-stack/05-static.md`](../05-http-stack/05-static.md) nên phục vụ
 file: để cache của kernel tự làm việc caching thay vì tự implement lại
 một LRU ở userspace cho dữ liệu lạnh vốn đã nóng sẵn trong page cache.
 
@@ -48,7 +48,7 @@ dưới các mẫu cấp phát multi-threaded, churn cao (ví dụ một buffer
 request/response được cấp phát-rồi-giải-phóng ở mỗi kết nối). Các proxy
 thường chuyển sang `jemalloc` hay `mimalloc` (crate `tikv-jemallocator`/
 `mimalloc` trong Rust) để có tail latency dễ đoán hơn và phân mảnh thấp
-hơn. Đây là một khác biệt thật, đo được cho `proxy` dưới thông lượng bền
+hơn. Đây là một khác biệt thật, đo được cho [`proxy`](../../proxy) dưới thông lượng bền
 vững, không phải một micro-optimization.
 
 ## Practice
@@ -62,7 +62,7 @@ vững, không phải một micro-optimization.
 3. Dùng `/proc/self/smaps` hoặc `pmap` để kiểm tra memory map của một
    proxy đang chạy và xác định vùng nào được page-cache backing so với
    vùng anonymous.
-4. Đổi allocator của `proxy` sang `mimalloc` qua `#[global_allocator]` và
+4. Đổi allocator của [`proxy`](../../proxy) sang `mimalloc` qua `#[global_allocator]` và
    benchmark xử lý request nặng về cấp phát trước/sau.
 5. Nếu bạn có quyền truy cập một máy nhiều socket, chạy `numactl
    --hardware` và giải thích một truy cập memory "remote" sẽ tốn gì so

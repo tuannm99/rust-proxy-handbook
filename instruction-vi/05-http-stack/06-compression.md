@@ -9,12 +9,12 @@ Gotcha: mức chất lượng chi phối toàn bộ so sánh này, và các mứ
 là cái bẫy cho nội dung động. Brotli quality 11 có thể chậm hơn một bậc
 độ lớn so với quality 4-5 để đổi lấy vài phần trăm tỉ lệ tốt hơn — ổn khi
 bạn nén một lần lúc build rồi serve mãi mãi (asset content-hashed của
-`05-http-stack/05-static.md`), không bao giờ đáng khi nén một response
+[`05-http-stack/05-static.md`](05-static.md)), không bao giờ đáng khi nén một response
 theo từng request. Dùng chất lượng cao cho file tĩnh nén sẵn, thấp-tới-vừa
 cho bất cứ gì động.
 
 ### Negotiation qua Accept-Encoding
-Client liệt kê những gì nó có thể decode, tùy chọn kèm trọng số chất lượng: `Accept-Encoding: gzip, br;q=0.8`. Server (hoặc proxy) chọn một cái nó hỗ trợ, set `Content-Encoding` trên response, và phải thêm `Vary: Accept-Encoding` để bất kỳ cache nào phía trước nó (xem `05-http-stack/07-cache.md`) không serve một response gzip cho một client chỉ yêu cầu brotli.
+Client liệt kê những gì nó có thể decode, tùy chọn kèm trọng số chất lượng: `Accept-Encoding: gzip, br;q=0.8`. Server (hoặc proxy) chọn một cái nó hỗ trợ, set `Content-Encoding` trên response, và phải thêm `Vary: Accept-Encoding` để bất kỳ cache nào phía trước nó (xem [`05-http-stack/07-cache.md`](07-cache.md)) không serve một response gzip cho một client chỉ yêu cầu brotli.
 
 Gotcha: xử lý các trường hợp biên của q-value, vì đó là chỗ negotiation
 tinh vi sai lệch. `q=0` nghĩa là *không* chấp nhận tường minh, không phải
@@ -53,13 +53,13 @@ upstream trở nên sai** — nó mô tả body chưa nén, và bạn không bi�
 đã nén cho tới khi xong. Bạn phải bỏ `Content-Length` và chuyển sang
 chunked transfer encoding (HTTP/1.1) hoặc dựa vào độ dài frame (HTTP/2).
 Forward một `Content-Length` đã cũ cùng với một body đã nén chính xác là
-sự bất đồng về framing mà `07-security/05-request-smuggling.md` nói tới —
+sự bất đồng về framing mà [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md) nói tới —
 đây là một trong những cách phổ biến nhất một proxy vô tình tự tạo ra nó.
 
 Gotcha: flush là một đánh đổi latency/tỉ lệ. Một compressor không bao giờ
 flush đệm dữ liệu để có tỉ lệ tốt hơn, điều này làm đứng các response
 streaming (SSE, long-poll, các pattern gần với
-`05-http-stack/09-websocket.md`) — client chờ output đang nằm trong
+[`05-http-stack/09-websocket.md`](09-websocket.md)) — client chờ output đang nằm trong
 compressor. Flush ở các ranh giới có ý nghĩa cho các content type
 streaming; đừng làm vậy với download hàng loạt.
 
@@ -69,7 +69,7 @@ Compression tốn CPU; ở tốc độ request cao, encode mỗi request có th�
 Gotcha: compression cũng là cách kinh điển vô tình chặn một async
 runtime. Nén một buffer lớn đồng bộ bên trong một task giữ worker thread
 cho toàn bộ phép toán (cooperative scheduling của
-`03-rust/05-async.md`), làm đứng mọi connection khác trên nó. Hoặc dùng
+[`03-rust/05-async.md`](../03-rust/05-async.md)), làm đứng mọi connection khác trên nó. Hoặc dùng
 một encoder streaming yield giữa các chunk, hoặc đẩy các lần nén lớn vào
 `spawn_blocking`.
 
@@ -93,15 +93,15 @@ kiện.
 Nếu upstream đã nén body rồi (nó gửi `Content-Encoding: gzip`), proxy không được nén nó lần nữa — hoặc pass-through nguyên vẹn nếu client chấp nhận encoding đó, hoặc giải-nén-rồi-nén-lại chỉ khi client cần một encoding khác với cái upstream cung cấp.
 
 Gotcha: khi bạn *thực sự* giải nén một response upstream, bạn đã nhận lấy
-rủi ro decompression-bomb từ `07-security/09-ddos.md` — giới hạn kích
+rủi ro decompression-bomb từ [`07-security/09-ddos.md`](../07-security/09-ddos.md) — giới hạn kích
 thước đã giải nén và tỉ lệ giãn nở, và streaming thay vì vật chất hóa toàn
 bộ. Điều tương tự áp dụng cho body *request* đã nén mà bạn giải nén để
-kiểm tra WAF (`07-security/06-waf.md`).
+kiểm tra WAF ([`07-security/06-waf.md`](../07-security/06-waf.md)).
 
 ## Practice
 Làm theo thứ tự này.
 
-1. Trong `labs/02-http-server`, thêm nén response gzip có điều kiện theo
+1. Trong [`labs/02-http-server`](../../labs/02-http-server), thêm nén response gzip có điều kiện theo
    `Accept-Encoding`, set `Content-Encoding` và `Vary`. **Xong khi** một
    client gửi `Accept-Encoding: gzip` nhận một body đã nén mà
    `curl --compressed` decode đúng, và một client gửi không có gì nhận
@@ -117,12 +117,12 @@ Làm theo thứ tự này.
    `*`. **Xong khi** `gzip;q=0, br` chọn brotli, `*;q=0` được xử lý có chủ
    đích, và logic chọn của bạn có một test cho mỗi trường hợp biên.
 5. Đo chi phí CPU. **Xong khi** bạn có số throughput ở brotli quality 4 so
-   với 11 dưới tải (`12-testing/01-load-testing.md`) và có thể nói rõ tỉ
+   với 11 dưới tải ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)) và có thể nói rõ tỉ
    lệ đạt được so với CPU bỏ ra.
 6. Cache byte đã nén cho response cacheable
-   (`05-http-stack/07-cache.md`). **Xong khi** request lặp lại cho cùng
+   ([`05-http-stack/07-cache.md`](07-cache.md)). **Xong khi** request lặp lại cho cùng
    resource nén zero lần.
-7. Trong `labs/05-reverse-proxy`, xử lý một response upstream đã nén sẵn.
+7. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), xử lý một response upstream đã nén sẵn.
    **Xong khi** một body upstream gzip được pass qua nguyên vẹn cho một
    client chấp nhận gzip, và được transcode đúng một lần cho một client
    chỉ chấp nhận brotli — với một bước giải nén có giới hạn.

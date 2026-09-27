@@ -1,6 +1,6 @@
 # Trie (Prefix Tree)
 
-`05-http-stack/03-router.md` covers matching method+path at the proxy level.
+[`05-http-stack/03-router.md`](../05-http-stack/03-router.md) covers matching method+path at the proxy level.
 This file covers the structure a real router's matching is built on:
 lookup by shared prefix, which is exactly what a path (`/users/:id/posts`)
 is made of.
@@ -44,12 +44,12 @@ bug users experience as "the route worked yesterday."
 A trie keyed byte-by-byte (rather than segment-by-segment) produces long
 chains of single-child nodes — one node per character of `/users` is six
 hops to store one segment. This is the exact problem
-`13-algorithms/radix-tree.md` fixes by merging those chains into a single
+[`13-algorithms/radix-tree.md`](radix-tree.md) fixes by merging those chains into a single
 edge; read that file once a segment-level trie's node count starts to
 matter.
 
 ## Practice
-1. In `labs/03-router`, implement a segment-based trie (map keyed by
+1. In [`labs/03-router`](../../labs/03-router), implement a segment-based trie (map keyed by
    path segment, not by character) and register both static and
    parameterized routes.
 2. Register `/users/:id` and `/users/new` and write the precedence rule

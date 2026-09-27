@@ -44,9 +44,9 @@ khó làm đúng.
 Không có lab nào yêu cầu skip list trực tiếp, nhưng nó là cấu trúc tự
 nhiên cho bất kỳ bài toán "giữ các entry có thứ tự theo một key thay đổi,
 và map bị sửa dưới truy cập đồng thời" — ví dụ theo dõi các cache entry
-theo thời gian hết hạn để `labs/10-cache` tìm "cái gì hết hạn tiếp theo"
+theo thời gian hết hạn để [`labs/10-cache`](../../labs/10-cache) tìm "cái gì hết hạn tiếp theo"
 mà không cần quét toàn bộ cache, một lựa chọn thay thế cho timer wheel
-(`13-algorithms/priority-queue.md`) khi thứ tự chính xác quan trọng hơn
+([`13-algorithms/priority-queue.md`](priority-queue.md)) khi thứ tự chính xác quan trọng hơn
 việc phân bucket O(1).
 
 ## Practice
@@ -55,7 +55,7 @@ việc phân bucket O(1).
 2. Đo số lượng level qua 10.000 lần insert ngẫu nhiên và xác nhận phân
    phối chiều cao level khớp gần đúng với phân phối hình học mà `p` dự
    đoán.
-3. Dùng nó trong `labs/10-cache` để giữ các entry có thứ tự theo thời gian
+3. Dùng nó trong [`labs/10-cache`](../../labs/10-cache) để giữ các entry có thứ tự theo thời gian
    hết hạn; implement "evict mọi thứ đã hết hạn" như một lần đi từ key nhỏ
    nhất thay vì quét toàn bộ, và so sánh chi phí với một lần quét tuyến
    tính ở 10.000 entry.

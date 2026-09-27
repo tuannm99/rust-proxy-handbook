@@ -1,7 +1,7 @@
 # Aho-Corasick
 
 Multi-pattern string matching in one pass. The algorithm that makes a WAF
-(`07-security/06-waf.md`) affordable: match 5000 signatures against a request
+([`07-security/06-waf.md`](../07-security/06-waf.md)) affordable: match 5000 signatures against a request
 body in the time a naive loop matches one.
 
 ## What to learn
@@ -66,17 +66,17 @@ automaton fully, then swap the `Arc` — never mutate a live one.
 
 ### Normalization must happen before matching
 Aho-Corasick matches bytes literally. `<ScRiPt>` does not match `<script`,
-and `%2e%2e%2f` does not match `../`. The normalization pipeline from
-`07-security/06-waf.md` — URL-decode, lowercase, collapse whitespace — is what
+and `%2e%2e%2f` does not match [`../`](../..). The normalization pipeline from
+[`07-security/06-waf.md`](../07-security/06-waf.md) — URL-decode, lowercase, collapse whitespace — is what
 makes literal matching viable, and it must be applied identically to the
 patterns at build time and the input at match time.
 
 Gotcha: normalize once into a buffer, then match. Normalizing lazily per
 pattern reintroduces the O(P × n) cost you adopted this algorithm to avoid.
-Watch for double-decoding too — decoding `%252e` twice yields `.`, and
+Watch for double-decoding too — decoding `%252e` twice yields [`.`](..), and
 whether an attacker can exploit that depends on what the *upstream* does,
 which is the same class of parser-mismatch bug as
-`07-security/05-request-smuggling.md`.
+[`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md).
 
 ### Where the literal-match boundary is
 Aho-Corasick handles literal strings, not regex. Real WAF rules need both:
@@ -84,10 +84,10 @@ use Aho-Corasick as a fast **prefilter** — if none of a rule's literal
 substrings appear, the rule's regex cannot match, so skip it. This is
 exactly how the `regex` crate accelerates alternations internally, and it
 turns "run 5000 regexes" into "run the 3 regexes whose literals were
-present." See `13-algorithms/regex-engine.md` for the engine side.
+present." See [`13-algorithms/regex-engine.md`](regex-engine.md) for the engine side.
 
 ## Practice
-1. In `labs/12-waf`, replace per-rule substring scanning with a single
+1. In [`labs/12-waf`](../../labs/12-waf), replace per-rule substring scanning with a single
    `AhoCorasick` built from all signature literals; benchmark both against
    a 100 KB body at 10, 100, and 1000 patterns and confirm the AC timing is
    flat in pattern count.

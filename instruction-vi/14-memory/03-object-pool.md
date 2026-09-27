@@ -1,6 +1,6 @@
 # Object Pools
 
-`14-memory/02-arena.md` giải phóng toàn bộ allocation của một request cùng
+[`14-memory/02-arena.md`](02-arena.md) giải phóng toàn bộ allocation của một request cùng
 lúc nhưng bắt đầu lại từ đầu ở request sau. Object pool dành cho pattern
 ngược lại: *cùng một loại* object, được tái sử dụng qua nhiều request, nên
 không bao giờ thực sự bị free — chỉ được checkout và trả lại.
@@ -55,7 +55,7 @@ chọn một chỗ, và làm cho việc bỏ qua nó là không thể.
 ### Gotcha: một pool không giới hạn là một memory leak có hình dạng pool
 Một pool chỉ tăng trưởng (checkout nhiều hơn trả lại, hoặc tăng để phục vụ
 một đợt tăng traffic rồi không bao giờ co lại) đạt tới cùng mức đỉnh không
-kiểm soát mà `06-fragmentation.md` mô tả cho chính allocator — chỉ khác là
+kiểm soát mà [`06-fragmentation.md`](06-fragmentation.md) mô tả cho chính allocator — chỉ khác là
 giờ code của bạn đang giữ bộ nhớ thay vì allocator. Giới hạn kích thước tối
 đa của pool, và khi đầy, hoặc block việc checkout, hoặc fallback về một
 allocation thật, hoặc từ chối — quyết định cái nào một cách chủ động, thay
@@ -63,7 +63,7 @@ vì mặc định tăng trưởng vô hạn.
 
 ## Practice
 1. Implement một pool được bảo vệ bằng RAII gồm các buffer I/O `Vec<u8>`
-   tái sử dụng cho đường copy theo từng connection của `labs/05-reverse-proxy`.
+   tái sử dụng cho đường copy theo từng connection của [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy).
 2. Thêm một test rằng một buffer, sau khi được trả lại pool và checkout
    lại, không bao giờ chứa byte từ lần dùng trước đó.
 3. Benchmark alloc-mỗi-request so với buffer đã pool dưới tải đồng thời;

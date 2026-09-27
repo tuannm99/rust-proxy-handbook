@@ -1,13 +1,13 @@
 # Token Bucket
 
-`07-security/07-ratelimit.md` nói về câu hỏi chính sách — theo từng client
+[`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) nói về câu hỏi chính sách — theo từng client
 hay toàn cục, giới hạn phân tán, khi nào nên dùng leaky bucket thay vào
 đó. File này nói về việc làm cho bản thân bộ đếm đúng và nhanh.
 
 ## What to learn
 
 ### Lazy refill và state bạn thực sự cần
-Công thức refill-khi-đọc trong `07-security/07-ratelimit.md` (tokens +
+Công thức refill-khi-đọc trong [`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) (tokens +
 elapsed × rate, chặn trên ở capacity) là đúng: không cần timer nền cho
 mỗi key, và state chỉ là một số token cộng một timestamp. Hai chi tiết
 quyết định nó đúng hay không:
@@ -51,7 +51,7 @@ integer/duration của GCRA né hoàn toàn vấn đề này.
 `Mutex<HashMap<IpAddr, TokenBucket>>` ngây thơ serialize mọi request trong
 proxy trên một lock. Hai cách sửa, theo thứ tự:
 
-1. **Shard cái map** — `dashmap`, như `07-security/07-ratelimit.md` gợi
+1. **Shard cái map** — `dashmap`, như [`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) gợi
    ý, tự shard bên trong để các key khác nhau hiếm khi tranh chấp.
 2. **Làm chính bucket lock-free** — đóng gói TAT của GCRA vào một
    `AtomicU64` (nanosecond kể từ một epoch cố định) và cập nhật bằng một
@@ -66,17 +66,17 @@ kiểm tra và trừ token phải là một thao tác atomic duy nhất.
 ### Số lượng key không bị chặn trên
 Một map theo địa chỉ IP nguồn nằm dưới quyền kiểm soát của attacker: các
 nguồn giả mạo hoặc phân tán mỗi cái tạo một entry, và cái map trở thành một
-vector làm cạn kiệt bộ nhớ (`07-security/09-ddos.md`). Hãy chặn nó bằng
+vector làm cạn kiệt bộ nhớ ([`07-security/09-ddos.md`](../07-security/09-ddos.md)). Hãy chặn nó bằng
 một trong các cách:
 - **Quét dọn entry rảnh.** Một bucket ở đầy capacity không mang thông tin
   gì cả — xóa nó tương đương với giữ nó. Quét bất cứ thứ gì không bị chạm
   tới trong vài khoảng refill.
-- **Chặn trên cái map** và evict LRU (`13-algorithms/lru.md`) khi vượt
+- **Chặn trên cái map** và evict LRU ([`13-algorithms/lru.md`](lru.md)) khi vượt
   giới hạn.
 - **Đếm xấp xỉ kích thước cố định.** Hash key vào một mảng bucket kích
   thước cố định và chấp nhận va chạm gộp giới hạn của hai client — bộ nhớ
   bị chặn trên bằng cấu trúc, đổi lại là thỉnh thoảng từ chối nhầm. Một
-  count-min sketch (`13-algorithms/count-min-sketch.md`) là phiên bản bài
+  count-min sketch ([`13-algorithms/count-min-sketch.md`](count-min-sketch.md)) là phiên bản bài
   bản của cách này.
 
 Gotcha: quét theo timer trong khi request đang chạm vào map đồng thời cần
@@ -85,7 +85,7 @@ bucket đang giữa chừng được một request cập nhật và tặng clien
 reset miễn phí. Check-and-remove phải atomic với đường cập nhật.
 
 ## Practice
-1. Trong `labs/11-rate-limit`, implement cả token bucket dấu phẩy động lẫn
+1. Trong [`labs/11-rate-limit`](../../labs/11-rate-limit), implement cả token bucket dấu phẩy động lẫn
    GCRA đằng sau một trait; assert chúng accept/reject giống hệt nhau trên
    một timeline request đã kịch bản sẵn kèm khoảng rảnh.
 2. Viết test tích lũy-khi-rảnh: để một bucket không bị chạm trong 60 lần

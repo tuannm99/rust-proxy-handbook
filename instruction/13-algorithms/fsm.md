@@ -1,6 +1,6 @@
 # FSM (Finite State Machines) as a Design Pattern
 
-`13-algorithms/dfa.md` covers the accept/reject automaton theory. This
+[`13-algorithms/dfa.md`](dfa.md) covers the accept/reject automaton theory. This
 file covers finite state machines as something you deliberately reach for
 when *writing* Rust — protocol parsers and connection lifecycles are
 state machines whether or not you model them as one, and modeling them
@@ -16,7 +16,7 @@ behavior to the transitions themselves — which is what an HTTP/1.1
 connection actually is: `Idle -> ReadingRequestLine -> ReadingHeaders ->
 ReadingBody -> Idle` (keep-alive) or `-> Closed`, with real work
 happening on each edge, not just a yes/no at the end. See
-`05-http-stack/01-parser.md` and `05-http-stack/04-keepalive.md` for the
+[`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) and [`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md) for the
 concrete states; this file is about how to encode the machine itself.
 
 ### Enum + match: the common case
@@ -60,7 +60,7 @@ impl HeadersRead {
 ```
 `Idle` simply has no `read_body` method — calling it out of order doesn't
 compile, rather than panicking or silently misbehaving in production. See
-`03-rust/01-ownership.md` for why consuming `self` (not `&self`) is what
+[`03-rust/01-ownership.md`](../03-rust/01-ownership.md) for why consuming `self` (not `&self`) is what
 makes this pattern actually enforce one-way transitions.
 
 ### Choosing between them
@@ -74,12 +74,12 @@ one that would be a security issue (e.g. sending a response before
 validating the request is fully read).
 
 ## Practice
-1. Model `labs/01-http-parser`'s request-parsing states as an explicit
+1. Model [`labs/01-http-parser`](../../labs/01-http-parser)'s request-parsing states as an explicit
    enum *before* writing the parsing logic; use `match` exhaustiveness to
    confirm every state has a defined transition for every byte class it
    can see.
 2. Rewrite the keep-alive connection lifecycle from
-   `05-http-stack/04-keepalive.md` (idle → reading → responding → idle/closed)
+   [`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md) (idle → reading → responding → idle/closed)
    as a typestate chain; try to call a method out of order and confirm it
    fails to compile.
 3. Pick one state transition your enum-based parser handles with a

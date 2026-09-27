@@ -1,6 +1,6 @@
 # Arena Allocation
 
-`14-memory/01-allocator.md` nói về cấp phát tổng quát. Arena là chiến lược
+[`14-memory/01-allocator.md`](01-allocator.md) nói về cấp phát tổng quát. Arena là chiến lược
 ngược lại cho một dạng workload cụ thể — thứ mà một proxy có liên tục:
 nhiều allocation nhỏ đều "chết" cùng nhau vào cuối một request.
 
@@ -38,7 +38,7 @@ parse, giá trị trung gian của quyết định routing, buffer cho việc bi
 đổi — tất cả chỉ cần tồn tại đến khi response được gửi đi. Cấp phát mỗi
 mảnh đó vào một arena theo request và drop toàn bộ arena khi request hoàn
 tất biến hàng chục lần free riêng lẻ thành một lần. Đây cũng chính xác là
-cách sửa mà `14-memory/06-fragmentation.md` khuyến nghị cho nguyên nhân
+cách sửa mà [`14-memory/06-fragmentation.md`](06-fragmentation.md) khuyến nghị cho nguyên nhân
 fragmentation "vòng đời lẫn lộn": dữ liệu theo phạm vi request không bao
 giờ có cơ hội đan xen với connection state sống lâu hơn nếu nó nằm trong
 arena riêng của nó.
@@ -48,7 +48,7 @@ Giá trị cấp phát từ một arena là reference mượn từ nó — chún
 sống lâu hơn arena mà không được copy ra trước. Trong một async handler,
 điều này có nghĩa là arena (hay một reference vào nó) phải sống ít nhất
 bằng mọi điểm `.await` chạm vào dữ liệu mượn từ nó — chính xác là kiểu
-tình huống self-referential-qua-await-point mà `03-rust/06-pin.md` mô tả.
+tình huống self-referential-qua-await-point mà [`03-rust/06-pin.md`](../03-rust/06-pin.md) mô tả.
 Cụ thể: đừng cấp phát vào một arena là biến local rồi cố giữ một reference
 vào nó qua một future bị suspend sống lâu hơn hàm — hoặc để future sở hữu
 arena trong state của nó, hoặc copy dữ liệu ra trước điểm suspend.
@@ -59,11 +59,11 @@ giới hạn do kẻ tấn công kiểm soát thành các mảnh cấp phát tro
 bỏ backpressure tự nhiên mà một giới hạn theo từng allocation lẽ ra đã
 cung cấp. Giới hạn tổng kích thước arena theo mỗi request và từ chối/báo
 lỗi khi vượt quá, giống cách bạn giới hạn bất kỳ tài nguyên nào khác theo
-request (`07-security/09-ddos.md`).
+request ([`07-security/09-ddos.md`](../07-security/09-ddos.md)).
 
 ## Practice
 1. Dùng `bumpalo` để arena-allocate header đã parse cho một request trong
-   `labs/01-http-parser`, thay thế các allocation `String`/`Vec` theo
+   [`labs/01-http-parser`](../../labs/01-http-parser), thay thế các allocation `String`/`Vec` theo
    từng header.
 2. Đo số lượng allocation và tổng thời gian parse một request có 20
    header, có và không có arena, ở mức đồng thời cao.

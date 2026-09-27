@@ -12,14 +12,14 @@ và trả về một fd *mới* cho kết nối đó (fd đang listen vẫn ti�
 nghe). Ở phía client, `connect()` thực hiện 3-way handshake của TCP. Việc
 này ánh xạ trực tiếp tới `TcpListener::bind` + `.accept()` và
 `TcpStream::connect` trong Rust, nhưng biết các syscall thô là thứ khiến
-một vòng lặp epoll dùng `libc` thô (xem bài tập của `02-linux/07-epoll.md`)
+một vòng lặp epoll dùng `libc` thô (xem bài tập của [`02-linux/07-epoll.md`](../02-linux/07-epoll.md))
 trở nên dễ hiểu thay vì như phép màu.
 
 ### Blocking vs non-blocking
 Một socket blocking khiến `read`/`write`/`accept` treo thread gọi cho tới
 khi có dữ liệu/kết nối sẵn sàng. Một socket non-blocking trả về
 `EWOULDBLOCK`/`EAGAIN` ngay lập tức thay vào đó — đây chính là nền tảng mà
-một event loop (epoll, xem `02-linux/07-epoll.md`) được xây trên đó: đăng
+một event loop (epoll, xem [`02-linux/07-epoll.md`](../02-linux/07-epoll.md)) được xây trên đó: đăng
 ký fd, block trên *nhiều* fd cùng lúc trong `epoll_wait`, và chỉ gọi
 `read`/`write` khi được báo fd đã sẵn sàng. `TcpListener`/`TcpStream` của
 tokio là non-blocking bên dưới và tự động tích hợp với reactor của nó.
@@ -61,9 +61,9 @@ viết.
 
 1. Trace `strace -f` trên một phiên `nc -l` đơn giản và xác định các
    syscall `socket`/`bind`/`listen`/`accept` theo đúng thứ tự.
-2. Implement `labs/00-tcp-server` dùng `TcpListener` của tokio, rồi so
+2. Implement [`labs/00-tcp-server`](../../labs/00-tcp-server) dùng `TcpListener` của tokio, rồi so
    sánh nó với echo server epoll-thô-dùng-`libc` bạn sẽ xây trong bài tập
-   của `02-linux/07-epoll.md` (một scratch project, không thuộc workspace
+   của [`02-linux/07-epoll.md`](../02-linux/07-epoll.md) (một scratch project, không thuộc workspace
    này) — cùng hành vi, code rất khác nhau.
 3. Trong phiên bản epoll thô đó, cố tình gọi `read()` non-blocking trước
    khi dữ liệu sẵn sàng và xác nhận bạn nhận được `EAGAIN`; xử lý nó đúng

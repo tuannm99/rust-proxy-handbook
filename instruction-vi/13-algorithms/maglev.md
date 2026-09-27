@@ -2,7 +2,7 @@
 
 Sơ đồ hashing của load balancer Google: lookup O(1), cân bằng gần như
 hoàn hảo, gián đoạn tối thiểu. Lựa chọn khi ring của consistent hashing
-(`13-algorithms/consistent-hash.md`) quá chậm hoặc quá lệch.
+([`13-algorithms/consistent-hash.md`](consistent-hash.md)) quá chậm hoặc quá lệch.
 
 ## What to learn
 
@@ -73,13 +73,13 @@ config và affinity sẽ âm thầm hỏng giữa chúng.
 ### Khi nào không nên dùng nó
 Cái giá của Maglev là việc rebuild: O(M) công việc và một bảng cỡ M cho
 mỗi pool. Với một vài upstream đứng sau một proxy, một ring `BTreeMap` hay
-HRW thuần (`13-algorithms/rendezvous-hash.md`) đơn giản hơn, rebuild ngay
+HRW thuần ([`13-algorithms/rendezvous-hash.md`](rendezvous-hash.md)) đơn giản hơn, rebuild ngay
 lập tức, và lookup O(log N) hay O(N) không phải nút thắt cổ chai của bạn.
 Maglev xứng đáng với độ phức tạp của nó ở hàng trăm-tới-hàng-nghìn
 upstream và tốc độ request cao.
 
 ## Practice
-1. Trong `labs/06-load-balancer`, implement việc sinh permutation cho
+1. Trong [`labs/06-load-balancer`](../../labs/06-load-balancer), implement việc sinh permutation cho
    M=65537 và assert rằng danh sách ưu tiên của một upstream thăm đúng
    tất cả M slot một lần — đây là test bắt được một M không phải số
    nguyên tố.
@@ -91,7 +91,7 @@ upstream và tốc độ request cao.
    xác nhận sự bùng nổ bậc hai.
 4. Gỡ một upstream khỏi 10 cái, rebuild, và đo phần trăm số slot trong M
    đổi chủ. So sánh với tỉ lệ ~1/10 mà ring consistent-hash của bạn đạt
-   được trong bài tập của `13-algorithms/consistent-hash.md`.
+   được trong bài tập của [`13-algorithms/consistent-hash.md`](consistent-hash.md).
 5. Xây cùng một bảng hai lần từ cùng tập upstream với thứ tự input bị xáo
    trộn; xác nhận các bảng chỉ giống hệt nhau khi bạn sắp xếp theo id ổn
    định trước.

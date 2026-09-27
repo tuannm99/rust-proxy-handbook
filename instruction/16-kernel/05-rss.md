@@ -1,6 +1,6 @@
 # RSS (Receive Side Scaling)
 
-`16-kernel/04-interrupt.md` covers why one core handling all packet
+[`16-kernel/04-interrupt.md`](04-interrupt.md) covers why one core handling all packet
 interrupts becomes a ceiling on throughput. RSS is the hardware-level
 fix: the NIC itself spreads incoming packets — and their interrupts —
 across multiple cores before the kernel ever sees them.
@@ -23,7 +23,7 @@ Without RSS (a single-queue NIC, or RSS disabled), every packet's
 interrupt lands on one core — usually core 0 by default — regardless of
 how many cores your application spawns worker threads on. RSS is what
 actually makes "packet processing" a parallel, multi-core workload at
-the hardware level; without it, `16-kernel/04-interrupt.md`'s ceiling
+the hardware level; without it, [`16-kernel/04-interrupt.md`](04-interrupt.md)'s ceiling
 applies no matter how the application is architected.
 
 ### Inspecting and tuning it
@@ -54,7 +54,7 @@ configured RSS means evenly *achieved* balance.
 2. If multiple queues are available, set per-queue IRQ affinity to spread
    across several cores and confirm with `/proc/interrupts` that
    different queues' interrupts land on different cores.
-3. Drive load at `proxy` from many distinct source ports/connections and
+3. Drive load at [`proxy`](../../proxy) from many distinct source ports/connections and
    compare per-queue packet counts (`ethtool -S`) against a test that
    reuses very few source connections — observe the concentration effect
    the gotcha above describes.

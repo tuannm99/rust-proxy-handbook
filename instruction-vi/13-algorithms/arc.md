@@ -1,6 +1,6 @@
 # ARC (Adaptive Replacement Cache)
 
-`13-algorithms/lru.md` và `13-algorithms/lfu.md` mỗi cái nắm bắt một tín
+[`13-algorithms/lru.md`](lru.md) và [`13-algorithms/lfu.md`](lfu.md) mỗi cái nắm bắt một tín
 hiệu — recency hoặc frequency — và mỗi cái đều có một workload đánh bại nó
 (LRU: quét one-shot; LFU: stale winner). Điểm bán của ARC là nó không bắt
 bạn phải chọn: nó theo dõi cả hai và *thích ứng* (adapt) tỉ lệ giữa chúng
@@ -75,12 +75,12 @@ lần hai) phải remove-rồi-insert một cách nguyên tử so với một l�
 rỉ.
 
 ## Practice
-1. Trong `labs/10-cache`, implement ARC như chính sách eviction thứ tư
+1. Trong [`labs/10-cache`](../../labs/10-cache), implement ARC như chính sách eviction thứ tư
    đứng sau trait dùng chung của bạn, dùng danh sách dựa trên arena
-   (kỹ thuật của `13-algorithms/lru.md`) cho cả bốn danh sách.
+   (kỹ thuật của [`13-algorithms/lru.md`](lru.md)) cho cả bốn danh sách.
 2. Tái tạo kịch bản mà ARC sinh ra để giải quyết: một tập hot nhỏ ổn định
    cộng với một lượt scan one-shot lớn theo chu kỳ. Chạy LRU thuần, LFU
-   thuần (`13-algorithms/lfu.md`), và ARC trên cùng một trace rồi so sánh
+   thuần ([`13-algorithms/lfu.md`](lfu.md)), và ARC trên cùng một trace rồi so sánh
    hit rate — xác nhận `p` của ARC dịch về phía T1 trong lúc scan và phục
    hồi sau đó mà không mất tập hot.
 3. Thêm một assertion rằng không key nào từng xuất hiện trong hơn một

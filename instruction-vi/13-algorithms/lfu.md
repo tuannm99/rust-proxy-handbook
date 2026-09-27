@@ -1,6 +1,6 @@
 # LFU (Least Frequently Used)
 
-`13-algorithms/lru.md` nói về eviction dựa trên recency và điểm mù của nó
+[`13-algorithms/lru.md`](lru.md) nói về eviction dựa trên recency và điểm mù của nó
 trước các lượt scan. File này nói về giải pháp thay thế dựa trên
 frequency và vì sao nó không phải một bản thay thế đơn giản.
 
@@ -52,22 +52,22 @@ thực sự muốn trong một cache.
 Giữa độ phức tạp của danh sách bucket và bài toán tuning aging, LFU thuần
 hiếm khi được dùng nguyên bản trong cache production. Hai hướng sửa nó
 theo cách khác nhau:
-- **ARC** (`13-algorithms/arc.md`) theo dõi cả recency lẫn frequency và tự
+- **ARC** ([`13-algorithms/arc.md`](arc.md)) theo dõi cả recency lẫn frequency và tự
   động điều chỉnh tỉ lệ giữa chúng, không cần một núm decay thủ công.
-- **TinyLFU** (`13-algorithms/tinylfu.md`) giữ *ý tưởng* frequency nhưng
+- **TinyLFU** ([`13-algorithms/tinylfu.md`](tinylfu.md)) giữ *ý tưởng* frequency nhưng
   thay bộ đếm chính xác bằng một count-min sketch xác suất
-  (`13-algorithms/count-min-sketch.md`) có sẵn cơ chế aging định kỳ, và
+  ([`13-algorithms/count-min-sketch.md`](count-min-sketch.md)) có sẵn cơ chế aging định kỳ, và
   chỉ dùng nó như một bộ lọc *admission* đứng trước một cấu trúc chính đơn
   giản hơn nhiều (thường dựa trên LRU) thay vì làm chính sách eviction cho
   toàn bộ cache.
 
-Gotcha: đừng tự viết tay LFU trong `proxy/` — nó ở đây để bạn nhận ra sự
+Gotcha: đừng tự viết tay LFU trong [`proxy/`](../../proxy) — nó ở đây để bạn nhận ra sự
 đánh đổi bằng tên gọi và hiểu ARC với TinyLFU thực sự đang cải thiện điều
 gì. Các hệ thống production (`moka`, Caffeine) dùng các thiết kế dẫn xuất
 từ TinyLFU, không phải LFU thuần, chính vì lý do stale ở trên.
 
 ## Practice
-1. Trong `labs/10-cache`, implement cấu trúc LFU O(1) (danh sách bucket
+1. Trong [`labs/10-cache`](../../labs/10-cache), implement cấu trúc LFU O(1) (danh sách bucket
    frequency chứa danh sách key) đứng sau cùng một trait eviction bạn đã
    dùng cho LRU.
 2. Cố tình tái tạo bug stale: làm một key cực kỳ phổ biến, ngừng chạm vào
@@ -78,6 +78,6 @@ từ TinyLFU, không phải LFU thuần, chính vì lý do stale ở trên.
    xác nhận key stale cuối cùng trở nên có thể evict được và hit rate phục
    hồi.
 4. So sánh độ phức tạp implementation và tính đúng đắn của eviction với
-   LRU dựa trên arena từ `13-algorithms/lru.md` trên cùng một bộ benchmark,
+   LRU dựa trên arena từ [`13-algorithms/lru.md`](lru.md) trên cùng một bộ benchmark,
    và viết ra, một cách cụ thể, hình dạng workload nào (tập hot ổn định so
    với độ phổ biến thay đổi so với scan one-shot) thiên về chính sách nào.

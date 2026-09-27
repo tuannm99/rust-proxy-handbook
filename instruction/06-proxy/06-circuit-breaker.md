@@ -1,7 +1,7 @@
 # Circuit Breaker
 
 Stop calling an upstream that is consistently failing, instead of retrying
-into it forever. `06-proxy/05-retry.md` handles individual request failures;
+into it forever. [`06-proxy/05-retry.md`](05-retry.md) handles individual request failures;
 this is the layer above, which decides an upstream should not be called at
 all for a while.
 
@@ -35,13 +35,13 @@ successes keep interleaving.
 Use a failure *rate* over a rolling window with a **minimum request count**
 floor: "open only if ≥20 requests in the window and >50% failed." The
 floor is the same guard that appears in rate-based alerting
-(`08-observability/06-alerting.md`) and canary analysis
-(`09-architecture/06-canary-deploy.md`) — below it, the correct verdict is
+([`08-observability/06-alerting.md`](../08-observability/06-alerting.md)) and canary analysis
+([`09-architecture/06-canary-deploy.md`](../09-architecture/06-canary-deploy.md)) — below it, the correct verdict is
 "not enough data", not "healthy" and not "failing".
 
 Gotcha: decide what counts as a failure, and do not include client errors.
 A 404 or 400 means the upstream worked correctly and the request was bad
-(`06-proxy/03-healthcheck.md` makes the same point for passive health
+([`06-proxy/03-healthcheck.md`](03-healthcheck.md) makes the same point for passive health
 checks). Counting 4xx lets one client with a broken URL scheme open the
 circuit for everyone.
 
@@ -71,7 +71,7 @@ Gotcha: a single trial call is a one-sample experiment. An upstream that
 is 50% broken has even odds of closing the circuit, at which point full
 traffic returns and it reopens — a flap. Requiring several consecutive
 successes before closing, or ramping traffic back gradually (the slow
-start in `06-proxy/04-outlier-detection.md`), is what converts a coin flip
+start in [`06-proxy/04-outlier-detection.md`](04-outlier-detection.md)), is what converts a coin flip
 into a measurement.
 
 ### Back off the open duration
@@ -79,25 +79,25 @@ A fixed 30-second open period means an upstream that is down for an hour
 gets probed 120 times, each probe costing a real request its latency. Back
 the open duration off on each failed trial (30s, 60s, 120s, capped), and
 reset it after a successful close — the same exponential-with-a-cap shape
-as retry backoff (`06-proxy/05-retry.md`).
+as retry backoff ([`06-proxy/05-retry.md`](05-retry.md)).
 
 ### Scope: per upstream, not per pool
 A circuit breaker on the *pool* fails fast for everything the moment one
 host misbehaves, which throws away the healthy hosts you have. Keep the
 circuit per upstream instance, and let the load balancer
-(`06-proxy/02-load-balancer.md`) route around open circuits by treating them
+([`06-proxy/02-load-balancer.md`](02-load-balancer.md)) route around open circuits by treating them
 like unhealthy hosts.
 
 Gotcha: that means the panic-threshold reasoning applies here too — if
 every upstream's circuit is open, failing fast for 100% of traffic may be
 worse than trying anyway. Decide what "all circuits open" does, exactly as
-`06-proxy/03-healthcheck.md` decides what "all hosts unhealthy" does.
+[`06-proxy/03-healthcheck.md`](03-healthcheck.md) decides what "all hosts unhealthy" does.
 
 Gotcha: circuit state is per process. With N proxy instances, an upstream
 must fail enough for *each* instance to trip independently, and a
 restarted instance starts with every circuit closed and re-learns by
 sending real traffic into a known-bad upstream
-(`09-architecture/05-rolling-restart.md`).
+([`09-architecture/05-rolling-restart.md`](../09-architecture/05-rolling-restart.md)).
 
 ### Where it sits relative to retries
 Retry first, circuit second: a retry handles the individual blip, and the
@@ -110,7 +110,7 @@ upstream selection must skip hosts with open circuits rather than treating
 ## Practice
 Build these in order.
 
-1. In `labs/05-reverse-proxy`, implement `CircuitState` per upstream with
+1. In [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), implement `CircuitState` per upstream with
    a consecutive-failure trigger. **Done when** logs show
    `Closed -> Open -> HalfOpen -> Closed` against an upstream you kill and
    restart.

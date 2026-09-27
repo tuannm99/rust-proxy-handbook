@@ -3,10 +3,10 @@
 ## What to learn
 
 ### Zero-copy file sending
-Serve một static file theo cách ngây thơ nghĩa là: đọc toàn bộ file vào một buffer userspace, rồi viết buffer đó ra socket — tốn thêm hai lần copy và hai lần context switch không cần thiết. `sendfile(2)` (xem `02-linux/11-zerocopy.md`) copy dữ liệu kernel-tới-kernel, bỏ qua userspace hoàn toàn; trên Linux, `tokio-uring`/`io_uring` (`02-linux/08-io_uring.md`) có thể làm điều tương tự bất đồng bộ với overhead syscall thấp hơn `sendfile` dựa trên epoll.
+Serve một static file theo cách ngây thơ nghĩa là: đọc toàn bộ file vào một buffer userspace, rồi viết buffer đó ra socket — tốn thêm hai lần copy và hai lần context switch không cần thiết. `sendfile(2)` (xem [`02-linux/11-zerocopy.md`](../02-linux/11-zerocopy.md)) copy dữ liệu kernel-tới-kernel, bỏ qua userspace hoàn toàn; trên Linux, `tokio-uring`/`io_uring` ([`02-linux/08-io_uring.md`](../02-linux/08-io_uring.md)) có thể làm điều tương tự bất đồng bộ với overhead syscall thấp hơn `sendfile` dựa trên epoll.
 
 Gotcha: `sendfile` nhanh khi page cache *hit* và block khi miss
-(`16-kernel/08-page-cache.md`). Trong một async runtime, một `sendfile`
+([`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md)). Trong một async runtime, một `sendfile`
 block trên một file nguội làm đứng toàn bộ worker thread và mọi connection
 khác nó đang đa hợp — nên "tối ưu hiển nhiên" đó biến một lần đọc file
 chậm thành một đợt latency spike trên các request không liên quan. Đây
@@ -29,11 +29,11 @@ Hai cách giảm nhẹ đáng biết: cache metadata (và thậm chí cả file
 descriptor đang mở) cho các file nóng, kiểu `open_file_cache` của nginx,
 để các request lặp lại bỏ qua syscall hoàn toàn; và giới hạn concurrency
 của static-file tách biệt khỏi concurrency request tổng thể
-(`07-security/09-ddos.md`), để một lần đứng của filesystem nguội không thể
+([`07-security/09-ddos.md`](../07-security/09-ddos.md)), để một lần đứng của filesystem nguội không thể
 nuốt cả process.
 
 Gotcha: một fd cache bị giới hạn bởi `ulimit -n` và phải evict
-(`13-algorithms/lru.md`), và nó phải key trên thứ gì đó phát hiện được
+([`13-algorithms/lru.md`](../13-algorithms/lru.md)), và nó phải key trên thứ gì đó phát hiện được
 việc file bị thay thế (device + inode, không phải path) — một lần deploy
 thay file để lại bạn serve nội dung của fd cũ mãi mãi.
 
@@ -87,7 +87,7 @@ chắc là resolve tương đối với một thư mục root đã mở, dùng `
 kernel enforce việc containment một cách atomic thay vì bạn tự kiểm tra
 một chuỗi.
 
-Gotcha: cùng thảo luận về normalization như `05-http-stack/03-router.md`
+Gotcha: cùng thảo luận về normalization như [`05-http-stack/03-router.md`](03-router.md)
 áp dụng ở đây, và nếu router đã normalize path rồi, static handler không
 được decode nó *lần nữa* — decode hai lần đưa traversal quay lại từ
 `%252e%252e%252f`. Decode đúng một lần, ở một chỗ có ghi rõ.
@@ -122,7 +122,7 @@ origin bạn. Serve nội dung người dùng từ một origin riêng, hoặc b
 ## Practice
 Làm theo thứ tự này.
 
-1. Trong `labs/04-static-server`, serve file từ một thư mục root bằng
+1. Trong [`labs/04-static-server`](../../labs/04-static-server), serve file từ một thư mục root bằng
    `tokio::fs::read` cộng một response body. **Xong khi** một file đã biết
    được trả về với đúng `Content-Type` từ một bảng extension.
 2. Viết các test traversal trước khi hardening: `../../../etc/passwd`,

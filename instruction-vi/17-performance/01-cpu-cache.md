@@ -2,7 +2,7 @@
 
 Vì sao data layout, chứ không phải số lượng instruction, thường quyết
 định latency của hot path. Đọc file này **sau khi**
-`08-observability/04-profiling.md` đã chỉ một flamegraph vào một hot path
+[`08-observability/04-profiling.md`](../08-observability/04-profiling.md) đã chỉ một flamegraph vào một hot path
 cụ thể — không phải trước.
 
 ## What to learn
@@ -20,7 +20,7 @@ nó stream tuần tự và mọi line đều được prefetch.
 - **Spatial** — dữ liệu dùng cùng nhau nên nằm cùng nhau, để một lần fetch
   line mang về nhiều giá trị hữu ích. Duyệt một `Vec<Struct>` có tính chất
   này; đuổi theo một linked list các node `Box` thì không, đây là lý do
-  cốt lõi vì sao `13-algorithms/lru.md` và `15-parser/03-ast.md` đẩy mạnh
+  cốt lõi vì sao [`13-algorithms/lru.md`](../13-algorithms/lru.md) và [`15-parser/03-ast.md`](../15-parser/03-ast.md) đẩy mạnh
   arena (`Vec` + index) thay vì cấu trúc con trỏ `Box`.
 - **Temporal** — dữ liệu dùng bây giờ sẽ sớm được dùng lại, nên giữ nó
   nóng.
@@ -33,7 +33,7 @@ struct Backend { weight: u32, conns: u32, addr: SocketAddr }
 ```
 
 Với một load balancer quét weight qua hàng nghìn backend
-(`06-proxy/02-load-balancer.md`), layout struct-of-arrays có thể nhanh hơn
+([`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md)), layout struct-of-arrays có thể nhanh hơn
 nhiều lần chỉ đơn giản vì không fetch các field nó không đọc.
 
 ### Prefetching thưởng cho truy cập có thể đoán trước
@@ -62,24 +62,24 @@ phản trực giác đến mức thay đổi layout mà không đo cả trước
 Gotcha: đừng bao giờ làm việc này một cách suy đoán. Một thay đổi layout
 cắt bớt cache miss trên code chạy 0.1% thời gian là vô hình trong
 production và mãi mãi thêm phức tạp. Điểm kích hoạt là một flamegraph
-(`08-observability/04-profiling.md`) chỉ ra một vòng lặp hot cụ thể, dưới
-tải thật (`12-testing/01-load-testing.md`) — xem thêm
-`17-performance/02-false-sharing.md` cho phiên bản đồng thời của vấn đề
+([`08-observability/04-profiling.md`](../08-observability/04-profiling.md)) chỉ ra một vòng lặp hot cụ thể, dưới
+tải thật ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)) — xem thêm
+[`17-performance/02-false-sharing.md`](02-false-sharing.md) cho phiên bản đồng thời của vấn đề
 này.
 
 ## Practice
 1. Benchmark array-of-structs so với struct-of-arrays cho việc quét một
    field qua 100 nghìn backend (phép quét weight của
-   `06-proxy/02-load-balancer.md`); ghi lại `perf stat cache-misses` cho
+   [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md)); ghi lại `perf stat cache-misses` cho
    cả hai, không chỉ wall time.
 2. Xây một linked list các node `Box` và một arena (`Vec` + index) của
    cùng dữ liệu, duyệt cả hai, và so sánh số cache-miss để thấy hiệu ứng
    prefetcher.
-3. Lấy một struct nóng từ đường xử lý request của `proxy` và tách nó
+3. Lấy một struct nóng từ đường xử lý request của [`proxy`](../../proxy) và tách nó
    thành hot/cold; đo xem benchmark của đường xử lý request có thay đổi
    chút nào không — và thành thật nếu nó không thay đổi.
 4. Dùng `perf record` để gán cache miss cho các dòng cụ thể trong một hot
-   path của `proxy` dưới tải, thay vì đoán truy cập nào tốn kém.
+   path của [`proxy`](../../proxy) dưới tải, thay vì đoán truy cập nào tốn kém.
 5. Đọc `L1-dcache-load-misses` trước và sau một thay đổi layout và ghi lại
    xem thay đổi đó có đáng với độ phức tạp của nó không — luyện tập việc
    từ chối những thay đổi không làm dịch chuyển con số.

@@ -1,9 +1,9 @@
 # Raft
 
 Consensus dựa trên leader — cách một tập node đồng thuận trên một log các
-thay đổi có thứ tự dù một số node fail. Ngoài phạm vi của `proxy/` một
+thay đổi có thứ tự dù một số node fail. Ngoài phạm vi của [`proxy/`](../../proxy) một
 instance; chỉ đọc file này nếu bạn mở rộng hướng tới một control plane hoặc
-cache đa node (`18-distributed/04-distributed-cache.md`).
+cache đa node ([`18-distributed/04-distributed-cache.md`](04-distributed-cache.md)).
 
 ## What to learn
 
@@ -23,7 +23,7 @@ Raft chủ động chia consensus thành các phần bạn có thể suy luận 
   điệu). Follower không nghe gì từ leader trước một timeout ngẫu nhiên trở
   thành candidate và request vote; một candidate có đa số trở thành leader.
   Timeout ngẫu nhiên là thứ phá vỡ đối xứng để hai candidate hiếm khi hòa —
-  xem `18-distributed/03-leader-election.md`.
+  xem [`18-distributed/03-leader-election.md`](03-leader-election.md).
 - **Log replication.** Client gửi thay đổi tới leader, leader append vào
   log của nó và replicate cho follower. Một entry được *commit* khi đa số
   đã lưu nó; chỉ sau đó nó được apply vào state machine và ack. Đây là lý
@@ -61,10 +61,10 @@ bạn cần — và, thường xuyên hơn nhiều, nhận ra khi nào bạn kh�
 ### Khi bạn gần như chắc chắn không cần nó
 Hầu hết các nhu cầu "distributed" mà một proxy có yếu hơn consensus và có
 giải pháp rẻ hơn: counter rate-limit chia sẻ dùng Redis
-(`07-security/07-ratelimit.md`), không phải Raft; membership/discovery
-dùng gossip (`18-distributed/02-gossip.md`) hoặc một registry có sẵn
-(`06-proxy/07-service-discovery.md`); một cache chia sẻ dùng consistent
-hashing (`13-algorithms/consistent-hash.md`) và chấp nhận inconsistency.
+([`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md)), không phải Raft; membership/discovery
+dùng gossip ([`18-distributed/02-gossip.md`](02-gossip.md)) hoặc một registry có sẵn
+([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)); một cache chia sẻ dùng consistent
+hashing ([`13-algorithms/consistent-hash.md`](../13-algorithms/consistent-hash.md)) và chấp nhận inconsistency.
 Chỉ dùng consensus khi các node *không bao giờ* được bất đồng về một
 history có thứ tự.
 
@@ -78,10 +78,10 @@ history có thứ tự.
    commit, bên nào không, và vì sao bên minority từ chối thay vì fork
    history?
 4. Với mỗi nhu cầu "distributed" trong handbook này — rate limiting
-   (`07-security/07-ratelimit.md`), service discovery
-   (`06-proxy/07-service-discovery.md`), cache chia sẻ
-   (`18-distributed/04-distributed-cache.md`) — quyết định nó có thực sự
+   ([`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md)), service discovery
+   ([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)), cache chia sẻ
+   ([`18-distributed/04-distributed-cache.md`](04-distributed-cache.md)) — quyết định nó có thực sự
    cần consensus hay một cơ chế yếu hơn, và giải thích từng cái.
-5. Chỉ khi bạn mở rộng `proxy/` thành một control plane đa node: dựng một
+5. Chỉ khi bạn mở rộng [`proxy/`](../../proxy) thành một control plane đa node: dựng một
    cluster 3 node với `openraft` lưu routing config, và kill leader dưới
    load để xem election và tính liên tục — không tự viết tay algorithm.

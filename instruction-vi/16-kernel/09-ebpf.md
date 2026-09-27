@@ -2,7 +2,7 @@
 
 Chạy code đã được verify của chính bạn bên trong kernel, không cần module
 và không cần reboot. Nền tảng cho packet filtering bằng XDP
-(`16-kernel/10-xdp.md`) và cho phần lớn observability hiện đại ở tầng
+([`16-kernel/10-xdp.md`](10-xdp.md)) và cho phần lớn observability hiện đại ở tầng
 kernel.
 
 ## What to learn
@@ -54,7 +54,7 @@ Các loại quan trọng ở đây: `HASH` (key/value tổng quát, ví dụ cou
 từng IP), `ARRAY` (khóa theo index, nhanh), `PERCPU_HASH`/`PERCPU_ARRAY`
 (một instance cho mỗi CPU, không cần atomic — lựa chọn đúng cho counter),
 `LPM_TRIE` (longest-prefix match, chính xác là CIDR matching cho
-`07-security/08-ip-filtering.md`), và `RINGBUF` (streaming sự kiện
+[`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)), và `RINGBUF` (streaming sự kiện
 kernel-tới-userspace hiệu quả).
 
 ```
@@ -70,7 +70,7 @@ chính xác từ phía kernel.
 
 ### Các attach point liên quan tới một proxy
 - **XDP** — sớm nhất có thể, trong NIC driver trước khi một `sk_buff` tồn
-  tại. Nhanh nhất, bị giới hạn nhiều nhất. Xem `16-kernel/10-xdp.md`.
+  tại. Nhanh nhất, bị giới hạn nhiều nhất. Xem [`16-kernel/10-xdp.md`](10-xdp.md).
 - **TC (traffic control)** — sau khi `sk_buff` được cấp phát; chậm hơn XDP
   nhưng thấy cả ingress lẫn egress và có thể sửa packet tự do hơn.
 - **Socket filter / `SO_ATTACH_BPF`** — theo từng socket, hữu ích cho việc
@@ -78,12 +78,12 @@ chính xác từ phía kernel.
 - **kprobe / tracepoint / USDT** — observability hơn là filtering: attach
   vào các hàm kernel hoặc tracepoint tĩnh để đo những gì kernel đang làm
   bên dưới proxy của bạn. Đây là thứ mà `bpftrace` compile ra, và nó là
-  eBPF thực dụng nhất ngay lập tức cho `08-observability/04-profiling.md`.
+  eBPF thực dụng nhất ngay lập tức cho [`08-observability/04-profiling.md`](../08-observability/04-profiling.md).
 
 ### Câu chuyện với Rust
 Có hai lựa chọn thực sự. **Aya** là Rust thuần cho cả chương trình phía
 kernel lẫn loader phía user-space, không phụ thuộc libbpf/clang — lựa chọn
-dễ chịu hơn, và là thứ `labs/17-ebpf` nhắm tới. **libbpf-rs** binding thư
+dễ chịu hơn, và là thứ [`labs/17-ebpf`](../../labs/17-ebpf) nhắm tới. **libbpf-rs** binding thư
 viện C libbpf và kế thừa sự trưởng thành cùng hỗ trợ CO-RE của nó.
 
 **CO-RE** (Compile Once, Run Everywhere) là cơ chế portability đáng biết:
@@ -100,7 +100,7 @@ sẵn, không phải chắp vá sau.
 
 ### Khi nào nó đáng làm
 Filtering bằng eBPF đáng làm khi bạn cần drop traffic *trước khi* nó tốn
-bất cứ chi phí nào (`07-security/09-ddos.md`), hoặc quan sát kernel mà
+bất cứ chi phí nào ([`07-security/09-ddos.md`](../07-security/09-ddos.md)), hoặc quan sát kernel mà
 không cần instrument ứng dụng. Nó không phải một thứ thay thế cho logic
 ứng dụng: nó không thể parse HTTP một cách có ý nghĩa, không thể ra quyết
 định cần state ở user-space, và mọi rule đều bị giới hạn bởi verifier.
@@ -108,7 +108,7 @@ Dùng nó như lớp lọc đầu tiên rẻ tiền, với proxy xử lý mọi 
 qua đó.
 
 ## Practice
-1. Viết một chương trình Aya tối giản trong `labs/17-ebpf` đếm số packet
+1. Viết một chương trình Aya tối giản trong [`labs/17-ebpf`](../../labs/17-ebpf) đếm số packet
    nhận được trong một `PERCPU_ARRAY` và một loader user-space in ra tổng
    cộng dồn mỗi giây.
 2. Cố tình kích hoạt một lần bị verifier từ chối: đọc một byte packet mà
@@ -118,9 +118,9 @@ qua đó.
    dưới tải; đo chi phí tranh chấp.
 4. Xây một map `LPM_TRIE` chứa các CIDR bị chặn, điền nó từ user space, và
    tra cứu địa chỉ nguồn với nó từ phía kernel — cùng loại matching mà
-   `07-security/08-ip-filtering.md` làm trong proxy.
+   [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md) làm trong proxy.
 5. Stream sự kiện tới user space bằng `RINGBUF` và so sánh throughput của
    nó với việc tra cứu map theo từng sự kiện.
 6. Dùng `bpftrace` (không cần viết code) để vẽ histogram latency của
    `tcp_sendmsg` trong khi proxy của bạn phục vụ tải, và đối chiếu nó với
-   metric từ `08-observability/02-metrics.md`.
+   metric từ [`08-observability/02-metrics.md`](../08-observability/02-metrics.md).

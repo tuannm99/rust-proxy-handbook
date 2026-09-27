@@ -15,7 +15,7 @@ Các chủ đề:
 number ban đầu trước khi bất kỳ dữ liệu ứng dụng nào chảy. Round trip này
 là overhead latency thuần túy mà proxy của bạn trả cho mỗi kết nối
 upstream mới — đó là luận điểm cốt lõi cho việc pooling/tái sử dụng kết
-nối tới upstream (xem `06-proxy/01-upstream.md`) thay vì dial mới cho mỗi
+nối tới upstream (xem [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)) thay vì dial mới cho mỗi
 request.
 
 ### TIME_WAIT và vòng đời socket
@@ -61,21 +61,21 @@ TCP keepalive (`SO_KEEPALIVE` + `TCP_KEEPIDLE`/`TCP_KEEPINTVL`/
 `TCP_KEEPCNT`) định kỳ thăm dò một kết nối rảnh để phát hiện một peer đã
 chết mà chưa bao giờ gửi `FIN` (ví dụ máy đó bị crash, hoặc một
 NAT/firewall âm thầm drop mapping). Điều này khác với HTTP keep-alive ở
-*tầng ứng dụng* (`05-http-stack/04-keepalive.md`) — TCP keepalive phát
+*tầng ứng dụng* ([`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md)) — TCP keepalive phát
 hiện một peer đã chết, HTTP keep-alive quyết định có tái sử dụng một kết
 nối cho request khác hay không.
 
 ## Practice
 
 1. Capture một handshake và một lần teardown kết nối bằng
-   `tcpdump -i lo port 8080` trong khi gọi tới `labs/00-tcp-server`, và
+   `tcpdump -i lo port 8080` trong khi gọi tới [`labs/00-tcp-server`](../../labs/00-tcp-server), và
    xác định chuỗi SYN/SYN-ACK/ACK và FIN/FIN-ACK.
 2. Chạy `ss -tn state time-wait | wc -l` trong khi dồn dập gọi tới
-   `labs/05-reverse-proxy` bằng các kết nối ngắn hạn (không keep-alive),
+   [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) bằng các kết nối ngắn hạn (không keep-alive),
    rồi lại chạy với tái sử dụng kết nối bật lên — so sánh số lượng.
 3. Benchmark latency của request có và không có `set_nodelay(true)` với
    các payload request/response nhỏ và đo sự khác biệt.
 4. Cấu hình TCP keepalive trên các kết nối client tới upstream trong
-   `labs/05-reverse-proxy` và xác nhận (bằng cách kill một upstream
+   [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) và xác nhận (bằng cách kill một upstream
    process mà không đóng socket của nó, ví dụ qua rule drop của
    `iptables`) rằng proxy của bạn cuối cùng phát hiện được peer đã chết.

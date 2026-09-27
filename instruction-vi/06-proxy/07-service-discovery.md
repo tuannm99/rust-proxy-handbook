@@ -2,10 +2,10 @@
 
 ## What to learn
 ### Config tĩnh vs discovery động
-`01-upstream.md` giả định một danh sách upstream cố định. Các deployment
+[`01-upstream.md`](01-upstream.md) giả định một danh sách upstream cố định. Các deployment
 thật thay đổi tập upstream liên tục (autoscaling, rolling deploy, node
 fail). Config tĩnh (một danh sách trong file config, reload theo
-`09-architecture/03-config.md`) đơn giản nhất và ổn cho các hạm đội
+[`09-architecture/03-config.md`](../09-architecture/03-config.md)) đơn giản nhất và ổn cho các hạm đội
 nhỏ/ổn định. Discovery động — bản ghi DNS SRV, Consul, hay Kubernetes
 Endpoints/EndpointSlices — cần thiết khi membership của upstream thay đổi
 nhanh hơn bạn muốn tự tay sửa config.
@@ -22,7 +22,7 @@ Resolve một tên DNS (thường là một bản ghi SRV, cái cũng mang theo
 port + weight, khác với A/AAAA thuần) theo một interval và diff kết quả
 với pool hiện tại. Rẻ, không dependency, nhưng bị giới hạn bởi DNS TTL —
 bạn không thể phản ứng nhanh hơn TTL, và resolver cache cũ (xem
-`01-network/09-dns.md`) có thể để bạn trỏ vào một upstream đã ngừng hoạt
+[`01-network/09-dns.md`](../01-network/09-dns.md)) có thể để bạn trỏ vào một upstream đã ngừng hoạt
 động trong một thời gian ngắn sau một thay đổi.
 
 Gotcha, và đây là cái kinh điển: **resolve một lần lúc khởi động không
@@ -58,7 +58,7 @@ dependency vào việc control plane đó có thể truy cập được.
 Gotcha: watch có thể gãy. Kết nối rớt, server restart, một resource
 version hết hạn và API bảo bạn bắt đầu lại. Một cài đặt dựa trên watch
 không phải "subscribe một lần" — nó là một vòng lặp được giám sát, tự
-reconnect với backoff (`05-retry.md`), re-list toàn bộ state khi
+reconnect với backoff ([`05-retry.md`](05-retry.md)), re-list toàn bộ state khi
 reconnect, và đối chiếu state đầy đủ đó với những gì nó đang giữ. Làm
 đúng đường đi re-list quan trọng hơn happy path, vì happy path là thứ bạn
 test còn re-list là thứ chạy trong lúc có sự cố.
@@ -93,7 +93,7 @@ thay đổi rỗng. Một lần poll xóa 90% upstream cùng lúc nhiều khả 
 một góc nhìn một phần hơn là một sự kiện thật. Một guard churn-tối-đa
 ("không bao giờ xóa nhiều hơn X% pool trong một lần cập nhật mà không có
 một lần poll xác nhận thứ hai") là bảo hiểm rẻ; cái tương đương của Envoy
-là panic threshold của nó (`03-healthcheck.md`), áp dụng ở lớp membership
+là panic threshold của nó ([`03-healthcheck.md`](03-healthcheck.md)), áp dụng ở lớp membership
 thay vì lớp health.
 
 ### Fail static
@@ -136,20 +136,20 @@ traffic:
 2. **Để các request in-flight hoàn thành** — hành vi refcount ở trên xử
    lý cái này nếu bạn giữ `Arc<Upstream>` theo từng request, với một
    deadline cho những cái không bao giờ xong.
-3. **Đóng các kết nối idle trong pool của nó** (`01-upstream.md`) sau
+3. **Đóng các kết nối idle trong pool của nó** ([`01-upstream.md`](01-upstream.md)) sau
    cùng. Bỏ qua bước này là bug phổ biến: connection pool giữ các socket
    ấm tới một host mà discovery đã xóa, và nếu pool của bạn được key theo
    địa chỉ thay vì theo identity của `Arc<Upstream>`, một host sau này ở
    cùng địa chỉ đó thừa hưởng chúng.
 
 Gotcha: một đường graceful-shutdown
-(`09-architecture/04-graceful-shutdown.md`) và một đường xóa-do-discovery
+([`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md)) và một đường xóa-do-discovery
 là cùng một logic drain ở các phạm vi khác nhau. Viết nó một lần.
 
 ## Practice
 Xây theo thứ tự.
 
-1. Trong `labs/05-reverse-proxy`, chuyển danh sách upstream hardcode đứng
+1. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), chuyển danh sách upstream hardcode đứng
    sau một trait `Discovery` với một cài đặt tĩnh. **Xong khi** proxy hành
    xử giống hệt như trước và không gì bên ngoài trait biết danh sách đến
    từ đâu.

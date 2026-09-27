@@ -1,10 +1,10 @@
 # HyperLogLog
 
-`13-algorithms/count-min-sketch.md` trả lời "key này đã xuất hiện bao
+[`13-algorithms/count-min-sketch.md`](count-min-sketch.md) trả lời "key này đã xuất hiện bao
 nhiêu lần." HyperLogLog trả lời một câu hỏi khác trong bộ nhớ cố định
 cũng nhỏ tương tự: "có bao nhiêu key *riêng biệt* đã xuất hiện" — ước
 lượng cardinality, hữu ích cho câu hỏi "có bao nhiêu IP tấn công riêng
-biệt đã đánh vào chúng ta trong phút vừa rồi" (`07-security/09-ddos.md`)
+biệt đã đánh vào chúng ta trong phút vừa rồi" ([`07-security/09-ddos.md`](../07-security/09-ddos.md))
 mà không bao giờ phải lưu bản thân tập IP.
 
 ## What to learn
@@ -56,7 +56,7 @@ Một register HyperLogLog chỉ có thể tăng (`max`, không bao giờ giảm
 nó trả lời "số phần tử riêng biệt kể từ khi tôi bắt đầu đếm," không phải
 một sliding window. Với một tín hiệu DDoS kiểu "số IP tấn công riêng biệt
 trong phút vừa qua," kết hợp nó với cùng mẹo decay/rotation mà
-`13-algorithms/count-min-sketch.md` dùng: giữ một HLL cho mỗi khoảng thời
+[`13-algorithms/count-min-sketch.md`](count-min-sketch.md) dùng: giữ một HLL cho mỗi khoảng thời
 gian, merge N bucket gần nhất để có ước lượng theo cửa sổ, và bỏ bucket cũ
 nhất khi thời gian trôi qua.
 
@@ -71,5 +71,5 @@ nhất khi thời gian trôi qua.
    cardinality hợp thật.
 4. Thêm rotation theo khoảng thời gian (một HLL mỗi phút, merge 5 cái gần
    nhất để có số đếm theo cửa sổ) và dùng nó làm tín hiệu tốc-độ-IP-riêng-biệt
-   cạnh việc phát hiện theo khối lượng của `07-security/09-ddos.md`; test
+   cạnh việc phát hiện theo khối lượng của [`07-security/09-ddos.md`](../07-security/09-ddos.md); test
    nó với một cuộc tấn công phân tán giả lập từ nhiều IP nguồn tổng hợp.

@@ -10,11 +10,11 @@ bắt đầu ở đâu — kẻ tấn công tạo ra một request mà một par
 request" còn parser kia đọc là "một request cộng với phần đầu của một
 request thứ hai, bị smuggle" và bị xử lý nhầm vào kết nối của một client
 xui xẻo tiếp theo (trên một kết nối keep-alive/pooled được tái sử dụng tới
-upstream). Đây chính xác là loại mơ hồ mà `05-http-stack/01-parser.md` và
-`labs/01-http-parser` buộc bạn phải đối mặt bằng tay.
+upstream). Đây chính xác là loại mơ hồ mà [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) và
+[`labs/01-http-parser`](../../labs/01-http-parser) buộc bạn phải đối mặt bằng tay.
 
 Điều kiện tiên quyết đáng chú ý: cuộc tấn công này tồn tại *vì* proxy pool
-và tái sử dụng kết nối upstream (`06-proxy/01-upstream.md`). Các byte bị
+và tái sử dụng kết nối upstream ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)). Các byte bị
 smuggle nằm ở đầu buffer của một kết nối, chờ bất kỳ ai dùng nó tiếp theo.
 Một proxy mở kết nối mới cho mỗi request rồi đóng nó ngay sau đó sẽ miễn
 nhiễm — và chậm hơn nhiều, đó là lý do không ai làm vậy, và cũng là lý do
@@ -24,7 +24,7 @@ lớp tấn công này vẫn tồn tại.
 Đáng nói thẳng ra, vì các biện pháp giảm thiểu trông như chủ nghĩa hình
 thức cho tới khi bạn thấy được cái giá phải trả:
 - **Vượt qua hoàn toàn bảo mật ở front-end.** Proxy thực thi auth
-  (`01-auth.md`), IP filtering, và rule WAF trên các request nó *thấy
+  ([`01-auth.md`](01-auth.md)), IP filtering, và rule WAF trên các request nó *thấy
   được*. Một request bị smuggle không bao giờ được proxy nhìn thấy như một
   request — nó là byte của body — nên nó tới upstream sau khi đã bỏ qua
   mọi kiểm tra. Kẻ tấn công tới được `/admin` qua một proxy được cấu hình
@@ -33,7 +33,7 @@ thức cho tới khi bạn thấy được cái giá phải trả:
   được tạo sao cho request thật *tiếp theo* trên kết nối đó bị gắn vào nó
   như body content — và bị echo lại trong một response mà kẻ tấn công có
   thể đọc. Bao gồm cả session cookie và auth header.
-- **Đầu độc cache.** Kết hợp với một cache (`05-http-stack/07-cache.md`),
+- **Đầu độc cache.** Kết hợp với một cache ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)),
   một response bị desync lưu vào sai key và phục vụ cho mọi người.
 
 Một kẻ tấn công, không cần credential, và thiệt hại tỷ lệ với lượng traffic
@@ -77,7 +77,7 @@ tiếp theo trên kết nối pooled đó bị dán `G` vào đầu, trở thàn
 
 ### Downgrade smuggling (H2.CL / H2.TE)
 Biến thể hiện đại, và là loại liên quan nhất tới một proxy terminate
-HTTP/2 rồi nói HTTP/1.1 lên upstream (`01-network/11-http2.md`). Frame
+HTTP/2 rồi nói HTTP/1.1 lên upstream ([`01-network/11-http2.md`](../01-network/11-http2.md)). Frame
 HTTP/2 mang độ dài tường minh của riêng chúng, nên không có sự mơ hồ nào
 *bên trong* HTTP/2 — nhưng `content-length` vẫn tồn tại như một header
 bình thường, và kẻ tấn công có thể gửi một request HTTP/2 với
@@ -138,7 +138,7 @@ trọng ngay cả khi việc validate framing của bạn hoàn hảo.
 ### Phát hiện nó
 Bạn không thể dựa vào việc nhận ra thiệt hại, vì nạn nhân là một client
 khác với kẻ tấn công. Các tín hiệu đáng thiết lập
-(`08-observability/01-logging.md`):
+([`08-observability/01-logging.md`](../08-observability/01-logging.md)):
 - **Lỗi parse ở upstream trên các kết nối pooled.** Một 400 từ upstream
   cho một request mà proxy của bạn coi là hợp lệ là bằng chứng rõ ràng nhất
   cho một kết nối bị desync.
@@ -155,7 +155,7 @@ pool — bất cứ thứ gì còn lại trong buffer của nó chính là paylo
 ## Practice
 Làm lần lượt theo thứ tự sau.
 
-1. Trong `labs/01-http-parser`, thêm một test với cả `Content-Length` lẫn
+1. Trong [`labs/01-http-parser`](../../labs/01-http-parser), thêm một test với cả `Content-Length` lẫn
    `Transfer-Encoding: chunked`. **Xong khi** parser trả về lỗi thay vì
    chọn một trong hai.
 2. Thêm các test cho các biến thể obfuscation: khoảng trắng ở cuối sau
@@ -163,12 +163,12 @@ Làm lần lượt theo thứ tự sau.
    với khoảng trắng ở cuối, một `\n` trần làm line ending, và khoảng trắng
    trước dấu hai chấm. **Xong khi** mỗi cái đều bị từ chối, và bạn có thể
    nói rõ cho từng trường hợp một upstream có thể đã làm gì khác đi với nó.
-3. Xây payload CL.TE ở trên và gửi nó qua `proxy` tới một upstream đồ chơi
+3. Xây payload CL.TE ở trên và gửi nó qua [`proxy`](../../proxy) tới một upstream đồ chơi
    dùng một parser *khác* (một dòng Python hay Node là lý tưởng — parser
    khác, bug khác). **Xong khi** bạn quan sát thấy một desync thật sự:
    upstream đồ chơi thấy một request thứ hai bị làm hỏng. Bạn cần tận mắt
    thấy nó hoạt động trước khi tin rằng bản sửa của bạn ngăn được nó.
-4. Thêm một tầng framing-validation trong `proxy` trước khi gọi upstream,
+4. Thêm một tầng framing-validation trong [`proxy`](../../proxy) trước khi gọi upstream,
    và tự tạo lại framing header khi chuyển tiếp. **Xong khi** payload ở
    bước 3 bị từ chối với 400, một security event được log, và request mà
    proxy của bạn phát ra lên upstream mang framing header do chính nó
@@ -179,7 +179,7 @@ Làm lần lượt theo thứ tự sau.
 6. Khiến bất kỳ anomaly parse nào đầu độc kết nối. **Xong khi** một kết nối
    đã tạo ra lỗi framing bị đóng thay vì trả về pool — xác minh bằng
    `ss -tan` rằng nó không xuất hiện lại như một kết nối pooled đang rảnh.
-7. (Mở rộng) Nếu `proxy` terminate HTTP/2 (`labs/08-http2`), xây một
+7. (Mở rộng) Nếu [`proxy`](../../proxy) terminate HTTP/2 ([`labs/08-http2`](../../labs/08-http2)), xây một
    payload downgrade nơi `content-length` HTTP/2 bất đồng với các DATA
    frame. **Xong khi** nó bị từ chối ngay ở tầng h2 thay vì bị dịch thành
    một request HTTP/1.1 sai định dạng.

@@ -1,6 +1,6 @@
 # General-Purpose Allocators
 
-`14-memory/06-fragmentation.md` covers what goes wrong over time. This file
+[`14-memory/06-fragmentation.md`](06-fragmentation.md) covers what goes wrong over time. This file
 covers what's actually behind `malloc`/Rust's global allocator, and why
 swapping it is one of the highest-leverage single changes for a
 multi-threaded proxy.
@@ -13,7 +13,7 @@ rounds each request up to one of a fixed set of size classes (e.g. 8,
 16, 32, 48, 64, 96, 128, ... bytes) and serves it from a free list for
 that class. This bounds fragmentation to "wasted space within a size
 class" rather than arbitrary external fragmentation, at the cost of some
-internal waste — see `06-fragmentation.md` for the concrete failure mode
+internal waste — see [`06-fragmentation.md`](06-fragmentation.md) for the concrete failure mode
 this trades against.
 
 ### Thread-local arenas: avoiding one global lock
@@ -47,7 +47,7 @@ binary, process-wide, with no per-call-site opt-out.
 ### Why glibc's default is usually the wrong choice for a proxy
 glibc's `ptmalloc` is a reasonable general-purpose allocator but is
 notably conservative about returning memory to the OS and multiplies its
-per-thread arena count under contention (`06-fragmentation.md` covers the
+per-thread arena count under contention ([`06-fragmentation.md`](06-fragmentation.md) covers the
 `MALLOC_ARENA_MAX` angle). mimalloc and jemalloc are both designed
 around exactly the workload a proxy has — many small, short-lived
 allocations across many threads — and consistently benchmark better on
@@ -59,21 +59,21 @@ A single-threaded microbenchmark of alloc/free in a loop tells you
 almost nothing about which allocator wins under a proxy's actual load:
 many threads, allocating and freeing at different rates, with objects
 sometimes freed on a different thread than the one that allocated them.
-Benchmark with `12-testing/01-load-testing.md`'s concurrent traffic, not a
+Benchmark with [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)'s concurrent traffic, not a
 synthetic single-thread loop, before picking one.
 
 ## Practice
-1. Swap `proxy`'s (or a `labs/` crate's) global allocator to `mimalloc`
+1. Swap [`proxy`](../../proxy)'s (or a [`labs/`](../../labs) crate's) global allocator to `mimalloc`
    via `#[global_allocator]` and confirm the binary still builds and
    passes its tests.
 2. Benchmark an allocation-heavy hot path (e.g. per-request header
-   parsing in `labs/01-http-parser`) under concurrent load with the
+   parsing in [`labs/01-http-parser`](../../labs/01-http-parser)) under concurrent load with the
    system allocator, then mimalloc, then jemalloc; compare throughput and
    tail latency, not just mean allocation time.
 3. Reproduce the cross-thread-free pattern deliberately (allocate on one
    tokio worker, send the value across a channel, free it on another) and
    check whether your chosen allocator's documentation calls this out as
    a slow path.
-4. Re-run `14-memory/06-fragmentation.md`'s RSS-over-time experiment with
+4. Re-run [`14-memory/06-fragmentation.md`](06-fragmentation.md)'s RSS-over-time experiment with
    your chosen allocator and compare the plateau height against the
    system allocator's.

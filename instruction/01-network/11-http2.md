@@ -19,7 +19,7 @@ HTTP/1.1's need for 6 parallel TCP connections per origin. Gotcha:
 multiplexing solves *connection-level* head-of-line blocking but not
 *TCP-level* HOL blocking — one dropped TCP segment still stalls every
 stream on that connection until it's retransmitted (this is exactly what
-HTTP/3 over QUIC fixes, see `12-http3.md`).
+HTTP/3 over QUIC fixes, see [`12-http3.md`](12-http3.md)).
 
 ### HPACK header compression
 Headers are compressed with HPACK: a static table of common header
@@ -50,7 +50,7 @@ per-connection concurrency bound, and it maps directly onto how many
 upstream requests one client connection can generate.
 
 Gotcha: `GOAWAY` carries the last stream ID the sender will process, which
-is what makes graceful shutdown (`09-architecture/04-graceful-shutdown.md`)
+is what makes graceful shutdown ([`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md))
 possible — streams below it complete, streams above it the client may
 safely retry elsewhere. A proxy that closes the TCP connection without
 `GOAWAY` turns a clean drain into client-visible errors.
@@ -72,7 +72,7 @@ state for the client side, encode state for the upstream side.
 **Decompression is an amplification vector.** A small compressed header
 block can expand enormously (the "HPACK bomb"), so bound the *decoded*
 header size, not just the frame size. This is the HTTP/2 form of the same
-limits discipline as `05-http-stack/01-parser.md`.
+limits discipline as [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md).
 
 ### Flow control in a proxy: where backpressure actually lands
 Two independent windows exist: per-stream and per-connection. A sender
@@ -110,13 +110,13 @@ theme, and a proxy must bound each:
 The pattern: any frame that is cheap for the client and not accounted for
 by an existing limit needs its own rate limit. `h2` has fixed each of
 these, which is a concrete argument for the position in
-`05-http-stack/01-parser.md` — use the maintained implementation.
+[`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) — use the maintained implementation.
 
 ### Where Rust fits
 `h2` (used internally by `hyper` when the `http2` feature is enabled) is
 the de facto HTTP/2 implementation in the Rust ecosystem; `hyper-util`'s
-auto server builder in `labs/02-http-server`/`reverse-proxy`
-negotiates HTTP/1.1 vs HTTP/2 via ALPN (see `13-tls.md`) so you get this "for
+auto server builder in [`labs/02-http-server`](../../labs/02-http-server)/`reverse-proxy`
+negotiates HTTP/1.1 vs HTTP/2 via ALPN (see [`13-tls.md`](13-tls.md)) so you get this "for
 free" once TLS is wired up, but you should still be able to explain what's
 happening below that abstraction.
 
@@ -125,9 +125,9 @@ happening below that abstraction.
 1. Capture an HTTP/2 connection with Wireshark (or `nghttp -v`) and
    identify at least 4 distinct frame types on the wire.
 2. Enable the `http2` feature on the hyper server in
-   `labs/02-http-server` and confirm via `curl --http2` that it
+   [`labs/02-http-server`](../../labs/02-http-server) and confirm via `curl --http2` that it
    negotiates HTTP/2 over TLS (ALPN).
-3. In `labs/08-http2`, send two concurrent requests over the same HTTP/2
+3. In [`labs/08-http2`](../../labs/08-http2), send two concurrent requests over the same HTTP/2
    connection with `curl --http2 -v` and confirm both streams complete on
    one TCP connection (check with `ss` or `lsof`); then shrink the initial
    window and watch the second stream stall behind flow control.
@@ -135,7 +135,7 @@ happening below that abstraction.
    what happens if your proxy's client-facing connection is HTTP/2 but the
    upstream connection is HTTP/1.1 — where does the flow-control mismatch
    get absorbed?
-5. Prove backpressure end to end in `labs/08-http2`: serve a large response
+5. Prove backpressure end to end in [`labs/08-http2`](../../labs/08-http2): serve a large response
    to a client that reads slowly (or stops reading entirely), and confirm
    your proxy's memory stays flat instead of buffering the whole body.
 6. Set `SETTINGS_MAX_CONCURRENT_STREAMS` low (e.g. 2), open more streams

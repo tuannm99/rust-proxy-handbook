@@ -27,7 +27,7 @@ bản bitwise ngầm định khi gán — không có move nào xảy ra, cả ha
 đều còn hợp lệ. `Clone` là một deep copy tường minh, có thể tốn kém, bạn
 chủ động chọn dùng qua `.clone()`. Trên một hot request path, một
 `.clone()` vô tình trên một header map nhiều kilobyte là một bug hiệu năng
-thật sự, không chỉ là chuyện style — ưu tiên `Arc` (xem `03-rust/04-sync.md`)
+thật sự, không chỉ là chuyện style — ưu tiên `Arc` (xem [`03-rust/04-sync.md`](04-sync.md))
 hoặc borrowing thay vì clone buffer trên từng request.
 
 ```rust
@@ -55,7 +55,7 @@ Gotcha: borrow không thể được giữ qua một điểm `.await` nếu futu
 cũng cần là `Send` và dữ liệu được borrow nằm trên stack frame của caller
 mà stack frame đó sẽ di chuyển — đây là nguyên nhân gốc của rất nhiều lỗi
 "future cannot be sent between threads" khi trộn borrowed slice với các
-async fn. Xem `03-rust/02-lifetimes.md` và `03-rust/05-async.md`.
+async fn. Xem [`03-rust/02-lifetimes.md`](02-lifetimes.md) và [`03-rust/05-async.md`](05-async.md).
 
 ### Drop order và RAII
 Các giá trị được drop theo thứ tự khai báo ngược lại khi ra khỏi scope;
@@ -74,20 +74,20 @@ struct UpstreamConn {
 
 Gotcha: `std::mem::forget` (hoặc một panic trong lúc unwind với
 `catch_unwind`) bỏ qua `Drop` — điều này liên quan nếu bạn từng đưa một
-raw fd cho code `libc` (xem `03-rust/03-unsafe.md`) và dựa vào `Drop` của
+raw fd cho code `libc` (xem [`03-rust/03-unsafe.md`](03-unsafe.md)) và dựa vào `Drop` của
 Rust để đóng nó.
 
 ## Practice
 1. Viết một hàm nhận ownership của một `Vec<u8>` request buffer, parse ra
    một view method/path/headers dưới dạng borrowed slice, và trả về một
    struct giữ cả buffer lẫn các slice — để ý vì sao việc này cần một
-   lifetime parameter (tiếp tục ở `03-rust/02-lifetimes.md`).
+   lifetime parameter (tiếp tục ở [`03-rust/02-lifetimes.md`](02-lifetimes.md)).
 2. Chủ động gây ra rồi sửa một lỗi "use of moved value" bằng cách tái cấu
    trúc một hàm để borrow thay vì lấy ownership.
 3. Benchmark (bằng một `std::time::Instant` nhanh) việc clone một header
    map 8KB 1 triệu lần so với bọc nó trong `Arc` rồi clone `Arc` — xác
    nhận sự khác biệt là có thật trước khi tin vào nó.
-4. Trong `labs/00-tcp-server`, quyết định xem read buffer trên mỗi
+4. Trong [`labs/00-tcp-server`](../../labs/00-tcp-server), quyết định xem read buffer trên mỗi
    connection của bạn thuộc sở hữu của task hay được borrow từ một pool,
    và giải thích trong một comment.
 5. Viết một type nhỏ với một `Drop` impl tự viết in ra khi nó chạy; xác

@@ -1,6 +1,6 @@
 # io_uring Internals
 
-`02-linux/08-io_uring.md` covers using `io_uring` from the application side.
+[`02-linux/08-io_uring.md`](../02-linux/08-io_uring.md) covers using `io_uring` from the application side.
 This file covers the submission/completion mechanics underneath that
 make it different in kind from epoll, not just a faster version of it.
 
@@ -23,7 +23,7 @@ is still a normal, potentially blocking syscall you issue yourself
 afterward. For file I/O in particular, "ready" isn't really well-defined
 the way it is for a socket, which is why async file I/O under the epoll
 model has always meant offloading to a blocking thread pool
-(`03-rust/05-async.md`'s cooperative-scheduling problem — this is exactly
+([`03-rust/05-async.md`](../03-rust/05-async.md)'s cooperative-scheduling problem — this is exactly
 why `tokio::fs` does that). `io_uring` operations are genuinely
 asynchronous at the kernel level for every operation it supports,
 including file reads: you submit the SQE and get a CQE when it's done,
@@ -35,7 +35,7 @@ pins it fresh on every single operation. Pre-registering a set of
 buffers once (`io_uring_register_buffers`) and referencing them by index
 in subsequent SQEs skips that per-operation validation — a real
 throughput win at high operation rates, at the cost of managing a fixed
-buffer pool yourself (see `14-memory/04-buffer-pool.md`).
+buffer pool yourself (see [`14-memory/04-buffer-pool.md`](../14-memory/04-buffer-pool.md)).
 
 ### SQPOLL: skipping the submission syscall entirely
 Normally, after writing SQEs into the ring, you still need one
@@ -52,7 +52,7 @@ specifically in its own code — enough that some environments (Docker's
 default seccomp profile at various points, ChromeOS, some managed cloud
 platforms) have disabled or restricted it outright. Check your actual
 deployment target's kernel version and syscall allow-list before
-designing `proxy/` around it as a hard dependency; treat it as an
+designing [`proxy/`](../../proxy) around it as a hard dependency; treat it as an
 optimization with a fallback, not a foundation.
 
 ## Practice

@@ -2,8 +2,8 @@
 Token Bucket, Leaky Bucket.
 
 The algorithms themselves (lazy refill, GCRA, lock-free counters, sliding
-windows) are covered in `13-algorithms/token-bucket.md`,
-`13-algorithms/sliding-window.md`, and `13-algorithms/leaky-bucket.md`.
+windows) are covered in [`13-algorithms/token-bucket.md`](../13-algorithms/token-bucket.md),
+[`13-algorithms/sliding-window.md`](../13-algorithms/sliding-window.md), and [`13-algorithms/leaky-bucket.md`](../13-algorithms/leaky-bucket.md).
 This file is the policy layer: what to count, what to do when the limit is
 hit, and what happens when the limiter itself fails.
 
@@ -57,7 +57,7 @@ the limiter protects you or just annoys your users.
 **Source IP** is the default and has two specific failure modes. Shared
 addresses (CGNAT, corporate NAT, a university) put thousands of users
 behind one key, so a limit sized for one person throttles all of them —
-the same shared-address problem as `08-ip-filtering.md`.
+the same shared-address problem as [`08-ip-filtering.md`](08-ip-filtering.md).
 
 And the IPv6 case is worse in the opposite direction: an attacker
 typically gets a **/64 allocation, which is 2^64 addresses**. Keying on the
@@ -69,7 +69,7 @@ limiter that's been in production for years can have this hole and nobody
 notices until an attacker uses it.
 
 **Authenticated identity** (API key, user ID from validated claims —
-`01-auth.md`) is strictly better where available: it's stable, it's not
+[`01-auth.md`](01-auth.md)) is strictly better where available: it's stable, it's not
 shared, and it's what your business rules are actually expressed in. The
 catch is that auth runs after the limiter in some designs, so you need
 both — a cheap IP-based limit in front to protect the auth path itself,
@@ -77,11 +77,11 @@ and a real per-identity limit behind it.
 
 **Route** should almost always be part of the key. One global limit per
 client means a burst of cheap requests consumes the budget that a single
-expensive endpoint needed (`09-ddos.md`). Limit `/search` separately from
+expensive endpoint needed ([`09-ddos.md`](09-ddos.md)). Limit `/search` separately from
 `/health`.
 
 Gotcha: whatever you key on, that key comes from attacker-controlled data
-and indexes a map. Bound it, per `13-algorithms/token-bucket.md`'s section
+and indexes a map. Bound it, per [`13-algorithms/token-bucket.md`](../13-algorithms/token-bucket.md)'s section
 on key growth — this is the same memory-exhaustion vector, and the /64
 mistake above turns it from theoretical into trivially exploitable.
 
@@ -109,12 +109,12 @@ are a single shared bucket/counter and are comparatively easy.
 Run both. Per-client limits enforce fairness; a global limit is what
 actually protects the upstream, because "10,000 clients each within their
 limit" can still exceed capacity. The global one should be sized from
-measured capacity (`12-testing/01-load-testing.md`), not chosen as a round
+measured capacity ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)), not chosen as a round
 number.
 
 ### What to return when you reject
 `429 Too Many Requests`, with `Retry-After` giving the seconds until
-capacity exists. GCRA (`13-algorithms/token-bucket.md`) yields that number
+capacity exists. GCRA ([`13-algorithms/token-bucket.md`](../13-algorithms/token-bucket.md)) yields that number
 exactly; a token bucket computes it as `(1 - tokens) / rate`.
 
 Beyond that, the `RateLimit-Limit` / `RateLimit-Remaining` /
@@ -128,12 +128,12 @@ hammer you until it gets a 429.
 Gotcha: a 429 must be cheap. If rejecting costs a database lookup, a log
 write with full request context, and a rendered error page, an attacker
 gets a better cost ratio from being rate-limited than from being served
-(`09-ddos.md`). Reject early in the pipeline, log at a sampled rate rather
+([`09-ddos.md`](09-ddos.md)). Reject early in the pipeline, log at a sampled rate rather
 than every occurrence.
 
 Gotcha: make sure your own clients don't retry 429s immediately. A retry
 storm of rejected requests is exactly the load the limit exists to
-prevent — see `06-proxy/05-retry.md`; `Retry-After` is there to be honored.
+prevent — see [`06-proxy/05-retry.md`](../06-proxy/05-retry.md); `Retry-After` is there to be honored.
 
 ### Distributed rate limiting
 A single proxy instance's in-memory bucket only limits traffic through
@@ -172,7 +172,7 @@ becomes "the site was down."
 ## Practice
 Build these in order.
 
-1. In `labs/11-rate-limit`, implement the `TokenBucket` above keyed by
+1. In [`labs/11-rate-limit`](../../labs/11-rate-limit), implement the `TokenBucket` above keyed by
    source IP with a `dashmap`. **Done when** a client exceeding the rate
    gets rejected and a client within it never is.
 2. Fix the key. **Done when** IPv6 clients are keyed on the /64 prefix —

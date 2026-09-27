@@ -20,7 +20,7 @@ fn parse_header_line(line: &str) -> Option<(&str, &str)> {
 ```
 
 ### Body framing: phần thực sự quan trọng
-Độ dài của body đến từ đúng một trong ba: `Content-Length`, `Transfer-Encoding: chunked`, hoặc "đọc tới khi connection đóng" (chỉ áp dụng cho response). Nếu một message có *cả* `Content-Length` lẫn `Transfer-Encoding`, hoặc nhiều giá trị `Content-Length` mâu thuẫn nhau, message đó là ambiguous — RFC 9112 §6.3 nói phải reject nó, không phải "chọn một cái". Làm sai chỗ này chính xác là cách request smuggling xảy ra (xem `07-security/05-request-smuggling.md`).
+Độ dài của body đến từ đúng một trong ba: `Content-Length`, `Transfer-Encoding: chunked`, hoặc "đọc tới khi connection đóng" (chỉ áp dụng cho response). Nếu một message có *cả* `Content-Length` lẫn `Transfer-Encoding`, hoặc nhiều giá trị `Content-Length` mâu thuẫn nhau, message đó là ambiguous — RFC 9112 §6.3 nói phải reject nó, không phải "chọn một cái". Làm sai chỗ này chính xác là cách request smuggling xảy ra (xem [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md)).
 
 ### Chunked transfer-encoding
 Mỗi chunk có dạng `<hex-size>CRLF<data>CRLF`, kết thúc bằng một chunk kích thước `0` và trailer tùy chọn. Một parser đúng phải giới hạn số chữ số của chunk-size và tổng kích thước đã decode (attacker có thể khai một chunk-size khổng lồ để làm cạn memory), và không được coi trailer header tương đương với header gửi trước body.
@@ -49,7 +49,7 @@ Gotcha: parse lại từ đầu ở mỗi lần đọc là O(n²) nếu attacker
 một (n lần đọc × n byte quét lại). Với một parser để học, điều này chấp
 nhận được và đáng để đo đạc; parser production hoặc giới hạn header size đủ
 chặt để n² bị chặn trên, hoặc giữ một state machine tường minh với một
-resume offset. Lưu ý tương tác với `07-security/09-ddos.md`: gửi từng byte
+resume offset. Lưu ý tương tác với [`07-security/09-ddos.md`](../07-security/09-ddos.md): gửi từng byte
 một *chính là* tấn công Slowloris, nên ngưỡng tốc độ đọc dữ liệu và giới hạn
 của parser này bảo vệ cùng một lỗ hổng từ hai phía.
 
@@ -69,7 +69,7 @@ lỗi ở mọi lần client ngắt kết nối đàng hoàng.
 Gotcha: sau `Complete { consumed }`, các byte còn dư phải được dịch về đầu
 buffer (hoặc theo dõi bằng một read cursor) trước lần đọc kế tiếp. Quên điều
 này là bug pipelining kinh điển — request thứ hai trên một connection
-keep-alive (`05-http-stack/04-keepalive.md`) bị parse từ một buffer vẫn còn
+keep-alive ([`05-http-stack/04-keepalive.md`](04-keepalive.md)) bị parse từ một buffer vẫn còn
 đuôi của request thứ nhất.
 
 ### Giới hạn là một phần của parser, không phải một wrapper quanh nó
@@ -99,19 +99,19 @@ Gotcha: tên header case-insensitive, nên so sánh cũng phải vậy, nhưng g
 sánh bằng `eq_ignore_ascii_case` với một hằng static, và lưu ý
 `str::to_lowercase` làm full Unicode case folding — vừa sai vừa chậm cho
 thứ vốn được định nghĩa là ASCII token. Đây là chỗ kỷ luật
-borrow-thay-vì-clone của `03-rust/01-ownership.md` phát huy tác dụng: một
+borrow-thay-vì-clone của [`03-rust/01-ownership.md`](../03-rust/01-ownership.md) phát huy tác dụng: một
 request đã parse nên borrow slice từ buffer input, không sở hữu bản copy
 của từng field.
 
 ### Vì sao code production dùng hyper thay vì tự viết parser
-Codec HTTP/1 (`h1`) của `hyper` đã hấp thụ nhiều năm sửa lỗi tương thích và bảo mật cho chính xác những ambiguity ở trên. Tự viết một parser có giá trị để học những ambiguity đó *là gì*, nhưng ship một cái tự viết trong `labs/02-http-server` hay sau này đồng nghĩa với việc tự khám phá lại từng CVE smuggling mà hyper đã fix.
+Codec HTTP/1 (`h1`) của `hyper` đã hấp thụ nhiều năm sửa lỗi tương thích và bảo mật cho chính xác những ambiguity ở trên. Tự viết một parser có giá trị để học những ambiguity đó *là gì*, nhưng ship một cái tự viết trong [`labs/02-http-server`](../../labs/02-http-server) hay sau này đồng nghĩa với việc tự khám phá lại từng CVE smuggling mà hyper đã fix.
 
 ## Practice
-1. Trong `labs/01-http-parser`, parse request line và header từ một buffer `&[u8]` thô vào một struct *borrow* từ nó; reject input hỏng thay vì cố phục hồi best-effort.
+1. Trong [`labs/01-http-parser`](../../labs/01-http-parser), parse request line và header từ một buffer `&[u8]` thô vào một struct *borrow* từ nó; reject input hỏng thay vì cố phục hồi best-effort.
 2. Làm cho entry point trả về `ParseStatus` (complete + số byte đã tiêu thụ, hoặc partial). Test bằng cách feed một request từng byte một và assert nó trả về `Partial` cho tới byte cuối cùng.
 3. Thêm body framing: hỗ trợ `Content-Length`, rồi `Transfer-Encoding: chunked`, và reject tường minh một request khai cả hai.
 4. Viết vòng lặp buffer xung quanh nó: xử lý byte dư sau một message hoàn chỉnh, và chứng minh pipelining hoạt động bằng cách parse hai request từ một buffer trong một lần đọc. Sau đó assert EOF giữa request là lỗi còn EOF ở ranh giới message thì không.
 5. Áp các giới hạn ở trên (số header, kích thước, chunk size) và viết một test reject cho mỗi giới hạn, assert đúng status code chứ không chỉ "có lỗi".
 6. Feed parser của bạn các input mang tính đối kháng (`Content-Length` trùng với giá trị khác nhau, header bị fold, một `\n` trơ, chunk size `0x` theo sau bởi rác, tên header có khoảng trắng thừa cuối) và xác nhận nó reject từng cái thay vì parse "ra được gì đó".
-7. Fuzz `labs/01-http-parser` (xem `12-testing/02-fuzzing.md`) với một corpus các bản capture traffic HTTP/1.1 thật và fix mọi panic.
+7. Fuzz [`labs/01-http-parser`](../../labs/01-http-parser) (xem [`12-testing/02-fuzzing.md`](../12-testing/02-fuzzing.md)) với một corpus các bản capture traffic HTTP/1.1 thật và fix mọi panic.
 8. Sau khi tự tay làm xong, đọc API của `httparse` và codec `h1` của `hyper` cho cùng các trường hợp, và ghi lại chúng làm khác implementation của bạn ở điểm nào.

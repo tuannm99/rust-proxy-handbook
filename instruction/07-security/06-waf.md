@@ -23,15 +23,15 @@ regex) and short-circuit on the first `Block` match.
 Gotcha: rules loaded from config are attacker-adjacent input to your regex
 *compiler*, not just your matcher. Enforce a compiled-size limit and
 reject a bad rule set at load time with the previous set left running
-(`09-architecture/03-config.md`) — a WAF that takes the proxy down on a typo
+([`09-architecture/03-config.md`](../09-architecture/03-config.md)) — a WAF that takes the proxy down on a typo
 in a rule file is a self-inflicted outage. See
-`13-algorithms/regex-engine.md` for the ReDoS side of this, which is the
+[`13-algorithms/regex-engine.md`](../13-algorithms/regex-engine.md) for the ReDoS side of this, which is the
 reason Rust's `regex` crate (linear-time, no backtracking) is the right
 engine here and `fancy-regex` is not.
 
 ### Signature-based detection
 Match known attack patterns directly (e.g. `' OR '1'='1` for SQLi,
-`<script>` for XSS, `../../` for path traversal) — precise and fast, but
+`<script>` for XSS, [`../../`](../../..) for path traversal) — precise and fast, but
 only catches attacks matching a known signature; trivially bypassed by
 attackers who vary encoding/casing/whitespace, so signatures need
 normalization (URL-decode, lowercase, collapse whitespace) applied
@@ -46,16 +46,16 @@ works, and it is a permanent structural gap rather than a bug you fix
 once.
 
 This is a large enough topic to live on its own, and it is shared with
-routing (`05-http-stack/03-router.md`) and framing
-(`07-security/05-request-smuggling.md`): see
-`07-security/04-normalization.md`. Nothing else in this file works if that
+routing ([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)) and framing
+([`07-security/05-request-smuggling.md`](05-request-smuggling.md)): see
+[`07-security/04-normalization.md`](04-normalization.md). Nothing else in this file works if that
 doesn't.
 
 ### Body inspection: the cost and the hard limit
 Inspecting a body means having the whole body, which means buffering it —
 so WAF inspection and streaming are mutually exclusive, and the buffer is
 bounded by memory you're willing to spend per concurrent request. This is
-the same constraint as retry buffering (`06-proxy/05-retry.md`), and the two
+the same constraint as retry buffering ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)), and the two
 should share one limit rather than each holding their own copy.
 
 The unavoidable decision is what happens to a body larger than the limit:
@@ -93,13 +93,13 @@ The threat model people bring to a WAF is "attacker gets through." The
 outage they actually cause is "WAF blocks legitimate traffic" — a
 too-broad rule that matches a customer's ordinary data (a name with an
 apostrophe, a code snippet in a support ticket, a base64 blob that happens
-to contain `../`) silently breaks a feature, and because the block happens
+to contain [`../`](../..)) silently breaks a feature, and because the block happens
 at the edge, application logs show nothing at all.
 
 The standard mitigation is to run every new rule set in **detection-only
 mode** first: score and log, never block. Compare what *would* have been
 blocked against real traffic for days, tune, then enforce. This is a
-canary process (`09-architecture/06-canary-deploy.md`) applied to security
+canary process ([`09-architecture/06-canary-deploy.md`](../09-architecture/06-canary-deploy.md)) applied to security
 rules, and skipping it is how a routine rule update becomes an incident.
 
 Gotcha: detection-only mode must exercise the same code path as blocking
@@ -110,21 +110,21 @@ what enforcement will actually do.
 ### Performance: prefilter before you match
 Running a rule set of hundreds of regexes against every request is
 linear in rule count, and it lands on the hot path of every request you
-serve. Two structural fixes, both covered in `13-algorithms/`:
+serve. Two structural fixes, both covered in [`13-algorithms/`](../13-algorithms):
 - Extract required literal substrings and scan for those first with a
-  multi-pattern matcher (`13-algorithms/aho-corasick.md`). Most benign
+  multi-pattern matcher ([`13-algorithms/aho-corasick.md`](../13-algorithms/aho-corasick.md)). Most benign
   traffic contains none of them and never reaches a regex.
 - Compile the surviving patterns into a single `RegexSet`
-  (`13-algorithms/regex-engine.md`) so P patterns cost one pass, not P.
+  ([`13-algorithms/regex-engine.md`](../13-algorithms/regex-engine.md)) so P patterns cost one pass, not P.
 
 Gotcha: measure the WAF stage separately from total request latency
-(`08-observability/02-metrics.md`). Folded into an overall number, a WAF that
+([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)). Folded into an overall number, a WAF that
 adds 8ms at p50 and 200ms at p99 on large bodies looks like general
 slowness rather than one tunable stage.
 
 ### Build your own vs. use a real one
 Writing a toy rule engine here is valuable for understanding how request
-inspection fits into a proxy's pipeline (see `09-architecture/01-components.md`)
+inspection fits into a proxy's pipeline (see [`09-architecture/01-components.md`](../09-architecture/01-components.md))
 and its performance cost. For anything internet-facing, prefer embedding a
 maintained engine — Coraza (Go, OWASP CRS-compatible, has a Rust FFI
 story) or shelling out to ModSecurity — rather than trusting a hand-rolled
@@ -133,10 +133,10 @@ signature set to cover real-world attack traffic.
 ## Practice
 Build these in order.
 
-1. In `labs/12-waf`, implement `Rule`/`RuleTarget` with 5-10 hardcoded
+1. In [`labs/12-waf`](../../labs/12-waf), implement `Rule`/`RuleTarget` with 5-10 hardcoded
    signatures (SQLi, XSS, path traversal). **Done when** an obvious
    payload in the query string is blocked and ordinary traffic passes.
-2. Work through `07-security/04-normalization.md`'s exercises against this
+2. Work through [`07-security/04-normalization.md`](04-normalization.md)'s exercises against this
    rule engine. **Done when** the mixed-case, double-encoded, and
    duplicate-parameter bypasses are all caught, and the router and WAF
    read one shared canonical form.

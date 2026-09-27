@@ -32,8 +32,8 @@ thực sự thấy một macro đã sinh ra cái gì.
 ### Nơi proc-macro thực sự xuất hiện ở đây
 Bạn sẽ dùng derive và attribute macro liên tục mà không cần viết cái nào:
 `#[derive(Serialize, Deserialize)]` (serde, config parsing —
-`09-architecture/03-config.md`), `#[derive(thiserror::Error)]`
-(`03-rust/08-error-handling.md`), `#[tokio::main]`/`#[tokio::test]`
+[`09-architecture/03-config.md`](../09-architecture/03-config.md)), `#[derive(thiserror::Error)]`
+([`03-rust/08-error-handling.md`](08-error-handling.md)), `#[tokio::main]`/`#[tokio::test]`
 (attribute macro viết lại `fn main()` thành thiết lập runtime cộng với
 thân hàm của bạn). Viết một proc-macro từ đầu — một loại crate riêng,
 dùng `syn`/`quote` để parse và sinh lại token stream — là kỹ năng thật
@@ -48,7 +48,7 @@ async fn main() { /* ... */ }
 
 ### Khi nào không nên dùng macro
 Nếu một hàm generic, một trait, hoặc một builder
-(`03-rust/13-api-design-and-modules.md`) có thể diễn đạt điều bạn muốn,
+([`03-rust/13-api-design-and-modules.md`](13-api-design-and-modules.md)) có thể diễn đạt điều bạn muốn,
 hãy ưu tiên chúng. Macro mờ đục với IDE tooling theo cách generics không
 gặp phải (autocomplete yếu hơn, lỗi compiler trỏ vào chỗ expand thay vì
 source của bạn), và chúng khó cho một người đọc trong tương lai — kể cả
@@ -69,5 +69,5 @@ chính bạn sau này — lần theo hơn so với một lời gọi hàm có t�
    trong bất kỳ `labs/*/src/main.rs` nào) và chạy `cargo expand --bin
    <name>` để thấy phần bootstrap runtime nó sinh ra.
 5. Viết ra, bằng lời của bạn, vì sao bạn sẽ không dùng một proc-macro để
-   giải quyết một vấn đề boilerplate trong `proxy` trước khi loại trừ một
+   giải quyết một vấn đề boilerplate trong [`proxy`](../../proxy) trước khi loại trừ một
    giải pháp bằng `macro_rules!`, generic, hoặc trait.

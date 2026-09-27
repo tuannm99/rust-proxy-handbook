@@ -53,8 +53,8 @@ protocol nào, nó chỉ drive bất kỳ state machine nào gắn với token c
 ### Vì sao reactor của tokio tồn tại
 Reactor của tokio chính xác là event loop này, tổng quát hóa: một thread
 (hay một pool nhỏ) sở hữu epoll fd, và mỗi `.await` trên một socket đăng
-ký một waker gắn với một token thay vì block. Xem `03-rust/05-async.md`
-và `04-runtime/01-tokio.md` — hiểu epoll thô trước sẽ giúp điệu nhảy
+ký một waker gắn với một token thay vì block. Xem [`03-rust/05-async.md`](../03-rust/05-async.md)
+và [`04-runtime/01-tokio.md`](../04-runtime/01-tokio.md) — hiểu epoll thô trước sẽ giúp điệu nhảy
 `Poll::Pending`/waker của tokio trở nên rõ ràng, vì nó là cùng một mô
 hình đăng ký với vòng lặp polling và sổ sách kế toán được ẩn đi.
 

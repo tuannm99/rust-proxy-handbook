@@ -5,7 +5,7 @@ deploy được quản lý bởi Kubernetes/systemd để dựa vào.
 
 ## What to learn
 ### Vì sao đây là một vấn đề khác với graceful shutdown
-`09-architecture/04-graceful-shutdown.md` bao quát việc dừng *một* process
+[`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md) bao quát việc dừng *một* process
 sạch sẽ. Một rolling restart cần một process **mới** (binary mới, config
 mới) tiếp quản listening port trước khi cái cũ biến mất — với zero
 khoảng trống nơi một lượt thử kết nối của client bị từ chối. Trên một
@@ -17,7 +17,7 @@ một load balancer, chính proxy phải làm cho việc chuyển giao này an t
 kernel load-balance các kết nối mới trên tất cả chúng. Khởi động process
 mới với `SO_REUSEPORT` được đặt, để nó bind cạnh process cũ vẫn đang
 chạy, xác nhận cái mới khỏe mạnh, rồi gửi cho cái cũ `SIGTERM` (kích hoạt
-drain bình thường của nó từ `04-graceful-shutdown.md`). Trong khoảng chồng
+drain bình thường của nó từ [`04-graceful-shutdown.md`](04-graceful-shutdown.md)). Trong khoảng chồng
 lấn ngắn, cả hai process accept kết nối mới — không có cửa sổ nào port bị
 unbind.
 
@@ -49,7 +49,7 @@ handshake đã hoàn thành mà client tin là đã thiết lập — bị reset
 `accept()` và phục vụ những gì đã xếp hàng sẵn trong một lúc sau khi nó
 ngừng là mục tiêu ưu tiên, thay vì đóng listener ngay khi nó quyết định
 drain. Đây là cùng bài học "ngừng-accept-không-miễn-phí" như pre-stop
-delay trong `09-architecture/04-graceful-shutdown.md`, ở một tầng thấp
+delay trong [`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md), ở một tầng thấp
 hơn.
 
 ### Chuyển giao socket qua `exec` (kiểu nginx)
@@ -89,15 +89,15 @@ trống — nên nó chỉ hoạt động nếu khoảng trống ngắn hơn th�
 load, config cần validate, cache cần xây) làm tràn backlog và các kết nối
 vẫn bị từ chối dù sao. Đo thời gian từ khởi động tới accepting của bạn và
 so sánh nó với connection rate của bạn nhân độ sâu backlog
-(`16-kernel/03-tcp-stack.md`) trước khi tin tưởng nó.
+([`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md)) trước khi tin tưởng nó.
 
 ### Điều gì phải luôn đúng bất kể kỹ thuật nào
 Process mới phải qua được kiểm tra readiness của chính nó (config đã
-parse, upstream tới được — gắn với `06-proxy/03-healthcheck.md`) *trước
+parse, upstream tới được — gắn với [`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)) *trước
 khi* cái cũ được tín hiệu để drain, nếu không một binary/config mới tồi sẽ
 làm sập cả proxy thay vì chỉ fail deploy. Các kết nối sống lâu (WebSocket,
-`05-http-stack/09-websocket.md`) được giữ bởi process cũ cần cùng drain
-deadline như `04-graceful-shutdown.md` — một rolling restart không làm
+[`05-http-stack/09-websocket.md`](../05-http-stack/09-websocket.md)) được giữ bởi process cũ cần cùng drain
+deadline như [`04-graceful-shutdown.md`](04-graceful-shutdown.md) — một rolling restart không làm
 vấn đề đó biến mất, nó chỉ thêm "và đừng từ chối kết nối mới trong khi
 drain."
 
@@ -106,18 +106,18 @@ Zero *kết nối bị rớt* không giống zero tác động, vì mọi thứ 
 tích lũy trong bộ nhớ đều biến mất. Mỗi cái dưới đây được bao quát ở nơi
 khác; cùng nhau chúng là lý do một lần restart zero-downtime "thành công"
 vẫn có thể xuất hiện như một cú tăng vọt trên mọi dashboard:
-- **Response cache rỗng** (`05-http-stack/07-cache.md`). Mọi entry là một
+- **Response cache rỗng** ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)). Mọi entry là một
   miss, tất cả cùng lúc — một cache stampede tự gây ra nhắm vào origin
   đúng lúc bạn muốn mọi thứ yên tĩnh. Request coalescing là thứ giữ điều
   này sống sót được.
-- **Rate limiter bucket reset** (`07-security/07-ratelimit.md`). Mọi
+- **Rate limiter bucket reset** ([`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md)). Mọi
   client âm thầm nhận một budget mới; một client bạn đang chủ động
   throttle giờ hết bị throttle. Một kẻ tấn công có thể kích hoạt restart
   nhận một lần reset giới hạn theo yêu cầu.
-- **Circuit breaker reset** (`06-proxy/05-retry.md`). Process mới không
+- **Circuit breaker reset** ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)). Process mới không
   biết một upstream đã hỏng và sẽ gửi traffic vào nó để tìm hiểu, học lại
   với chi phí là các request thật.
-- **Connection pool nguội** (`06-proxy/01-upstream.md`). Các request đầu
+- **Connection pool nguội** ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)). Các request đầu
   tiên trả latency handshake, bao gồm TLS, nên p99 tăng vọt trong hàng
   chục giây sau lần chuyển giao.
 - **Health state không rõ.** Cho tới khi chu kỳ probe đầu tiên hoàn
@@ -142,7 +142,7 @@ khẳng định cả ba đều bằng không xuyên suốt quá trình chuyển 
 ## Practice
 Xây theo thứ tự.
 
-1. Cài đặt helper bind `SO_REUSEPORT` trong `proxy` và chạy hai instance
+1. Cài đặt helper bind `SO_REUSEPORT` trong [`proxy`](../../proxy) và chạy hai instance
    trên một port. **Xong khi** log theo-từng-instance cho thấy kernel
    phân phối kết nối mới trên cả hai.
 2. Thêm một kiểm tra readiness process mới phải vượt qua — config đã
@@ -150,7 +150,7 @@ Xây theo thứ tự.
    kết nối upstream trong pool đã mở. **Xong khi** một process với config
    hỏng hoặc upstream không tới được không bao giờ báo cáo sẵn sàng.
 3. Viết script restart: khởi động cái mới, chờ readiness, `SIGTERM` cái
-   cũ (tái sử dụng drain từ `09-architecture/04-graceful-shutdown.md`),
+   cũ (tái sử dụng drain từ [`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)),
    xác nhận nó thoát sau khi drain. **Xong khi** một binary mới tồi để
    lại cái cũ vẫn phục vụ, không bị đụng tới.
 4. Làm cho process đang drain tiếp tục accept các kết nối đã xếp hàng sẵn
@@ -158,7 +158,7 @@ Xây theo thứ tự.
    cao xuyên qua quá trình chuyển giao cho thấy zero reset — chạy nó
    không có bước này trước và đếm chúng, vì chúng vô hình trừ khi bạn tìm.
 5. Load test xuyên qua một lần restart, đo lỗi ở cấp kết nối riêng biệt
-   (`12-testing/01-load-testing.md`). **Xong khi** connection refusal,
+   ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)). **Xong khi** connection refusal,
    reset, và non-2xx đều bằng không xuyên suốt quá trình chuyển giao.
 6. Đo chi phí mất state. **Xong khi** bạn có một biểu đồ tỷ lệ request tới
    origin (cache miss), p99 latency (pool nguội), và tỷ lệ lỗi upstream

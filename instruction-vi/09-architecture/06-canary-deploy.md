@@ -21,7 +21,7 @@ expand-migrate-contract, định dạng message tương thích ngược), không
 thứ proxy có thể cung cấp.
 
 ### Cài đặt weighted traffic splitting ở lớp proxy
-Cái này xây trực tiếp trên `06-proxy/02-load-balancer.md`: thay vì một
+Cái này xây trực tiếp trên [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md): thay vì một
 upstream pool, router giữ hai pool (stable, canary) với một weight, và
 chọn theo từng request bằng weighted random selection hoặc một hash tất
 định (để cùng một client luôn rơi vào cùng một phiên bản — hữu ích cho
@@ -40,7 +40,7 @@ sticky routing (hash trên một cookie/client-id) thay vào đó.
 
 Gotcha: sticky-by-hash chỉ hoạt động nếu mọi instance proxy tính cùng một
 hash. Một seed ngẫu nhiên theo-từng-process (cảnh báo `DefaultHasher` của
-`13-algorithms/hashmap.md`) nghĩa là instance A gửi một người dùng tới
+[`13-algorithms/hashmap.md`](../13-algorithms/hashmap.md)) nghĩa là instance A gửi một người dùng tới
 canary và instance B gửi cùng người dùng đó tới stable — tạo ra chính
 xác hiện tượng nảy-phiên-bản mà sự dính (stickiness) lẽ ra phải ngăn
 chặn. Dùng một hash fixed-seed, và không bao gồm gì ngoài phép so sánh
@@ -50,12 +50,12 @@ lượng người dùng tối thiểu.
 Gotcha: một client nảy giữa các phiên bản tệ hơn vẻ ngoài của nó khi các
 phiên bản khác nhau về hành vi — một trình duyệt load `index.html` từ
 canary và bundle JS đã hash của nó từ stable nhận một 404 (tài sản bất
-biến của `05-http-stack/05-static.md`), và người dùng thấy một trang hỏng
+biến của [`05-http-stack/05-static.md`](../05-http-stack/05-static.md)), và người dùng thấy một trang hỏng
 thay vì một lỗi sạch sẽ.
 
 ### Trigger rollback tự động
 Một canary chỉ hữu ích nếu có gì đó đang theo dõi nó. So sánh tỷ lệ lỗi /
-p99 latency của pool canary (từ `08-observability/02-metrics.md`) với
+p99 latency của pool canary (từ [`08-observability/02-metrics.md`](../08-observability/02-metrics.md)) với
 pool stable, trên cùng một cửa sổ thời gian, và tự động chuyển weight về
 0% nếu tỷ lệ lỗi của canary vượt một ngưỡng (ví dụ gấp 2x stable) trong N
 khoảng liên tiếp. Rollback chỉ-thủ-công tệ hơn hẳn — con người nhận ra một
@@ -71,8 +71,8 @@ các bản release khỏe mạnh gần như mãi mãi, huấn luyện mọi ngư
 Hai guard, cả hai đều bắt buộc:
 - **Số mẫu tối thiểu** trước khi bất kỳ phép so sánh nào được đánh giá —
   cùng cái sàn như tỷ lệ alerting trong
-  `08-observability/06-alerting.md` và circuit breaker dựa trên tỷ lệ
-  trong `06-proxy/05-retry.md`. Dưới nó, phán quyết đúng là "chưa đủ dữ
+  [`08-observability/06-alerting.md`](../08-observability/06-alerting.md) và circuit breaker dựa trên tỷ lệ
+  trong [`06-proxy/05-retry.md`](../06-proxy/05-retry.md). Dưới nó, phán quyết đúng là "chưa đủ dữ
   liệu," không phải "healthy" và không phải "failing."
 - **So sánh cùng loại với cùng loại.** Canary và stable phải được đo trên
   cùng cửa sổ, và lý tưởng là trên cùng hỗn hợp traffic — nếu canary của
@@ -86,15 +86,15 @@ nhỏ; chờ khối lượng có ý nghĩa trước khi tin vào các so sánh t
 
 ### Những gì một canary không thể bắt được
 Đáng biết để một canary xanh không bị nhầm là bằng chứng:
-- **Rò rỉ tài nguyên.** Một memory leak (`14-memory/06-fragmentation.md`)
+- **Rò rỉ tài nguyên.** Một memory leak ([`14-memory/06-fragmentation.md`](../14-memory/06-fragmentation.md))
   hoặc fd leak mất lâu hơn 100 lần để hiện ra ở 1% traffic. Một canary
   chạy một giờ không nói gì cho bạn về một leak giết một instance
   full-traffic trong một ngày.
 - **Failure phụ thuộc load.** Lock contention, cạn kiệt connection pool
-  (`06-proxy/01-upstream.md`), và thundering herd chỉ xuất hiện gần
+  ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)), và thundering herd chỉ xuất hiện gần
   capacity — thứ mà một canary 1% còn lâu mới chạm tới.
 - **Bug phụ thuộc thời gian.** Một batch job hàng ngày, hết hạn
-  certificate (`01-network/13-tls.md`), một phép tính ranh giới tháng.
+  certificate ([`01-network/13-tls.md`](../01-network/13-tls.md)), một phép tính ranh giới tháng.
 - **Bất cứ thứ gì downstream.** Nếu canary chia sẻ upstream và một
   database với stable, nó không thể tiết lộ một vấn đề trong dependency
   dùng chung — và có thể *gây ra* một vấn đề gây hại cho cả traffic
@@ -107,13 +107,13 @@ fail, fail sau khi lần deploy được công bố hoàn thành.
 
 ### Nơi điều này phụ thuộc vào service discovery
 Nếu các instance upstream được đăng ký động
-(`06-proxy/07-service-discovery.md`), gắn thẻ mỗi instance với một
+([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)), gắn thẻ mỗi instance với một
 version/pool label lúc đăng ký để router có thể query "cho tôi các
 instance stable khỏe mạnh" vs "cho tôi các instance canary khỏe mạnh"
 thay vì hardcode địa chỉ.
 
 Gotcha: pool canary nhỏ — thường là một instance duy nhất — nên logic
-panic-threshold và health-check từ `06-proxy/03-healthcheck.md` hành xử
+panic-threshold và health-check từ [`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md) hành xử
 khác ở đó. Một instance unhealthy trong một pool stable 20-instance là
 không đáng kể; một instance unhealthy trong một pool canary 1-instance là
 100% của pool đó, và chế độ panic fail-open của bạn có thể route traffic
@@ -123,9 +123,9 @@ gộp.
 ## Practice
 Xây theo thứ tự.
 
-1. Mở rộng `labs/06-load-balancer` (hoặc `proxy`) để hỗ trợ hai pool có
+1. Mở rộng [`labs/06-load-balancer`](../../labs/06-load-balancer) (hoặc [`proxy`](../../proxy)) để hỗ trợ hai pool có
    tên với weight cấu hình được, lấy từ config
-   (`09-architecture/03-config.md`). **Xong khi** weight có thể thay đổi
+   ([`09-architecture/03-config.md`](03-config.md)). **Xong khi** weight có thể thay đổi
    mà không cần restart.
 2. Cài đặt weighted-random selection. **Xong khi** một test trên 100k
    request cho thấy sự chia tách trong phạm vi một phần trăm của weight
@@ -141,7 +141,7 @@ Xây theo thứ tự.
    canary ở weight 1% với 3 lỗi trong một phút *không* rollback, và một
    canary thực sự trả 50% lỗi thì có — trường hợp đầu là cái chứng minh
    guard hoạt động.
-6. Mô phỏng một canary tồi dưới load (`12-testing/01-load-testing.md`)
+6. Mô phỏng một canary tồi dưới load ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md))
    với một upstream trả 500. **Xong khi** rollback tự động kích hoạt
    trong cửa sổ mục tiêu của bạn và tổng số lỗi thấy được ở client bị
    giới hạn bởi weight canary, không phải bởi thời gian một con người

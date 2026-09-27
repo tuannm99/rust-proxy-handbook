@@ -1,6 +1,6 @@
 # TinyLFU / W-TinyLFU
 
-`13-algorithms/lru.md` introduces TinyLFU in outline as "a small LRU
+[`13-algorithms/lru.md`](lru.md) introduces TinyLFU in outline as "a small LRU
 admission window in front of a frequency-based main cache." This file is
 the deep dive: it's the eviction/admission design most production Rust
 and JVM caches actually ship (`moka`, Caffeine), and it's worth
@@ -26,7 +26,7 @@ instead of flushing the working set the way a scan flushes LRU.
 Storing an exact counter per key (as plain LFU does) costs memory
 proportional to the number of distinct keys ever seen, which is unbounded
 for a proxy cache. TinyLFU instead uses a count-min sketch
-(`13-algorithms/count-min-sketch.md`) — fixed-size, small (a few bits per
+([`13-algorithms/count-min-sketch.md`](count-min-sketch.md)) — fixed-size, small (a few bits per
 expected key), with bounded overestimation error and no per-key
 allocation at all.
 
@@ -44,7 +44,7 @@ Gotcha: without periodic aging, sketch counters only grow and eventually
 saturate, at which point the estimator loses all discriminating power —
 every popular-enough key looks equally "infinitely popular." Halve every
 counter in the sketch once `total_increments` crosses `reset_threshold`.
-This is the same aging problem `13-algorithms/lfu.md` has with exact
+This is the same aging problem [`13-algorithms/lfu.md`](lfu.md) has with exact
 counters, solved here by periodically resetting a fixed-size structure
 instead of decaying a growing map.
 
@@ -95,9 +95,9 @@ costs essentially nothing in hit rate while costing much less in memory
 and CPU than ARC or ideal-LFU.
 
 ## Practice
-1. In `labs/10-cache`, implement the count-min-sketch-based frequency
+1. In [`labs/10-cache`](../../labs/10-cache), implement the count-min-sketch-based frequency
    estimator with periodic halving, then wire it into an admission check
-   in front of your existing LRU (`13-algorithms/lru.md`) as the main
+   in front of your existing LRU ([`13-algorithms/lru.md`](lru.md)) as the main
    cache — this is TinyLFU without the windowed cold-start fix yet.
 2. Reproduce the cold-start problem on purpose: introduce a brand-new key
    that is about to become very hot, and confirm frequency-only admission
@@ -107,7 +107,7 @@ and CPU than ARC or ideal-LFU.
 3. Add the doorkeeper Bloom filter and measure sketch quality (compare
    estimated vs. true frequency for a known set of keys) with and without
    it, on a trace dominated by one-hit-wonders.
-4. Run the same three-workload comparison you used for `13-algorithms/arc.md`
+4. Run the same three-workload comparison you used for [`13-algorithms/arc.md`](arc.md)
    (steady hot set, periodic scan, shifting popularity) against your
    W-TinyLFU implementation, and compare hit rate *and* memory usage
    against ARC and plain LRU on identical traces.

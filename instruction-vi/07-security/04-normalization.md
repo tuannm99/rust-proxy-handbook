@@ -2,9 +2,9 @@
 
 Hai component parse cùng một chuỗi byte theo hai cách khác nhau, và kẻ tấn
 công sống trong khoảng cách đó. Đây là điểm yếu cấu trúc đứng sau các cách
-bypass WAF (`07-security/06-waf.md`), bypass access-control dựa trên path
-(`05-http-stack/03-router.md`), và — ở dạng thuần túy nhất của nó — request
-smuggling (`07-security/05-request-smuggling.md`). Normalization là biện
+bypass WAF ([`07-security/06-waf.md`](06-waf.md)), bypass access-control dựa trên path
+([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)), và — ở dạng thuần túy nhất của nó — request
+smuggling ([`07-security/05-request-smuggling.md`](05-request-smuggling.md)). Normalization là biện
 pháp phòng thủ, và nó là một ranh giới bảo mật chứ không phải một chi tiết
 tiền xử lý.
 
@@ -32,7 +32,7 @@ mà bạn vừa mới giải quyết xong.
 
 ### Decode depth
 Bạn URL-decode một lần; kẻ tấn công gửi `%252e%252e%252f`, decode một lần
-ra `%2e%2e%2f` (không khớp) và decode hai lần ra `../`. Nếu upstream
+ra `%2e%2e%2f` (không khớp) và decode hai lần ra [`../`](../..). Nếu upstream
 framework decode hai lần, nó thấy traversal còn bạn thì không.
 
 Decode lặp đi lặp lại cho tới khi ổn định lại có thất bại ngược lại: giờ
@@ -53,7 +53,7 @@ Lowercase xử lý được `<ScRiPt>`. Nó không xử lý được:
   thành tương đương ASCII sau khi bạn đã kiểm tra xong.
 - **Overlong UTF-8 encoding**, nơi một ký tự được encode bằng nhiều byte
   hơn cần thiết — về mặt lịch sử là một cách đáng tin cậy để lén đưa `/`
-  hoặc `.` qua các kiểm tra so sánh byte.
+  hoặc [`.`](..) qua các kiểm tra so sánh byte.
 - **Khác biệt Unicode case folding**: chữ ı Thổ Nhĩ Kỳ không chấm, chữ ß
   Đức, và các ký tự mà dạng viết hoa là nhiều ký tự.
 
@@ -89,30 +89,30 @@ thi; một WAF chỉ kiểm tra giá trị cuối cùng bỏ lỡ trường hợ
 
 Quy tắc: kiểm tra **mọi lần xuất hiện của mọi tham số**, và kiểm tra cả
 raw query string. Điều tương tự áp dụng cho header trùng lặp, và cho JSON
-body có key trùng lặp (`15-parser/` — hành vi parser ở đó cũng khác nhau).
+body có key trùng lặp ([`15-parser/`](../15-parser) — hành vi parser ở đó cũng khác nhau).
 
 Gotcha: các framing header là trường hợp cực đoan của vấn đề này, nơi sự
 bất đồng cho bạn nguyên một request bị smuggle thay vì chỉ một giá trị
-tham số sai. `07-security/05-request-smuggling.md` nói về nó; lý luận y
+tham số sai. [`07-security/05-request-smuggling.md`](05-request-smuggling.md) nói về nó; lý luận y
 hệt, chỉ ở một tầng sâu hơn.
 
 ### Path là vấn đề normalization của riêng nó
 Dot segment, separator đã encode, dấu gạch chéo trùng lặp, dấu gạch chéo ở
 cuối, và filesystem không phân biệt hoa thường đều khiến path bạn dùng để
-route khác với path mà upstream resolve. `05-http-stack/03-router.md` nói
+route khác với path mà upstream resolve. [`05-http-stack/03-router.md`](../05-http-stack/03-router.md) nói
 về các biến thể và quy tắc canonical-form; đó chính là kỷ luật tương tự áp
 dụng cho input duy nhất mà một proxy luôn luôn phải parse.
 
 ### Normalize một lần, sớm, ở một nơi duy nhất
 Kiểu thất bại sống sót qua tất cả những điều trên là normalize ở nhiều nơi
 với các rule hơi khác nhau. Đặt normalization tại một điểm duy nhất trong
-pipeline (`09-architecture/01-components.md`, trước routing), lưu dạng
+pipeline ([`09-architecture/01-components.md`](../09-architecture/01-components.md), trước routing), lưu dạng
 canonical trên request, và để mọi component sau đó — router, WAF, logger,
 bộ chuyển tiếp upstream — đọc *chính dạng đó* thay vì tự tính lại của riêng
 mình.
 
 Gotcha: giữ lại các byte gốc để log
-(`08-observability/01-logging.md`) để một cuộc điều tra có thể thấy những
+([`08-observability/01-logging.md`](../08-observability/01-logging.md)) để một cuộc điều tra có thể thấy những
 gì thực sự đã được gửi, nhưng chỉ để dạng canonical là thứ duy nhất mà bất
 kỳ *quyết định* nào được đọc. Có hai dạng biểu diễn thì ổn; có hai nguồn
 input cho quyết định thì không.
@@ -120,7 +120,7 @@ input cho quyết định thì không.
 ## Practice
 Làm lần lượt theo thứ tự sau.
 
-1. Trong `labs/12-waf`, viết các bài test bypass trước khi có bất kỳ
+1. Trong [`labs/12-waf`](../../labs/12-waf), viết các bài test bypass trước khi có bất kỳ
    normalization nào: mixed case, double URL-encoding, một overlong UTF-8
    encoding của `/`, một payload nằm ở tham số *thứ hai* trong hai tham số
    trùng tên, và một body có charset khai báo khác với encoding thực tế.

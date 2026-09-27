@@ -1,7 +1,7 @@
 # Branch Prediction
 
 Why an unpredictable branch on a hot path costs far more than the one
-comparison it looks like. Like the rest of `17-performance/`, chase this
+comparison it looks like. Like the rest of [`17-performance/`](.), chase this
 only after a profile points at it.
 
 ## What to learn
@@ -32,10 +32,10 @@ for &b in &data {
 ```
 
 ### Where a proxy meets it
-Byte-at-a-time parsing with a branch per character (`05-http-stack/01-parser.md`)
+Byte-at-a-time parsing with a branch per character ([`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md))
 is the honest hot spot — a branch deciding "is this a delimiter" runs
 millions of times. Per-request policy checks (WAF rules
-`07-security/06-waf.md`, IP filtering `07-security/08-ip-filtering.md`) are
+[`07-security/06-waf.md`](../07-security/06-waf.md), IP filtering [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)) are
 branches on request data. Usually these are *predictable* (almost all
 traffic is allowed, almost all bytes are not delimiters), which is why they
 are cheap in practice — the danger is a branch that genuinely splits
@@ -51,7 +51,7 @@ remove it — compute both sides branchlessly:
   indexed 256-entry lookup table (a byte-classification table), the trick
   behind fast HTTP header scanners.
 - **SIMD:** process 16–32 bytes at once with no per-byte branch at all —
-  see `17-performance/06-simd.md`, which is where header scanning ultimately
+  see [`17-performance/06-simd.md`](06-simd.md), which is where header scanning ultimately
   goes.
 
 Gotcha: branchless code is not automatically faster. Removing a
@@ -76,11 +76,11 @@ and only on genuinely lopsided branches.
    it beats the *unsorted* case but check whether it beats the *sorted*
    (predictable) case.
 3. Replace an `if`/`match` byte classifier in an HTTP-parser-style loop
-   (`05-http-stack/01-parser.md`) with a 256-entry lookup table and measure.
-4. Measure a WAF/IP-filter branch (`07-security/06-waf.md`) under realistic
+   ([`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md)) with a 256-entry lookup table and measure.
+4. Measure a WAF/IP-filter branch ([`07-security/06-waf.md`](../07-security/06-waf.md)) under realistic
    mostly-allowed traffic and confirm it is *predictable* and therefore
    cheap — practice recognizing a branch not worth touching.
-5. Add `#[cold]` to a genuine error path in `proxy`, inspect whether the
+5. Add `#[cold]` to a genuine error path in [`proxy`](../../proxy), inspect whether the
    hot path's code got denser, and verify with a benchmark that you did not
    make things worse — then decide whether the next step is
-   `17-performance/06-simd.md`.
+   [`17-performance/06-simd.md`](06-simd.md).

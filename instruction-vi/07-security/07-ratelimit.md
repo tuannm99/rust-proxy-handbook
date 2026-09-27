@@ -2,8 +2,8 @@
 Token Bucket, Leaky Bucket.
 
 Bản thân các thuật toán (lazy refill, GCRA, bộ đếm lock-free, sliding
-window) nằm trong `13-algorithms/token-bucket.md`,
-`13-algorithms/sliding-window.md`, và `13-algorithms/leaky-bucket.md`. File
+window) nằm trong [`13-algorithms/token-bucket.md`](../13-algorithms/token-bucket.md),
+[`13-algorithms/sliding-window.md`](../13-algorithms/sliding-window.md), và [`13-algorithms/leaky-bucket.md`](../13-algorithms/leaky-bucket.md). File
 này là tầng chính sách: đếm theo cái gì, làm gì khi chạm giới hạn, và
 chuyện gì xảy ra khi chính bộ limiter thất bại.
 
@@ -58,7 +58,7 @@ bạn hay chỉ làm phiền người dùng của bạn.
 **Source IP** là mặc định và có hai kiểu thất bại cụ thể. Các địa chỉ dùng
 chung (CGNAT, NAT công ty, một trường đại học) đặt hàng ngàn người dùng
 sau một key, nên một giới hạn thiết kế cho một người sẽ throttle tất cả họ
-— cùng vấn đề shared-address như trong `08-ip-filtering.md`.
+— cùng vấn đề shared-address như trong [`08-ip-filtering.md`](08-ip-filtering.md).
 
 Và trường hợp IPv6 còn tệ hơn theo chiều ngược lại: một kẻ tấn công thường
 được cấp một **allocation /64, tức 2^64 địa chỉ**. Key theo địa chỉ đầy đủ
@@ -70,7 +70,7 @@ phải toàn bộ địa chỉ. Một limiter đã chạy production nhiều nă
 lỗ hổng này mà không ai để ý cho tới khi một kẻ tấn công dùng nó.
 
 **Authenticated identity** (API key, user ID từ claim đã xác thực —
-`01-auth.md`) tốt hơn hẳn khi có sẵn: nó ổn định, không bị chia sẻ, và là
+[`01-auth.md`](01-auth.md)) tốt hơn hẳn khi có sẵn: nó ổn định, không bị chia sẻ, và là
 thứ mà business rule của bạn thực sự được diễn đạt theo. Điểm bất tiện là
 auth chạy sau limiter trong một số thiết kế, nên bạn cần cả hai — một
 limiter rẻ dựa trên IP đứng trước để bảo vệ chính đường auth, và một
@@ -78,12 +78,12 @@ limiter thật theo từng identity đứng sau nó.
 
 **Route** gần như luôn nên là một phần của key. Một giới hạn toàn cục cho
 mỗi client nghĩa là một burst các request rẻ tiêu tốn hết ngân sách mà một
-endpoint đắt đỏ duy nhất cần (`09-ddos.md`). Giới hạn `/search` riêng biệt
+endpoint đắt đỏ duy nhất cần ([`09-ddos.md`](09-ddos.md)). Giới hạn `/search` riêng biệt
 với `/health`.
 
 Gotcha: bất kể bạn key theo cái gì, key đó đến từ dữ liệu do attacker kiểm
 soát và index vào một map. Giới hạn nó, theo phần về key growth trong
-`13-algorithms/token-bucket.md` — đây là cùng một vector cạn kiệt memory,
+[`13-algorithms/token-bucket.md`](../13-algorithms/token-bucket.md) — đây là cùng một vector cạn kiệt memory,
 và lỗi /64 ở trên biến nó từ lý thuyết thành khai thác được một cách tầm
 thường.
 
@@ -111,12 +111,12 @@ client nào) là một bucket/counter chia sẻ duy nhất và tương đối d�
 Chạy cả hai. Giới hạn theo client thực thi sự công bằng; giới hạn toàn cục
 mới là thứ thực sự bảo vệ upstream, vì "10.000 client mỗi người trong giới
 hạn của họ" vẫn có thể vượt quá capacity. Giới hạn toàn cục nên được định
-cỡ từ capacity đo được (`12-testing/01-load-testing.md`), không phải chọn
+cỡ từ capacity đo được ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)), không phải chọn
 như một con số tròn.
 
 ### Trả về gì khi từ chối
 `429 Too Many Requests`, kèm `Retry-After` cho số giây tới khi có capacity.
-GCRA (`13-algorithms/token-bucket.md`) cho ra con số đó chính xác; một
+GCRA ([`13-algorithms/token-bucket.md`](../13-algorithms/token-bucket.md)) cho ra con số đó chính xác; một
 token bucket tính nó là `(1 - tokens) / rate`.
 
 Ngoài ra, họ header `RateLimit-Limit` / `RateLimit-Remaining` /
@@ -130,12 +130,12 @@ nhận 429.
 Gotcha: một 429 phải rẻ. Nếu việc từ chối tốn một database lookup, một
 dòng log có cấu trúc đầy đủ context, và một trang lỗi được render, kẻ tấn
 công có một tỷ lệ chi phí tốt hơn khi bị rate-limit so với khi được phục
-vụ (`09-ddos.md`). Từ chối sớm trong pipeline, log với tỷ lệ mẫu thay vì
+vụ ([`09-ddos.md`](09-ddos.md)). Từ chối sớm trong pipeline, log với tỷ lệ mẫu thay vì
 mỗi lần xảy ra.
 
 Gotcha: đảm bảo client của chính bạn không retry 429 ngay lập tức. Một cơn
 bão retry các request bị từ chối chính là loại tải mà giới hạn tồn tại để
-ngăn chặn — xem `06-proxy/05-retry.md`; `Retry-After` tồn tại là để được
+ngăn chặn — xem [`06-proxy/05-retry.md`](../06-proxy/05-retry.md); `Retry-After` tồn tại là để được
 tôn trọng.
 
 ### Rate limiting phân tán
@@ -173,7 +173,7 @@ nó trong một sự cố là cách "rate limiter bị sập" biến thành "sit
 ## Practice
 Làm lần lượt theo thứ tự sau.
 
-1. Trong `labs/11-rate-limit`, implement `TokenBucket` ở trên, key theo
+1. Trong [`labs/11-rate-limit`](../../labs/11-rate-limit), implement `TokenBucket` ở trên, key theo
    source IP với một `dashmap`. **Xong khi** một client vượt tốc độ bị từ
    chối và một client trong giới hạn thì không bao giờ.
 2. Sửa key. **Xong khi** client IPv6 được key theo prefix /64 — chứng minh

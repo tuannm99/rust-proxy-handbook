@@ -1,6 +1,6 @@
 # Leaky Bucket
 
-`07-security/07-ratelimit.md` introduces leaky bucket as "a queue that drains
+[`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) introduces leaky bucket as "a queue that drains
 at a constant rate." This file covers the two ways that sentence actually
 gets implemented, because they behave very differently under load.
 
@@ -37,7 +37,7 @@ impl LeakyBucketMeter {
 This is mathematically the mirror image of token bucket (fill vs drain,
 reject-on-full vs reject-on-empty) and produces the *same* accept/reject
 decisions as token bucket for the same capacity and rate — see
-`13-algorithms/token-bucket.md`'s GCRA. If you already have a correct
+[`13-algorithms/token-bucket.md`](token-bucket.md)'s GCRA. If you already have a correct
 token bucket, you don't need to separately implement this form; it exists
 mostly because vendor docs (AWS, GCP quota docs, some API gateways)
 describe their limiter this way.
@@ -85,9 +85,9 @@ where every blocked task holds resources (a connection, a task) for the
 wait.
 
 ## Practice
-1. In `labs/11-rate-limit`, implement the meter form and confirm, on a
+1. In [`labs/11-rate-limit`](../../labs/11-rate-limit), implement the meter form and confirm, on a
    scripted request timeline, that it accepts/rejects identically to your
-   `token-bucket.md` implementation at matching capacity/rate.
+   [`token-bucket.md`](token-bucket.md) implementation at matching capacity/rate.
 2. Implement the queue form with a bounded `VecDeque` and a background
    task draining at a fixed interval; add a `try_enqueue` that rejects
    immediately when full.
@@ -98,4 +98,4 @@ wait.
    the queue trickles all of them out at `drain_rate`.
 4. Change the queue form to block-until-room instead of reject-on-full,
    measure the worst-case wait at your chosen capacity/rate, and write
-   down why you would or wouldn't ship that behavior in `proxy/`.
+   down why you would or wouldn't ship that behavior in [`proxy/`](../../proxy).

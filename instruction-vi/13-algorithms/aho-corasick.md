@@ -1,7 +1,7 @@
 # Aho-Corasick
 
 Multi-pattern string matching trong một lượt. Thuật toán khiến một WAF
-(`07-security/06-waf.md`) trở nên khả thi về chi phí: match 5000 signature
+([`07-security/06-waf.md`](../07-security/06-waf.md)) trở nên khả thi về chi phí: match 5000 signature
 với một request body trong thời gian một vòng lặp ngây thơ match được một.
 
 ## What to learn
@@ -66,17 +66,17 @@ chỉnh rồi mới swap `Arc` — không bao giờ mutate một automaton đang
 
 ### Normalization phải xảy ra trước khi matching
 Aho-Corasick match byte theo nghĩa đen. `<ScRiPt>` không match `<script`,
-và `%2e%2e%2f` không match `../`. Pipeline normalization từ
-`07-security/06-waf.md` — URL-decode, lowercase, gộp khoảng trắng — chính
+và `%2e%2e%2f` không match [`../`](../..). Pipeline normalization từ
+[`07-security/06-waf.md`](../07-security/06-waf.md) — URL-decode, lowercase, gộp khoảng trắng — chính
 là thứ khiến literal matching khả thi, và nó phải được áp dụng giống hệt
 nhau lên pattern lúc build và lên input lúc match.
 
 Gotcha: normalize một lần vào một buffer, rồi mới match. Normalize lười
 theo từng pattern lại đưa trở lại đúng cái chi phí O(P × n) mà bạn dùng
 thuật toán này để tránh. Cũng để ý double-decoding: decode `%252e` hai lần
-ra `.`, và việc attacker có khai thác được điều đó hay không phụ thuộc vào
+ra [`.`](..), và việc attacker có khai thác được điều đó hay không phụ thuộc vào
 việc *upstream* làm gì, cùng một lớp bug parser-mismatch như
-`07-security/05-request-smuggling.md`.
+[`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md).
 
 ### Ranh giới của literal-match nằm ở đâu
 Aho-Corasick xử lý chuỗi literal, không phải regex. Rule WAF thật cần cả
@@ -84,10 +84,10 @@ hai: dùng Aho-Corasick như một **prefilter** nhanh — nếu không substrin
 literal nào của một rule xuất hiện, regex của rule đó không thể match,
 nên bỏ qua nó. Đây chính xác là cách crate `regex` tăng tốc các alternation
 bên trong, và nó biến "chạy 5000 regex" thành "chạy 3 regex mà literal của
-chúng đã xuất hiện." Xem `13-algorithms/regex-engine.md` cho phía engine.
+chúng đã xuất hiện." Xem [`13-algorithms/regex-engine.md`](regex-engine.md) cho phía engine.
 
 ## Practice
-1. Trong `labs/12-waf`, thay việc quét substring theo từng rule bằng một
+1. Trong [`labs/12-waf`](../../labs/12-waf), thay việc quét substring theo từng rule bằng một
    `AhoCorasick` duy nhất xây từ toàn bộ literal của signature; benchmark
    cả hai với body 100 KB ở 10, 100, và 1000 pattern và xác nhận thời gian
    của AC phẳng theo số lượng pattern.

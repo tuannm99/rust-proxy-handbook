@@ -2,7 +2,7 @@
 
 Vì sao một branch khó đoán trên hot path tốn kém hơn nhiều so với vẻ
 ngoài của một phép so sánh đơn thuần. Giống phần còn lại của
-`17-performance/`, chỉ theo đuổi điều này sau khi một profile chỉ vào nó.
+[`17-performance/`](.), chỉ theo đuổi điều này sau khi một profile chỉ vào nó.
 
 ## What to learn
 
@@ -32,10 +32,10 @@ for &b in &data {
 ```
 
 ### Chỗ một proxy gặp phải nó
-Parse từng byte một với một branch mỗi ký tự (`05-http-stack/01-parser.md`)
+Parse từng byte một với một branch mỗi ký tự ([`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md))
 là hot spot chân thật — một branch quyết định "đây có phải delimiter
 không" chạy hàng triệu lần. Kiểm tra policy theo từng request (rule WAF
-`07-security/06-waf.md`, IP filtering `07-security/08-ip-filtering.md`)
+[`07-security/06-waf.md`](../07-security/06-waf.md), IP filtering [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md))
 là các branch trên dữ liệu request. Thường thì chúng *có thể đoán trước*
 (hầu hết traffic được cho phép, hầu hết byte không phải delimiter), đó là
 lý do vì sao chúng rẻ trong thực tế — nguy hiểm là một branch thực sự chia
@@ -51,7 +51,7 @@ tính cả hai bên mà không cần branch:
   bảng tra cứu 256 mục có index (một bảng phân loại byte), mẹo đứng sau
   các bộ scan header HTTP nhanh.
 - **SIMD:** xử lý 16–32 byte cùng lúc mà không cần branch theo từng byte
-  nào cả — xem `17-performance/06-simd.md`, nơi việc scan header cuối
+  nào cả — xem [`17-performance/06-simd.md`](06-simd.md), nơi việc scan header cuối
   cùng sẽ dẫn tới.
 
 Gotcha: code branchless không tự động nhanh hơn. Loại bỏ một branch *có
@@ -76,12 +76,12 @@ hẳn.
    xác nhận nó thắng trường hợp *chưa sắp xếp* nhưng kiểm tra xem nó có
    thắng trường hợp *đã sắp xếp* (có thể đoán trước) không.
 3. Thay một bộ phân loại byte kiểu `if`/`match` trong một vòng lặp kiểu
-   HTTP-parser (`05-http-stack/01-parser.md`) bằng một bảng tra cứu 256
+   HTTP-parser ([`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md)) bằng một bảng tra cứu 256
    mục và đo.
-4. Đo một branch WAF/IP-filter (`07-security/06-waf.md`) dưới traffic
+4. Đo một branch WAF/IP-filter ([`07-security/06-waf.md`](../07-security/06-waf.md)) dưới traffic
    thực tế phần lớn được cho phép và xác nhận nó *có thể đoán trước* và
    do đó rẻ — luyện tập việc nhận ra một branch không đáng để đụng vào.
-5. Thêm `#[cold]` vào một error path thật trong `proxy`, kiểm tra xem code
+5. Thêm `#[cold]` vào một error path thật trong [`proxy`](../../proxy), kiểm tra xem code
    của hot path có dày đặc hơn không, và xác nhận bằng một benchmark rằng
    bạn không làm mọi thứ tệ hơn — rồi quyết định xem bước tiếp theo có
-   phải là `17-performance/06-simd.md` không.
+   phải là [`17-performance/06-simd.md`](06-simd.md) không.

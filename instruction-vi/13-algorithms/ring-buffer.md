@@ -1,6 +1,6 @@
 # Ring Buffer
 
-Một circular buffer kích thước cố định. `08-observability/01-logging.md`
+Một circular buffer kích thước cố định. [`08-observability/01-logging.md`](../08-observability/01-logging.md)
 cần một cái để logging không bao giờ allocate trên hot path của request và
 không bao giờ block nó khi chờ một writer chậm.
 
@@ -32,7 +32,7 @@ buffer không cần lock nào cả: producer chỉ ghi `head` và đọc `tail`,
 consumer chỉ ghi `tail` và đọc `head`, và mỗi bên chỉ cần
 `Ordering::Release` khi ghi / `Acquire` khi đọc chỉ số của mình để phía
 kia thấy đúng. Đây chính là điều `tracing_appender::non_blocking` (được
-nhắc tới trong `08-observability/01-logging.md`) và đa số crate SPSC
+nhắc tới trong [`08-observability/01-logging.md`](../08-observability/01-logging.md)) và đa số crate SPSC
 channel (`crossbeam`, `ringbuf`) implement.
 
 ### Chính sách khi đầy: không bao giờ block hot path
@@ -43,7 +43,7 @@ là **drop cái mới nhất** (từ chối dòng log vừa đến, rẻ, mất 
 đây nhất) hoặc **ghi đè cái cũ nhất** (dịch `tail` theo cùng với `head`,
 mất lịch sử nhưng không bao giờ từ chối). Chọn dựa trên việc "chúng ta
 biết mình đã mất gì đó" (kèm một metric đếm số bị drop,
-`08-observability/02-metrics.md`) có quan trọng hơn việc giữ sự kiện mới
+[`08-observability/02-metrics.md`](../08-observability/02-metrics.md)) có quan trọng hơn việc giữ sự kiện mới
 nhất hay không.
 
 ### Gotcha: false sharing giữa head và tail
@@ -52,7 +52,7 @@ nhưng nếu chúng nằm trên cùng một cache line, mỗi lần ghi vào m�
 làm invalidate bản cache của core kia cho cache line đó — hai thread cuối
 cùng bị serialize trên lưu lượng cache dù đang chạm vào dữ liệu độc lập về
 mặt logic. Đây chính xác là kiểu thất bại của
-`17-performance/02-false-sharing.md`; pad `head` và `tail` sang các cache
+[`17-performance/02-false-sharing.md`](../17-performance/02-false-sharing.md); pad `head` và `tail` sang các cache
 line riêng biệt (`#[repr(align(64))]` trên một wrapper, hoặc xen kẽ với
 các trường padding) để sửa nó.
 
@@ -64,7 +64,7 @@ các trường padding) để sửa nó.
    đằng sau một flag, và thêm một counter đếm số dòng bị drop được export
    thành metric.
 3. Nối ring buffer làm buffer đứng sau một đường logging bất đồng bộ trong
-   `proxy` (hoặc một test harness độc lập mô phỏng nó), và load-test với
+   [`proxy`](../../proxy) (hoặc một test harness độc lập mô phỏng nó), và load-test với
    một "disk writer" consumer cố tình chậm để xác nhận việc xử lý request
    không bao giờ bị block bởi nó.
 4. Tái hiện chi phí false sharing: benchmark throughput với `head` và

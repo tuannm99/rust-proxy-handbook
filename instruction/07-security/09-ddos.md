@@ -1,6 +1,6 @@
 # DDoS & Volumetric Mitigation
 
-The layer below `07-ratelimit.md` and `06-waf.md`: attacks that try to exhaust connections or bandwidth before any request is even parsed.
+The layer below [`07-ratelimit.md`](07-ratelimit.md) and [`06-waf.md`](06-waf.md): attacks that try to exhaust connections or bandwidth before any request is even parsed.
 
 ## What to learn
 ### The governing idea: cost asymmetry
@@ -17,7 +17,7 @@ something. When you evaluate a defense of your own, price both sides
 before deciding it works.
 
 ### Where this differs from rate limiting and WAF
-`07-ratelimit.md` and `06-waf.md` operate on parsed HTTP requests — they assume the connection is already accepted and the proxy is reading bytes off it. A volumetric or connection-exhaustion attack (SYN flood, a flood of legitimate-looking connection attempts, slow-client attacks) tries to win *before* that point, by exhausting file descriptors, memory, or CPU on the accept path itself. Defenses here have to be cheaper per-attempt than an HTTP-layer rate limiter, because you can't afford to fully parse a request just to reject it.
+[`07-ratelimit.md`](07-ratelimit.md) and [`06-waf.md`](06-waf.md) operate on parsed HTTP requests — they assume the connection is already accepted and the proxy is reading bytes off it. A volumetric or connection-exhaustion attack (SYN flood, a flood of legitimate-looking connection attempts, slow-client attacks) tries to win *before* that point, by exhausting file descriptors, memory, or CPU on the accept path itself. Defenses here have to be cheaper per-attempt than an HTTP-layer rate limiter, because you can't afford to fully parse a request just to reject it.
 
 ### SYN floods are usually not the proxy's problem to solve
 A SYN flood is answered by the kernel's SYN cookie mechanism (`net.ipv4.tcp_syncookies`) or by infrastructure in front of the proxy (a cloud provider's L3/L4 DDoS scrubbing, an anycast edge). A single Rust process cannot out-scale a real volumetric flood — trying to handle it entirely in application code is the wrong layer to fight at. The proxy's job is defense-in-depth for what actually reaches it as an established connection, not replacing a scrubbing layer.
@@ -25,7 +25,7 @@ A SYN flood is answered by the kernel's SYN cookie mechanism (`net.ipv4.tcp_sync
 Know the mechanism anyway, because it explains the boundary: SYN cookies
 let the kernel stop allocating state for half-open connections by encoding
 the connection parameters into the sequence number itself, so the SYN
-backlog (`16-kernel/03-tcp-stack.md`) can't be exhausted. The cost is that
+backlog ([`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md)) can't be exhausted. The cost is that
 TCP options negotiated in the SYN are partially lost — which is why it's a
 fallback triggered under pressure rather than a default.
 
@@ -34,8 +34,8 @@ fallback triggered under pressure rather than a default.
 attacker finds it for you. Per connection, a proxy spends: one file
 descriptor (`ulimit -n`, frequently still 1024 by default in a container —
 check, don't assume), kernel socket buffers on both send and receive
-(`16-kernel/03-tcp-stack.md`: tens of KB each, and *not* counted in your
-process's RSS), your own read/write buffers (`14-memory/04-buffer-pool.md`),
+([`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md): tens of KB each, and *not* counted in your
+process's RSS), your own read/write buffers ([`14-memory/04-buffer-pool.md`](../14-memory/04-buffer-pool.md)),
 and a task with its state machine.
 
 At 100k concurrent connections, a modest 64 KB of kernel buffers per
@@ -96,27 +96,27 @@ family has three members (slow headers, slow body, slow read), and the
 defense is a minimum data *rate* per phase rather than a total deadline a
 well-paced attacker simply waits out.
 
-See `07-security/10-slowloris.md` for the three variants and the rate-floor
+See [`07-security/10-slowloris.md`](10-slowloris.md) for the three variants and the rate-floor
 design.
 
 ### Layer 7: the expensive-endpoint flood
 The most efficient attack is usually not volumetric at all — it's finding
 the endpoint where one cheap request costs you the most. A search query
 with no index, an endpoint that renders a report, a regex over a large
-input (`13-algorithms/regex-engine.md`), an image resize. A few hundred
+input ([`13-algorithms/regex-engine.md`](../13-algorithms/regex-engine.md)), an image resize. A few hundred
 requests per second — trivially below any sane rate limit — saturate the
 upstream while looking like ordinary traffic.
 
 Defenses are per-endpoint rather than global: separate, tighter rate
-limits on expensive routes (`07-ratelimit.md` keyed by route, not just by
+limits on expensive routes ([`07-ratelimit.md`](07-ratelimit.md) keyed by route, not just by
 client), concurrency caps per route so one endpoint can't consume the
 whole upstream pool, and — the structural fix — treating "which endpoints
-are expensive" as something you *measure* (`08-observability/02-metrics.md`
+are expensive" as something you *measure* ([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)
 per-route latency and upstream time) rather than guess.
 
 ### Decompression bombs
 If the proxy accepts `Content-Encoding: gzip` on request bodies and
-decompresses them to inspect (`06-waf.md`) or transform, then a 10 KB upload
+decompresses them to inspect ([`06-waf.md`](06-waf.md)) or transform, then a 10 KB upload
 can expand to 10 GB. The compression ratio is the attacker's leverage and
 it is enormous — this is the single worst cost asymmetry available at
 layer 7.
@@ -134,7 +134,7 @@ let n = limited.read_to_end(&mut buf)?;   // stops at the cap, not at the bomb's
 Gotcha: also bound the *ratio*, not only the absolute size. A body that
 expands 1000:1 is hostile even if it lands under your cap, and the ratio
 is a much better signal than size alone for distinguishing an attack from
-a legitimately large upload. See `05-http-stack/06-compression.md` for the
+a legitimately large upload. See [`05-http-stack/06-compression.md`](../05-http-stack/06-compression.md) for the
 response-side mirror of this.
 
 ### Load shedding beats queueing
@@ -144,16 +144,16 @@ client has timed out and retried. Rejecting immediately, cheaply, and as
 early in the pipeline as possible is what keeps useful throughput from
 collapsing.
 
-See `07-security/11-load-shedding.md` for the shed-vs-queue argument,
+See [`07-security/11-load-shedding.md`](11-load-shedding.md) for the shed-vs-queue argument,
 time-based bounds, priority shedding, and adaptive concurrency limits.
 
 ### Pushing decisions down the stack
 Everything above runs after a TCP (and often TLS) handshake you already
 paid for. Once you have *identified* an attacker, the cheap place to drop
 them is far lower: an `nftables`/`ipset` entry, or XDP at the driver
-(`16-kernel/10-xdp.md`), where a packet dies before a socket exists.
+([`16-kernel/10-xdp.md`](../16-kernel/10-xdp.md)), where a packet dies before a socket exists.
 
-This is the feedback loop `labs/17-ebpf` builds: the proxy has the
+This is the feedback loop [`labs/17-ebpf`](../../labs/17-ebpf) builds: the proxy has the
 application context to decide who is abusive, the kernel has the position
 to drop them for free. Keep the decision in the proxy and the enforcement
 as low as you can reach.
@@ -162,29 +162,29 @@ as low as you can reach.
 Build these in order.
 
 1. Compute your ceilings first. **Done when** you have written down, for
-   `proxy`'s configuration: `ulimit -n`, kernel socket buffer size per
+   [`proxy`](../../proxy)'s configuration: `ulimit -n`, kernel socket buffer size per
    connection, your own per-connection buffer allocation, and the resulting
    maximum connections — and have verified the number by actually holding
    that many idle connections open.
 2. Add the accept-rate/concurrency limiter, with metrics separate from
-   application-level 429s (`07-ratelimit.md`). **Done when** exceeding the cap
+   application-level 429s ([`07-ratelimit.md`](07-ratelimit.md)). **Done when** exceeding the cap
    closes new connections immediately and the rejection count is visible
    as its own metric.
 3. Handle `EMFILE` properly in the accept loop. **Done when** lowering
    `ulimit -n` to a small number and flooding connections produces backoff
    and clean rejections rather than a 100%-CPU spin — watch `top` to
    confirm.
-4. Work through `07-security/10-slowloris.md`'s exercises. **Done when** all
+4. Work through [`07-security/10-slowloris.md`](10-slowloris.md)'s exercises. **Done when** all
    three slow-client variants are shed and a genuinely slow legitimate
    client is not.
 5. Add a decompression limit on request bodies with both an absolute cap
    and a ratio cap. **Done when** a gzip bomb is rejected having allocated
    only up to your cap (measure RSS during the test to prove it), and a
    legitimately compressible 50 MB body still works.
-6. Work through `07-security/11-load-shedding.md`'s exercises. **Done when**
+6. Work through [`07-security/11-load-shedding.md`](11-load-shedding.md)'s exercises. **Done when**
    overloading one expensive route returns 503 quickly instead of
    queueing, and other routes keep serving normally.
-7. Write down, in `proxy`'s README, which attack classes `proxy` mitigates
+7. Write down, in [`proxy`](../../proxy)'s README, which attack classes [`proxy`](../../proxy) mitigates
    itself vs which require infrastructure in front of it. **Done when**
    the boundary is explicit — this is the actual design decision, not a
    detail to skip.

@@ -1,6 +1,6 @@
 # Binary Heap
 
-Biến thể least-outstanding-requests của `06-proxy/02-load-balancer.md`
+Biến thể least-outstanding-requests của [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md)
 cần luôn biết upstream nào hiện có ít request đang xử lý dở nhất nhất.
 Một binary heap là cấu trúc trả lời "cái nào nhỏ nhất" trong O(log n) cho
 mỗi lần cập nhật thay vì quét mọi upstream ở mỗi request.
@@ -58,11 +58,11 @@ sift-down thay vì 2. Với `d` nhỏ (4, đôi khi 8) đây là một chiến t
 ròng trong thực tế vì nó thực hiện ít lần nhảy qua ranh giới cache-line
 hơn cho một tổng số phép so sánh tương tự; các implementation
 priority-queue production (một số OS scheduler, một số implementation LB)
-dùng d-ary heap chính vì lý do này. Xem `17-performance/01-cpu-cache.md`
+dùng d-ary heap chính vì lý do này. Xem [`17-performance/01-cpu-cache.md`](../17-performance/01-cpu-cache.md)
 trước khi micro-tune `d` — đo trước đã.
 
 ## Practice
-1. Trong `labs/06-load-balancer`, implement least-outstanding-requests
+1. Trong [`labs/06-load-balancer`](../../labs/06-load-balancer), implement least-outstanding-requests
    dùng một min-heap có key là số request đang xử lý dở; bắt đầu với
    cách lazy-deletion cho decrease-key.
 2. Tái tạo vấn đề entry cũ: dispatch và hoàn thành request thật nhanh và

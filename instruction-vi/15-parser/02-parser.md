@@ -1,8 +1,8 @@
 # Parser
 
 Biến một token stream phẳng thành dữ liệu có cấu trúc. Đây là lý thuyết
-tổng quát; `05-http-stack/01-parser.md` là ứng dụng riêng cho HTTP và
-`labs/01-http-parser` là nơi bạn implement nó.
+tổng quát; [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) là ứng dụng riêng cho HTTP và
+[`labs/01-http-parser`](../../labs/01-http-parser) là nơi bạn implement nó.
 
 ## What to learn
 
@@ -31,7 +31,7 @@ sâu (`{{{{...}}}}`, hoặc một JSON array sâu cả triệu tầng) có thể
 stack — trong Rust việc này abort process, không thể catch được. Bất kỳ
 parser nào tiếp xúc với input không đáng tin cậy **phải** giới hạn độ sâu
 nesting một cách tường minh bằng một counter, y hệt cách
-`05-http-stack/01-parser.md` giới hạn số lượng header và kích thước body.
+[`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) giới hạn số lượng header và kích thước body.
 Đây là một vector DoS thật sự, không phải lý thuyết.
 
 ### Predictive parsing và lookahead một token
@@ -40,7 +40,7 @@ chọn bằng cách nhìn một token (LL(1)). `match self.peek()` của bạn c
 nhánh; không cần backtrack. Khi một token không đủ để quyết định, bạn
 hoặc peek xa hơn, tái cấu trúc grammar, hoặc chấp nhận backtracking — và
 backtracking trên input không đáng tin cậy tái tạo lại đúng rủi ro bùng nổ
-theo cấp số mũ như một backtracking regex (`13-algorithms/regex-engine.md`).
+theo cấp số mũ như một backtracking regex ([`13-algorithms/regex-engine.md`](../13-algorithms/regex-engine.md)).
 Ưu tiên một grammar bạn có thể parse với lookahead cố định.
 
 ### Precedence: chỗ recursive descent ngây thơ trở nên xấu xí
@@ -66,15 +66,15 @@ Một parser chết ngay ở lỗi đầu tiên buộc người dùng phải s�
 dòng một mỗi lần chạy. Parser thật sự phục hồi: khi gặp lỗi, bỏ qua token
 tới một điểm đồng bộ đã biết (`;` hoặc `}` tiếp theo), ghi lại lỗi, và
 tiếp tục để một lượt chạy báo cáo được nhiều vấn đề. Với một config
-hot-reload (`09-architecture/03-config.md`) đây là khác biệt giữa một
+hot-reload ([`09-architecture/03-config.md`](../09-architecture/03-config.md)) đây là khác biệt giữa một
 công cụ dùng được và một công cụ gây bực bội — dù lưu ý rằng với config
 bạn vẫn từ chối *toàn bộ* lần reload một cách atomic; bạn chỉ phục hồi để
 gom hết lỗi hiển thị cùng lúc.
 
 ## Practice
-1. Mở rộng lexer từ `15-parser/01-lexer.md` thành một recursive-descent
+1. Mở rộng lexer từ [`15-parser/01-lexer.md`](01-lexer.md) thành một recursive-descent
    parser tạo ra một config struct có kiểu, một hàm cho mỗi rule grammar.
-   Đây là giai đoạn parse của `labs/13-hot-reload`.
+   Đây là giai đoạn parse của [`labs/13-hot-reload`](../../labs/13-hot-reload).
 2. Thêm một counter độ sâu nesting tường minh và một test đưa vào các
    block lồng sâu, chứng minh parser trả về một lỗi sạch thay vì overflow
    stack.
@@ -83,7 +83,7 @@ gom hết lỗi hiển thị cùng lúc.
    chạy.
 4. Viết một Pratt parser cho một grammar biểu thức boolean nhỏ
    (`&&`/`||`/`!` với dấu ngoặc) kiểu mà một điều kiện WAF
-   (`07-security/06-waf.md`) sẽ dùng, và kiểm chứng precedence bằng test.
+   ([`07-security/06-waf.md`](../07-security/06-waf.md)) sẽ dùng, và kiểm chứng precedence bằng test.
 5. Viết lại một rule bằng `nom` hoặc `winnow` và so sánh với phiên bản
    viết tay của bạn về độ dễ đọc và chất lượng error message; quyết định
    idiom nào phù hợp với config parsing so với binary framing.

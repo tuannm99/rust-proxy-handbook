@@ -1,9 +1,9 @@
 # Crypto Basics: Encryption, Hashing, Signatures, PKI
 
-Một phần của chuỗi fundamentals từ-con-số-0 — xem `01-network/01-fundamentals.md`
-để có index đầy đủ. `01-network/13-tls.md` mở đầu bằng "negotiate một
+Một phần của chuỗi fundamentals từ-con-số-0 — xem [`01-network/01-fundamentals.md`](01-fundamentals.md)
+để có index đầy đủ. [`01-network/13-tls.md`](13-tls.md) mở đầu bằng "negotiate một
 cipher suite, trao đổi (EC)DHE key share, derive session key" và
-`07-security/02-jwt.md`/`07-security/03-mtls.md`/`07-security/01-auth.md`
+[`07-security/02-jwt.md`](../07-security/02-jwt.md)/[`07-security/03-mtls.md`](../07-security/03-mtls.md)/[`07-security/01-auth.md`](../07-security/01-auth.md)
 đều dựa vào "signature," "public key," và "certificate chain" — không cái
 nào đọc hiểu được nếu thiếu file này. File này không dạy cryptography như
 một ngành học; nó dạy năm khối xây dựng đủ rõ để handshake của TLS và cơ
@@ -34,7 +34,7 @@ so với symmetric encryption, quá chậm để dùng cho traffic khối lượ
 
 Các thuật toán **key exchange** (Diffie-Hellman và biến thể đường cong
 elliptic của nó, ECDHE — chính là "(EC)DHE" trong dòng mở đầu của
-`13-tls.md`) là một mẹo khéo léo liên quan tới asymmetric: cả hai bên trao
+[`13-tls.md`](13-tls.md)) là một mẹo khéo léo liên quan tới asymmetric: cả hai bên trao
 đổi các giá trị công khai qua đường truyền mở, và mỗi bên độc lập *tính
 toán* ra cùng một secret dùng chung từ giá trị private của chính mình và
 giá trị public của bên kia — một kẻ nghe lén thấy cả hai giá trị public
@@ -48,7 +48,7 @@ cả hai, theo trình tự: key exchange **asymmetric** (ECDHE) trong lúc
 handshake để đồng ý về một secret dùng chung mà không truyền nó, rồi
 encryption **symmetric** (AES/ChaCha20) dùng secret đã derive đó cho toàn
 bộ traffic request/response thật sự. Đây là lý do tên cipher suite trong
-`13-tls.md` có nhiều phần (ví dụ
+[`13-tls.md`](13-tls.md) có nhiều phần (ví dụ
 `TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256`) — nó đang gọi tên thuật toán key
 exchange, thuật toán signature (mục tiếp theo), và cipher symmetric, cả ba
 được negotiate cùng nhau.
@@ -64,7 +64,7 @@ byte) là cái bạn sẽ thấy được nhắc đến nhiều nhất trong han
 Hashing đơn thuần cho bạn *kiểm tra tính toàn vẹn* (dữ liệu này có bị thay
 đổi không?) nhưng không cho *tính xác thực* (nó có đến từ đúng người tôi
 nghĩ không? — ai cũng có thể hash bất cứ thứ gì). Các hash function trong
-`13-algorithms/count-min-sketch.md` và `13-algorithms/hashmap.md` giải
+[`13-algorithms/count-min-sketch.md`](../13-algorithms/count-min-sketch.md) và [`13-algorithms/hashmap.md`](../13-algorithms/hashmap.md) giải
 quyết một vấn đề hoàn toàn khác (phân phối key vào các bucket) và rõ ràng
 *không* bị ràng buộc bởi tính một-chiều kiểu cryptographic — đừng nhầm lẫn
 một hash function dùng cho hash table với một hash function *cryptographic*
@@ -78,7 +78,7 @@ cryptographic hash function với một secret key, tạo ra một digest mà ch
 ai đang giữ cùng secret đó mới có thể tạo ra được — đây là thứ cho bạn
 tính xác thực chồng lên trên tính toàn vẹn của hashing đơn thuần. HMAC là
 thứ "HS256" nghĩa là trong tên thuật toán của một JWT
-(`07-security/02-jwt.md`): HMAC dùng SHA-256, với secret dùng chung là bất
+([`07-security/02-jwt.md`](../07-security/02-jwt.md)): HMAC dùng SHA-256, với secret dùng chung là bất
 kỳ key nào mà service của bạn và bên phát hành token đã thống nhất ngoài
 băng tần (out of band).
 
@@ -92,7 +92,7 @@ của một JWT: chữ ký RSA hoặc ECDSA, được xác minh bằng một pub
 vì một secret dùng chung.
 
 Khác biệt thực tế so với HMAC quan trọng cho tấn công algorithm-confusion
-của `07-security/02-jwt.md`: một HMAC secret phải được giữ bí mật ngang
+của [`07-security/02-jwt.md`](../07-security/02-jwt.md): một HMAC secret phải được giữ bí mật ngang
 nhau ở cả phía ký lẫn phía xác minh (ai xác minh được thì cũng giả mạo
 được), trong khi public key của một signature *có chủ đích* là công khai
 — ai cũng xác minh được, chỉ chủ sở hữu private key mới ký được. Nhầm lẫn
@@ -105,7 +105,7 @@ truyền nó", nhưng để lại một khoảng trống: khi trình duyệt c�
 một public key từ một server, làm sao nó biết key đó thực sự thuộc về
 `example.com` chứ không phải một attacker đứng giữa? Một **certificate**
 trả lời câu này: nó là một public key cộng một identity (một hostname,
-trong trường hợp khớp SNI của `13-tls.md`) cộng một **digital signature**
+trong trường hợp khớp SNI của [`13-tls.md`](13-tls.md)) cộng một **digital signature**
 — được ký không phải bởi chính server, mà bởi một **Certificate Authority
 (CA)**, một bên thứ ba mà trình duyệt/OS của bạn đã tin tưởng sẵn.
 
@@ -116,14 +116,14 @@ certificate **leaf** (server) thật sự mà proxy của bạn trình ra. Xác 
 một certificate nghĩa là đi ngược chuỗi này — leaf được ký bởi
 intermediate, intermediate được ký bởi một root bạn đã tin tưởng sẵn —
 dùng cơ chế xác minh signature từ mục trước ở mỗi bước. Gotcha "chain tới
-một CA đáng tin cậy yếu hơn nghe có vẻ" của `07-security/03-mtls.md` hoàn
+một CA đáng tin cậy yếu hơn nghe có vẻ" của [`07-security/03-mtls.md`](../07-security/03-mtls.md) hoàn
 toàn nói về điều này: CA chỉ vouch cho *một identity*, không phải cho
 *sự ủy quyền* — bất kỳ ai CA đó chịu ký cho đều có được một chain hợp lệ.
 
 **PKI** (public key infrastructure) chỉ là thuật ngữ bao trùm cho toàn bộ
 hệ thống này: các CA, các certificate, việc xác minh chain-of-trust, và
 tooling (ACME/Let's Encrypt, được nhắc trong phần quản lý certificate của
-`13-tls.md`) phát hành và gia hạn chúng.
+[`13-tls.md`](13-tls.md)) phát hành và gia hạn chúng.
 
 ## Practice
 1. Chạy `openssl s_client -connect example.com:443 -servername
@@ -139,7 +139,7 @@ tooling (ACME/Let's Encrypt, được nhắc trong phần quản lý certificate
    digest thay đổi hoàn toàn thay vì chỉ thay đổi một chút (tính chất
    avalanche của một hash function tốt).
 4. Đọc mục "Algorithm confusion, concretely" trong
-   `07-security/02-jwt.md` khi HMAC vs signature còn mới trong đầu, và
+   [`07-security/02-jwt.md`](../07-security/02-jwt.md) khi HMAC vs signature còn mới trong đầu, và
    giải thích bằng lời của bạn vì sao đối xử với một RSA public key như
    một HMAC secret cho phép attacker giả mạo một token — gắn nó lại với
    "ai cũng xác minh được một signature; chỉ chủ sở hữu secret mới tính

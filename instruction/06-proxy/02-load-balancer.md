@@ -4,7 +4,7 @@
 - Consistent Hash
 
 Deeper variants (smooth WRR internals, rendezvous hashing, Maglev) live in
-`13-algorithms/`.
+[`13-algorithms/`](../13-algorithms).
 
 ## What to learn
 
@@ -33,14 +33,14 @@ Gotcha: plain round robin ignores load — if one upstream is slow, it still
 gets an equal share of new requests and its queue backs up.
 
 Gotcha: `fetch_add` on a shared counter is a contended cache line across
-every worker thread on every request (`17-performance/02-false-sharing.md`) —
+every worker thread on every request ([`17-performance/02-false-sharing.md`](../17-performance/02-false-sharing.md)) —
 at high request rates this single atomic becomes measurable. A per-worker
 counter, each starting at a different offset, gets the same distribution
 with no cross-core traffic at all, and is the standard fix once round
 robin shows up in a profile.
 
 Gotcha: `% upstreams.len()` on a *changing* pool silently reshuffles
-everything when the length changes by one (`07-service-discovery.md`) — fine
+everything when the length changes by one ([`07-service-discovery.md`](07-service-discovery.md)) — fine
 for stateless round robin, fatal if anything downstream assumed stability.
 That difference is exactly why consistent hashing exists.
 
@@ -49,13 +49,13 @@ Pick the upstream with the fewest `active_conns` right now. Better than
 round robin under uneven request cost (some requests are cheap, some
 expensive) because it reacts to actual load, not just count. Needs an
 accurate, low-overhead `active_conns` counter per upstream (see
-`01-upstream.md`) — a scan over N upstreams per pick is fine for tens of
-upstreams, not for thousands (use a heap, `13-algorithms/heap.md`, if you
+[`01-upstream.md`](01-upstream.md)) — a scan over N upstreams per pick is fine for tens of
+upstreams, not for thousands (use a heap, [`13-algorithms/heap.md`](../13-algorithms/heap.md), if you
 need to scale further).
 
 Gotcha: least-connection can thundering-herd onto a newly-recovered
 upstream (0 connections looks maximally attractive) — combine with a slow
-start / connection ramp-up (`03-healthcheck.md`).
+start / connection ramp-up ([`03-healthcheck.md`](03-healthcheck.md)).
 
 Gotcha, and this one is structural: **your connection counts are local.**
 With M proxy instances, each one knows only the connections *it* opened.
@@ -89,7 +89,7 @@ nothing. It is the default in linkerd and available in Envoy, and it
 should generally be your default too.
 
 Gotcha: P2C is only as good as the load metric you compare. With
-`active_conns` it inherits the cancellation-leak bug from `01-upstream.md`
+`active_conns` it inherits the cancellation-leak bug from [`01-upstream.md`](01-upstream.md)
 (a leaked counter makes a healthy host permanently unattractive); with
 latency it inherits the cold-host problem below.
 
@@ -101,7 +101,7 @@ response latency, multiplied by its outstanding request count, and picks
 the lowest score (usually combined with P2C rather than a global scan).
 It reacts to a host that has become slow without having failed — the
 partial-degradation case that health checks miss entirely
-(`03-healthcheck.md`).
+([`03-healthcheck.md`](03-healthcheck.md)).
 
 Gotcha: a host that receives no traffic has no recent latency samples, so
 its EWMA is stale — and stale-and-fast looks like the best host in the
@@ -141,14 +141,14 @@ traffic, which is the right trade when the alternative is one host melting.
 Gotcha: the hash must be stable across processes and restarts. A
 `DefaultHasher` from `std` is explicitly not stable across Rust releases,
 and `HashMap`'s `SipHash` is seeded randomly per process (see
-`13-algorithms/hashmap.md`) — two proxy instances using it would build
+[`13-algorithms/hashmap.md`](../13-algorithms/hashmap.md)) — two proxy instances using it would build
 *different* rings from the same config and disagree about every key. Use a
 fixed-seed, explicitly-specified hash (xxHash, or SipHash with a constant
 key) for anything whose result must match across processes.
 
 ### Choosing between them
 A short decision guide, since this is the actual question when you sit
-down to write `proxy/`:
+down to write [`proxy/`](../../proxy):
 - No affinity needed, uniform request cost, small pool → round robin. It
   is cheap and its weaknesses don't bite.
 - No affinity needed, variable request cost → **P2C over a load metric**.
@@ -162,7 +162,7 @@ down to write `proxy/`:
 Build these in order — each one needs the previous one's measurements to
 be judged against.
 
-1. In `labs/06-load-balancer`, implement round robin. **Done when** a load
+1. In [`labs/06-load-balancer`](../../labs/06-load-balancer), implement round robin. **Done when** a load
    test shows requests distributed within ±1% across 3 equal dummy
    upstreams.
 2. Add a deliberately slow upstream (inject 200ms into one backend) and

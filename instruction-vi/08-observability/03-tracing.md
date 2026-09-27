@@ -88,21 +88,21 @@ Một span chỉ ghi lại tên và thời lượng cho bạn biết một reque
 định nó đã đưa ra:
 
 - upstream nào được chọn, và bằng thuật toán nào
-  (`06-proxy/02-load-balancer.md`)
+  ([`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md))
 - việc lấy connection mất bao lâu so với thời gian phản hồi thực của
-  upstream (`06-proxy/01-upstream.md`) — hai cái này thường bị nhầm lẫn
+  upstream ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)) — hai cái này thường bị nhầm lẫn
   trong các buổi review sự cố, và phép tách này giải quyết dứt điểm
-- số lần retry và circuit có đang mở không (`06-proxy/05-retry.md`)
-- cache hit/miss/stale (`05-http-stack/07-cache.md`)
+- số lần retry và circuit có đang mở không ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md))
+- cache hit/miss/stale ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md))
 - request có bị rate-limit hay bị shed không, và bởi rule nào
-- thời gian dành cho kiểm tra WAF (`07-security/06-waf.md`)
+- thời gian dành cho kiểm tra WAF ([`07-security/06-waf.md`](../07-security/06-waf.md))
 
 Các span con cho từng giai đoạn (handshake TLS, WAF, gọi upstream) làm cho
 biểu đồ waterfall tự giải thích được — ai đó đọc trace nên thấy được thời
 gian đi đâu mà không cần biết code của bạn.
 
 Gotcha: attribute của span chịu cùng các quy tắc như field của log
-(`08-observability/01-logging.md`) — không credential, không raw body,
+([`08-observability/01-logging.md`](01-logging.md)) — không credential, không raw body,
 không chuỗi do kẻ tấn công kiểm soát mà không giới hạn. Trace thường được
 đọc rộng rãi hơn log, chứ không phải hẹp hơn.
 
@@ -132,10 +132,10 @@ có chủ đích.
 Gotcha: một kẻ tấn công kiểm soát `traceparent` kiểm soát luôn quyết định
 sampling của bạn, và có thể ép 100% sampling bằng cách đặt flag sampled
 trên mọi request — biến pipeline tracing của bạn thành một mục tiêu
-khuếch đại (`07-security/09-ddos.md`). Rate-limit việc tôn trọng sampling
+khuếch đại ([`07-security/09-ddos.md`](../07-security/09-ddos.md)). Rate-limit việc tôn trọng sampling
 do client đặt từ các client không đáng tin, hoặc bỏ qua flag trừ khi đến
 từ các peer đáng tin (lại chính ranh giới tin cậy của
-`07-security/08-ip-filtering.md`).
+[`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)).
 
 ### Đừng để telemetry làm sập proxy
 Exporter là một network client nằm trong cái bóng của request path, và nó
@@ -149,7 +149,7 @@ thất bại giống một cái như vậy. Ba tính chất cần kiểm chứng
   cố bạn đang cố điều tra.
 - **Shutdown phải flush.** Các span đang buffer khi process thoát sẽ mất
   trừ khi đường shutdown drain chúng — hãy nối việc này vào
-  `09-architecture/04-graceful-shutdown.md` thay vì phó mặc cho một
+  [`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md) thay vì phó mặc cho một
   destructor có thể không bao giờ chạy.
 
 ### Span khác với `Span` của crate tracing
@@ -157,16 +157,16 @@ Gây nhầm lẫn một chút, crate `tracing` của Rust cũng gọi các scope
 structured-logging của nó là "span" — và chúng kết hợp tốt với
 OpenTelemetry: `tracing-opentelemetry` bắc cầu `tracing::Span` sang OTel
 span để export tới một collector (Jaeger/Tempo/Honeycomb), nên chính
-instrumentation bạn thêm cho `08-observability/01-logging.md` cũng đóng
+instrumentation bạn thêm cho [`08-observability/01-logging.md`](01-logging.md) cũng đóng
 vai trò là trace data.
 
 ## Practice
 Xây dựng theo thứ tự sau.
 
-1. Trong `labs/16-opentelemetry`, ghép `tracing-opentelemetry` cùng một
+1. Trong [`labs/16-opentelemetry`](../../labs/16-opentelemetry), ghép `tracing-opentelemetry` cùng một
    OTLP exporter phát ra một span tới một collector local (Jaeger là đủ).
    **Xong khi** span đó xuất hiện trong UI.
-2. Cố tình tái tạo bug `enter()`-xuyên-`.await` trong `proxy`: instrument
+2. Cố tình tái tạo bug `enter()`-xuyên-`.await` trong [`proxy`](../../proxy): instrument
    một request handler với một guard được giữ và chạy các request đồng
    thời. **Xong khi** bạn thấy được các span lồng dưới sai parent — rồi
    chuyển sang `.instrument()` / `#[instrument]`, bật
@@ -175,7 +175,7 @@ Xây dựng theo thứ tự sau.
    khi** một header sai định dạng (sai số field, không phải hex, trace ID
    toàn 0) bị từ chối và thay thế thay vì panic hay được propagate, và một
    cái hợp lệ tạo ra đúng quan hệ parent/child.
-4. Chạy proxy trước hai instance nối tiếp của `labs/02-http-server` và
+4. Chạy proxy trước hai instance nối tiếp của [`labs/02-http-server`](../../labs/02-http-server) và
    kiểm chứng end-to-end. **Xong khi** một trace ID duy nhất nối các span
    từ cả ba process trong UI.
 5. Thêm attribute quyết định của proxy và các span con theo giai đoạn.

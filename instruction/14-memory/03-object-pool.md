@@ -1,6 +1,6 @@
 # Object Pools
 
-`14-memory/02-arena.md` frees a whole request's allocations at once but
+[`14-memory/02-arena.md`](02-arena.md) frees a whole request's allocations at once but
 starts fresh next request. An object pool is for the opposite pattern:
 the *same-shaped* object, reused across many requests, so it's never
 freed at all — just checked out and returned.
@@ -55,7 +55,7 @@ checkout time — pick one place, and make it impossible to skip.
 ### Gotcha: an unbounded pool is a pool-shaped memory leak
 A pool that only ever grows (checked out more than returned, or growing
 to serve a traffic spike and never shrinking) reaches the same
-uncontrolled high-water mark `06-fragmentation.md` describes for the
+uncontrolled high-water mark [`06-fragmentation.md`](06-fragmentation.md) describes for the
 allocator itself — except now it's your code holding the memory instead
 of the allocator. Cap the pool's maximum size, and when at capacity,
 either block the checkout, fall back to a real allocation, or reject —
@@ -63,7 +63,7 @@ decide which, deliberately, rather than growing without bound by default.
 
 ## Practice
 1. Implement an RAII-guarded pool of reusable `Vec<u8>` I/O buffers for
-   `labs/05-reverse-proxy`'s per-connection copy path.
+   [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy)'s per-connection copy path.
 2. Add a test that a buffer, once returned to the pool and checked out
    again, never contains bytes from its previous use.
 3. Benchmark alloc-per-request vs pooled buffers under concurrent load;

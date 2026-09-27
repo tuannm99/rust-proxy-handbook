@@ -35,7 +35,7 @@ trên type task của bạn và standard library tự xây vtable cho bạn.
 
 ### Wakeup thực sự đến từ đâu
 Với các future I/O, waker cuối cùng được lưu trong reactor, khóa theo fd
-đã đăng ký (xem `04-runtime/01-tokio.md`); epoll báo readiness chính là
+đã đăng ký (xem [`04-runtime/01-tokio.md`](01-tokio.md)); epoll báo readiness chính là
 thứ kích hoạt `.wake()`. Với một future tự viết tay (một timer, một
 channel), *bạn* chịu trách nhiệm gọi `.wake()` đúng thời điểm — ví dụ một
 thread nền bắn khi tới deadline, hoặc phía gửi của một channel đánh thức
@@ -50,7 +50,7 @@ nhau (ví dụ giữa các nhánh `select!`) luôn phải đánh thức waker *m
 future tự viết tay.
 
 ## Practice
-1. Trong executor tự viết tay từ bài tập `03-rust/05-async.md`, implement
+1. Trong executor tự viết tay từ bài tập [`03-rust/05-async.md`](../03-rust/05-async.md), implement
    một `Waker` qua `std::task::Wake`: `wake()` nên đẩy id của task trở
    lại một run queue (ví dụ một `VecDeque` sau một `Mutex`, hoặc một
    channel `mpsc`).

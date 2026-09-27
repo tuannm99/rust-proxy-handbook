@@ -1,6 +1,6 @@
 # Latency, Bandwidth, Throughput, RTT
 
-Part of the from-scratch fundamentals series — see `01-network/01-fundamentals.md`
+Part of the from-scratch fundamentals series — see [`01-network/01-fundamentals.md`](01-fundamentals.md)
 for the full index. Four numbers that get used interchangeably in casual
 conversation and shouldn't be — mixing them up leads to optimizing the
 wrong thing.
@@ -11,7 +11,7 @@ wrong thing.
 **Latency** is how long one piece of data takes to get from A to B.
 It's dominated by physical distance (light in fiber travels at roughly
 200,000 km/s, not 300,000, due to the refractive index of glass) and the
-number of hops (`02-addressing.md`'s routing section) — not by how "fast"
+number of hops ([`02-addressing.md`](02-addressing.md)'s routing section) — not by how "fast"
 your connection is in the colloquial sense. A cross-continental link has
 tens of milliseconds of latency no matter how much bandwidth you throw at
 it, because that's a speed-of-light floor, not a congestion problem.
@@ -34,10 +34,10 @@ throughput if something else is the bottleneck.
 **RTT (round-trip time)** is the time for a message to go out and its
 reply to come back — roughly `2 × latency` plus processing time at the
 far end. This is the number that matters for "how many round trips does
-this cost": every handshake (`03-byte-streams.md`) — TCP's, then TLS's on
+this cost": every handshake ([`03-byte-streams.md`](03-byte-streams.md)) — TCP's, then TLS's on
 top of it — is one more RTT of pure waiting before the first real
 request byte moves. That's the entire argument for connection reuse in
-`06-proxy/01-upstream.md`: paying an RTT-bound handshake once and reusing
+[`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md): paying an RTT-bound handshake once and reusing
 the connection beats paying it on every request.
 
 ### Why a high-bandwidth link can still feel slow
@@ -48,14 +48,14 @@ back is real physical distance). For a small request/response exchange —
 most HTTP traffic — the transfer itself is so quick that RTT, not
 bandwidth, dominates total time: you're waiting on round trips, not on
 bytes. This is precisely why HTTP/2's multiplexing
-(`01-network/11-http2.md`) and 0-RTT/session resumption in TLS
-(`01-network/13-tls.md`) exist — they're attacking round-trip *count*,
+([`01-network/11-http2.md`](11-http2.md)) and 0-RTT/session resumption in TLS
+([`01-network/13-tls.md`](13-tls.md)) exist — they're attacking round-trip *count*,
 not throughput.
 
 ### Bandwidth-delay product: how much can be "in flight"
 The **bandwidth-delay product** (bandwidth × RTT) is how many bytes can
 be in transit on the link at once, unacknowledged — TCP's congestion
-window (`01-network/08-tcp.md`) has to grow to roughly this size before a
+window ([`01-network/08-tcp.md`](08-tcp.md)) has to grow to roughly this size before a
 single connection can use the link's full bandwidth. On a high-bandwidth,
 high-latency link ("long fat network" — a satellite link, or a
 cross-continental fiber run), this product is large, and a connection

@@ -1,6 +1,6 @@
 # Trie (Prefix Tree)
 
-`05-http-stack/03-router.md` nói về việc match method+path ở tầng proxy.
+[`05-http-stack/03-router.md`](../05-http-stack/03-router.md) nói về việc match method+path ở tầng proxy.
 File này nói về cấu trúc mà matching của một router thật được xây trên đó:
 lookup theo prefix dùng chung, đúng là thứ mà một path (`/users/:id/posts`)
 được tạo thành từ đó.
@@ -43,12 +43,12 @@ như "route này hôm qua còn chạy".
 Một trie đánh chỉ số theo từng byte (thay vì theo từng segment) tạo ra các
 chuỗi node dài chỉ có một con — một node cho mỗi ký tự của `/users` là sáu
 bước nhảy để lưu một segment. Đây chính xác là vấn đề mà
-`13-algorithms/radix-tree.md` sửa bằng cách gộp các chuỗi đó thành một
+[`13-algorithms/radix-tree.md`](radix-tree.md) sửa bằng cách gộp các chuỗi đó thành một
 edge duy nhất; đọc file đó khi số lượng node của một trie theo segment
 bắt đầu trở thành vấn đề.
 
 ## Practice
-1. Trong `labs/03-router`, implement một trie theo segment (map đánh chỉ
+1. Trong [`labs/03-router`](../../labs/03-router), implement một trie theo segment (map đánh chỉ
    số theo path segment, không phải theo ký tự) và đăng ký cả route static
    lẫn route có tham số.
 2. Đăng ký `/users/:id` và `/users/new`, viết quy tắc precedence khiến

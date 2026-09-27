@@ -6,7 +6,7 @@
 `tokio::spawn` trả về một `JoinHandle<T>` — drop nó *không* hủy task
 (nó tiếp tục chạy tách rời), nhưng bạn mất khả năng lấy kết quả hoặc quan
 sát một panic (gotcha "panic bị nuốt âm thầm" của
-`03-rust/08-error-handling.md` sống ở đây). `.abort()` trên một
+[`03-rust/08-error-handling.md`](../03-rust/08-error-handling.md) sống ở đây). `.abort()` trên một
 `JoinHandle` hủy task ở điểm `.await` tiếp theo của nó, và await handle
 sau đó trả về một `JoinError` bạn có thể kiểm tra để phân biệt "đã
 panic" với "đã bị hủy."
@@ -44,10 +44,10 @@ while let Some(res) = set.join_next().await {
 // health check còn đang chạy bị abort — không có task mồ côi nào sót lại
 ```
 Đây là câu trả lời trực tiếp cho câu hỏi "ai hủy các health checker khi
-pool bị dỡ bỏ" trong `06-proxy/03-healthcheck.md`.
+pool bị dỡ bỏ" trong [`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md).
 
 ### `select!` và cancellation-safety, với API thật
-`03-rust/05-async.md` bao quát "drop là hủy" ở mức khái niệm; trong thực
+[`03-rust/05-async.md`](../03-rust/05-async.md) bao quát "drop là hủy" ở mức khái niệm; trong thực
 tế câu hỏi là: một thao tác có để lại trạng thái chia sẻ nhất quán nếu bị
 drop giữa chừng không? `tokio::sync::Mutex::lock().await` là
 cancellation-safe — drop future trước khi nó resolve chỉ có nghĩa lock
@@ -65,7 +65,7 @@ truy cập được mà không cần luồn nó qua mọi lời gọi hàm — t
 async của một thread-local, gắn theo phạm vi một task đã spawn thay vì
 một OS thread (điều không có ý nghĩa ở đây, vì nhiều task chia sẻ một
 thread). Ứng dụng thực tế phổ biến là một trace/span context theo từng
-request (`08-observability/03-tracing.md`) hoặc request ID mà mọi dòng
+request ([`08-observability/03-tracing.md`](../08-observability/03-tracing.md)) hoặc request ID mà mọi dòng
 log ở bất cứ đâu trong call graph của task đó nên mang theo, mà không cần
 một tham số tường minh ở mọi nơi.
 
@@ -79,7 +79,7 @@ REQUEST_ID.scope(request_id, async move {
 ```
 
 ### Graceful shutdown như một dạng structured concurrency
-Bài toán cốt lõi của `09-architecture/04-graceful-shutdown.md` — ngừng
+Bài toán cốt lõi của [`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md) — ngừng
 nhận kết nối mới, để các kết nối đang xử lý dở hoàn tất, rồi thoát — về
 bản chất là một bài toán hủy/theo-dõi-hoàn-thành: một `JoinSet`, hoặc một
 tín hiệu shutdown `tokio::sync::watch` được đua qua `select!` bên trong
@@ -94,7 +94,7 @@ thành.
    dừng ở điểm `.await` tiếp theo, và rẽ nhánh trên `.is_cancelled()`
    của `JoinError` kết quả.
 3. Thay một `Vec<JoinHandle>` thủ công trong bài tập
-   `06-proxy/03-healthcheck.md` bằng một `JoinSet`, rồi chứng minh thuộc
+   [`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md) bằng một `JoinSet`, rồi chứng minh thuộc
    tính structured-cancellation: return sớm khỏi hàm sở hữu và xác nhận
    (qua một dòng log theo-task khi drop) rằng các health check đang chạy
    bị abort.
@@ -103,6 +103,6 @@ thành.
    một timeout ngắn bằng `select!`, và chứng minh phía kia kết thúc với
    một message gửi dở.
 5. Gắn `tokio::task_local!` cho một request ID vào
-   `labs/05-reverse-proxy`, và xác nhận mọi dòng log ở bất cứ đâu trong
+   [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), và xác nhận mọi dòng log ở bất cứ đâu trong
    call graph của request đó có thể đọc nó mà không cần truyền như một
    tham số.

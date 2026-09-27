@@ -30,7 +30,7 @@ thousands of them during a routine upstream restart, and the level stops
 carrying information — which means the one genuinely novel error is
 invisible. Failures the proxy *handled* (a retry that succeeded, a circuit
 that opened as designed) are `WARN` at most; the aggregate rate belongs in
-metrics (`08-observability/02-metrics.md`), not in a log line per occurrence.
+metrics ([`08-observability/02-metrics.md`](02-metrics.md)), not in a log line per occurrence.
 
 ### Redact by allowlist, not denylist
 "Don't log the `Authorization` header" is a rule you will violate by
@@ -74,7 +74,7 @@ still carry a payload that attacks whatever *reads* it — a dashboard that
 renders log fields as HTML has an XSS hole fed by your proxy's traffic.
 
 ### Correlation IDs / request IDs
-A reverse proxy is often the first hop, so it should mint a request ID if the client didn't send one (`X-Request-Id`), thread it through every log line via a `tracing::Span`, and forward it to the upstream so logs across services can be joined on it. This is the low-tech precursor to full distributed tracing (see `08-observability/03-tracing.md`).
+A reverse proxy is often the first hop, so it should mint a request ID if the client didn't send one (`X-Request-Id`), thread it through every log line via a `tracing::Span`, and forward it to the upstream so logs across services can be joined on it. This is the low-tech precursor to full distributed tracing (see [`08-observability/03-tracing.md`](03-tracing.md)).
 
 ```rust
 let span = tracing::info_span!("request", request_id = %request_id);
@@ -84,7 +84,7 @@ let _enter = span.enter(); // all logs inside inherit request_id
 Gotcha: the snippet above is correct in a synchronous function and
 **wrong in an async one** — holding an `Entered` guard across an `.await`
 attaches the span to whatever task the executor runs next. Use
-`.instrument(span)` on the future instead; `08-observability/03-tracing.md`
+`.instrument(span)` on the future instead; [`08-observability/03-tracing.md`](03-tracing.md)
 covers why in detail. This is the most common instrumentation bug in
 async Rust and it silently corrupts the correlation you built the ID for.
 
@@ -98,11 +98,11 @@ At 10k req/s, one log line per request is 10k lines/s to ship, parse, index, and
 
 Gotcha: a synchronous write to a log file is a blocking syscall on the
 request path. When the disk is slow — or the log volume itself has filled
-the page cache with dirty pages (`16-kernel/08-page-cache.md`) — that write
+the page cache with dirty pages ([`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md)) — that write
 blocks a tokio worker thread and stalls every connection multiplexed on
 it. `tracing_appender::non_blocking` moves writes to a dedicated thread
 behind a bounded queue; that queue is a ring buffer
-(`13-algorithms/ring-buffer.md`), and you must know what it does when
+([`13-algorithms/ring-buffer.md`](../13-algorithms/ring-buffer.md)), and you must know what it does when
 full. Dropping log lines under pressure is the right default for a proxy —
 but only if you *count* the drops, or you'll trust an incomplete log
 without knowing it.
@@ -123,7 +123,7 @@ rest.
 ## Practice
 Build these in order.
 
-1. In `proxy`, wire `tracing` + `tracing-subscriber` with a JSON
+1. In [`proxy`](../../proxy), wire `tracing` + `tracing-subscriber` with a JSON
    formatter configurable via `RUST_LOG`. **Done when** one request emits
    one parseable JSON line containing method, path, status, and latency.
 2. Add a per-request span carrying `request_id`, attached with
@@ -146,7 +146,7 @@ Build these in order.
    request latency unaffected and a nonzero, *visible* drop counter.
 7. Measure logging's own cost. **Done when** you have p50/p99 request
    latency with logging fully on, sampled, and off, under
-   `12-testing/01-load-testing.md` — the gap is your logging budget.
+   [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md) — the gap is your logging budget.
 8. Add deterministic sampling plus always-log rules for 5xx and slow
    requests. **Done when** the same request is either logged at every hop
    or none, and every error in a load test appears in full.

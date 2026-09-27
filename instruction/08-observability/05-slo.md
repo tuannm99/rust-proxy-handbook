@@ -1,7 +1,7 @@
 # SLIs, SLOs, and Error Budgets
 
 Defining what "working" means, numerically, before deciding what should
-wake someone up. `08-observability/06-alerting.md` builds on this — an alert
+wake someone up. [`08-observability/06-alerting.md`](06-alerting.md) builds on this — an alert
 without an SLO behind it is a threshold somebody guessed.
 
 ## What to learn
@@ -26,11 +26,11 @@ survive an argument during an incident. Pin down both halves:
 
 - **Are 4xx errors yours?** Usually not — a client sending malformed
   requests shouldn't burn your budget. But a 429 you emitted because you
-  were overloaded (`07-security/11-load-shedding.md`) *is* your failure
+  were overloaded ([`07-security/11-load-shedding.md`](../07-security/11-load-shedding.md)) *is* your failure
   wearing a client-error status code, and belongs in the numerator.
 - **Is a slow success a success?** For a latency SLO, no — define "good"
   as "succeeded *and* under threshold", with the threshold matching a
-  histogram bucket edge (`08-observability/02-metrics.md`) so it's an exact
+  histogram bucket edge ([`08-observability/02-metrics.md`](02-metrics.md)) so it's an exact
   count rather than an interpolation.
 - **Which requests are valid?** Health checks, synthetic probes, and
   scrapes of `/metrics` should be excluded, or a quiet night of nothing
@@ -47,13 +47,13 @@ makes the error budget useless: the proxy team burns budget for an
 upstream's bad deploy and has nothing to fix.
 
 Measure both. Page the proxy team on the first
-(`08-observability/06-alerting.md` covers routing by who can act). The second
+([`08-observability/06-alerting.md`](06-alerting.md) covers routing by who can act). The second
 is still worth tracking — it's what users actually experience — but its
 owner is the service behind you.
 
 Gotcha: attributing a failure to the right side is not always obvious. A
 504 because the upstream exceeded the proxy's timeout could be an upstream
-problem or a timeout you set too aggressively (`06-proxy/01-upstream.md`).
+problem or a timeout you set too aggressively ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)).
 Decide the attribution rule in advance and encode it in the recording
 rule, or every incident starts with the same argument.
 
@@ -66,7 +66,7 @@ matter:
   DNS, the internet.
 - **You cannot exceed your dependencies.** A proxy fronting a 99.9%
   upstream cannot offer 99.99% end-to-end, unless it can serve without
-  that upstream (`05-http-stack/07-cache.md`'s `stale-if-error` is exactly
+  that upstream ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)'s `stale-if-error` is exactly
   this kind of decoupling).
 - **The window matters as much as the number.** 99.9% over 30 days is 43
   minutes; over 7 days it's 10 minutes, and a single bad deploy can spend
@@ -84,7 +84,7 @@ Two derived signals do the actual work:
 - **Burn rate** — how fast you're consuming budget relative to the
   sustainable rate. This is what alerts fire on, because it catches both
   "an outage right now" and "a slow leak that will spend the month" with
-  one mechanism (`08-observability/06-alerting.md`).
+  one mechanism ([`08-observability/06-alerting.md`](06-alerting.md)).
 
 Gotcha: keep the SLO target in *one* recording rule that everything else
 references. Hard-coding `0.001` in five alert rules means changing the SLO
@@ -93,9 +93,9 @@ silently leaves four of them enforcing the old one.
 ## Practice
 Build these in order.
 
-1. Define two SLIs for `proxy` — proxy-caused failures and end-to-end
+1. Define two SLIs for [`proxy`](../../proxy) — proxy-caused failures and end-to-end
    failures — as recording rules over the counters from
-   `08-observability/02-metrics.md`. **Done when** each has explicit handling
+   [`08-observability/02-metrics.md`](02-metrics.md). **Done when** each has explicit handling
    for 4xx, for 429-under-load, and for excluded health-check traffic, and
    you can name the team each one belongs to.
 2. Write the attribution rule for 504s. **Done when** a timeout is
@@ -115,5 +115,5 @@ Build these in order.
    in that one place moves every derived signal — verify by changing it
    and watching them all move.
 7. Validate against reality. **Done when** you replay a past incident (or
-   inject one with `12-testing/03-chaos.md`) and confirm the budget consumed
+   inject one with [`12-testing/03-chaos.md`](../12-testing/03-chaos.md)) and confirm the budget consumed
    matches the incident's actual duration and severity.

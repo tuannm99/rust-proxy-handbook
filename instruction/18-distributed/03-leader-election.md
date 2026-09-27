@@ -1,8 +1,8 @@
 # Leader Election
 
 Picking exactly one node to hold a role — the sub-problem underneath Raft
-(`18-distributed/01-raft.md`), and often solvable far more cheaply on its own.
-Optional/advanced relative to the single-instance `proxy/`.
+([`18-distributed/01-raft.md`](01-raft.md)), and often solvable far more cheaply on its own.
+Optional/advanced relative to the single-instance [`proxy/`](../../proxy).
 
 ## What to learn
 
@@ -37,7 +37,7 @@ etcd, Consul, and ZooKeeper expose exactly this; Kubernetes' own
 `leader-election` (the `Lease` object) is this pattern and is how most
 Go/Rust services in a k8s environment elect a leader. Redis `SET NX PX` is
 the poor-man's version. You are borrowing the store's already-correct
-consensus (`18-distributed/01-raft.md`) instead of re-deriving it.
+consensus ([`18-distributed/01-raft.md`](01-raft.md)) instead of re-deriving it.
 
 Gotcha: the lease TTL is a real trade-off. Too long and a dead leader's
 work stalls for the whole TTL before failover; too short and a brief GC
@@ -51,7 +51,7 @@ stale leader's writes) rather than trusting timing.
 ### When you do not need election at all
 Often the cleaner design is to need no leader: make the periodic job
 idempotent and let every instance run it (harmless duplication), or shard
-the work by consistent hashing (`13-algorithms/consistent-hash.md`) so each
+the work by consistent hashing ([`13-algorithms/consistent-hash.md`](../13-algorithms/consistent-hash.md)) so each
 key has a natural owner without a global leader, or push the
 single-writer requirement down into a store that serializes writes itself.
 Electing a leader adds a failure mode (the election); avoiding the need for
@@ -71,5 +71,5 @@ one removes it. Prefer that when the job allows.
    overlap.
 5. For one real fleet job (config polling, cache cleanup), decide whether
    to elect a leader or make it idempotent/sharded
-   (`13-algorithms/consistent-hash.md`) instead, and justify which is
-   simpler for `proxy`'s actual needs.
+   ([`13-algorithms/consistent-hash.md`](../13-algorithms/consistent-hash.md)) instead, and justify which is
+   simpler for [`proxy`](../../proxy)'s actual needs.

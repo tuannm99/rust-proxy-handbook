@@ -2,7 +2,7 @@
 
 Hai atomic không liên quan trên cùng một cache line âm thầm serialize hóa
 code mà bạn tin là lock-free. Đối tác đồng thời của
-`17-performance/01-cpu-cache.md`.
+[`17-performance/01-cpu-cache.md`](01-cpu-cache.md).
 
 ## What to learn
 
@@ -29,10 +29,10 @@ tái tạo lại nó ở tầng phần cứng.
 
 ### Chỗ một proxy gặp phải nó
 Counter theo từng worker hoặc từng core là nghi phạm hàng đầu — chính là
-công việc metrics trong `08-observability/02-metrics.md`. Bạn tách một
+công việc metrics trong [`08-observability/02-metrics.md`](../08-observability/02-metrics.md). Bạn tách một
 counter toàn cục thành một `Vec<AtomicU64>`, một slot mỗi worker, để tránh
 tranh chấp... rồi đóng gói 8 cái vào một line, nên các worker liền kề vẫn
-đánh nhau vì line. LRU lock đã shard hóa (`13-algorithms/lru.md`) và
+đánh nhau vì line. LRU lock đã shard hóa ([`13-algorithms/lru.md`](../13-algorithms/lru.md)) và
 per-connection atomic state có cùng rủi ro này.
 
 ### Cách sửa: pad tới một cache line
@@ -60,7 +60,7 @@ thể pad tới 128 trên một số target.
 False sharing là vấn đề của việc *ghi*. Nhiều core đọc cùng một line vui
 vẻ chia sẻ nó — coherence chỉ đánh nhau trên các lần ghi. Nên bảng config
 hay routing được đọc trên mỗi request nhưng chỉ ghi khi reload
-(`09-architecture/03-config.md`) hoàn toàn ổn khi đóng gói chặt; đừng pad
+([`09-architecture/03-config.md`](../09-architecture/03-config.md)) hoàn toàn ổn khi đóng gói chặt; đừng pad
 chúng. Chỉ dành padding cho state được *ghi* đồng thời.
 
 ### Nó vô hình nếu không đo lường
@@ -69,7 +69,7 @@ chứng là throughput không scale theo số core, hoặc *tệ hơn* khi bạn
 core. Xác nhận nó trước khi sửa: `perf c2c` (cache-to-cache) được xây
 dựng chính xác cho việc này và chỉ ra line đang bị tranh chấp. Như mọi thứ
 khác trong thư mục này, điểm kích hoạt là một phép đo, không phải một
-linh cảm — xem `08-observability/04-profiling.md`.
+linh cảm — xem [`08-observability/04-profiling.md`](../08-observability/04-profiling.md).
 
 ## Practice
 1. Tái tạo nó: hai thread tăng hai `AtomicU64` đóng gói trong một struct,
@@ -81,7 +81,7 @@ linh cảm — xem `08-observability/04-profiling.md`.
    throughput theo N — phiên bản đóng gói ngừng scale sớm.
 3. Dùng `perf c2c` để xác định line đang bị tranh chấp trong phiên bản
    đóng gói và xác nhận nó khớp với các field bạn kỳ vọng.
-4. Kiểm toán metrics của `proxy` (`08-observability/02-metrics.md`) để
+4. Kiểm toán metrics của [`proxy`](../../proxy) ([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)) để
    tìm các counter được ghi đồng thời chia sẻ một line; chỉ pad những cái
    đó, và xác nhận bằng load test rằng nó có ích và các metric lạnh vẫn
    không bị pad.

@@ -1,7 +1,7 @@
 # Rendezvous Hashing (HRW)
 
 Highest Random Weight: an alternative to consistent hashing
-(`13-algorithms/consistent-hash.md`) that needs no ring, no virtual nodes,
+([`13-algorithms/consistent-hash.md`](consistent-hash.md)) that needs no ring, no virtual nodes,
 and no shared mutable state.
 
 ## What to learn
@@ -58,18 +58,18 @@ Weights fold in via a log transform: score each upstream as
 with the highest transformed score wins, and selection probability comes
 out proportional to weight while keeping the minimal-disruption property.
 This is materially harder to get right than smooth WRR
-(`13-algorithms/smooth-wrr.md`) — reach for it only when you need weights
+([`13-algorithms/smooth-wrr.md`](smooth-wrr.md)) — reach for it only when you need weights
 *and* affinity at once.
 
 ### The real cost
 Selection is O(N) hashes per request, versus O(log N) for a ring lookup
-and O(1) for Maglev (`13-algorithms/maglev.md`). At tens of upstreams,
+and O(1) for Maglev ([`13-algorithms/maglev.md`](maglev.md)). At tens of upstreams,
 N hashes of a short string is tens of nanoseconds and the simplicity wins.
 At thousands of upstreams it is the wrong choice — that is Maglev's
 territory.
 
 ## Practice
-1. Implement HRW in `labs/06-load-balancer` behind the same trait as your
+1. Implement HRW in [`labs/06-load-balancer`](../../labs/06-load-balancer) behind the same trait as your
    round-robin and consistent-hash implementations, so the three are
    swappable.
 2. Hash 100k synthetic keys across 10 upstreams and report the per-upstream

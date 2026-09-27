@@ -2,7 +2,7 @@
 
 Two unrelated atomics on the same cache line silently serializing code you
 believed was lock-free. The concurrent counterpart to
-`17-performance/01-cpu-cache.md`.
+[`17-performance/01-cpu-cache.md`](01-cpu-cache.md).
 
 ## What to learn
 
@@ -29,10 +29,10 @@ contention and accidentally reintroduced it in hardware.
 
 ### Where a proxy hits it
 Per-worker or per-core counters are the prime suspect — exactly the metrics
-work in `08-observability/02-metrics.md`. You split a global counter into a
+work in [`08-observability/02-metrics.md`](../08-observability/02-metrics.md). You split a global counter into a
 `Vec<AtomicU64>`, one slot per worker, to avoid contention... and pack them
 8-to-a-line, so neighboring workers fight over lines anyway. Sharded LRU
-locks (`13-algorithms/lru.md`) and per-connection atomic state have the
+locks ([`13-algorithms/lru.md`](../13-algorithms/lru.md)) and per-connection atomic state have the
 same exposure.
 
 ### The fix: pad to a cache line
@@ -60,7 +60,7 @@ which is why `CachePadded` may pad to 128 on some targets.
 False sharing is a *write* problem. Many cores reading the same line share
 it happily — coherence only fights on writes. So config or routing tables
 that are read on every request but written only on reload
-(`09-architecture/03-config.md`) are fine to pack tightly; do not pad them.
+([`09-architecture/03-config.md`](../09-architecture/03-config.md)) are fine to pack tightly; do not pad them.
 Reserve padding for concurrently-*written* state.
 
 ### It is invisible without measurement
@@ -69,7 +69,7 @@ throughput that does not scale with cores, or gets *worse* as you add them.
 Confirm it before fixing: `perf c2c` (cache-to-cache) is built for exactly
 this and points at the contended line. As with everything in this folder,
 the trigger is a measurement, not a hunch — see
-`08-observability/04-profiling.md`.
+[`08-observability/04-profiling.md`](../08-observability/04-profiling.md).
 
 ## Practice
 1. Reproduce it: two threads incrementing two `AtomicU64`s packed in one
@@ -80,7 +80,7 @@ the trigger is a measurement, not a hunch — see
    throughput against N — the packed version stops scaling early.
 3. Use `perf c2c` to identify the contended line in the packed version and
    confirm it matches the fields you expect.
-4. Audit your `proxy` metrics (`08-observability/02-metrics.md`) for
+4. Audit your [`proxy`](../../proxy) metrics ([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)) for
    concurrently-written counters sharing a line; pad only those, and verify
    with a load test that it helps and that cold metrics stayed unpadded.
 5. Demonstrate the non-problem: pack read-mostly routing data tightly, show

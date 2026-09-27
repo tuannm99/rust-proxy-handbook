@@ -1,6 +1,6 @@
 # ARC (Adaptive Replacement Cache)
 
-`13-algorithms/lru.md` and `13-algorithms/lfu.md` each capture one signal
+[`13-algorithms/lru.md`](lru.md) and [`13-algorithms/lfu.md`](lfu.md) each capture one signal
 — recency or frequency — and each has a workload that defeats it (LRU:
 one-shot scans; LFU: stale winners). ARC's pitch is that it doesn't make
 you pick: it tracks both and *adapts* the balance between them online,
@@ -72,12 +72,12 @@ second access) must remove-then-insert atomically relative to a
 concurrent eviction, or you get a duplicate or a leaked entry.
 
 ## Practice
-1. In `labs/10-cache`, implement ARC as a fourth eviction policy behind
-   your shared trait, using arena-backed lists (`13-algorithms/lru.md`'s
+1. In [`labs/10-cache`](../../labs/10-cache), implement ARC as a fourth eviction policy behind
+   your shared trait, using arena-backed lists ([`13-algorithms/lru.md`](lru.md)'s
    technique) for all four lists.
 2. Reproduce the scenario ARC is meant for: a small steady hot set plus a
    periodic large one-shot scan. Run plain LRU, plain LFU
-   (`13-algorithms/lfu.md`), and ARC on the same trace and compare hit
+   ([`13-algorithms/lfu.md`](lfu.md)), and ARC on the same trace and compare hit
    rate — confirm ARC's `p` shifts toward T1 during the scan and recovers
    afterward without losing the hot set.
 3. Add an assertion that no key ever appears in more than one of the four

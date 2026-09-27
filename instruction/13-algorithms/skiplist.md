@@ -44,9 +44,9 @@ notoriously hard to get right.
 No lab requires a skip list directly, but it's the natural structure for
 any "keep entries sorted by an evolving key, and the map changes under
 concurrent access" problem — e.g. tracking cache entries by expiry time
-so `labs/10-cache` can find "what expires next" without scanning the
+so [`labs/10-cache`](../../labs/10-cache) can find "what expires next" without scanning the
 whole cache, an alternative to a timer wheel
-(`13-algorithms/priority-queue.md`) when exact ordering matters more than
+([`13-algorithms/priority-queue.md`](priority-queue.md)) when exact ordering matters more than
 O(1) bucketing.
 
 ## Practice
@@ -55,7 +55,7 @@ O(1) bucketing.
 2. Instrument level counts across 10,000 random insertions and confirm
    the level-height distribution roughly matches the geometric
    distribution `p` predicts.
-3. Use it in `labs/10-cache` to keep entries ordered by expiry time;
+3. Use it in [`labs/10-cache`](../../labs/10-cache) to keep entries ordered by expiry time;
    implement "evict everything expired" as a walk from the smallest key
    instead of a full scan, and compare cost against a linear scan at
    10,000 entries.

@@ -20,7 +20,7 @@ I/O (unlike sockets) has no readiness notion at all under epoll — io_uring
 is the first Linux API to give you real async file I/O. For an L7 proxy
 that's mostly socket-to-socket, the win is smaller than for a
 storage-heavy workload; io_uring pays off most when you're also serving
-static files (`05-http-stack/05-static.md`) or doing heavy disk-backed caching.
+static files ([`05-http-stack/05-static.md`](../05-http-stack/05-static.md)) or doing heavy disk-backed caching.
 
 ### Rust crate landscape
 - `io-uring`: thin, unsafe-ish bindings close to the raw ring layout — you
@@ -56,6 +56,6 @@ overhead is actually your bottleneck, not a default.
 ## Practice
 1. Read the `io-uring` crate docs and write a minimal program that reads a file with a single SQE/CQE round trip.
 2. Extend it to submit multiple reads before reaping any completions, and observe the batching in `strace`.
-3. Port the raw-epoll echo server from `02-linux/07-epoll.md`'s exercise from epoll to `tokio-uring` and compare code complexity and behavior under connection churn.
+3. Port the raw-epoll echo server from [`02-linux/07-epoll.md`](07-epoll.md)'s exercise from epoll to `tokio-uring` and compare code complexity and behavior under connection churn.
 4. Check `uname -r` on your dev machine and any target deployment environment; confirm whether io_uring is even available/enabled there.
-5. Write down, in your own words, why `proxy` should default to tokio's epoll-based reactor rather than io_uring.
+5. Write down, in your own words, why [`proxy`](../../proxy) should default to tokio's epoll-based reactor rather than io_uring.

@@ -51,8 +51,8 @@ drives whichever state machine is attached to that fd's token.
 ### Why tokio's reactor exists
 Tokio's reactor is exactly this event loop, generalized: one thread (or a
 small pool) owns the epoll fd, and every `.await` on a socket registers a
-waker against a token instead of blocking. See `03-rust/05-async.md` and
-`04-runtime/01-tokio.md` — understanding raw epoll first makes tokio's
+waker against a token instead of blocking. See [`03-rust/05-async.md`](../03-rust/05-async.md) and
+[`04-runtime/01-tokio.md`](../04-runtime/01-tokio.md) — understanding raw epoll first makes tokio's
 `Poll::Pending` / waker dance click, because it's the same registration model
 with the polling loop and bookkeeping hidden from you.
 

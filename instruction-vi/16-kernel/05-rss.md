@@ -1,6 +1,6 @@
 # RSS (Receive Side Scaling)
 
-`16-kernel/04-interrupt.md` nói về việc vì sao một core xử lý mọi
+[`16-kernel/04-interrupt.md`](04-interrupt.md) nói về việc vì sao một core xử lý mọi
 interrupt packet trở thành trần throughput. RSS là cách fix ở tầng
 hardware: chính NIC dàn packet đến — và interrupt của chúng — ra nhiều
 core trước khi kernel kịp nhìn thấy chúng.
@@ -22,7 +22,7 @@ Không có RSS (NIC một queue, hoặc RSS bị tắt), interrupt của mọi p
 đều rơi vào một core — thường là core 0 mặc định — bất kể ứng dụng của
 bạn spawn worker thread trên bao nhiêu core. RSS chính là thứ thực sự biến
 "xử lý packet" thành một workload song song, đa-core ở tầng hardware; nếu
-không có nó, trần của `16-kernel/04-interrupt.md` áp dụng bất kể ứng dụng
+không có nó, trần của [`16-kernel/04-interrupt.md`](04-interrupt.md) áp dụng bất kể ứng dụng
 được kiến trúc thế nào.
 
 ### Kiểm tra và tinh chỉnh
@@ -52,7 +52,7 @@ theo từng queue (`ethtool -S eth0 | grep rx_queue`) thay vì giả định RSS
 2. Nếu có nhiều queue, set IRQ affinity từng queue để dàn ra nhiều core và
    xác nhận qua `/proc/interrupts` rằng interrupt của các queue khác nhau
    rơi vào các core khác nhau.
-3. Tạo tải vào `proxy` từ nhiều source port/kết nối khác nhau và so sánh
+3. Tạo tải vào [`proxy`](../../proxy) từ nhiều source port/kết nối khác nhau và so sánh
    số packet theo từng queue (`ethtool -S`) với một bài test tái sử dụng
    rất ít kết nối nguồn — quan sát hiệu ứng tập trung mà gotcha ở trên mô
    tả.

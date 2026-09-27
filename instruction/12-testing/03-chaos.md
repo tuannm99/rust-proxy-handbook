@@ -8,16 +8,16 @@ faults worth starting with: added latency (does a slow upstream cause
 unbounded queueing?), packet loss/connection resets (does the client-facing
 side degrade gracefully?), and full upstream failures (does the proxy
 actually fail over?). These map directly to the failure modes
-`06-proxy/03-healthcheck.md` and `06-proxy/05-retry.md` are meant to handle — this
+[`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md) and [`06-proxy/05-retry.md`](../06-proxy/05-retry.md) are meant to handle — this
 is where you find out if that code actually works.
 
 ### toxiproxy
 `toxiproxy` (Shopify) sits between your proxy and its upstreams as a
 programmable TCP proxy: you can inject latency, bandwidth limits, and
 connection resets on a live connection via its HTTP API, and toggle them
-mid-test. It's the easiest way to test `06-proxy/05-retry.md`'s circuit
+mid-test. It's the easiest way to test [`06-proxy/05-retry.md`](../06-proxy/05-retry.md)'s circuit
 breaker without touching kernel-level tools — point
-`labs/05-reverse-proxy`'s upstream config at a toxiproxy instance
+[`labs/05-reverse-proxy`](../../labs/05-reverse-proxy)'s upstream config at a toxiproxy instance
 instead of the real upstream.
 
 ### tc netem
@@ -37,7 +37,7 @@ test as an assertion against that claim (e.g. "after killing upstream A,
 and see what happens."
 
 ## Practice
-1. Put `labs/05-reverse-proxy` in front of two upstreams routed
+1. Put [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) in front of two upstreams routed
    through `toxiproxy`; inject 500ms latency on one and confirm your load
    balancer/health check notices and shifts traffic (or at minimum that p99
    reflects it if you haven't built adaptive routing yet).
@@ -47,8 +47,8 @@ and see what happens."
 3. Use `tc netem` to add 5% packet loss on `lo` and re-run the same
    load test; compare error rate/latency to the toxiproxy-only run.
 4. Kill and restart an upstream process repeatedly during a sustained load
-   test ("flapping") and confirm `06-proxy/03-healthcheck.md`'s hysteresis
+   test ("flapping") and confirm [`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)'s hysteresis
    prevents the proxy from thrashing its rotation decision every second.
-5. Send `SIGTERM` to `proxy` mid-chaos-test and
-   confirm graceful shutdown (`09-architecture/04-graceful-shutdown.md`) still
+5. Send `SIGTERM` to [`proxy`](../../proxy) mid-chaos-test and
+   confirm graceful shutdown ([`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md)) still
    drains in-flight requests correctly even while upstreams are unhealthy.

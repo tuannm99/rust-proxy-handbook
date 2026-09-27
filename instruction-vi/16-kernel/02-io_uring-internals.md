@@ -1,6 +1,6 @@
 # io_uring Internals
 
-`02-linux/08-io_uring.md` nói về việc dùng `io_uring` từ phía ứng dụng.
+[`02-linux/08-io_uring.md`](../02-linux/08-io_uring.md) nói về việc dùng `io_uring` từ phía ứng dụng.
 File này nói về cơ chế submission/completion bên dưới khiến nó khác *về
 bản chất* so với epoll, chứ không chỉ là một phiên bản nhanh hơn.
 
@@ -22,7 +22,7 @@ thực tế vẫn là một syscall bình thường, có thể block, mà bạn 
 đó. Với file I/O nói riêng, "sẵn sàng" không thực sự có định nghĩa rõ ràng
 như với socket, đó là lý do async file I/O dưới mô hình epoll luôn phải
 đẩy sang một thread pool blocking (vấn đề cooperative-scheduling ở
-`03-rust/05-async.md` — đây chính xác là lý do `tokio::fs` làm vậy). Các
+[`03-rust/05-async.md`](../03-rust/05-async.md) — đây chính xác là lý do `tokio::fs` làm vậy). Các
 thao tác `io_uring` thực sự bất đồng bộ ở tầng kernel cho mọi thao tác nó
 hỗ trợ, kể cả đọc file: bạn submit SQE và nhận CQE khi xong, không có
 syscall block nào trên thread gọi ở bất kỳ thời điểm nào.
@@ -33,7 +33,7 @@ và pin nó lại từ đầu ở mỗi thao tác. Đăng ký trước một t�
 (`io_uring_register_buffers`) và tham chiếu chúng bằng index trong các SQE
 sau đó bỏ qua việc validate mỗi-thao-tác đó — một lợi ích throughput thực
 sự ở tốc độ thao tác cao, đổi lại bạn phải tự quản lý một buffer pool cố
-định (xem `14-memory/04-buffer-pool.md`).
+định (xem [`14-memory/04-buffer-pool.md`](../14-memory/04-buffer-pool.md)).
 
 ### SQPOLL: bỏ qua hoàn toàn syscall submission
 Bình thường, sau khi ghi SQE vào ring, bạn vẫn cần một syscall
@@ -50,7 +50,7 @@ ngay trong chính code của nó — đủ nhiều để một số môi trườ
 profile mặc định của Docker ở một số thời điểm, ChromeOS, một số nền tảng
 cloud có quản lý) đã tắt hoặc hạn chế nó hoàn toàn. Kiểm tra phiên bản
 kernel thực tế của môi trường triển khai và allow-list syscall trước khi
-thiết kế `proxy/` phụ thuộc cứng vào nó; coi nó là một tối ưu có fallback,
+thiết kế [`proxy/`](../../proxy) phụ thuộc cứng vào nó; coi nó là một tối ưu có fallback,
 không phải một nền tảng.
 
 ## Practice

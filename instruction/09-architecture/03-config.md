@@ -5,7 +5,7 @@
 A production L7 proxy is fronting live traffic; a config change (new upstream, updated rate limit) that requires a restart means a connection drop for every in-flight request. Hot reload means: load new config, validate it, atomically swap it in for new requests, while existing requests keep running against whatever config they started with (or the new one, if the field doesn't affect in-flight requests).
 
 ### SIGHUP as the reload trigger
-The Unix convention (nginx, most daemons) is: `SIGHUP` = "reload config," `SIGTERM` = "shut down gracefully" (see `02-linux/10-signals.md`, `09-architecture/04-graceful-shutdown.md`). Listen for it with `tokio::signal::unix::signal(SignalKind::hangup())` rather than blocking signal handling — this keeps the reload async and non-disruptive to in-flight I/O.
+The Unix convention (nginx, most daemons) is: `SIGHUP` = "reload config," `SIGTERM` = "shut down gracefully" (see [`02-linux/10-signals.md`](../02-linux/10-signals.md), [`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)). Listen for it with `tokio::signal::unix::signal(SignalKind::hangup())` rather than blocking signal handling — this keeps the reload async and non-disruptive to in-flight I/O.
 
 ```rust
 use tokio::signal::unix::{signal, SignalKind};
@@ -42,9 +42,9 @@ Never apply a config that hasn't been fully parsed and validated (upstream addre
 
 "Validated" has to mean more than "parsed." The checks that actually catch
 real breakage are the ones that try the side effects:
-- **Certificate and key actually load and match** (`01-network/13-tls.md`) —
+- **Certificate and key actually load and match** ([`01-network/13-tls.md`](../01-network/13-tls.md)) —
   a path typo or a mismatched pair is a total outage for that vhost.
-- **Routes don't conflict** (`05-http-stack/03-router.md`) — two rules that
+- **Routes don't conflict** ([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)) — two rules that
   can never be distinguished mean one endpoint silently disappears.
 - **Referenced upstream pools exist** — a route pointing at a pool name
   that isn't defined should fail validation, not 502 at request time.
@@ -60,7 +60,7 @@ fails during prepare leaves the running config completely untouched.
 Gotcha: validation that hits the network (resolving upstream DNS,
 connecting to check liveness) makes reload fail when a *dependency* is
 down, which is the fail-static problem from
-`06-proxy/07-service-discovery.md` in a new costume. Validate syntax and
+[`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md) in a new costume. Validate syntax and
 internal consistency strictly; treat an unresolvable upstream as a health
 check's problem, not a reason to reject an otherwise valid config.
 
@@ -75,7 +75,7 @@ effect on reload and which need a restart. Typical split:
 Gotcha: silently ignoring a changed non-reloadable field is worse than
 rejecting it. An operator who edits the listen port, sends `SIGHUP`, sees
 "reload successful," and finds the old port still serving has been
-actively misled. Either apply it (rebind, which `09-architecture/05-rolling-restart.md`
+actively misled. Either apply it (rebind, which [`09-architecture/05-rolling-restart.md`](05-rolling-restart.md)
 covers properly) or fail the reload with a message naming the field.
 
 ### Representing "current config" for concurrent readers
@@ -98,13 +98,13 @@ request that loads config to pick an upstream pool and loads it again to
 read that pool's timeout can straddle a reload and combine fields from two
 different configs. Load **once** at the start of a request, hold the `Arc`
 for its duration, and pass it down the pipeline
-(`09-architecture/01-components.md`'s extensions). This bug is rare, entirely
+([`09-architecture/01-components.md`](01-components.md)'s extensions). This bug is rare, entirely
 non-deterministic, and essentially undebuggable after the fact.
 
 Gotcha: holding that `Arc` for the request's lifetime is also what keeps
 the old config alive while in-flight requests use it — the memory is
 released when the last request holding it finishes, which is exactly the
-refcount-driven drain from `06-proxy/07-service-discovery.md`. A long-lived
+refcount-driven drain from [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md). A long-lived
 streaming request pins its config version; that's correct, and worth
 knowing when you wonder why an old config hasn't been dropped.
 
@@ -113,7 +113,7 @@ Config is read from disk, logged on reload, dumped in debug output, and
 frequently committed to a repository by accident. Keep credentials
 (upstream auth, JWT signing keys) in environment variables or a secrets
 store referenced *by name* from the config, and wrap them in a redacting
-newtype (`08-observability/01-logging.md`) so `{:?}` on the config can't leak
+newtype ([`08-observability/01-logging.md`](../08-observability/01-logging.md)) so `{:?}` on the config can't leak
 them.
 
 Gotcha: logging the config on reload is genuinely useful for auditing what
@@ -121,13 +121,13 @@ changed. Log a **hash or version**, plus a structured diff of non-secret
 fields — never the whole struct.
 
 ### Versioned config for rollback
-Keep the last N valid configs (or at least the last one) so an operator can roll back instantly if a syntactically-valid-but-logically-wrong config causes elevated error rates — tie the decision to roll back to the error-rate metrics from `09-architecture/06-canary-deploy.md`/`08-observability/02-metrics.md`.
+Keep the last N valid configs (or at least the last one) so an operator can roll back instantly if a syntactically-valid-but-logically-wrong config causes elevated error rates — tie the decision to roll back to the error-rate metrics from [`09-architecture/06-canary-deploy.md`](06-canary-deploy.md)/[`08-observability/02-metrics.md`](../08-observability/02-metrics.md).
 
 Gotcha: a reload that *succeeds* and then degrades traffic is the
 dangerous case, because nothing alerted — validation passed. Emit a
 config version/hash as a metric label or a gauge so dashboards can
 correlate "error rate rose" with "config changed at this moment", and
-alert on reload *failures* as a ticket (`08-observability/06-alerting.md`):
+alert on reload *failures* as a ticket ([`08-observability/06-alerting.md`](../08-observability/06-alerting.md)):
 a proxy running happily on stale config while every reload attempt fails
 is a silent, compounding divergence from what operators believe is
 deployed.
@@ -135,7 +135,7 @@ deployed.
 ## Practice
 Build these in order.
 
-1. Do steps 1-5 in `labs/13-hot-reload`, then repeat in `proxy`. Define a
+1. Do steps 1-5 in [`labs/13-hot-reload`](../../labs/13-hot-reload), then repeat in [`proxy`](../../proxy). Define a
    `Config` struct with `serde` + `toml` (upstreams, routes, rate limits,
    TLS paths). **Done when** it loads at startup behind an `ArcSwap` and
    handlers read via `.load()`.

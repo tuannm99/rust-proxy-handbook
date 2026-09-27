@@ -34,7 +34,7 @@ occupies an 80-byte slot; 15 bytes are wasted and unreachable.
 Usually minor — unless your hot-path struct sits just past a boundary. A
 129-byte connection struct takes a 160-byte slot, wasting 24% at 100k
 connections. This is why struct field reordering
-(`17-performance/04-memory-layout.md`) is not micro-optimization at scale: shrinking a
+([`17-performance/04-memory-layout.md`](../17-performance/04-memory-layout.md)) is not micro-optimization at scale: shrinking a
 struct below a size-class boundary is a step-function win, not a linear one.
 
 ### Why memory does not return to the OS
@@ -44,7 +44,7 @@ or `madvise(MADV_DONTNEED)`), which requires that region to be entirely
 free. One long-lived object anchoring a 4 MB region keeps all 4 MB
 resident.
 
-This is precisely the slab shrink problem in `13-algorithms/slab.md`,
+This is precisely the slab shrink problem in [`13-algorithms/slab.md`](../13-algorithms/slab.md),
 generalized: any structure that grows to a peak and then holds its capacity
 pins the allocator's regions along with it.
 
@@ -52,7 +52,7 @@ Gotcha: glibc's malloc is particularly reluctant to return memory, and its
 per-thread arenas multiply the effect — each thread gets its own arena, so
 a proxy with 16 worker threads can hold 16 separate high-water marks.
 `MALLOC_ARENA_MAX` bounds this, and switching to jemalloc or mimalloc
-(`02-linux/09-memory.md` covers the `#[global_allocator]` swap) usually helps
+([`02-linux/09-memory.md`](../02-linux/09-memory.md) covers the `#[global_allocator]` swap) usually helps
 more than any tuning of glibc.
 
 ### The structural fixes
@@ -74,7 +74,7 @@ Gotcha: pooling has its own failure mode — a pool that grows to serve a
 traffic spike and never shrinks *is* the high-water mark, just under your
 control instead of the allocator's. That is usually the better trade
 (bounded and observable), but only if you actually bound it and export the
-size as a metric (`08-observability/02-metrics.md`).
+size as a metric ([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)).
 
 ### Measuring it
 The number to watch is the ratio of RSS to bytes your application believes
@@ -92,8 +92,8 @@ whole point is that it develops over days.
 3. Measure size-class rounding: allocate structs of 64, 65, 128, and 129
    bytes 100k times each and compare actual RSS growth against the
    arithmetic you would expect.
-4. Instrument `proxy` with an allocated-vs-resident gauge and run
-   `12-testing/01-load-testing.md` traffic against it for an extended period;
+4. Instrument [`proxy`](../../proxy) with an allocated-vs-resident gauge and run
+   [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md) traffic against it for an extended period;
    watch the ratio over time rather than at a single instant.
 5. Add a buffer pool for request I/O buffers, re-run step 4, and compare
    the ratio's drift with and without pooling.

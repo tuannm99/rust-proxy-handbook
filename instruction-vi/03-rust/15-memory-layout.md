@@ -8,8 +8,8 @@ field của struct để giảm padding — hai struct có cùng danh sách fiel
 thể có layout khác nhau, và thứ tự field trong bộ nhớ không cần khớp thứ
 tự khai báo. Điều này phần lớn không quan trọng với code Rust thuần túy
 (field được truy cập theo tên), nhưng quan trọng ngay khi bạn cần một
-layout ổn định: FFI (`03-rust/14-ffi-and-abi.md`), hoặc suy luận về việc
-đóng gói cache-line cho một struct nóng (`17-performance/01-cpu-cache.md`).
+layout ổn định: FFI ([`03-rust/14-ffi-and-abi.md`](14-ffi-and-abi.md)), hoặc suy luận về việc
+đóng gói cache-line cho một struct nóng ([`17-performance/01-cpu-cache.md`](../17-performance/01-cpu-cache.md)).
 
 ```rust
 struct A { a: u8, b: u64, c: u8 }              // repr(Rust): compiler may pack tighter than declared order
@@ -32,7 +32,7 @@ assert!(size_of::<Good>() < size_of::<Bad>());
 Với một struct được cấp phát trên mỗi connection ở quy mô lớn — hàng chục
 nghìn connection còn sống trong một proxy — kiểu khác biệt padding này là
 bộ nhớ thật, không phải một micro-optimization. Xem
-`17-performance/01-cpu-cache.md` và `17-performance/04-memory-layout.md`
+[`17-performance/01-cpu-cache.md`](../17-performance/01-cpu-cache.md) và [`17-performance/04-memory-layout.md`](../17-performance/04-memory-layout.md)
 để có phần xử lý sâu hơn về đóng gói cache-line mà file này là điều kiện
 tiên quyết.
 
@@ -64,22 +64,22 @@ enum Mixed { A, B([u8; 256]) }       // sized for the 256-byte variant even when
 ```
 
 ### Vì sao điều này liên hệ tới buffer pool và arena
-Các thiết kế arena/slab/object-pool trong `14-memory/` đều giả định bạn
+Các thiết kế arena/slab/object-pool trong [`14-memory/`](../14-memory) đều giả định bạn
 biết chính xác kích thước và alignment của thứ bạn đang lưu trữ — một slab
-allocator (`14-memory/05-slab-allocator.md`) không thể được thiết kế mà
+allocator ([`14-memory/05-slab-allocator.md`](../14-memory/05-slab-allocator.md)) không thể được thiết kế mà
 không biết chính xác mỗi slot cần lớn bao nhiêu, đó chính là `size_of`/
 `align_of` áp dụng lên struct connection-state thực tế của bạn.
 
 ## Practice
 1. Lấy một struct connection-state trên mỗi connection từ
-   `labs/05-reverse-proxy`, in `std::mem::size_of::<T>()`, sắp xếp lại
+   [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), in `std::mem::size_of::<T>()`, sắp xếp lại
    field theo kích thước giảm dần, và đo xem nó có nhỏ lại không.
 2. Tự xác nhận tuyên bố về niche optimization: so sánh
    `size_of::<Option<u32>>()` với `size_of::<Option<std::num::NonZeroU32>>()`
    và với `size_of::<Option<&u32>>()`.
 3. Xây một `Result<T, E>` với `E` là một struct lớn, đo
    `size_of::<Result<T, E>>()`, rồi box `E` lại và đo lần nữa.
-4. Đọc `14-memory/05-slab-allocator.md` và liên hệ logic định cỡ slot của
+4. Đọc [`14-memory/05-slab-allocator.md`](../14-memory/05-slab-allocator.md) và liên hệ logic định cỡ slot của
    nó với phần thảo luận `size_of`/`align_of` của file này, bằng lời của
    bạn.
 5. Thêm `#[repr(C)]` vào một struct hiện đang là `repr(Rust)` và dùng

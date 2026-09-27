@@ -29,7 +29,7 @@ Gotcha: this is why zero-copy parsers and self-referential state don't mix.
 A struct cannot hold both a buffer and a borrow into that same buffer as
 sibling fields — the borrow would need to reference a field of the same
 struct it lives in, which Rust's ownership model forbids without indirection
-(`Pin`, see `03-rust/06-pin.md`, or just storing an offset/`Range<usize>`
+(`Pin`, see [`03-rust/06-pin.md`](06-pin.md), or just storing an offset/`Range<usize>`
 instead of a `&[u8]`, which is what most production zero-copy parsers do).
 
 ### Lifetimes vs async
@@ -47,8 +47,8 @@ async fn handle(buf: &[u8]) { /* ... */ } // fine to call and .await inline
 ```
 
 The fix is almost always to make the spawned task own its data (`Vec<u8>`,
-`Bytes`, or `Arc<T>`) rather than borrow it — see `03-rust/04-sync.md` for
-`Arc`, and `05-http-stack/01-parser.md` for `bytes::Bytes` (a cheaply-cloneable
+`Bytes`, or `Arc<T>`) rather than borrow it — see [`03-rust/04-sync.md`](04-sync.md) for
+`Arc`, and [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) for `bytes::Bytes` (a cheaply-cloneable
 owned buffer, the standard fix for this exact problem in the hyper
 ecosystem).
 
@@ -59,7 +59,7 @@ picks, not one fixed lifetime — e.g. a middleware trait whose `handle`
 method takes `&Request` with a lifetime chosen per call. You don't need to
 write these often, but recognize the syntax when a compiler error mentions
 "higher-ranked lifetime error" while building a plugin/middleware system
-(`09-architecture/02-plugin.md`).
+([`09-architecture/02-plugin.md`](../09-architecture/02-plugin.md)).
 
 ## Practice
 1. Take the `RequestView<'a>` from 01-ownership.md's practice and make the
@@ -68,10 +68,10 @@ write these often, but recognize the syntax when a compiler error mentions
 2. Refactor a function that borrows a buffer into one that owns
    `bytes::Bytes` instead, and explain in a comment when each choice is
    correct for a request/response type moving through
-   `labs/02-http-server`.
+   [`labs/02-http-server`](../../labs/02-http-server).
 3. Reproduce the "does not live long enough" error from a borrow crossing
    `tokio::spawn`, then fix it three different ways: cloning into an owned
    type, wrapping in `Arc`, and restructuring to avoid spawning at all.
 4. Write a struct that intentionally cannot compile because it tries to hold
    a buffer and a `&[u8]` slice of itself as sibling fields; read the error
-   and connect it to `03-rust/06-pin.md`.
+   and connect it to [`03-rust/06-pin.md`](06-pin.md).

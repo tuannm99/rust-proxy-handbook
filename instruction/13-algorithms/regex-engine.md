@@ -1,7 +1,7 @@
 # Regex Engines
 
 How a regex engine is actually built, and why the answer decides whether
-your WAF (`07-security/06-waf.md`) is a defense or a denial-of-service
+your WAF ([`07-security/06-waf.md`](../07-security/06-waf.md)) is a defense or a denial-of-service
 vector.
 
 ## What to learn
@@ -65,7 +65,7 @@ when the pattern set is loaded from config rather than written by you.
 ### Literal prefilters
 The largest practical speedup is not the engine at all: extract required
 literal substrings from the pattern, scan for those first with a fast
-multi-pattern matcher (`13-algorithms/aho-corasick.md` or memchr), and
+multi-pattern matcher ([`13-algorithms/aho-corasick.md`](aho-corasick.md) or memchr), and
 only run the full engine where a literal hit. A pattern like
 `\d+-admin-\w+` cannot match without `-admin-` present, so most input is
 rejected at memchr speed. The `regex` crate does this internally, and it is
@@ -85,7 +85,7 @@ let hits: Vec<usize> = set.matches(input).into_iter().collect();
 ```
 
 Gotcha: `RegexSet` tells you *which* patterns matched, not *where*. For
-anomaly scoring (`07-security/06-waf.md`) that is sufficient and much faster.
+anomaly scoring ([`07-security/06-waf.md`](../07-security/06-waf.md)) that is sufficient and much faster.
 Only re-run individual patterns for match positions when you actually need
 to log the offending span.
 
@@ -93,7 +93,7 @@ to log the offending span.
 If WAF rules come from config that anyone but you can edit, the pattern is
 untrusted input to the compiler. Enforce a compiled-size limit, a pattern
 length limit, and reject on compile error at *load* time with the old rule
-set left running (`09-architecture/03-config.md`) — never let a bad rule take
+set left running ([`09-architecture/03-config.md`](../09-architecture/03-config.md)) — never let a bad rule take
 effect or take the proxy down at reload.
 
 ## Practice
@@ -102,7 +102,7 @@ effect or take the proxy down at reload.
    time. Repeat with the `regex` crate and confirm it stays linear.
 2. Build an NFA by Thompson construction for `a(b|c)*d` on paper, then
    trace the active state set byte by byte over `"abccd"`.
-3. In `labs/12-waf`, replace per-rule `Regex` loops with a single
+3. In [`labs/12-waf`](../../labs/12-waf), replace per-rule `Regex` loops with a single
    `RegexSet`; benchmark at 10, 100, and 1000 rules against a 100 KB body.
 4. Add an Aho-Corasick literal prefilter in front of the `RegexSet` and
    measure the fraction of benign requests that never reach the engine.

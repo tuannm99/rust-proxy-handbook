@@ -4,12 +4,12 @@ gRPC is HTTP/2 with a specific framing convention on top — proxying it correct
 
 ## What to learn
 ### gRPC's message framing inside HTTP/2 DATA frames
-Each gRPC message is a 1-byte compression flag, a 4-byte big-endian length prefix, then that many bytes of protobuf payload — all carried inside ordinary HTTP/2 `DATA` frames (see `01-network/11-http2.md`). A proxy forwarding gRPC does not need to understand protobuf or even this framing; it only needs to forward `DATA` frames faithfully, byte-for-byte, without doing anything an HTTP/1.1-oriented code path might reflexively do (buffering the whole body to compute `Content-Length`, for instance — gRPC bodies are length-prefixed per-message, not once for the whole stream, and are often unbounded/streaming).
+Each gRPC message is a 1-byte compression flag, a 4-byte big-endian length prefix, then that many bytes of protobuf payload — all carried inside ordinary HTTP/2 `DATA` frames (see [`01-network/11-http2.md`](../01-network/11-http2.md)). A proxy forwarding gRPC does not need to understand protobuf or even this framing; it only needs to forward `DATA` frames faithfully, byte-for-byte, without doing anything an HTTP/1.1-oriented code path might reflexively do (buffering the whole body to compute `Content-Length`, for instance — gRPC bodies are length-prefixed per-message, not once for the whole stream, and are often unbounded/streaming).
 
 Gotcha: gRPC has its own per-message compression (that 1-byte flag),
 negotiated with `grpc-encoding`/`grpc-accept-encoding`. It is *not*
 HTTP `Content-Encoding`, and a proxy that applies its own response
-compression (`05-http-stack/06-compression.md`) to a gRPC body corrupts it —
+compression ([`05-http-stack/06-compression.md`](06-compression.md)) to a gRPC body corrupts it —
 the client will try to parse a gzip stream as length-prefixed messages.
 Exclude `application/grpc` content types from response compression
 explicitly.
@@ -34,7 +34,7 @@ Handle the zero-DATA case explicitly.
 
 ### Your error responses must be gRPC-shaped too
 When the proxy itself fails a request — no healthy upstream, circuit open
-(`06-proxy/05-retry.md`), rate limited (`07-security/07-ratelimit.md`) — the
+([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)), rate limited ([`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md)) — the
 reflex is to return HTTP 503 or 429 with a short body. To a gRPC client,
 that is a malformed response: it's looking for `grpc-status` in trailers,
 and a plain HTTP error surfaces as a confusing transport error rather than
@@ -56,25 +56,25 @@ gRPC has four call shapes: unary, client-streaming, server-streaming, and bidire
 
 Gotcha: the same applies to every timeout you inherited from the
 request/response model, exactly as with WebSockets
-(`05-http-stack/09-websocket.md`). A server-streaming RPC that emits an
+([`05-http-stack/09-websocket.md`](09-websocket.md)). A server-streaming RPC that emits an
 update every few minutes is healthy; a total-request timeout kills it on
 schedule. Worse, gRPC clients send their own deadline in the
 `grpc-timeout` header — the proxy should *honor* that (and shorten it by
 the time already spent) rather than imposing an unrelated one, so the
 deadline the application set is the one that applies.
 
-Gotcha: body buffering for WAF inspection (`07-security/06-waf.md`) or retry
-replay (`06-proxy/05-retry.md`) is fundamentally incompatible with streaming
+Gotcha: body buffering for WAF inspection ([`07-security/06-waf.md`](../07-security/06-waf.md)) or retry
+replay ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)) is fundamentally incompatible with streaming
 RPCs. Decide per content-type, not globally, or your first bidi-streaming
 customer discovers it for you.
 
 ### Load balancing gRPC is not the same problem as load balancing HTTP/1.1
-A gRPC client typically opens one long-lived HTTP/2 connection and multiplexes many independent RPCs over it (see `01-network/11-http2.md`'s multiplexing). A load balancer that picks an upstream *per connection* (like a plain L4/TCP balancer, or a naive `06-proxy/02-load-balancer.md` implementation written with one-request-per-connection HTTP/1.1 in mind) sends every RPC on that connection to the same upstream forever, defeating load balancing entirely once a client connects. Correct gRPC load balancing has to be aware of individual HTTP/2 streams and pick an upstream per-RPC, not per-connection.
+A gRPC client typically opens one long-lived HTTP/2 connection and multiplexes many independent RPCs over it (see [`01-network/11-http2.md`](../01-network/11-http2.md)'s multiplexing). A load balancer that picks an upstream *per connection* (like a plain L4/TCP balancer, or a naive [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md) implementation written with one-request-per-connection HTTP/1.1 in mind) sends every RPC on that connection to the same upstream forever, defeating load balancing entirely once a client connects. Correct gRPC load balancing has to be aware of individual HTTP/2 streams and pick an upstream per-RPC, not per-connection.
 
 Gotcha: this interacts badly with scaling events. Long-lived connections
 pinned to a subset of upstreams means new upstreams added by autoscaling
-(`06-proxy/07-service-discovery.md`) receive nothing — the connection
-lifetime caps from `05-http-stack/04-keepalive.md` are what eventually
+([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)) receive nothing — the connection
+lifetime caps from [`05-http-stack/04-keepalive.md`](04-keepalive.md) are what eventually
 rebalance, and for gRPC the equivalent is periodically sending `GOAWAY` so
 clients reconnect and redistribute.
 
@@ -82,7 +82,7 @@ clients reconnect and redistribute.
 gRPC defines its own health checking protocol (`grpc.health.v1.Health`)
 with `Check` and `Watch` methods — an upstream that speaks gRPC may not
 serve an HTTP `/healthz` at all, so the probe from
-`06-proxy/03-healthcheck.md` needs a gRPC-aware variant. `Watch` is the
+[`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md) needs a gRPC-aware variant. `Watch` is the
 better of the two for a proxy: it streams status changes rather than
 requiring a poll interval, so detection is immediate and the probe cost
 from `healthcheck.md` largely disappears.
@@ -95,7 +95,7 @@ returns `grpc-status: 13` (INTERNAL).
 
 Record `grpc-status` as its own metric dimension, and take the method name
 from the path (`/package.Service/Method`) as the route label rather than
-treating each as a unique URL (`08-observability/02-metrics.md`).
+treating each as a unique URL ([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)).
 
 ## Practice
 Build these in order.
@@ -103,7 +103,7 @@ Build these in order.
 1. Stand up a real gRPC upstream with `tonic`, including one method that
    returns a non-OK status and one server-streaming method. **Done when**
    a `grpcurl` client talks to it directly and sees both behaviors.
-2. In `labs/05-reverse-proxy`, proxy it end-to-end. **Done when** a unary
+2. In [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), proxy it end-to-end. **Done when** a unary
    call succeeds through the proxy and the non-OK `grpc-status` reaches
    the client as a proper status — not a transport error and not a false
    success.

@@ -1,9 +1,9 @@
 # Lexer
 
 Turning a flat stream of bytes into a stream of meaningful tokens — the
-stage before any structure exists. `05-http-stack/01-parser.md` does this
+stage before any structure exists. [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) does this
 inline for HTTP; this file is the reusable theory underneath, equally
-applicable to the config parser in `09-architecture/03-config.md`.
+applicable to the config parser in [`09-architecture/03-config.md`](../09-architecture/03-config.md).
 
 ## What to learn
 
@@ -28,7 +28,7 @@ enum Token {
 Gotcha: make tokens borrow the input (store byte ranges), not own copies.
 A config file or HTTP message is parsed once and thrown away; copying every
 identifier into a `String` doubles allocation for no benefit. This is the
-same "bytes, not String" discipline as `05-http-stack/01-parser.md`.
+same "bytes, not String" discipline as [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md).
 
 ### The core loop: one byte of lookahead
 Most lexers are a single loop with a cursor and a `peek()` of the next
@@ -69,7 +69,7 @@ raised — do not pay per-byte for position bookkeeping on the happy path.
 
 ### Where lexing and parsing blur
 Not every format has a clean lexer/parser split. HTTP/1.1 request lines are
-so simple that `05-http-stack/01-parser.md` scans bytes directly with no token
+so simple that [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) scans bytes directly with no token
 type — introducing a lexer there would add ceremony without value. The
 split earns its keep when the grammar has real nesting and precedence (a
 config language, an expression language), where a token stream genuinely
@@ -81,7 +81,7 @@ before.
 1. Write a lexer for a tiny config grammar — `key value;` lines, `{}`
    blocks, `#` comments, numbers with optional unit suffixes (`10s`,
    `4k`) — emitting borrowed-range tokens. This is the front half of the
-   config work in `labs/13-hot-reload`.
+   config work in [`labs/13-hot-reload`](../../labs/13-hot-reload).
 2. Handle maximal munch correctly for a two-character operator (`>=` or
    `//`): write the failing test first (`a>=b` must lex to three tokens),
    then the peek logic that passes it.
@@ -91,6 +91,6 @@ before.
 4. Benchmark borrowed-range tokens against a version that allocates a
    `String` per identifier on a large config; confirm the allocation count
    difference.
-5. Compare your hand-written scanner against `05-http-stack/01-parser.md`'s
+5. Compare your hand-written scanner against [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md)'s
    inline HTTP scanning and articulate why HTTP does *not* use a separate
    token type — when the split helps and when it is ceremony.

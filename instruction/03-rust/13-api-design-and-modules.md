@@ -15,7 +15,7 @@ pub mod pool {
 ```
 
 ### The newtype pattern
-Wrapping a primitive or foreign type in a single-field struct (`struct RequestId(u64);`) buys three things: a distinct type the compiler won't let you accidentally mix with a plain `u64` (a classic bug — passing a connection-count where a port number was expected, both `usize`), the ability to implement traits you don't own for a type you don't own (sidestepping the orphan rule from `03-rust/07-traits-and-generics.md`), and a place to enforce invariants in a constructor while keeping the inner value private.
+Wrapping a primitive or foreign type in a single-field struct (`struct RequestId(u64);`) buys three things: a distinct type the compiler won't let you accidentally mix with a plain `u64` (a classic bug — passing a connection-count where a port number was expected, both `usize`), the ability to implement traits you don't own for a type you don't own (sidestepping the orphan rule from [`03-rust/07-traits-and-generics.md`](07-traits-and-generics.md)), and a place to enforce invariants in a constructor while keeping the inner value private.
 
 ```rust
 pub struct UpstreamAddr(std::net::SocketAddr); // distinct from a raw SocketAddr used for the client's own address
@@ -44,8 +44,8 @@ pub trait Middleware: private::Sealed { fn handle(&self, req: Request) -> Respon
 Adding a `pub` field, a new variant to a `pub` enum without `#[non_exhaustive]`, or a new required trait method are all breaking changes under semver even though they only "add" something — existing code that exhaustively matches or implements against the old shape stops compiling. `#[non_exhaustive]` on a struct/enum you expect to grow lets you add fields/variants without that break, at the cost of callers never being able to construct or exhaustively match it directly.
 
 ## Practice
-1. Take a struct in `labs/06-load-balancer` with several public fields and refactor it to keep fields private behind a builder with a validating `.build()`.
+1. Take a struct in [`labs/06-load-balancer`](../../labs/06-load-balancer) with several public fields and refactor it to keep fields private behind a builder with a validating `.build()`.
 2. Introduce a newtype wrapper around a raw `SocketAddr` or `u64` id somewhere it's currently a bare primitive, and find (via compiler errors) every place that was relying on it being interchangeable with the raw type.
 3. Mark an enum you own with `#[non_exhaustive]`, add a variant, and confirm existing exhaustive `match`es outside the defining module now fail to compile — then fix them with a wildcard arm.
 4. Write a sealed trait for a small `Middleware`-style abstraction, and confirm from a separate module that outside code cannot implement it.
-5. Pick one `pub` item in a `labs/` crate and write down what changing its shape would break for a hypothetical downstream user — decide whether it should really be `pub`.
+5. Pick one `pub` item in a [`labs/`](../../labs) crate and write down what changing its shape would break for a hypothetical downstream user — decide whether it should really be `pub`.

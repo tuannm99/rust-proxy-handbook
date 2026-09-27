@@ -1,6 +1,6 @@
 # Consistent Hashing
 
-`06-proxy/02-load-balancer.md` nói về việc lookup trên ring và vì sao việc
+[`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md) nói về việc lookup trên ring và vì sao việc
 gỡ bỏ chỉ remap ~1/N số key. File này nói về phần mà bản tóm tắt đó bỏ
 qua: cách sizing virtual node, bài toán cân bằng, và bounded loads.
 
@@ -40,8 +40,8 @@ struct Ring {
 Gotcha: bộ nhớ và chi phí rebuild là `O(upstream × V)`. Ở 1000 upstream ×
 200 vnode, đó là 200 nghìn entry `BTreeMap` bị rebuild ở mỗi lần thay đổi
 membership — đây là lúc rendezvous hashing
-(`13-algorithms/rendezvous-hash.md`, không có cấu trúc nào phải rebuild)
-hoặc Maglev (`13-algorithms/maglev.md`, lookup O(1)) trở thành câu trả lời
+([`13-algorithms/rendezvous-hash.md`](rendezvous-hash.md), không có cấu trúc nào phải rebuild)
+hoặc Maglev ([`13-algorithms/maglev.md`](maglev.md), lookup O(1)) trở thành câu trả lời
 tốt hơn.
 
 ### Weight
@@ -77,14 +77,14 @@ thái — least-connection hay smooth WRR phản ứng với tải thật, còn
 consistent hashing thì cố tình không làm vậy.
 
 ## Practice
-1. Trong `labs/06-load-balancer`, xây ring với V=1 và hash 100 nghìn key
+1. Trong [`labs/06-load-balancer`](../../labs/06-load-balancer), xây ring với V=1 và hash 100 nghìn key
    trên 5 upstream; ghi lại phần trăm mỗi upstream và tỉ lệ giữa upstream
    bận nhất và rảnh nhất.
 2. Lặp lại với V = 10, 100, 500. Vẽ tỉ lệ max/min theo V và xác nhận nó
    thu hẹp xấp xỉ theo `1/sqrt(V)`; chọn V mà bạn sẽ thực sự ship và giải
    thích vì sao.
 3. Đo thời gian xây ring và bộ nhớ ở 1000 upstream × 200 vnode, rồi so
-   sánh với implementation HRW từ `13-algorithms/rendezvous-hash.md` cho
+   sánh với implementation HRW từ [`13-algorithms/rendezvous-hash.md`](rendezvous-hash.md) cho
    cùng pool đó.
 4. Implement bounded loads: giới hạn mỗi upstream ở 1.25× trung bình và đi
    tràn khi vượt. Gửi 50% traffic vào một hot key và xác nhận tải được

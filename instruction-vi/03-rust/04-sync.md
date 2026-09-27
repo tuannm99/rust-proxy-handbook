@@ -67,7 +67,7 @@ thay một `Mutex<State>` chia sẻ bằng một task duy nhất sở hữu stat
 nơi khác gửi message cho nó — không lock contention, không rủi ro deadlock
 từ thứ tự lock. Dùng `tokio::sync::watch` đặc biệt cho dữ liệu kiểu "giá
 trị mới nhất, nhiều reader" như một config được reload trực tiếp
-(`09-architecture/03-config.md`); dùng `RwLock`/`Arc` chia sẻ khi dữ liệu
+([`09-architecture/03-config.md`](../09-architecture/03-config.md)); dùng `RwLock`/`Arc` chia sẻ khi dữ liệu
 lớn và clone nó mỗi lần update sẽ lãng phí (ví dụ một routing table lớn).
 
 Gotcha: dưới tải thực tế, lock contention trên một `Mutex<Vec<Upstream>>`
@@ -85,7 +85,7 @@ hãy biết rằng `RwLock` và `watch` là hai lối thoát đầu tiên nên t
    guard trước.
 3. Thay một counter được bảo vệ bởi `Mutex<u64>` bằng `AtomicU64` và xác
    nhận bằng một benchmark nhanh rằng nó nhanh hơn khi có contention.
-4. Trong `labs/05-reverse-proxy`, quyết định xem upstream pool của bạn là
+4. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), quyết định xem upstream pool của bạn là
    `Arc<RwLock<Vec<Upstream>>>` hay thuộc sở hữu một task và được truy cập
    qua một channel `tokio::sync::watch` — implement một trong hai, và viết
    một câu giải thích vì sao bạn không chọn cái còn lại.

@@ -1,6 +1,6 @@
 # LRU và Cache Eviction
 
-`05-http-stack/07-cache.md` nói về ngữ nghĩa cache HTTP (freshness, `Vary`,
+[`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md) nói về ngữ nghĩa cache HTTP (freshness, `Vary`,
 invalidation). File này nói về chính sách eviction bên dưới: vứt bỏ cái gì
 khi cache đầy.
 
@@ -23,10 +23,10 @@ struct Node<K, V> {
 
 Gotcha: viết cái này với `Rc<RefCell<Node>>` tạo ra các chu trình tham
 chiếu không bao giờ được giải phóng, và viết nó với con trỏ thô nghĩa là
-`unsafe` thật sự (xem `03-rust/03-unsafe.md`). Câu trả lời idiomatic trong
+`unsafe` thật sự (xem [`03-rust/03-unsafe.md`](../03-rust/03-unsafe.md)). Câu trả lời idiomatic trong
 Rust là một arena — lưu node trong một `Vec` và dùng chỉ số `usize` làm
 liên kết, điều này khiến toàn bộ cấu trúc an toàn, gọn, và thân thiện với
-cache. Đây là cùng kỹ thuật với `13-algorithms/slab.md`; một slab là kho
+cache. Đây là cùng kỹ thuật với [`13-algorithms/slab.md`](slab.md); một slab là kho
 lưu trữ tự nhiên cho một LRU. Trong production, dùng crate `lru` hoặc
 `moka` thay vì tự viết tay.
 
@@ -55,7 +55,7 @@ con trỏ. Khi eviction, một "kim đồng hồ" quét qua vòng tròn: nếu b
 set, xóa nó và đi tiếp; nếu chưa set, evict. Các entry được chạm vào kể từ
 lượt quét trước sống sót một vòng, xấp xỉ recency đủ sát cho phần lớn
 workload với một phần nhỏ chi phí điều phối. Đây là thứ mà page cache của
-Linux dùng (`16-kernel/08-page-cache.md`).
+Linux dùng ([`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md)).
 
 ### Điểm mù của LRU: scan
 Một lượt quét qua một tập lớn các item chỉ dùng một lần (một crawler đi
@@ -71,7 +71,7 @@ khi working set thực sự thay đổi — một item phổ biến hôm qua v�
   chuyển capacity giữa chúng dựa trên cái nào đang tạo ra hit.
 - **TinyLFU / W-TinyLFU** đặt một cửa sổ admission LRU nhỏ trước một cache
   chính dựa trên frequency, dùng một count-min sketch
-  (`13-algorithms/count-min-sketch.md`) để ước lượng frequency trong vài
+  ([`13-algorithms/count-min-sketch.md`](count-min-sketch.md)) để ước lượng frequency trong vài
   bit mỗi key. Một item mới chỉ được admit nếu frequency ước lượng của nó
   thắng entry mà nó sẽ evict. Đây là lựa chọn mặc định hiện tại — đây là
   thứ `moka` implement — và nó kháng scan theo thiết kế.
@@ -90,7 +90,7 @@ cache, nếu không một response lớn sẽ evict hàng nghìn response nhỏ 
 hot.
 
 ## Practice
-1. Trong `labs/10-cache`, implement một LRU dựa trên arena (chỉ số, không
+1. Trong [`labs/10-cache`](../../labs/10-cache), implement một LRU dựa trên arena (chỉ số, không
    phải con trỏ) giới hạn theo tổng byte response thay vì số lượng entry;
    thêm một giới hạn kích thước object tối đa có thể cache.
 2. Viết test eviction quan trọng: insert cho tới đầy, xác minh entry

@@ -13,7 +13,7 @@ này.
 ### Vì sao hầu hết proxy Rust chọn composition lúc compile-time
 Các trait `tower::Service`/`Layer` của Rust cho bạn ghép hành vi xử lý
 request (auth, rate limit, WAF, logging — xem
-`09-architecture/01-components.md`) như các type generic, dispatch tĩnh.
+[`09-architecture/01-components.md`](01-components.md)) như các type generic, dispatch tĩnh.
 Compiler inline và monomorphize cả stack, nên không có chi phí runtime cho
 "plugin", và một module tồi là một lỗi compile hoặc một panic bị chặn lại,
 không phải một crash ABI. Chi phí: thêm/bớt một module cần rebuild, không
@@ -38,7 +38,7 @@ những gì nó tiết kiệm được.
 
 Một tower stack lúc compile-time có thứ tự được đóng cứng vào type lúc
 build. Nhưng một proxy thật thường muốn tập module là *theo từng route*
-và *cấu hình được* (`09-architecture/03-config.md`): route này cần auth
+và *cấu hình được* ([`09-architecture/03-config.md`](03-config.md)): route này cần auth
 và WAF, route kia không cần cái nào, và một operator thay đổi nó mà không
 rebuild. Bạn không thể diễn đạt "thứ tự đến từ một file TOML" trong một
 type đã monomorphize.
@@ -76,7 +76,7 @@ này được làm cho một proxy thật.
 An toàn bộ nhớ là nửa dễ của sandboxing. Nửa khó hơn là một plugin chạy
 trên đường đi request của bạn đơn giản là có thể *không trả về* — một vòng
 lặp vô hạn trong một WASM guest treo worker thread đúng như bất kỳ thao
-tác blocking nào khác (`03-rust/05-async.md`), kéo theo mọi kết nối
+tác blocking nào khác ([`03-rust/05-async.md`](../03-rust/05-async.md)), kéo theo mọi kết nối
 multiplex trên nó cùng với request đã kích hoạt nó.
 
 `wasmtime` cung cấp hai cơ chế cho việc này, và bạn cần một trong số đó:
@@ -94,46 +94,46 @@ Gotcha: vòng đời instance là một quyết định hiệu năng thật sự
 `Instance` mới cho mỗi request là cách cô lập sạch nhất và đắt nhất; pool
 instance (pooling allocator của wasmtime) nhanh hơn nhiều nhưng nghĩa là
 state có thể rò rỉ giữa các request trừ khi bạn reset nó — cùng kỷ luật
-như `14-memory/03-object-pool.md`, với một hệ quả bảo mật nếu bạn làm sai.
+như [`14-memory/03-object-pool.md`](../14-memory/03-object-pool.md), với một hệ quả bảo mật nếu bạn làm sai.
 
 ### Luồng dữ liệu và điều khiển qua biên plugin
 Dù bạn chọn cơ chế nào, hãy quyết định tường minh: một plugin có thể thấy
 toàn bộ body request/response, hay chỉ header? Nó có thể short-circuit
 (trả một response mà không gọi upstream) không? Nó có thể fail open (cho
 qua) hay phải fail closed (reject) khi plugin lỗi? Đây là các quyết định
-liên quan tới bảo mật (xem `07-security/06-waf.md`), không chỉ là kiến
+liên quan tới bảo mật (xem [`07-security/06-waf.md`](../07-security/06-waf.md)), không chỉ là kiến
 trúc.
 
 Hai điều nữa gây hại về sau nếu để ngầm định:
 - **Một plugin có thể mutate những gì các module trước đã thiết lập
   không?** Nếu một plugin có thể ghi đè header identity mà auth đã đặt
-  (`07-security/01-auth.md`), nó có thể leo thang đặc quyền. Phơi bày một
+  ([`07-security/01-auth.md`](../07-security/01-auth.md)), nó có thể leo thang đặc quyền. Phơi bày một
   view *chỉ đọc* của context tin cậy và một kênh riêng, hạn chế cho các
   mutation bạn thực sự định cho phép.
 - **Truy cập body ép buffer.** Cấp quyền truy cập body âm thầm tắt
   streaming cho mọi route dùng plugin đó
-  (`05-http-stack/10-grpc.md`, `05-http-stack/09-websocket.md`), với mọi
-  hệ quả về giới hạn kích thước của `07-security/06-waf.md`. Làm nó
+  ([`05-http-stack/10-grpc.md`](../05-http-stack/10-grpc.md), [`05-http-stack/09-websocket.md`](../05-http-stack/09-websocket.md)), với mọi
+  hệ quả về giới hạn kích thước của [`07-security/06-waf.md`](../07-security/06-waf.md). Làm nó
   opt-in theo từng plugin và hiển thị trong config, không phải một khả
   năng mọi thứ đều có.
 
 Gotcha: một plugin trên đường đi request là một phần trong ngân sách
 latency của bạn, và một plugin bên thứ ba là latency bạn không kiểm soát.
 Đo thời gian mỗi plugin riêng biệt như metric của chính nó
-(`08-observability/02-metrics.md`) và một span
-(`08-observability/03-tracing.md`) — "proxy bị chậm" nên quy được về một
+([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)) và một span
+([`08-observability/03-tracing.md`](../08-observability/03-tracing.md)) — "proxy bị chậm" nên quy được về một
 plugin cụ thể mà không cần chia đôi config để tìm.
 
 ## Practice
 Xây theo thứ tự.
 
-1. Trong `labs/14-plugin`, định nghĩa một trait `Module` và cài đặt hai
+1. Trong [`labs/14-plugin`](../../labs/14-plugin), định nghĩa một trait `Module` và cài đặt hai
    module (logging + rate limiting) đứng sau nó. **Xong khi** mỗi cái
    được unit-test độc lập và không cái nào biết cái kia tồn tại.
 2. Xây stack từ config thay vì từ một type. **Xong khi** thay đổi thứ tự
    module trong một file TOML thay đổi thứ tự thực thi mà không cần
    rebuild, và các quy tắc thứ tự từ
-   `09-architecture/01-components.md` được validate lúc load (từ chối một
+   [`09-architecture/01-components.md`](01-components.md) được validate lúc load (từ chối một
    config đặt auth sau WAF).
 3. Đo chi phí của dynamic dispatch. **Xong khi** bạn có các con số chi phí
    theo từng request cho một stack monomorphize so với

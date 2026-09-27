@@ -1,7 +1,7 @@
 # Page Cache
 
 The kernel's cache of file data in RAM. What makes static file serving
-(`05-http-stack/05-static.md`) fast, and what makes your proxy's memory
+([`05-http-stack/05-static.md`](../05-http-stack/05-static.md)) fast, and what makes your proxy's memory
 accounting confusing.
 
 ## What to learn
@@ -33,11 +33,11 @@ dies with an OOM whose RSS looks far below the limit, this is the first
 thing to check.
 
 ### Zero-copy depends on it entirely
-`sendfile()` and `splice()` (see `02-linux/11-zerocopy.md`) move data from the
+`sendfile()` and `splice()` (see [`02-linux/11-zerocopy.md`](../02-linux/11-zerocopy.md)) move data from the
 page cache to a socket without copying through user space. That is only
 fast on a cache *hit* — on a miss the syscall blocks on disk I/O, and in an
 async runtime that blocks the whole worker thread
-(`03-rust/05-async.md`'s cooperative-scheduling problem), stalling every other
+([`03-rust/05-async.md`](../03-rust/05-async.md)'s cooperative-scheduling problem), stalling every other
 connection on it.
 
 This is the trap in "just use sendfile for static files": it is excellent
@@ -60,7 +60,7 @@ For a proxy, `WILLNEED` on a file you are about to stream can turn the
 first-chunk latency from a disk seek into a cache hit. `DONTNEED` after
 streaming a very large one-shot file stops it from evicting your genuinely
 hot working set — the page cache's own version of the scan-pollution
-problem in `13-algorithms/lru.md`.
+problem in [`13-algorithms/lru.md`](../13-algorithms/lru.md).
 
 ### Eviction is CLOCK, and dirty pages are different
 Clean pages are dropped on reclaim, essentially free. Dirty pages (written
@@ -69,14 +69,14 @@ them can block. Writeback is governed by `vm.dirty_ratio` and
 `vm.dirty_background_ratio`; crossing the hard ratio makes *writers* block
 synchronously until writeback catches up.
 
-A proxy writing access logs to disk (`08-observability/01-logging.md`) is a
+A proxy writing access logs to disk ([`08-observability/01-logging.md`](../08-observability/01-logging.md)) is a
 dirty-page producer. Under heavy logging on slow storage, a log write can
 block a request-handling thread — which is exactly why that file
 recommends `tracing_appender::non_blocking`.
 
 The reclaim policy itself is an approximate-LRU variant: two lists (active
 and inactive) with reference bits, which is the CLOCK-family algorithm
-described in `13-algorithms/lru.md`. Same reasoning — real LRU's per-access
+described in [`13-algorithms/lru.md`](../13-algorithms/lru.md). Same reasoning — real LRU's per-access
 list surgery is unaffordable at page-cache scale.
 
 ### Measuring it
@@ -91,8 +91,8 @@ production, where the working set is larger than memory.
 1. Read a large file twice, timing both. Drop the caches, repeat, and
    confirm the first read's timing returns.
 2. Use `vmtouch` (or `mincore` directly) to show which pages of a file
-   `labs/04-static-server` has resident after serving it once.
-3. Benchmark `labs/04-static-server` with a working set that fits in RAM,
+   [`labs/04-static-server`](../../labs/04-static-server) has resident after serving it once.
+3. Benchmark [`labs/04-static-server`](../../labs/04-static-server) with a working set that fits in RAM,
    then one several times larger. Compare p99 latency and explain the gap
    from what you know about cache hits and blocking.
 4. Demonstrate the blocking hazard: serve a cold large file with a

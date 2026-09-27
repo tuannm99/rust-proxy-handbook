@@ -1,10 +1,10 @@
 # HyperLogLog
 
-`13-algorithms/count-min-sketch.md` answers "how many times has this key
+[`13-algorithms/count-min-sketch.md`](count-min-sketch.md) answers "how many times has this key
 appeared." HyperLogLog answers a different question in similarly tiny
 fixed memory: "how many *distinct* keys have appeared" — cardinality
 estimation, useful for "how many distinct attacker IPs hit us in the last
-minute" (`07-security/09-ddos.md`) without ever storing the set of IPs.
+minute" ([`07-security/09-ddos.md`](../07-security/09-ddos.md)) without ever storing the set of IPs.
 
 ## What to learn
 
@@ -54,7 +54,7 @@ A HyperLogLog register only ever grows (`max`, never decreases), so it
 answers "distinct elements since I started counting," not a sliding
 window. For a DDoS signal like "distinct attacker IPs in the last
 minute," combine it with the same decay/rotation trick
-`13-algorithms/count-min-sketch.md` uses: keep one HLL per time bucket,
+[`13-algorithms/count-min-sketch.md`](count-min-sketch.md) uses: keep one HLL per time bucket,
 merge the recent N buckets for the windowed estimate, and drop the
 oldest bucket as time advances.
 
@@ -70,5 +70,5 @@ oldest bucket as time advances.
    true union cardinality.
 4. Add time-bucket rotation (one HLL per minute, merge the last 5 for a
    windowed count) and use it as a distinct-IP-rate signal alongside
-   `07-security/09-ddos.md`'s volumetric detection; test it against a
+   [`07-security/09-ddos.md`](../07-security/09-ddos.md)'s volumetric detection; test it against a
    simulated distributed flood from many synthetic source IPs.

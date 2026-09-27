@@ -1,6 +1,6 @@
 # Priority Queues at Scale: Timer Wheels
 
-`13-algorithms/heap.md` covers the binary heap backing a small
+[`13-algorithms/heap.md`](heap.md) covers the binary heap backing a small
 priority queue (one entry per upstream). This file covers what happens
 when the priority queue's job is scheduling *timeouts* — potentially one
 per connection, at proxy scale — where a heap's O(log n) per-operation
@@ -14,14 +14,14 @@ A proxy schedules a timeout on essentially every connection and request
 early when the operation completes normally. A heap handles this as
 insert-then-usually-cancel-before-firing, and canceling an arbitrary
 entry in a binary heap (not just the root) needs the same decrease-key
-machinery `heap.md` describes for updates — an O(log n) search-and-remove
+machinery [`heap.md`](heap.md) describes for updates — an O(log n) search-and-remove
 per cancellation, at a rate of "once per request," is real overhead at
 high connection counts.
 
 ### The timer wheel: bucket by when, not by exact order
 A timer wheel trades exact ordering for O(1) insert and O(1) cancel by
 bucketing deadlines into a fixed number of time slots (a circular array,
-like `13-algorithms/ring-buffer.md`'s structure, but indexed by future
+like [`13-algorithms/ring-buffer.md`](ring-buffer.md)'s structure, but indexed by future
 time rather than insertion order):
 
 ```rust
@@ -58,20 +58,20 @@ assuming you need heap precision.
 ### Gotcha: don't build your own if the runtime already has one
 `tokio::time::sleep`/`timeout`/`interval` are backed by exactly this
 mechanism inside tokio's runtime already. Building a second, separate
-timer wheel in `proxy/` for something `tokio::time` already covers
+timer wheel in [`proxy/`](../../proxy) for something `tokio::time` already covers
 duplicates a well-tested subsystem for no benefit — reach for this
 file's content when you need to understand *why* `tokio::time::sleep` is
 cheap to create and cancel by the thousand, not to replace it.
 
 ## Practice
 1. Implement a single-level timer wheel and benchmark insert, fire, and
-   cancel against your `heap.md` implementation at 100k scheduled
+   cancel against your [`heap.md`](heap.md) implementation at 100k scheduled
    timeouts with a 90% early-cancellation rate (simulating requests that
    complete before their timeout fires).
 2. Extend it to a two-level hierarchical wheel (e.g. milliseconds and
    seconds) and confirm a timer scheduled beyond the first wheel's range
    correctly migrates into the fine wheel as its deadline approaches.
-3. In `labs/05-reverse-proxy`, replace a naive per-connection
+3. In [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), replace a naive per-connection
    `tokio::time::sleep`-per-timeout pattern with a design that reasons
    about batch cancellation (e.g. connection close cancels every pending
    timer for it), and explain in writing why `tokio::time` already

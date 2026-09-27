@@ -1,6 +1,6 @@
 # Bloom Filter
 
-`13-algorithms/tinylfu.md` uses a Bloom filter as a "doorkeeper" to keep
+[`13-algorithms/tinylfu.md`](tinylfu.md) uses a Bloom filter as a "doorkeeper" to keep
 one-hit-wonders out of its frequency sketch. This file covers the
 structure itself: fast, tiny, probabilistic *membership* testing with no
 false negatives.
@@ -35,11 +35,11 @@ false-positive rate first, then size `m` and `k` from it — don't pick
 round numbers and hope.
 
 ### Where it earns its place in this handbook
-- **TinyLFU's doorkeeper** (`13-algorithms/tinylfu.md`): a key must appear
+- **TinyLFU's doorkeeper** ([`13-algorithms/tinylfu.md`](tinylfu.md)): a key must appear
   twice before it's counted in the frequency sketch, and the Bloom
   filter is the cheap first-appearance check.
-- **A first-pass IP/rule blocklist check** (`07-security/06-waf.md`,
-  `07-security/08-ip-filtering.md`): checking a large deny-list is often
+- **A first-pass IP/rule blocklist check** ([`07-security/06-waf.md`](../07-security/06-waf.md),
+  [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)): checking a large deny-list is often
   dominated by "the common case is not on the list" — a Bloom filter in
   front of the real lookup answers "definitely not blocked" for most
   traffic in O(k) with no memory access outside the filter itself, and
@@ -59,11 +59,11 @@ monitor actual insertions against it if that number can grow unbounded.
 1. Implement a Bloom filter sized for a chosen `n` and false-positive
    target; empirically measure the actual false-positive rate against a
    `HashSet` ground truth and confirm it matches the formula.
-2. Use it as a doorkeeper in front of your `13-algorithms/tinylfu.md`
-   frequency sketch (`labs/10-cache`) and confirm one-hit-wonder keys
+2. Use it as a doorkeeper in front of your [`13-algorithms/tinylfu.md`](tinylfu.md)
+   frequency sketch ([`labs/10-cache`](../../labs/10-cache)) and confirm one-hit-wonder keys
    never reach the sketch.
 3. Build a first-pass check in front of an IP blocklist
-   (`labs/12-waf` or `labs/11-rate-limit`) and measure the fraction of
+   ([`labs/12-waf`](../../labs/12-waf) or [`labs/11-rate-limit`](../../labs/11-rate-limit)) and measure the fraction of
    allowed traffic that the Bloom filter resolves without touching the
    real list.
 4. Deliberately insert well past your sized `n` and re-measure the

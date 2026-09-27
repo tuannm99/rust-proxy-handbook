@@ -5,7 +5,7 @@
 A "plugin system" can mean anything from "compose a fixed set of `tower::Layer`s at compile time" to "load arbitrary untrusted code at runtime" (dylibs, Lua, WASM). More flexibility at runtime means more risk (ABI mismatches, crashes taking down the whole proxy, security exposure) and worse performance (dynamic dispatch, serialization boundaries). Nginx/Envoy/HAProxy all lean toward compiled or sandboxed modules rather than arbitrary dynamic code, for exactly this reason.
 
 ### Why most Rust proxies choose compile-time composition
-Rust's `tower::Service`/`Layer` traits let you compose request-handling behavior (auth, rate limit, WAF, logging — see `09-architecture/01-components.md`) as generic, statically-dispatched types. The compiler inlines and monomorphizes the whole stack, so there's no runtime cost for "plugins," and a bad module is a compile error or a contained panic, not an ABI crash. The cost: adding/removing a module requires a rebuild, not a hot-swappable artifact.
+Rust's `tower::Service`/`Layer` traits let you compose request-handling behavior (auth, rate limit, WAF, logging — see [`09-architecture/01-components.md`](01-components.md)) as generic, statically-dispatched types. The compiler inlines and monomorphizes the whole stack, so there's no runtime cost for "plugins," and a bad module is a compile error or a contained panic, not an ABI crash. The cost: adding/removing a module requires a rebuild, not a hot-swappable artifact.
 
 ```rust
 trait Module: Send + Sync {
@@ -26,7 +26,7 @@ Here is the practical fork in the road, and it decides your design.
 
 A compile-time tower stack has its order baked into the type at build
 time. But a real proxy typically wants the module set to be *per route*
-and *configurable* (`09-architecture/03-config.md`): this route needs auth
+and *configurable* ([`09-architecture/03-config.md`](03-config.md)): this route needs auth
 and WAF, that one needs neither, and an operator changes it without a
 rebuild. You cannot express "order comes from a TOML file" in a
 monomorphized type.
@@ -54,7 +54,7 @@ Envoy's WASM filters are the reference design if you want to see this done for a
 Memory safety is the easy half of sandboxing. The harder half is that a
 plugin running on your request path can simply *not return* — an infinite
 loop in a WASM guest hangs the worker thread exactly like any other
-blocking operation (`03-rust/05-async.md`), taking every connection
+blocking operation ([`03-rust/05-async.md`](../03-rust/05-async.md)), taking every connection
 multiplexed on it down with the request that triggered it.
 
 `wasmtime` provides two mechanisms for this, and you need one of them:
@@ -72,40 +72,40 @@ Gotcha: instance lifecycle is a real performance decision. Creating a
 fresh `Instance` per request is the cleanest isolation and the most
 expensive; pooling instances (wasmtime's pooling allocator) is much faster
 but means state can leak between requests unless you reset it — the same
-discipline as `14-memory/03-object-pool.md`, with a security consequence if
+discipline as [`14-memory/03-object-pool.md`](../14-memory/03-object-pool.md), with a security consequence if
 you get it wrong.
 
 ### Data and control flow across a plugin boundary
-Whatever mechanism you pick, decide explicitly: can a plugin see the full request/response body, or just headers? Can it short-circuit (return a response without calling upstream)? Can it fail open (pass through) or must it fail closed (reject) on plugin error? These are security-relevant decisions (see `07-security/06-waf.md`), not just architecture ones.
+Whatever mechanism you pick, decide explicitly: can a plugin see the full request/response body, or just headers? Can it short-circuit (return a response without calling upstream)? Can it fail open (pass through) or must it fail closed (reject) on plugin error? These are security-relevant decisions (see [`07-security/06-waf.md`](../07-security/06-waf.md)), not just architecture ones.
 
 Two more that bite later if left implicit:
 - **Can a plugin mutate what earlier modules established?** If a plugin
   can rewrite the identity header that auth set
-  (`07-security/01-auth.md`), it can escalate privilege. Expose a *read-only*
+  ([`07-security/01-auth.md`](../07-security/01-auth.md)), it can escalate privilege. Expose a *read-only*
   view of trusted context and a separate, restricted channel for the
   mutations you actually intend to allow.
 - **Body access forces buffering.** Granting body access silently
   disables streaming for every route that uses that plugin
-  (`05-http-stack/10-grpc.md`, `05-http-stack/09-websocket.md`), with all of
-  `07-security/06-waf.md`'s size-limit consequences. Make it opt-in per
+  ([`05-http-stack/10-grpc.md`](../05-http-stack/10-grpc.md), [`05-http-stack/09-websocket.md`](../05-http-stack/09-websocket.md)), with all of
+  [`07-security/06-waf.md`](../07-security/06-waf.md)'s size-limit consequences. Make it opt-in per
   plugin and visible in config, not a capability everything gets.
 
 Gotcha: a plugin on the request path is part of your latency budget, and
 a third-party plugin is latency you don't control. Time each plugin
-separately as its own metric (`08-observability/02-metrics.md`) and span
-(`08-observability/03-tracing.md`) — "the proxy got slow" should be
+separately as its own metric ([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)) and span
+([`08-observability/03-tracing.md`](../08-observability/03-tracing.md)) — "the proxy got slow" should be
 attributable to a specific plugin without bisecting config.
 
 ## Practice
 Build these in order.
 
-1. In `labs/14-plugin`, define a `Module` trait and implement two modules
+1. In [`labs/14-plugin`](../../labs/14-plugin), define a `Module` trait and implement two modules
    (logging + rate limiting) behind it. **Done when** each is unit-tested
    in isolation and neither knows the other exists.
 2. Build the stack from config rather than from a type. **Done when**
    changing module order in a TOML file changes execution order with no
    rebuild, and the ordering rules from
-   `09-architecture/01-components.md` are validated at load time (rejecting a
+   [`09-architecture/01-components.md`](01-components.md) are validated at load time (rejecting a
    config that puts auth after WAF).
 3. Measure dynamic dispatch's cost. **Done when** you have per-request
    overhead numbers for a monomorphized stack vs `Vec<Arc<dyn Module>>`

@@ -11,7 +11,7 @@ không dễ dàng link được libFuzzer. Với handbook này, `cargo-fuzz` là
 chọn idiomatic hơn vì mọi thứ đều là một Cargo workspace bình thường.
 
 ### Fuzz parser tự viết tay
-`labs/01-http-parser` chính xác là loại code mà fuzzing được sinh ra để
+[`labs/01-http-parser`](../../labs/01-http-parser) chính xác là loại code mà fuzzing được sinh ra để
 dùng: input ở mức byte, một state machine không tầm thường (header,
 chunked encoding, Content-Length), và một lịch sử thật về các bug bảo mật
 (request smuggling) đến từ chính lớp parser này khi bất đồng với một
@@ -32,7 +32,7 @@ hai: proptest cho tính đúng đắn round-trip, cargo-fuzz cho "không bao gi�
 panic trên bất cứ thứ gì."
 
 ## Practice
-1. Thêm một thư mục `fuzz/` vào `labs/01-http-parser` bằng `cargo fuzz
+1. Thêm một thư mục `fuzz/` vào [`labs/01-http-parser`](../../labs/01-http-parser) bằng `cargo fuzz
    init` và một target gọi parser của bạn trên byte thô.
 2. Chạy nó vài phút và sửa bất kỳ panic nào nó tìm thấy (index vượt giới
    hạn trên input bị cắt cụt là crash kinh điển đầu tiên).
@@ -46,4 +46,4 @@ panic trên bất cứ thứ gì."
    nhau bề ngoài (ví dụ cả một header `Content-Length` lẫn
    `Transfer-Encoding: chunked`) và xác nhận nó chọn một cách xác định và
    từ chối sự mập mờ thay vì đoán — nối lại với
-   `07-security/05-request-smuggling.md`.
+   [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md).

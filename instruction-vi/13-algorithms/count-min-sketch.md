@@ -2,7 +2,7 @@
 
 Đếm tần suất xấp xỉ trong bộ nhớ cố định. Cách bạn trả lời "IP này đã gửi
 bao nhiêu request" cho hàng triệu IP mà không cần một map tăng theo ngân
-sách của kẻ tấn công (`07-security/09-ddos.md`).
+sách của kẻ tấn công ([`07-security/09-ddos.md`](../07-security/09-ddos.md)).
 
 ## What to learn
 
@@ -62,7 +62,7 @@ nếu nó vượt ngưỡng, insert key vào một min-heap có giới hạn ch�
 vi phạm tệ nhất. Sketch xử lý cardinality vô hạn trong bộ nhớ cố định;
 heap chỉ giữ những key thực sự quan trọng.
 
-Đây cũng là cách TinyLFU (`13-algorithms/lru.md`) ước lượng tần suất truy
+Đây cũng là cách TinyLFU ([`13-algorithms/lru.md`](lru.md)) ước lượng tần suất truy
 cập cho việc admission vào cache chỉ với vài bit mỗi key.
 
 ### Decay: số đếm phải biết quên
@@ -94,7 +94,7 @@ nên không tương thích với các scheme sliding-window có phép trừ.
    trong `ε × N` với ε bạn đã size.
 2. Cho thấy failure mode: thay `d` hash độc lập bằng `hash(key) + i` và
    chạy lại bước 1; đo xem error suy giảm bao nhiêu.
-3. Trong `labs/11-rate-limit`, thêm một bộ phát hiện heavy-hitter toàn cục
+3. Trong [`labs/11-rate-limit`](../../labs/11-rate-limit), thêm một bộ phát hiện heavy-hitter toàn cục
    dựa trên sketch cạnh các bucket chính xác theo từng IP. So sánh bộ nhớ
    ở 1 triệu IP nguồn riêng biệt.
 4. Thêm việc giảm một nửa theo chu kỳ; xác nhận một key burst-rồi-idle rơi

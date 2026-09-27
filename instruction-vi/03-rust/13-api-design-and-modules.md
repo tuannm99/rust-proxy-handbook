@@ -25,7 +25,7 @@ Bọc một type nguyên thủy hoặc ngoại lai trong một struct một fiel
 sẽ không cho bạn vô tình lẫn với một `u64` thuần túy (một bug kinh điển —
 truyền một số lượng connection vào chỗ cần một port number, cả hai đều là
 `usize`), khả năng implement các trait bạn không sở hữu cho một type bạn
-không sở hữu (né được orphan rule từ `03-rust/07-traits-and-generics.md`),
+không sở hữu (né được orphan rule từ [`03-rust/07-traits-and-generics.md`](07-traits-and-generics.md)),
 và một chỗ để enforce invariant trong một constructor trong khi vẫn giữ
 giá trị bên trong private.
 
@@ -71,7 +71,7 @@ mà không gây ra breaking change đó, đánh đổi bằng việc caller khô
 giờ có thể construct hoặc match đầy đủ nó trực tiếp.
 
 ## Practice
-1. Lấy một struct trong `labs/06-load-balancer` có vài field public và
+1. Lấy một struct trong [`labs/06-load-balancer`](../../labs/06-load-balancer) có vài field public và
    tái cấu trúc nó để giữ các field private đứng sau một builder có
    `.build()` validate.
 2. Đưa một newtype wrapper quanh một `SocketAddr` hoặc `u64` id thô ở chỗ
@@ -83,6 +83,6 @@ giờ có thể construct hoặc match đầy đủ nó trực tiếp.
 4. Viết một sealed trait cho một abstraction kiểu `Middleware` nhỏ, và
    xác nhận từ một module riêng rằng code bên ngoài không thể implement
    nó.
-5. Chọn một item `pub` trong một crate `labs/` và viết ra việc thay đổi
+5. Chọn một item `pub` trong một crate [`labs/`](../../labs) và viết ra việc thay đổi
    hình dạng của nó sẽ làm hỏng gì cho một downstream user giả định —
    quyết định xem nó có thực sự nên là `pub` không.

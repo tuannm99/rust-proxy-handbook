@@ -1,6 +1,6 @@
 # Bloom Filter
 
-`13-algorithms/tinylfu.md` dùng một Bloom filter làm "doorkeeper" để chặn
+[`13-algorithms/tinylfu.md`](tinylfu.md) dùng một Bloom filter làm "doorkeeper" để chặn
 các one-hit-wonder không cho vào frequency sketch của nó. File này nói về
 bản thân cấu trúc: kiểm tra *membership* xác suất, nhanh, nhỏ gọn, không
 có false negative.
@@ -34,11 +34,11 @@ key là gì. Hãy quyết định tỉ lệ false-positive chấp nhận đượ
 size `m` và `k` từ đó — đừng chọn số tròn rồi hy vọng.
 
 ### Nơi nó có chỗ đứng trong handbook này
-- **Doorkeeper của TinyLFU** (`13-algorithms/tinylfu.md`): một key phải
+- **Doorkeeper của TinyLFU** ([`13-algorithms/tinylfu.md`](tinylfu.md)): một key phải
   xuất hiện hai lần trước khi được đếm vào frequency sketch, và Bloom
   filter là bước kiểm tra lần-xuất-hiện-đầu-tiên rẻ tiền.
-- **Kiểm tra sơ bộ IP/rule blocklist** (`07-security/06-waf.md`,
-  `07-security/08-ip-filtering.md`): việc check một deny-list lớn thường
+- **Kiểm tra sơ bộ IP/rule blocklist** ([`07-security/06-waf.md`](../07-security/06-waf.md),
+  [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)): việc check một deny-list lớn thường
   bị chi phối bởi "trường hợp phổ biến là không nằm trong danh sách" —
   một Bloom filter đứng trước lookup thật trả lời "chắc chắn không bị
   chặn" cho phần lớn traffic trong O(k) mà không cần truy cập bộ nhớ nào
@@ -60,10 +60,10 @@ nó có thể tăng vô hạn.
    false-positive đã chọn; đo thực nghiệm tỉ lệ false-positive thật so với
    một `HashSet` làm ground truth và xác nhận nó khớp công thức.
 2. Dùng nó làm doorkeeper đứng trước frequency sketch
-   `13-algorithms/tinylfu.md` của bạn (`labs/10-cache`) và xác nhận các
+   [`13-algorithms/tinylfu.md`](tinylfu.md) của bạn ([`labs/10-cache`](../../labs/10-cache)) và xác nhận các
    key one-hit-wonder không bao giờ chạm tới sketch.
 3. Xây một bước kiểm tra sơ bộ đứng trước một IP blocklist
-   (`labs/12-waf` hoặc `labs/11-rate-limit`) và đo tỉ lệ traffic được cho
+   ([`labs/12-waf`](../../labs/12-waf) hoặc [`labs/11-rate-limit`](../../labs/11-rate-limit)) và đo tỉ lệ traffic được cho
    phép mà Bloom filter giải quyết được mà không cần chạm vào danh sách
    thật.
 4. Cố tình insert vượt xa `n` đã size và đo lại tỉ lệ false-positive để

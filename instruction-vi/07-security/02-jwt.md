@@ -1,6 +1,6 @@
 # JWT Validation
 
-Xác thực một bearer token ở edge của proxy. `07-security/01-auth.md` nói về
+Xác thực một bearer token ở edge của proxy. [`07-security/01-auth.md`](01-auth.md) nói về
 việc này nằm ở đâu trong pipeline và proxy làm gì với identity sau đó; file
 này nói về việc làm đúng chính bản thân việc xác thực.
 
@@ -79,7 +79,7 @@ chính việc refetch (tối đa một lần mỗi N giây bất kể bao nhiêu
 và trả 401 trong lúc chờ.
 
 **Fetch thất bại.** Nếu JWKS không thể truy cập, fail static trên tập key
-đã cache (`06-proxy/07-service-discovery.md` — cùng nguyên tắc): tiếp tục
+đã cache ([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md) — cùng nguyên tắc): tiếp tục
 xác thực bằng key tốt cuối cùng đã biết thay vì từ chối toàn bộ traffic.
 Một lần xoay vòng bạn bỏ lỡ sẽ tạo ra 401 cho các token thực sự mới; một
 key cache rỗng tạo ra 401 cho *mọi thứ*.
@@ -98,7 +98,7 @@ leeway trên `exp` kéo dài tuổi thọ của một token đã hết hạn th�
 khoảng đó — điều này ổn ở mức 60 giây và không ổn ở mức một giờ.
 
 Gotcha: leeway che giấu clock drift chứ không sửa nó. Theo dõi độ lệch thực
-tế (`08-observability/02-metrics.md`); một server trôi vượt quá leeway của
+tế ([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)); một server trôi vượt quá leeway của
 bạn sẽ fail mọi token cùng một lúc, và bạn muốn có cảnh báo trước khi điều
 đó xảy ra.
 
@@ -120,7 +120,7 @@ mặc định `exp` 24 giờ nghĩa là một cửa sổ bị lộ 24 giờ.
 ## Practice
 Làm lần lượt theo thứ tự sau.
 
-1. Trong `proxy`, thêm JWT validation bằng `jsonwebtoken`: thuật toán được
+1. Trong [`proxy`](../../proxy), thêm JWT validation bằng `jsonwebtoken`: thuật toán được
    ghim cứng, signature + `exp`/`aud`, ngược lại trả 401. **Xong khi** một
    token hợp lệ đi qua và một token có payload bị sửa thì fail.
 2. Tự dàn dựng cuộc tấn công algorithm-confusion nhắm vào chính endpoint
@@ -128,7 +128,7 @@ Làm lần lượt theo thứ tự sau.
    HS256 secret, và gửi đi. **Xong khi** nó bị từ chối — và, để chứng minh
    bài test là thật, tạm thời cấu hình validator để chấp nhận `alg` của
    chính token và xem token giả mạo thành công.
-3. Đưa vào các giá trị `kid` chứa `../` và một `jku` trỏ tới một URL bạn
+3. Đưa vào các giá trị `kid` chứa [`../`](../..) và một `jku` trỏ tới một URL bạn
    kiểm soát. **Xong khi** không cái nào được tin — `kid` chỉ resolve vào
    tập key cố định của bạn và không có outbound fetch nào cho `jku`.
 4. Thêm việc fetch JWKS với tra cứu theo `kid`, giới hạn tốc độ refetch, và

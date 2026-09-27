@@ -1,9 +1,9 @@
 # Raft
 
 Leader-based consensus — how a set of nodes agree on an ordered log of
-changes even as some fail. Out of scope for the single-instance `proxy/`;
+changes even as some fail. Out of scope for the single-instance [`proxy/`](../../proxy);
 read this only if you extend toward a multi-node control plane or cache
-(`18-distributed/04-distributed-cache.md`).
+([`18-distributed/04-distributed-cache.md`](04-distributed-cache.md)).
 
 ## What to learn
 
@@ -24,7 +24,7 @@ separately:
   increasing number). Followers that hear nothing from a leader before a
   randomized timeout become candidates and request votes; a candidate with
   a majority becomes leader. Randomized timeouts are what break symmetry so
-  two candidates rarely tie — see `18-distributed/03-leader-election.md`.
+  two candidates rarely tie — see [`18-distributed/03-leader-election.md`](03-leader-election.md).
 - **Log replication.** Clients send changes to the leader, which appends
   them to its log and replicates to followers. An entry is *committed* once
   a majority have stored it; only then is it applied to the state machine
@@ -64,10 +64,10 @@ recognizing when you do not.
 ### When you almost certainly do not need it
 Most "distributed" needs a proxy has are weaker than consensus and have
 cheaper solutions: shared rate-limit counters use Redis
-(`07-security/07-ratelimit.md`), not Raft; membership/discovery uses gossip
-(`18-distributed/02-gossip.md`) or an existing registry
-(`06-proxy/07-service-discovery.md`); a shared cache uses consistent hashing
-(`13-algorithms/consistent-hash.md`) and tolerates inconsistency. Reach for
+([`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md)), not Raft; membership/discovery uses gossip
+([`18-distributed/02-gossip.md`](02-gossip.md)) or an existing registry
+([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)); a shared cache uses consistent hashing
+([`13-algorithms/consistent-hash.md`](../13-algorithms/consistent-hash.md)) and tolerates inconsistency. Reach for
 consensus only when nodes must *never* disagree on an ordered history.
 
 ## Practice
@@ -80,11 +80,11 @@ consensus only when nodes must *never* disagree on an ordered history.
    commit, which cannot, and why does the minority side refuse rather than
    fork history?
 4. For each "distributed" need in this handbook — rate limiting
-   (`07-security/07-ratelimit.md`), service discovery
-   (`06-proxy/07-service-discovery.md`), shared cache
-   (`18-distributed/04-distributed-cache.md`) — decide whether it truly needs
+   ([`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md)), service discovery
+   ([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)), shared cache
+   ([`18-distributed/04-distributed-cache.md`](04-distributed-cache.md)) — decide whether it truly needs
    consensus or a weaker mechanism, and justify each.
-5. If and only if you extend `proxy/` to a multi-node control plane: stand
+5. If and only if you extend [`proxy/`](../../proxy) to a multi-node control plane: stand
    up a 3-node cluster with `openraft` storing the routing config, and kill
    the leader under load to watch election and continuity — do not
    hand-roll the algorithm.

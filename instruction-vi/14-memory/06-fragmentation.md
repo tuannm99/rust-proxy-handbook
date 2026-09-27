@@ -33,7 +33,7 @@ Allocator làm tròn allocation lên một size class (8, 16, 32, 48, 64, 80,
 Thường là nhỏ nhặt — trừ khi struct trên hot path của bạn nằm ngay sau một
 ranh giới. Một connection struct 129 byte chiếm một slot 160 byte, lãng
 phí 24% ở quy mô 100 nghìn connection. Đây là lý do vì sao việc sắp xếp
-lại field của struct (`17-performance/04-memory-layout.md`) không phải
+lại field của struct ([`17-performance/04-memory-layout.md`](../17-performance/04-memory-layout.md)) không phải
 micro-optimization ở quy mô lớn: thu nhỏ một struct xuống dưới ranh giới
 size-class là một chiến thắng dạng bậc thang, không phải tuyến tính.
 
@@ -44,7 +44,7 @@ hoặc `madvise(MADV_DONTNEED)`), điều này đòi hỏi vùng đó phải ho�
 trống. Một object sống lâu neo giữ một vùng 4 MB giữ cả 4 MB đó ở trạng
 thái resident.
 
-Đây chính xác là vấn đề co lại của slab trong `13-algorithms/slab.md`,
+Đây chính xác là vấn đề co lại của slab trong [`13-algorithms/slab.md`](../13-algorithms/slab.md),
 được tổng quát hóa: bất kỳ cấu trúc nào tăng lên đỉnh rồi giữ nguyên dung
 lượng đó sẽ ghim luôn các vùng của allocator theo nó.
 
@@ -52,7 +52,7 @@ Gotcha: malloc của glibc đặc biệt miễn cưỡng trong việc trả lạ
 các arena per-thread của nó nhân hiệu ứng này lên — mỗi thread có arena
 riêng, nên một proxy với 16 worker thread có thể giữ 16 mức đỉnh riêng
 biệt. `MALLOC_ARENA_MAX` giới hạn điều này, và chuyển sang jemalloc hay
-mimalloc (`02-linux/09-memory.md` nói về việc đổi `#[global_allocator]`)
+mimalloc ([`02-linux/09-memory.md`](../02-linux/09-memory.md) nói về việc đổi `#[global_allocator]`)
 thường giúp ích nhiều hơn bất kỳ việc tune glibc nào.
 
 ### Các cách sửa mang tính cấu trúc
@@ -75,7 +75,7 @@ Gotcha: pooling có failure mode riêng của nó — một pool tăng để ph�
 một đợt traffic rồi không bao giờ co lại *chính là* mức đỉnh, chỉ là giờ
 nằm trong tầm kiểm soát của bạn thay vì của allocator. Đó thường là đánh
 đổi tốt hơn (có giới hạn và quan sát được), nhưng chỉ khi bạn thực sự giới
-hạn nó và export kích thước như một metric (`08-observability/02-metrics.md`).
+hạn nó và export kích thước như một metric ([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)).
 
 ### Đo lường nó
 Con số cần theo dõi là tỷ lệ giữa RSS và số byte mà ứng dụng của bạn tin
@@ -93,8 +93,8 @@ toàn bộ vấn đề là nó phát triển qua nhiều ngày.
 3. Đo việc làm tròn size-class: cấp phát struct 64, 65, 128, và 129 byte
    100 nghìn lần mỗi loại và so sánh mức tăng RSS thực tế với con số bạn
    kỳ vọng theo tính toán.
-4. Instrument `proxy` với một gauge allocated-vs-resident và chạy traffic
-   của `12-testing/01-load-testing.md` vào nó trong thời gian dài; theo
+4. Instrument [`proxy`](../../proxy) với một gauge allocated-vs-resident và chạy traffic
+   của [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md) vào nó trong thời gian dài; theo
    dõi tỷ lệ theo thời gian thay vì tại một thời điểm duy nhất.
 5. Thêm một buffer pool cho buffer I/O của request, chạy lại bước 4, và so
    sánh độ trôi của tỷ lệ có và không có pooling.

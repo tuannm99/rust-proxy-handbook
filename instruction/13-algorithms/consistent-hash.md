@@ -1,6 +1,6 @@
 # Consistent Hashing
 
-`06-proxy/02-load-balancer.md` covers the ring lookup and why removal remaps
+[`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md) covers the ring lookup and why removal remaps
 only ~1/N of keys. This file covers what that summary skips: virtual node
 sizing, the balance problem, and bounded loads.
 
@@ -39,8 +39,8 @@ struct Ring {
 Gotcha: memory and rebuild cost are `O(upstreams × V)`. At 1000 upstreams
 × 200 vnodes that is 200k `BTreeMap` entries rebuilt on every membership
 change — which is when rendezvous hashing
-(`13-algorithms/rendezvous-hash.md`, no structure to rebuild) or Maglev
-(`13-algorithms/maglev.md`, O(1) lookup) becomes the better answer.
+([`13-algorithms/rendezvous-hash.md`](rendezvous-hash.md), no structure to rebuild) or Maglev
+([`13-algorithms/maglev.md`](maglev.md), O(1) lookup) becomes the better answer.
 
 ### Weights
 Weighted consistent hashing is expressed as vnode count: a weight-3
@@ -75,7 +75,7 @@ least-connection or smooth WRR reacts to real load, and consistent hashing
 deliberately does not.
 
 ## Practice
-1. In `labs/06-load-balancer`, build the ring with V=1 and hash 100k keys
+1. In [`labs/06-load-balancer`](../../labs/06-load-balancer), build the ring with V=1 and hash 100k keys
    across 5 upstreams; record the per-upstream percentages and the ratio
    between the busiest and idlest.
 2. Repeat at V = 10, 100, 500. Plot max/min ratio against V and confirm it
@@ -83,7 +83,7 @@ deliberately does not.
    justify it.
 3. Measure ring build time and memory at 1000 upstreams × 200 vnodes, then
    compare against the HRW implementation from
-   `13-algorithms/rendezvous-hash.md` for the same pool.
+   [`13-algorithms/rendezvous-hash.md`](rendezvous-hash.md) for the same pool.
 4. Implement bounded loads: cap each upstream at 1.25× average and walk on
    overflow. Send 50% of traffic to one hot key and confirm the load
    spreads instead of pinning one upstream.

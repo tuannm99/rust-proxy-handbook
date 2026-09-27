@@ -4,7 +4,7 @@
 
 ### `multi_thread` vs. `current_thread`
 `#[tokio::main]` mặc định dùng runtime work-stealing multi-threaded từ
-`01-tokio.md`, với số worker mặc định bằng số CPU core.
+[`01-tokio.md`](01-tokio.md), với số worker mặc định bằng số CPU core.
 `#[tokio::main(flavor = "current_thread")]` chạy mọi thứ trên đúng một
 thread gọi, hoàn toàn không có work-stealing. Một proxy hầu như luôn
 muốn `multi_thread` ở production (nó rải kết nối qua các core), nhưng
@@ -24,7 +24,7 @@ Mọi future spawn bằng `tokio::spawn` phải là `Send`, vì scheduler có th
 di chuyển nó giữa các worker thread. `tokio::task::LocalSet` (đi kèm một
 runtime `current_thread`, hoặc được vào qua `LocalSet::run_until`) cho
 bạn `spawn_local` một future *không* `Send` — hữu ích khi bọc một thư
-viện C không thread-safe qua FFI (`03-rust/14-ffi-and-abi.md`), hoặc tái
+viện C không thread-safe qua FFI ([`03-rust/14-ffi-and-abi.md`](../03-rust/14-ffi-and-abi.md)), hoặc tái
 sử dụng một cấu trúc dựa trên `Rc<RefCell<_>>` mà không phải trả giá cho
 `Arc<Mutex<_>>`.
 
@@ -40,7 +40,7 @@ ban đầu không `Send`, thường có nghĩa là có một `Rc`/`RefCell` ẩn
 nên là `Arc`/`Mutex`.
 
 ### Định cỡ blocking pool
-`spawn_blocking` (`04-runtime/01-tokio.md`) chạy việc trên một thread pool
+`spawn_blocking` ([`04-runtime/01-tokio.md`](01-tokio.md)) chạy việc trên một thread pool
 riêng, được định cỡ bằng `max_blocking_threads` (mặc định 512) — rộng
 rãi, vì blocking thread phần lớn ngồi idle chờ I/O hoặc một mutex thay vì
 đốt CPU, nên có nhiều thread như vậy là rẻ. Điều này không liên quan tới
@@ -52,12 +52,12 @@ tốt hơn.
 ### Quan sát một runtime đang chạy: tokio-console và metrics
 `tokio-console` (một TUI kết nối qua crate `console-subscriber`) cho thấy
 số task đang sống và thời lượng poll theo thời gian thực, và làm cho bug
-gọi-blocking-trong-code-async (failure mode trung tâm của `01-tokio.md`)
+gọi-blocking-trong-code-async (failure mode trung tâm của [`01-tokio.md`](01-tokio.md))
 hiện rõ trực tiếp thay vì phải suy đoán từ triệu chứng.
 `tokio::runtime::Handle::metrics()` (một tập con stable, nhiều hơn dưới
 `tokio_unstable`) cho quyền truy cập lập trình vào số lần ăn cắp của
 worker, độ sâu queue, và busy time — cùng dữ liệu mà
-`08-observability/02-metrics.md` muốn export dưới dạng Prometheus gauge
+[`08-observability/02-metrics.md`](../08-observability/02-metrics.md) muốn export dưới dạng Prometheus gauge
 cho một proxy đang chạy.
 
 ### Chọn `worker_threads` một cách có chủ đích
@@ -69,7 +69,7 @@ khoảng trống trên một host dùng chung — bằng cách đặt `worker_th
 bằng số core trừ một.
 
 ## Practice
-1. Chạy `labs/05-reverse-proxy` dưới cả `flavor = "multi_thread"` (mặc
+1. Chạy [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) dưới cả `flavor = "multi_thread"` (mặc
    định) và `flavor = "current_thread"`, load-test cả hai, và đo khác
    biệt thông lượng dưới các kết nối đồng thời.
 2. Xây một ví dụ nhỏ dùng `LocalSet` + `spawn_local` với trạng thái chia
@@ -79,7 +79,7 @@ bằng số core trừ một.
    tình gọi một hàm blocking bên trong một handler async — tìm nó trong
    console qua thời lượng poll của nó.
 4. In số lần ăn cắp của worker từ `tokio::runtime::Handle::metrics()` cho
-   `labs/05-reverse-proxy` dưới tải, và nối một đợt tăng đột biến trong
+   [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) dưới tải, và nối một đợt tăng đột biến trong
    số lần ăn cắp với việc phân phối kết nối không đều giữa các worker.
 5. Giải thích bằng lời của bạn vì sao đặt `worker_threads` vượt xa số
-   core sẽ làm `proxy` chậm hơn, không nhanh hơn, dưới tải bền vững.
+   core sẽ làm [`proxy`](../../proxy) chậm hơn, không nhanh hơn, dưới tải bền vững.

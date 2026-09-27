@@ -14,7 +14,7 @@ changes, backward-compatible message formats), not something the proxy
 can provide.
 
 ### Implementing weighted traffic splitting at the proxy layer
-This builds directly on `06-proxy/02-load-balancer.md`: instead of one upstream pool, the router maintains two pools (stable, canary) with a weight, and picks per-request using weighted random selection or a deterministic hash (so the same client consistently lands on the same version — useful for session-sensitive testing).
+This builds directly on [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md): instead of one upstream pool, the router maintains two pools (stable, canary) with a weight, and picks per-request using weighted random selection or a deterministic hash (so the same client consistently lands on the same version — useful for session-sensitive testing).
 
 ```rust
 fn pick_pool(stable_weight: u32, canary_weight: u32) -> Pool {
@@ -25,7 +25,7 @@ fn pick_pool(stable_weight: u32, canary_weight: u32) -> Pool {
 Gotcha: weighted-random splitting means a single client's requests can bounce between stable and canary across requests — fine for stateless APIs, broken for anything session-affine, where you need sticky routing (hash on a cookie/client-id) instead.
 
 Gotcha: sticky-by-hash only works if every proxy instance computes the
-same hash. A per-process random seed (`13-algorithms/hashmap.md`'s
+same hash. A per-process random seed ([`13-algorithms/hashmap.md`](../13-algorithms/hashmap.md)'s
 `DefaultHasher` warning) means instance A sends a user to canary and
 instance B sends the same user to stable — producing exactly the
 version-flapping that stickiness was supposed to prevent. Use a
@@ -36,11 +36,11 @@ users.
 Gotcha: a client bouncing between versions is worse than it sounds when
 the versions differ in behavior — a browser that loads `index.html` from
 canary and its hashed JS bundle from stable gets a 404
-(`05-http-stack/05-static.md`'s immutable assets), and the user sees a broken
+([`05-http-stack/05-static.md`](../05-http-stack/05-static.md)'s immutable assets), and the user sees a broken
 page rather than a clean error.
 
 ### Automated rollback triggers
-A canary is only useful if something is watching it. Compare the canary pool's error rate / p99 latency (from `08-observability/02-metrics.md`) against the stable pool's, over the same time window, and automatically shift weight back to 0% if the canary's error rate exceeds a threshold (e.g. 2x stable's) for N consecutive intervals. Manual-only rollback is strictly worse — humans notice a canary regression slower than a metrics threshold does.
+A canary is only useful if something is watching it. Compare the canary pool's error rate / p99 latency (from [`08-observability/02-metrics.md`](../08-observability/02-metrics.md)) against the stable pool's, over the same time window, and automatically shift weight back to 0% if the canary's error rate exceeds a threshold (e.g. 2x stable's) for N consecutive intervals. Manual-only rollback is strictly worse — humans notice a canary regression slower than a metrics threshold does.
 
 ### The statistics problem nobody warns you about
 A 1% canary receives 1% of the traffic, and therefore 1% of the *samples*.
@@ -52,8 +52,8 @@ everyone to ignore it.
 
 Two guards, both required:
 - **Minimum sample count** before any comparison is evaluated — the same
-  floor as the alerting ratio in `08-observability/06-alerting.md` and the
-  rate-based circuit breaker in `06-proxy/05-retry.md`. Below it, the correct
+  floor as the alerting ratio in [`08-observability/06-alerting.md`](../08-observability/06-alerting.md) and the
+  rate-based circuit breaker in [`06-proxy/05-retry.md`](../06-proxy/05-retry.md). Below it, the correct
   verdict is "not enough data," not "healthy" and not "failing."
 - **Compare like with like.** Canary and stable must be measured over the
   same window, and ideally over the same traffic mix — if your canary
@@ -68,15 +68,15 @@ latency comparisons.
 
 ### What a canary cannot catch
 Worth knowing so a green canary isn't mistaken for proof:
-- **Resource leaks.** A memory leak (`14-memory/06-fragmentation.md`) or fd
+- **Resource leaks.** A memory leak ([`14-memory/06-fragmentation.md`](../14-memory/06-fragmentation.md)) or fd
   leak takes 100x longer to manifest at 1% traffic. A canary that runs for
   an hour tells you nothing about a leak that kills a full-traffic
   instance in a day.
 - **Load-dependent failures.** Lock contention, connection pool exhaustion
-  (`06-proxy/01-upstream.md`), and thundering herds only appear near capacity
+  ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)), and thundering herds only appear near capacity
   — which a 1% canary is nowhere near.
 - **Time-dependent bugs.** A daily batch, a certificate expiry
-  (`01-network/13-tls.md`), a month-boundary calculation.
+  ([`01-network/13-tls.md`](../01-network/13-tls.md)), a month-boundary calculation.
 - **Anything downstream.** If the canary shares upstreams and a database
   with stable, it can't reveal a problem in the shared dependency — and
   can *cause* one that harms stable traffic too.
@@ -87,10 +87,10 @@ release after it's fully rolled out — most releases that fail, fail after
 the deploy is declared complete.
 
 ### Where this depends on service discovery
-If upstream instances are registered dynamically (`06-proxy/07-service-discovery.md`), tag each instance with a version/pool label at registration time so the router can query "give me healthy stable instances" vs "give me healthy canary instances" instead of hardcoding addresses.
+If upstream instances are registered dynamically ([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)), tag each instance with a version/pool label at registration time so the router can query "give me healthy stable instances" vs "give me healthy canary instances" instead of hardcoding addresses.
 
 Gotcha: canary pools are small — often a single instance — so the
-panic-threshold and health-check logic from `06-proxy/03-healthcheck.md`
+panic-threshold and health-check logic from [`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)
 behaves differently there. One unhealthy instance in a 20-instance stable
 pool is a non-event; one unhealthy instance in a 1-instance canary pool is
 100% of that pool, and your fail-open panic mode may route *stable*
@@ -99,9 +99,9 @@ traffic to it. Evaluate health per pool, not across the merged set.
 ## Practice
 Build these in order.
 
-1. Extend `labs/06-load-balancer` (or `proxy`) to support two named pools
+1. Extend [`labs/06-load-balancer`](../../labs/06-load-balancer) (or [`proxy`](../../proxy)) to support two named pools
    with configurable weights, sourced from config
-   (`09-architecture/03-config.md`). **Done when** weights can change without
+   ([`09-architecture/03-config.md`](03-config.md)). **Done when** weights can change without
    a restart.
 2. Implement weighted-random selection. **Done when** a test over 100k
    requests shows the split within a percent of the configured weight.
@@ -115,7 +115,7 @@ Build these in order.
    a canary at 1% weight with 3 errors in a minute does *not* roll back,
    and a canary genuinely returning 50% errors does — the first case is
    the one that proves the guard works.
-6. Simulate a bad canary under load (`12-testing/01-load-testing.md`) with
+6. Simulate a bad canary under load ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)) with
    one upstream returning 500s. **Done when** automatic rollback fires
    within your target window and the total number of client-visible errors
    is bounded by the canary weight, not by the time a human took to react.

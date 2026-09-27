@@ -74,21 +74,21 @@ that explain *why*, and for a proxy the interesting ones are all about
 decisions it made:
 
 - which upstream was selected, and by which algorithm
-  (`06-proxy/02-load-balancer.md`)
+  ([`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md))
 - how long connection acquisition took vs the upstream's own response time
-  (`06-proxy/01-upstream.md`) — these are frequently confused in incident
+  ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)) — these are frequently confused in incident
   reviews and the split settles it
-- retry count and whether a circuit was open (`06-proxy/05-retry.md`)
-- cache hit/miss/stale (`05-http-stack/07-cache.md`)
+- retry count and whether a circuit was open ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md))
+- cache hit/miss/stale ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md))
 - whether the request was rate-limited or shed, and by which rule
-- time spent in WAF inspection (`07-security/06-waf.md`)
+- time spent in WAF inspection ([`07-security/06-waf.md`](../07-security/06-waf.md))
 
 Child spans for the phases (TLS handshake, WAF, upstream call) make the
 waterfall self-explanatory — someone reading the trace should be able to
 see where the time went without knowing your code.
 
 Gotcha: span attributes are subject to the same rules as log fields
-(`08-observability/01-logging.md`) — no credentials, no raw bodies, no
+([`08-observability/01-logging.md`](01-logging.md)) — no credentials, no raw bodies, no
 unbounded attacker-controlled strings. Traces are usually more widely
 readable than logs, not less.
 
@@ -111,9 +111,9 @@ implications, so make it deliberately.
 Gotcha: an attacker who controls `traceparent` controls your sampling
 decision, and can force 100% sampling by setting the sampled flag on every
 request — turning your tracing pipeline into an amplification target
-(`07-security/09-ddos.md`). Rate-limit the honoring of client-set sampling
+([`07-security/09-ddos.md`](../07-security/09-ddos.md)). Rate-limit the honoring of client-set sampling
 from untrusted clients, or ignore the flag except from trusted peers
-(`07-security/08-ip-filtering.md`'s trust boundary again).
+([`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)'s trust boundary again).
 
 ### Don't let telemetry take down the proxy
 The exporter is a network client in your request path's shadow, and it
@@ -126,19 +126,19 @@ fails like one. Three properties to verify rather than assume:
   during exactly the incident you're trying to investigate.
 - **Shutdown must flush.** Spans buffered when the process exits are lost
   unless the shutdown path drains them — tie this into
-  `09-architecture/04-graceful-shutdown.md` rather than leaving it to a
+  [`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md) rather than leaving it to a
   destructor that may not run.
 
 ### Spans vs tracing crate `Span`s
-Confusingly, Rust's `tracing` crate calls its structured logging scopes "spans" too — and they compose well with OpenTelemetry: `tracing-opentelemetry` bridges `tracing::Span`s into OTel spans that get exported to a collector (Jaeger/Tempo/Honeycomb), so the same instrumentation you added for `08-observability/01-logging.md` doubles as trace data.
+Confusingly, Rust's `tracing` crate calls its structured logging scopes "spans" too — and they compose well with OpenTelemetry: `tracing-opentelemetry` bridges `tracing::Span`s into OTel spans that get exported to a collector (Jaeger/Tempo/Honeycomb), so the same instrumentation you added for [`08-observability/01-logging.md`](01-logging.md) doubles as trace data.
 
 ## Practice
 Build these in order.
 
-1. In `labs/16-opentelemetry`, get `tracing-opentelemetry` plus an OTLP
+1. In [`labs/16-opentelemetry`](../../labs/16-opentelemetry), get `tracing-opentelemetry` plus an OTLP
    exporter emitting one span to a local collector (Jaeger is enough).
    **Done when** the span appears in the UI.
-2. Reproduce the `enter()`-across-`.await` bug on purpose in `proxy`:
+2. Reproduce the `enter()`-across-`.await` bug on purpose in [`proxy`](../../proxy):
    instrument a request handler with a held guard and run concurrent
    requests. **Done when** you can see spans nested under the wrong
    parent — then switch to `.instrument()` / `#[instrument]`, enable
@@ -148,7 +148,7 @@ Build these in order.
    ID) is rejected and replaced rather than panicking or propagating, and
    a valid one produces a correct parent/child relationship.
 4. Run the proxy in front of two chained instances of
-   `labs/02-http-server` and verify end-to-end. **Done when** one trace ID
+   [`labs/02-http-server`](../../labs/02-http-server) and verify end-to-end. **Done when** one trace ID
    connects spans from all three processes in the UI.
 5. Add proxy-decision attributes and phase child spans. **Done when** a
    single trace shows connection-acquisition time separately from upstream

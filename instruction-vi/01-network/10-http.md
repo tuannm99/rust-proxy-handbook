@@ -15,7 +15,7 @@ server chưa bao giờ xác nhận idempotency là vi phạm hợp đồng.
 ### Method và idempotency
 GET/HEAD/PUT/DELETE là idempotent (lặp lại có cùng hiệu ứng như làm một
 lần); POST/PATCH nhìn chung thì không. Đây là yếu tố quyết định liệu logic
-retry của proxy bạn (`06-proxy/05-retry.md`) có an toàn để áp dụng tự động
+retry của proxy bạn ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)) có an toàn để áp dụng tự động
 hay cần một cơ chế opt-in tường minh/idempotency key.
 
 ### Status code mà một proxy thực sự tạo ra
@@ -24,7 +24,7 @@ về backend: `502 Bad Gateway` (upstream không thể tiếp cận/response
 không hợp lệ), `503 Service Unavailable` (không có upstream khỏe mạnh,
 hoặc load-shedding có chủ đích), `504 Gateway Timeout` (upstream quá
 chậm), `429 Too Many Requests` (rate limit, xem
-`07-security/07-ratelimit.md`). Trả về `500` cho những trường hợp này là
+[`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md)). Trả về `500` cho những trường hợp này là
 một lỗi phổ biến của người mới — nó che giấu việc lỗi là từ proxy của bạn
 hay từ backend.
 
@@ -51,7 +51,7 @@ bằng một chunk kích thước 0. Một message không được vừa chỉ �
 nhận phải từ chối hoặc chuẩn hóa sự mập mờ đó. Đây chính xác là sự mập mờ
 mà các tấn công request-smuggling khai thác khi một parser front-end và
 back-end bất đồng về header nào thắng — xem
-`07-security/05-request-smuggling.md`.
+[`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md).
 
 ## Practice
 
@@ -61,11 +61,11 @@ back-end bất đồng về header nào thắng — xem
    `Transfer-Encoding: chunked` tới một test server bạn kiểm soát và quan
    sát nó bị từ chối như thế nào (hoặc không — thử nhiều hơn một HTTP
    library).
-3. Trong `labs/02-http-server`, implement việc bóc header hop-by-hop
+3. Trong [`labs/02-http-server`](../../labs/02-http-server), implement việc bóc header hop-by-hop
    đúng cách cho cả request lẫn response.
-4. Trong `labs/05-reverse-proxy`, trả về `502`/`503`/`504` khác nhau
+4. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), trả về `502`/`503`/`504` khác nhau
    tương ứng cho "upstream từ chối kết nối", "không có upstream khỏe
    mạnh", và "upstream timeout".
-5. Đọc `05-http-stack/01-parser.md` và `07-security/05-request-smuggling.md`
+5. Đọc [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) và [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md)
    để nối phần thảo luận về framing của file này với việc một parser phải
    thực thi nó ra sao.

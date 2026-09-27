@@ -1,8 +1,8 @@
 # Byte Streams, Packets, and Connections
 
-Một phần của chuỗi fundamentals từ-con-số-0 — xem `01-network/01-fundamentals.md`
+Một phần của chuỗi fundamentals từ-con-số-0 — xem [`01-network/01-fundamentals.md`](01-fundamentals.md)
 để có index đầy đủ. File này nói về mental model quan trọng nhất cho
-`labs/00-tcp-server` và `labs/01-http-parser`.
+[`labs/00-tcp-server`](../../labs/00-tcp-server) và [`labs/01-http-parser`](../../labs/01-http-parser).
 
 ## What to learn
 
@@ -53,18 +53,18 @@ kết nối đó trong suốt vòng đời của nó — sequence number, dữ l
 ack, kích thước buffer. Chính trạng thái này làm cho reliability và thứ tự
 trở nên khả thi, và cũng chính nó làm cho một kết nối TCP trở thành một
 *tài nguyên* thật, có trạng thái, trên cả hai máy (xem
-`16-kernel/03-tcp-stack.md` để biết trạng thái đó tốn kém gì ở quy mô lớn,
-và `02-addressing.md` để biết về 4-tuple định danh nó).
+[`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md) để biết trạng thái đó tốn kém gì ở quy mô lớn,
+và [`02-addressing.md`](02-addressing.md) để biết về 4-tuple định danh nó).
 
 UDP là **connectionless**: một datagram cứ thế được gửi đi, không
 handshake, không acknowledgment, không đảm bảo thứ tự, không tự động
 retransmit. Nếu bạn cần những tính chất đó trên UDP, tầng ứng dụng của bạn
 phải tự xây chúng. Nghe có vẻ tệ hơn hẳn, và với một request/response
 thông thường thì đúng là vậy — nhưng đó cũng là lý do vì sao **QUIC**
-(tầng transport bên dưới HTTP/3, xem `01-network/12-http3.md`) được xây
+(tầng transport bên dưới HTTP/3, xem [`01-network/12-http3.md`](12-http3.md)) được xây
 trên UDP thay vì TCP: reliability trong kernel, một-kích-cỡ-cho-tất-cả của
 TCP tạo ra head-of-line blocking mà HTTP/2 phải chịu ở tầng multiplexed
-stream (`01-network/11-http2.md`), và QUIC tái hiện thực reliability
+stream ([`01-network/11-http2.md`](11-http2.md)), và QUIC tái hiện thực reliability
 *theo từng stream*, ở userspace, chính là để tránh điều đó — một thứ bạn
 không thể làm trên nền TCP vì đảm bảo về thứ tự của TCP áp dụng cho cả
 kết nối, không phải cho từng logical stream.
@@ -74,11 +74,11 @@ Một "handshake" là bất kỳ cuộc trao đổi nào mà cả hai bên đồ
 thái chung trước khi dữ liệu thật chảy — bạn sẽ gặp từ này ba lần riêng
 biệt trong thư mục này, mỗi lần là một instance khác nhau của cùng một ý
 tưởng:
-- **3-way handshake của TCP** (`08-tcp.md`) đồng ý về trạng thái kết nối
+- **3-way handshake của TCP** ([`08-tcp.md`](08-tcp.md)) đồng ý về trạng thái kết nối
   và sequence number ban đầu.
-- **Handshake của TLS** (`13-tls.md`) đồng ý về encryption key và
+- **Handshake của TLS** ([`13-tls.md`](13-tls.md)) đồng ý về encryption key và
   protocol version/cipher nào sẽ dùng.
-- **Handshake `Upgrade` của HTTP/1.1** (`05-http-stack/09-websocket.md`)
+- **Handshake `Upgrade` của HTTP/1.1** ([`05-http-stack/09-websocket.md`](../05-http-stack/09-websocket.md))
   đồng ý dừng nói HTTP và bắt đầu nói một protocol khác trên cùng kết nối.
 
 Nhận ra "đây là một handshake" cho bạn biết nên kỳ vọng gì: một cuộc trao
@@ -90,17 +90,17 @@ không (đây là nơi rất nhiều bug thật sự trú ngụ).
 Sự khác biệt ở tầng kết nối phía trên (TCP theo dõi trạng thái, UDP thì
 không) có một tiếng vọng ở tầng application đáng nêu riêng: các protocol
 **stateless** (HTTP/1.1 request/response thuần túy, ở mức ngữ nghĩa — xem
-`01-network/10-http.md`) xử lý mỗi request độc lập, không nhớ gì về những
+[`01-network/10-http.md`](10-http.md)) xử lý mỗi request độc lập, không nhớ gì về những
 request trước; các tương tác **stateful** (một phiên WebSocket, một
 session đã xác thực theo dõi qua cookie) đòi hỏi server phải nhớ điều gì
 đó giữa các lần trao đổi. Một proxy load-balance các request stateless có
 thể gửi mỗi request đi bất cứ đâu (round robin của
-`06-proxy/02-load-balancer.md`); một proxy đứng trước các tương tác
+[`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md)); một proxy đứng trước các tương tác
 stateful cần affinity (consistent hashing) hoặc trạng thái phải nằm ở một
 nơi dùng chung, không phải trên một instance riêng lẻ.
 
 ## Practice
-1. Trong `labs/00-tcp-server`, viết một test client gửi một payload
+1. Trong [`labs/00-tcp-server`](../../labs/00-tcp-server), viết một test client gửi một payload
    10.000 byte trong một lệnh gọi `write_all` duy nhất, nhưng để *server*
    đọc bằng buffer 256 byte và log xem cần bao nhiêu lệnh gọi `read()` để
    nhận hết. Xác nhận con số đó không đúng bằng `10000 / 256`, và giải
@@ -113,6 +113,6 @@ nơi dùng chung, không phải trên một instance riêng lẻ.
 3. Viết ra, mỗi ý một câu, trạng thái nào một kết nối TCP đang theo dõi
    mà một "kết nối" UDP (thực ra chỉ là một 4-tuple cố định bạn chọn tái
    sử dụng) thì không.
-4. Đọc mục 3-way handshake trong `01-network/08-tcp.md` và mục handshake
-   trong `01-network/13-tls.md` liền nhau; liệt kê mỗi cái đang đồng ý về
+4. Đọc mục 3-way handshake trong [`01-network/08-tcp.md`](08-tcp.md) và mục handshake
+   trong [`01-network/13-tls.md`](13-tls.md) liền nhau; liệt kê mỗi cái đang đồng ý về
    điều gì, dùng cách diễn giải từ file này.

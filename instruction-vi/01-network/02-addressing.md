@@ -1,6 +1,6 @@
 # Addressing: IP, Ports, CIDR, NAT
 
-Một phần của chuỗi fundamentals từ-con-số-0 — xem `01-network/01-fundamentals.md`
+Một phần của chuỗi fundamentals từ-con-số-0 — xem [`01-network/01-fundamentals.md`](01-fundamentals.md)
 để có index đầy đủ. File này nói về cách một process cụ thể trên một máy
 cụ thể được định danh đủ rõ để một packet có thể tìm thấy nó.
 
@@ -32,7 +32,7 @@ giải phóng khi kết nối đóng. Gotcha, và là một gotcha thật trong 
 một proxy mở nhiều kết nối outbound ngắn hạn tới cùng một upstream có thể
 cạn kiệt pool ephemeral port của chính nó (mặc định khoảng 28,000 port khả
 dụng) nhanh hơn tốc độ `TIME_WAIT` giải phóng chúng — đây là lý do thực tế
-vì sao `06-proxy/01-upstream.md` và `01-network/08-tcp.md` nhấn mạnh việc
+vì sao [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md) và [`01-network/08-tcp.md`](08-tcp.md) nhấn mạnh việc
 tái sử dụng kết nối thay vì dial mới cho mỗi request.
 
 ### Một socket, chính xác là gì
@@ -41,7 +41,7 @@ một đầu của một kết nối. Một kết nối TCP thực ra được �
 giá trị cùng nhau (gọi là "4-tuple"): source IP, source port, destination
 IP, destination port. Đó là lý do một server process lắng nghe trên một
 port có thể phục vụ hàng nghìn client đồng thời — 4-tuple của mỗi client
-khác nhau dù IP và port của server là cố định. `01-network/07-socket.md`
+khác nhau dù IP và port của server là cố định. [`01-network/07-socket.md`](07-socket.md)
 nói về API thực sự tạo ra một socket.
 
 ### CIDR notation: mô tả một dải địa chỉ
@@ -59,8 +59,8 @@ do (phần "host").
 IPv6 address là 128 bit, viết dưới dạng tám nhóm chữ số hex
 (`2001:db8::1`, với `::` gom một chuỗi nhóm toàn số 0), và dùng cùng cú
 pháp dấu gạch chéo (`2001:db8::/64`). Bạn sẽ cần dùng thành thạo cái này
-cho `07-security/08-ip-filtering.md` (allow/deny list) và
-`07-security/07-ratelimit.md` (vì sao key một rate limiter theo cả một IPv6
+cho [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md) (allow/deny list) và
+[`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) (vì sao key một rate limiter theo cả một IPv6
 address đầy đủ trao cho attacker 2^64 danh tính miễn phí trong chính `/64`
 của họ — nói kỹ ở đó).
 
@@ -83,8 +83,8 @@ công cộng. Hai dạng quan trọng ở đây:
 
 Vì sao điều này quan trọng với riêng một proxy: đến lúc một kết nối tới
 được listening socket của bạn, `peer_addr()` có thể đã cách client thật
-vài hop NAT — đây *chính xác* là vấn đề mà `01-network/14-proxy-protocol.md`
-và phần thảo luận `X-Forwarded-For` trong `07-security/08-ip-filtering.md`
+vài hop NAT — đây *chính xác* là vấn đề mà [`01-network/14-proxy-protocol.md`](14-proxy-protocol.md)
+và phần thảo luận `X-Forwarded-For` trong [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)
 tồn tại để giải quyết, và đó là lý do "cứ tin vào peer address của socket"
 là ngây thơ ngay khi có bất kỳ load balancer, NAT gateway, hay CDN nào ở
 phía trước bạn.
@@ -98,7 +98,7 @@ router dọc đường đưa ra cùng một quyết định cục bộ, chỉ m�
 route` (Linux) hoặc `route -n` cho thấy routing table của máy bạn;
 `traceroute`/`mtr` cho thấy đường đi thực tế, từng hop, mà một packet đi
 qua để tới đích. Đây là kiến thức nền để hiểu *vì sao* latency tích lũy
-theo từng hop (`04-latency-throughput.md`) chứ không phải thứ bạn sẽ tự
+theo từng hop ([`04-latency-throughput.md`](04-latency-throughput.md)) chứ không phải thứ bạn sẽ tự
 implement — routing hoàn toàn là việc của kernel/router, không bao giờ là
 việc của application.
 
@@ -107,14 +107,14 @@ việc của application.
    bạn; chạy `ip route` và xác định default gateway của bạn.
 2. Chạy `traceroute example.com` (hoặc `mtr` để xem trực tiếp) và đếm số
    hop; so sánh số hop đó với RTT bạn đã đo trong bài tập của
-   `04-latency-throughput.md`.
+   [`04-latency-throughput.md`](04-latency-throughput.md).
 3. Tính bằng tay xem `10.0.0.0/8` và `2001:db8::/64` mỗi cái bao phủ bao
    nhiêu địa chỉ, rồi xác nhận bằng một CIDR calculator.
 4. Nếu bạn đang đứng sau NAT (hầu như ai ở nhà cũng vậy), truy cập một
    trang "what's my IP" và so sánh địa chỉ nó báo với địa chỉ máy bạn ở
    bước 1 — chúng sẽ khác nhau; khoảng cách đó chính là SNAT của router
    bạn đang hoạt động.
-5. Trong `labs/00-tcp-server`, kết nối hai client khác nhau cùng lúc và
+5. Trong [`labs/00-tcp-server`](../../labs/00-tcp-server), kết nối hai client khác nhau cùng lúc và
    log đầy đủ 4-tuple của mỗi kết nối (`local_addr()` + `peer_addr()`) —
    xác nhận chúng chỉ khác nhau ở source port nếu cả hai client cùng nằm
    trên một máy.

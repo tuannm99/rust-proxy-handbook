@@ -26,7 +26,7 @@ bitwise-duplicated on assignment — no move happens, both bindings stay valid.
 `Clone` is an explicit, possibly expensive deep copy you opt into with
 `.clone()`. In a hot request path, an accidental `.clone()` on a
 multi-kilobyte header map is a real perf bug, not just style — prefer `Arc`
-(see `03-rust/04-sync.md`) or borrowing over cloning buffers per-request.
+(see [`03-rust/04-sync.md`](04-sync.md)) or borrowing over cloning buffers per-request.
 
 ```rust
 #[derive(Clone, Copy)]
@@ -52,7 +52,7 @@ Gotcha: borrows cannot be held across an `.await` point if the future also
 needs to be `Send` and the borrowed data lives on a caller's stack frame that
 moves — this is the root cause of many "future cannot be sent between
 threads" errors when mixing borrowed slices with async fns. See
-`03-rust/02-lifetimes.md` and `03-rust/05-async.md`.
+[`03-rust/02-lifetimes.md`](02-lifetimes.md) and [`03-rust/05-async.md`](05-async.md).
 
 ### Drop order and RAII
 Values are dropped in reverse declaration order at end of scope; struct
@@ -70,19 +70,19 @@ struct UpstreamConn {
 
 Gotcha: `std::mem::forget` (or a panic during unwind with `catch_unwind`)
 skips `Drop` — relevant if you ever hand a raw fd to `libc` code (see
-`03-rust/03-unsafe.md`) and rely on Rust's `Drop` to close it.
+[`03-rust/03-unsafe.md`](03-unsafe.md)) and rely on Rust's `Drop` to close it.
 
 ## Practice
 1. Write a function that takes ownership of a `Vec<u8>` request buffer,
    parses out a method/path/headers view as borrowed slices, and returns a
    struct holding both the buffer and the slices — notice why this needs a
-   lifetime parameter (continue in `03-rust/02-lifetimes.md`).
+   lifetime parameter (continue in [`03-rust/02-lifetimes.md`](02-lifetimes.md)).
 2. Deliberately trigger and then fix an "use of moved value" error by
    restructuring a function to borrow instead of take ownership.
 3. Benchmark (with a quick `std::time::Instant`) cloning a 8KB header map
    1M times vs wrapping it in `Arc` and cloning the `Arc` — confirm the
    difference is real before you believe it.
-4. In `labs/00-tcp-server`, decide whether your per-connection read
+4. In [`labs/00-tcp-server`](../../labs/00-tcp-server), decide whether your per-connection read
    buffer is owned by the task or borrowed from a pool, and justify it in a
    comment.
 5. Write a small type with a custom `Drop` impl that prints when it runs;

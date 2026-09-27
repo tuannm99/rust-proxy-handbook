@@ -5,8 +5,8 @@
 ### Chiến lược matching
 Quét tuyến tính một `Vec<Route>` là O(n) mỗi request nhưng dễ implement và ổn với vài route. Một router dạng radix/trie (thứ mà hầu hết router Rust production — `matchit`, router của axum — dùng) chia sẻ các tiền tố path chung trong một cây nên lookup xấp xỉ O(độ dài path), và xử lý được path parameter (`/users/:id`) cùng wildcard mà không tốn chi phí backtracking như regex.
 
-Bản thân các cấu trúc dữ liệu này nằm ở `13-algorithms/trie.md` (matching
-tiền tố theo segment) và `13-algorithms/radix-tree.md` (dạng nén mà router
+Bản thân các cấu trúc dữ liệu này nằm ở [`13-algorithms/trie.md`](../13-algorithms/trie.md) (matching
+tiền tố theo segment) và [`13-algorithms/radix-tree.md`](../13-algorithms/radix-tree.md) (dạng nén mà router
 production thực sự ship, bao gồm cả phần khó là tách longest-common-prefix
 khi insert). Đọc hai file đó để biết cách implement; file này nói về những
 gì một *proxy* cần thêm trên nền chúng.
@@ -18,10 +18,10 @@ path, nếu không attacker sống trong sự khác biệt đó.
 
 Hãy hình dung một proxy cấu hình để block `/admin` và cho phép
 `/public/*`. Một request tới `/public/../admin` match `/public/*` theo
-cách so khớp segment ngây thơ — và một upstream normalize `..` trước khi
+cách so khớp segment ngây thơ — và một upstream normalize [`..`](../..) trước khi
 serve sẽ trả về `/admin`. Quyết định routing của proxy và cách diễn giải
 của upstream không khớp nhau, và access control là nạn nhân. Đây là cùng
-họ parser-differential như `07-security/05-request-smuggling.md`, áp dụng
+họ parser-differential như [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md), áp dụng
 cho path thay vì framing.
 
 Các biến thể cần xử lý, tất cả đều đã từng gây ra bypass thật:
@@ -32,7 +32,7 @@ Các biến thể cần xử lý, tất cả đều đã từng gây ra bypass t
   reject thay vì đoán nếu không chắc.
 - **Double-encoding**: `%252e%252e%252f` — decode tới một độ sâu cố định,
   có ghi rõ, khớp với những gì upstream của bạn làm
-  (`07-security/06-waf.md` có cùng thảo luận này).
+  ([`07-security/06-waf.md`](../07-security/06-waf.md) có cùng thảo luận này).
 - **Slash trùng lặp**: `//admin` so với `/admin` — gộp chúng lại.
 - **Trailing slash**: `/admin/` so với `/admin`. Chọn một dạng canonical
   và redirect dạng kia thay vì đăng ký cả hai.
@@ -52,7 +52,7 @@ Gotcha: phát hiện xung đột thật sự ở *thời điểm đăng ký*, kh
 điểm match. Hai route không bao giờ phân biệt được (cùng một pattern đăng
 ký hai lần, hoặc `/a/:x` và `/a/:y`) là một lỗi cấu hình, và fail ngay lúc
 khởi động — hoặc lúc reload config, giữ nguyên bảng cũ đang chạy
-(`09-architecture/03-config.md`) — tốt hơn là âm thầm chọn một cái và để
+([`09-architecture/03-config.md`](../09-architecture/03-config.md)) — tốt hơn là âm thầm chọn một cái và để
 lại một endpoint không bao giờ với tới được.
 
 ### Method dispatch
@@ -65,7 +65,7 @@ Hai trường hợp mà mô hình hai chiều thường bỏ sót:
   monitoring dùng `HEAD` liên tục.
 - **`OPTIONS`** là một CORS preflight, và browser gửi nó *không kèm*
   credential trước request thật. Nếu proxy áp auth
-  (`07-security/01-auth.md`) lên preflight, mọi lời gọi cross-origin từ
+  ([`07-security/01-auth.md`](../07-security/01-auth.md)) lên preflight, mọi lời gọi cross-origin từ
   browser sẽ fail theo kiểu trông giống CORS misconfiguration nhưng thực
   ra là bug thứ tự auth.
 
@@ -75,13 +75,13 @@ sự match. Đây là yêu cầu của spec và là thứ khiến sự khác bi�
 
 ### Routing trên nhiều hơn chỉ path
 Một proxy route trên toàn bộ request, không chỉ path: `Host` (xem
-`05-http-stack/11-vhost-routing.md`), header tùy ý (canary routing theo
-`X-Version`, `09-architecture/06-canary-deploy.md`), đôi khi weight cho
+[`05-http-stack/11-vhost-routing.md`](11-vhost-routing.md)), header tùy ý (canary routing theo
+`X-Version`, [`09-architecture/06-canary-deploy.md`](../09-architecture/06-canary-deploy.md)), đôi khi weight cho
 traffic splitting.
 
 Gotcha: `Host` không phải một thứ duy nhất. Trong HTTP/1.1 nó là header
 `Host`; trong HTTP/2 và HTTP/3 nó là pseudo-header `:authority`; và dưới
-TLS còn có tên SNI từ handshake (`01-network/13-tls.md`), thứ mà client
+TLS còn có tên SNI từ handshake ([`01-network/13-tls.md`](../01-network/13-tls.md)), thứ mà client
 chọn *trước khi* gửi bất kỳ cái nào trong số đó. Chúng đều có thể bất
 đồng — một attacker connect với SNI `public.example.com` rồi gửi
 `Host: admin.internal`. Quyết định cái nào là authoritative cho routing,
@@ -89,7 +89,7 @@ validate rằng các cái còn lại khớp với nó, và reject request khi ch
 không khớp.
 
 ### Middleware như một phép hợp thành, không phải một trường hợp đặc biệt
-Hãy nghĩ một route handler như một `tower::Service<Request> -> Response`. Middleware (auth, rate limiting, logging) chỉ là một `Service` khác bọc lấy cái bên trong — đây là lý do `07-security/01-auth.md` và `07-security/07-ratelimit.md` cắm vào cùng một abstraction router thay vì bị gắn thêm riêng lẻ.
+Hãy nghĩ một route handler như một `tower::Service<Request> -> Response`. Middleware (auth, rate limiting, logging) chỉ là một `Service` khác bọc lấy cái bên trong — đây là lý do [`07-security/01-auth.md`](../07-security/01-auth.md) và [`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) cắm vào cùng một abstraction router thay vì bị gắn thêm riêng lẻ.
 
 ```rust
 // sketch: router as a Vec of (matcher, handler), method-aware
@@ -104,15 +104,15 @@ Câu hỏi về thứ tự theo sau đó: middleware phải chạy *trước* ro
 (connection limit, IP filtering — bạn không thể route trước) so với
 middleware cần route đã tồn tại (auth policy theo từng route, rate limit
 theo từng route). Sự phân chia đó là cấu trúc thật của pipeline, và
-`09-architecture/01-components.md` là nơi nó được thiết kế.
+[`09-architecture/01-components.md`](../09-architecture/01-components.md) là nơi nó được thiết kế.
 
 ### Routing trong reverse proxy so với API server
-Một API server route tới một handler function; một reverse proxy (`06-proxy/`) route tới một *upstream pool* — "handler" là "forward request này tới load balancer của service X". Logic matching (path prefix, host header, routing theo header) là cùng một bài toán, chỉ khác hành động cuối cùng.
+Một API server route tới một handler function; một reverse proxy ([`06-proxy/`](../06-proxy)) route tới một *upstream pool* — "handler" là "forward request này tới load balancer của service X". Logic matching (path prefix, host header, routing theo header) là cùng một bài toán, chỉ khác hành động cuối cùng.
 
 Một hệ quả riêng cho trường hợp proxy: bảng route thay đổi lúc runtime
-(`09-architecture/03-config.md`, `labs/13-hot-reload`) trong khi request
+([`09-architecture/03-config.md`](../09-architecture/03-config.md), [`labs/13-hot-reload`](../../labs/13-hot-reload)) trong khi request
 đang bay. Xây bảng như một cấu trúc immutable được swap atomic
-(`arc_swap`, như trong `06-proxy/07-service-discovery.md`) thay vì một
+(`arc_swap`, như trong [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)) thay vì một
 cấu trúc bị mutate dưới lock — routing nằm trên hot path của mọi request,
 và nó không bao giờ nên chờ một lần cập nhật config.
 
@@ -125,7 +125,7 @@ route thay vì ngầm định.
 ## Practice
 Làm theo thứ tự này.
 
-1. Trong `labs/03-router`, implement một route matcher tuyến tính
+1. Trong [`labs/03-router`](../../labs/03-router), implement một route matcher tuyến tính
    (method + path chính xác) nối vào hyper handler. **Xong khi** hai path
    khác nhau route tới hai handler khác nhau.
 2. Viết các test path-confusion trước khi thêm normalization: request
@@ -145,7 +145,7 @@ Làm theo thứ tự này.
    `HEAD` fallback về route `GET` và `OPTIONS` bỏ qua auth. **Xong khi**
    `HEAD` trên một route chỉ có `GET` trả về 200 không body, và một CORS
    preflight thành công mà không cần credential.
-6. Thay router tuyến tính bằng radix tree từ `13-algorithms/radix-tree.md`.
+6. Thay router tuyến tính bằng radix tree từ [`13-algorithms/radix-tree.md`](../13-algorithms/radix-tree.md).
    **Xong khi** toàn bộ test suite pass không đổi và latency lookup phẳng
    từ 10 tới 1000 route.
 7. Refactor handler đứng sau một trait kiểu `Service` và thêm middleware
@@ -154,7 +154,7 @@ Làm theo thứ tự này.
 8. Thêm validate tính nhất quán `Host`/`:authority`/SNI. **Xong khi** một
    request có `Host` bất đồng với SNI bị reject, và bạn có thể nói rõ
    nguồn nào router của bạn coi là authoritative.
-9. Khi tới `labs/05-reverse-proxy`, làm cho một route đã match resolve
+9. Khi tới [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), làm cho một route đã match resolve
    tới một tên upstream pool, với việc rewrite prefix theo từng route
    tường minh, và swap bảng atomic khi reload. **Xong khi** một lần reload
    bảng route dưới tải đồng thời tạo ra zero request bị rớt hoặc route

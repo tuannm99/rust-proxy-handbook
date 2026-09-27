@@ -1,7 +1,7 @@
 # SLI, SLO, và Error Budget
 
 Định nghĩa "hoạt động tốt" nghĩa là gì, bằng con số, trước khi quyết định
-cái gì nên đánh thức một con người. `08-observability/06-alerting.md` xây
+cái gì nên đánh thức một con người. [`08-observability/06-alerting.md`](06-alerting.md) xây
 trên nền này — một alert không có SLO đứng sau chỉ là một ngưỡng ai đó
 đoán ra.
 
@@ -28,13 +28,13 @@ hai nửa:
 
 - **Lỗi 4xx có phải của bạn không?** Thường thì không — một client gửi
   request sai định dạng không nên đốt ngân sách của bạn. Nhưng một mã 429
-  bạn phát ra vì bạn đang quá tải (`07-security/11-load-shedding.md`)
+  bạn phát ra vì bạn đang quá tải ([`07-security/11-load-shedding.md`](../07-security/11-load-shedding.md))
   *chính là* thất bại của bạn đội lốt một status code lỗi-của-client, và
   thuộc về tử số.
 - **Một thành công chậm có phải là thành công không?** Với một SLO
   latency, không — hãy định nghĩa "tốt" là "thành công *và* dưới ngưỡng,"
   với ngưỡng khớp một cạnh bucket histogram
-  (`08-observability/02-metrics.md`) để nó là một con số đếm chính xác
+  ([`08-observability/02-metrics.md`](02-metrics.md)) để nó là một con số đếm chính xác
   thay vì một phép nội suy.
 - **Request nào là hợp lệ?** Health check, synthetic probe, và scrape
   `/metrics` nên bị loại trừ, nếu không một đêm yên tĩnh chỉ toàn health
@@ -52,14 +52,14 @@ Gộp chúng lại làm error budget trở nên vô dụng: team proxy đốt ng
 vì một lần deploy tệ của upstream mà không có gì để sửa.
 
 Hãy đo cả hai. Page team proxy trên cái thứ nhất
-(`08-observability/06-alerting.md` bàn về việc route theo ai có thể hành
+([`08-observability/06-alerting.md`](06-alerting.md) bàn về việc route theo ai có thể hành
 động). Cái thứ hai vẫn đáng để theo dõi — nó là những gì người dùng thực
 sự trải nghiệm — nhưng chủ sở hữu của nó là service đứng sau bạn.
 
 Gotcha: gán một thất bại cho đúng phía không phải lúc nào cũng rõ ràng.
 Một mã 504 vì upstream vượt quá timeout của proxy có thể là vấn đề của
 upstream hoặc một timeout bạn đặt quá gắt gao
-(`06-proxy/01-upstream.md`). Hãy quyết định quy tắc quy kết trước, và mã
+([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)). Hãy quyết định quy tắc quy kết trước, và mã
 hóa nó vào recording rule, nếu không mọi sự cố đều bắt đầu bằng cùng một
 cuộc tranh cãi.
 
@@ -72,7 +72,7 @@ nửa đều quan trọng:
 - **Bạn không thể vượt quá các dependency của mình.** Một proxy đứng trước
   một upstream 99.9% không thể cung cấp 99.99% end-to-end, trừ khi nó có
   thể phục vụ mà không cần upstream đó (`stale-if-error` của
-  `05-http-stack/07-cache.md` chính là kiểu tách rời này).
+  [`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md) chính là kiểu tách rời này).
 - **Window quan trọng ngang với con số.** 99.9% trong 30 ngày là 43 phút;
   trong 7 ngày là 10 phút, và một lần deploy tệ duy nhất có thể tiêu hết
   toàn bộ ngân sách ngắn hơn đó.
@@ -89,7 +89,7 @@ Hai tín hiệu dẫn xuất thực sự làm việc:
 - **Burn rate** — tốc độ bạn đang tiêu ngân sách so với tốc độ bền vững.
   Đây là thứ các alert dựa vào để bắn, vì nó bắt được cả "một sự cố ngay
   bây giờ" lẫn "một rò rỉ chậm sẽ tiêu hết cả tháng" bằng một cơ chế duy
-  nhất (`08-observability/06-alerting.md`).
+  nhất ([`08-observability/06-alerting.md`](06-alerting.md)).
 
 Gotcha: giữ target SLO trong *một* recording rule duy nhất mà mọi thứ
 khác tham chiếu tới. Hard-code `0.001` trong năm alert rule nghĩa là thay
@@ -98,9 +98,9 @@ khác tham chiếu tới. Hard-code `0.001` trong năm alert rule nghĩa là tha
 ## Practice
 Xây dựng theo thứ tự sau.
 
-1. Định nghĩa hai SLI cho `proxy` — thất bại do proxy gây ra và thất bại
+1. Định nghĩa hai SLI cho [`proxy`](../../proxy) — thất bại do proxy gây ra và thất bại
    end-to-end — dưới dạng recording rule trên các counter từ
-   `08-observability/02-metrics.md`. **Xong khi** mỗi cái có xử lý tường
+   [`08-observability/02-metrics.md`](02-metrics.md). **Xong khi** mỗi cái có xử lý tường
    minh cho 4xx, cho 429-do-quá-tải, và cho traffic health-check bị loại
    trừ, và bạn có thể nêu tên team sở hữu mỗi cái.
 2. Viết quy tắc quy kết cho mã 504. **Xong khi** một timeout được gán cho
@@ -120,6 +120,6 @@ Xây dựng theo thứ tự sau.
    nó ở một chỗ đó di chuyển mọi tín hiệu dẫn xuất — kiểm chứng bằng cách
    thay đổi nó và xem tất cả di chuyển.
 7. Kiểm chứng với thực tế. **Xong khi** bạn replay lại một sự cố trong quá
-   khứ (hoặc tiêm một cái mới bằng `12-testing/03-chaos.md`) và xác nhận
+   khứ (hoặc tiêm một cái mới bằng [`12-testing/03-chaos.md`](../12-testing/03-chaos.md)) và xác nhận
    ngân sách bị tiêu khớp với thời lượng và mức độ nghiêm trọng thực tế
    của sự cố.

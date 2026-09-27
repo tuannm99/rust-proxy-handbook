@@ -3,7 +3,7 @@
 Lưu trữ object kích thước cố định với insert và remove O(1), đánh địa chỉ
 bằng chỉ số nguyên thay vì con trỏ. Cấu trúc dữ liệu đứng sau bảng kết
 nối, node của LRU, và các đồ thị dựa trên arena.
-`14-memory/05-slab-allocator.md` nói về góc nhìn ở tầng allocator; file
+[`14-memory/05-slab-allocator.md`](../14-memory/05-slab-allocator.md) nói về góc nhìn ở tầng allocator; file
 này nói về cấu trúc dữ liệu bạn thực sự dùng trong Rust.
 
 ## What to learn
@@ -14,14 +14,14 @@ riêng lẻ — một entry cho mỗi kết nối đang hoạt động, một no
 LRU. Các dạng hiển nhiên đều có vấn đề: `HashMap<Id, T>` hash mỗi lần truy
 cập và rải rác các allocation; `Vec<T>` làm mọi chỉ số vô hiệu khi remove;
 đồ thị `Rc<RefCell<T>>` leak khi có chu trình; con trỏ raw nghĩa là
-`unsafe` (`03-rust/03-unsafe.md`).
+`unsafe` ([`03-rust/03-unsafe.md`](../03-rust/03-unsafe.md)).
 
 Một slab là một `Vec` gồm các slot mà **remove không dịch chuyển gì cả** —
 slot vừa giải phóng gia nhập một free list, nên mọi chỉ số đang tồn tại
 vẫn hợp lệ. Bạn có tốc độ truy cập kiểu mảng, handle ổn định, một
 allocation liền mạch duy nhất, và không cần `unsafe`. Đó là lý do
 `Slab<T>` xuất hiện trong các connection registry và vì sao một LRU dựa
-trên arena (`13-algorithms/lru.md`) là cách implement idiomatic trong
+trên arena ([`13-algorithms/lru.md`](lru.md)) là cách implement idiomatic trong
 Rust.
 
 ### Free list sống ngay bên trong các slot
@@ -75,7 +75,7 @@ Một slab không bao giờ tự co lại: sau khi một đợt spike traffic t�
 100 nghìn slot kết nối, `Vec` vẫn giữ nguyên độ rộng 100 nghìn slot ngay
 cả khi chỉ còn 100 kết nối active. Với một proxy chạy dài hạn, đó là một
 mức đỉnh bộ nhớ vĩnh viễn được set bởi đợt spike tệ nhất của bạn
-(xem `14-memory/06-fragmentation.md`).
+(xem [`14-memory/06-fragmentation.md`](../14-memory/06-fragmentation.md)).
 
 Nén lại nghĩa là di chuyển các entry đang chiếm dụng vào các slot thấp,
 điều này làm vô hiệu chỉ số của chúng — đúng chính cái tính chất mà slab
@@ -92,7 +92,7 @@ khi proxy vốn đã đang chịu áp lực.
 2. Tái hiện bug stale-handle: giữ một chỉ số qua một chu trình remove+insert
    và quan sát nó đọc phải người chiếm chỗ mới. Sau đó thêm generation
    counter và xác nhận cùng một truy cập giờ trả về `None`.
-3. Dùng nó trong `labs/05-reverse-proxy` làm connection registry, đánh
+3. Dùng nó trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) làm connection registry, đánh
    chỉ mục bằng một handle có generation thay vì bằng địa chỉ.
 4. So sánh với `HashMap<u64, T>` qua 100 nghìn chu trình insert/remove/lookup
    — đo cả thời gian lẫn bộ nhớ đỉnh.
@@ -100,4 +100,4 @@ khi proxy vốn đã đang chịu áp lực.
    và cho thấy bộ nhớ không quay về. Thêm một giới hạn capacity và test từ
    chối insert vượt quá nó.
 6. Dùng slab của bạn thay cho một `Vec` trần để làm nền cho LRU trong
-   `13-algorithms/lru.md`.
+   [`13-algorithms/lru.md`](lru.md).

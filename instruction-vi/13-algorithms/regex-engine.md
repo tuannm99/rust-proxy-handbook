@@ -1,7 +1,7 @@
 # Regex Engine
 
 Một regex engine thực sự được xây như thế nào, và câu trả lời quyết định
-WAF của bạn (`07-security/06-waf.md`) là một lớp phòng thủ hay một vector
+WAF của bạn ([`07-security/06-waf.md`](../07-security/06-waf.md)) là một lớp phòng thủ hay một vector
 denial-of-service.
 
 ## What to learn
@@ -65,7 +65,7 @@ pattern được load từ config thay vì do chính bạn viết.
 ### Literal prefilter
 Cú tăng tốc lớn nhất trên thực tế không nằm ở engine: trích các substring
 literal bắt buộc từ pattern, quét tìm chúng trước bằng một multi-pattern
-matcher nhanh (`13-algorithms/aho-corasick.md` hoặc memchr), và chỉ chạy
+matcher nhanh ([`13-algorithms/aho-corasick.md`](aho-corasick.md) hoặc memchr), và chỉ chạy
 engine đầy đủ ở chỗ có literal khớp. Một pattern như `\d+-admin-\w+` không
 thể match nếu thiếu `-admin-`, nên đa số input bị loại ở tốc độ memchr.
 Crate `regex` tự làm điều này bên trong, và đây cũng chính là thiết kế bạn
@@ -85,7 +85,7 @@ let hits: Vec<usize> = set.matches(input).into_iter().collect();
 ```
 
 Gotcha: `RegexSet` cho bạn biết pattern nào khớp, chứ không cho biết *ở
-đâu*. Với anomaly scoring (`07-security/06-waf.md`) như vậy là đủ và nhanh
+đâu*. Với anomaly scoring ([`07-security/06-waf.md`](../07-security/06-waf.md)) như vậy là đủ và nhanh
 hơn nhiều. Chỉ chạy lại từng pattern riêng để lấy vị trí match khi bạn thực
 sự cần log đoạn nội dung vi phạm.
 
@@ -93,7 +93,7 @@ sự cần log đoạn nội dung vi phạm.
 Nếu rule WAF đến từ config mà người khác ngoài bạn có thể sửa, pattern đó
 là input không tin cậy đối với compiler. Áp giới hạn kích thước sau khi
 compile, giới hạn độ dài pattern, và reject lỗi compile ngay tại thời điểm
-*load* trong khi để rule set cũ tiếp tục chạy (`09-architecture/03-config.md`)
+*load* trong khi để rule set cũ tiếp tục chạy ([`09-architecture/03-config.md`](../09-architecture/03-config.md))
 — đừng bao giờ để một rule sai có hiệu lực hoặc làm sập proxy khi reload.
 
 ## Practice
@@ -102,7 +102,7 @@ compile, giới hạn độ dài pattern, và reject lỗi compile ngay tại th
    lại với crate `regex` và xác nhận nó vẫn tuyến tính.
 2. Xây một NFA bằng Thompson construction cho `a(b|c)*d` trên giấy, rồi
    trace tập state active từng byte một trên `"abccd"`.
-3. Trong `labs/12-waf`, thay các vòng lặp `Regex` theo từng rule bằng một
+3. Trong [`labs/12-waf`](../../labs/12-waf), thay các vòng lặp `Regex` theo từng rule bằng một
    `RegexSet` duy nhất; benchmark ở 10, 100, và 1000 rule trên một body
    100 KB.
 4. Thêm một literal prefilter bằng Aho-Corasick trước `RegexSet` và đo tỷ

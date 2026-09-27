@@ -1,7 +1,7 @@
 # Cache Stampede
 
 The failure where a cache, at the exact moment it stops helping, actively
-makes things worse. `05-http-stack/07-cache.md` covers HTTP caching
+makes things worse. [`05-http-stack/07-cache.md`](07-cache.md) covers HTTP caching
 semantics; this file covers the concurrency problem underneath any cache,
 and why single-flight is a requirement rather than an optimization.
 
@@ -18,7 +18,7 @@ popular the key, the worse the spike — so the entries your cache is
 protecting best are the ones whose expiry hurts most.
 
 Gotcha: this is not only an expiry problem. A cold start
-(`09-architecture/05-rolling-restart.md` — every restart empties an in-memory
+([`09-architecture/05-rolling-restart.md`](../09-architecture/05-rolling-restart.md) — every restart empties an in-memory
 cache), a purge, or an eviction under memory pressure all produce the same
 simultaneous-miss condition, for every key at once rather than one.
 
@@ -45,23 +45,23 @@ is old and the absence of it is a recurring incident.
 
 Gotcha: waiters need a **timeout**. A hung origin fetch must not park a
 thousand requests indefinitely — each waiter should give up on its own
-deadline (`06-proxy/01-upstream.md`'s request timeouts) and decide for itself
+deadline ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)'s request timeouts) and decide for itself
 whether to fail or attempt its own fetch.
 
 Gotcha: on fetch **failure**, every waiter must be woken with the error.
 A leader that returns early — a panic, an unhandled branch, a dropped
 future on client cancellation — leaves waiters blocked on a result that
 will never arrive. Structure the leader so the notification happens in a
-`Drop` guard, the same discipline as `06-proxy/01-upstream.md`'s connection
+`Drop` guard, the same discipline as [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)'s connection
 counter.
 
 Gotcha: the in-flight map is keyed by attacker-influenceable data, so it
 needs the same bound as any other such map
-(`13-algorithms/count-min-sketch.md`).
+([`13-algorithms/count-min-sketch.md`](../13-algorithms/count-min-sketch.md)).
 
 ### Serving stale while you refresh
 Single-flight reduces N fetches to one, but the waiters still wait. With
-`stale-while-revalidate` (`05-http-stack/07-cache.md`) the waiting disappears
+`stale-while-revalidate` ([`05-http-stack/07-cache.md`](07-cache.md)) the waiting disappears
 entirely: serve the stale copy immediately to everyone, refresh once in
 the background, swap it in when it arrives.
 
@@ -73,7 +73,7 @@ genuinely cold, not merely stale — have to wait.
 Gotcha: a background refresh that nobody is waiting for still needs a
 timeout, a failure path, and a bound on how many can run at once. Otherwise
 an origin outage leaves a growing pile of refresh tasks, each holding a
-connection (`06-proxy/01-upstream.md`), all of them futile.
+connection ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)), all of them futile.
 
 ### Spreading expiry so it doesn't synchronize
 Keys populated together expire together. Fill a cache from a cold start
@@ -83,8 +83,8 @@ to your TTL.
 
 Add jitter to the TTL when storing (±10% is plenty) so expiries spread
 across a window instead of landing in lockstep. This is the same
-synchronization problem as probe intervals (`06-proxy/03-healthcheck.md`) and
-retry storms (`06-proxy/05-retry.md`), with the same fix.
+synchronization problem as probe intervals ([`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)) and
+retry storms ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)), with the same fix.
 
 ### Negative caching
 An origin that returns 404 or 500 for a hot key, uncached, gets every
@@ -100,7 +100,7 @@ absence is cheaper to fix than being wrong about content.
 ## Practice
 Build these in order.
 
-1. In `labs/10-cache`, reproduce the stampede: cache a deliberately slow
+1. In [`labs/10-cache`](../../labs/10-cache), reproduce the stampede: cache a deliberately slow
    origin response, expire it, and fire 500 concurrent requests. **Done
    when** you can show ~500 origin hits with an origin-side counter.
 2. Add single-flight coalescing with an atomic check-and-insert. **Done

@@ -1,6 +1,6 @@
 # Radix Tree (Compressed Trie)
 
-`13-algorithms/trie.md` covers the plain trie and its memory cost: long
+[`13-algorithms/trie.md`](trie.md) covers the plain trie and its memory cost: long
 chains of single-child nodes. A radix tree (also called a Patricia trie)
 is the fix, and it's what production HTTP routers (`httprouter`, `gin`,
 `actix-web`'s router) actually implement rather than a plain trie.
@@ -39,7 +39,7 @@ tree bugs live.
 
 ### Parameter and wildcard segments still need explicit precedence
 Compression is a memory/lookup optimization; it doesn't change the
-routing semantics from `13-algorithms/trie.md` — static, parameter
+routing semantics from [`13-algorithms/trie.md`](trie.md) — static, parameter
 (`:id`), and wildcard (`*rest`) segments still need the same explicit,
 order-independent precedence rule. A radix tree usually keeps parameter
 and wildcard branches uncompressed (as distinct children at the branch
@@ -55,9 +55,9 @@ config reload); lookup is the same segment-by-segment descent as a plain
 trie, just over fewer, longer edges.
 
 ## Practice
-1. Convert your `labs/03-router` trie into a radix tree: implement the
+1. Convert your [`labs/03-router`](../../labs/03-router) trie into a radix tree: implement the
    longest-common-prefix insertion with the split case, and register the
-   same route set from `trie.md`'s exercises.
+   same route set from [`trie.md`](trie.md)'s exercises.
 2. Count nodes in both representations for a realistic route set (a
    REST API with `/api/v1/users`, `/api/v1/users/:id`,
    `/api/v1/orders`, `/api/v1/orders/:id/items`, ...) and confirm the
@@ -65,5 +65,5 @@ trie, just over fewer, longer edges.
 3. Deliberately trigger the split-with-existing-handler case (insert
    `/users` after `/user` already has a handler) and write a test that
    both handlers remain reachable afterward.
-4. Re-run `trie.md`'s benchmark (lookup time at 10/100/1000 routes)
+4. Re-run [`trie.md`](trie.md)'s benchmark (lookup time at 10/100/1000 routes)
    against the radix tree and compare both lookup latency and memory.

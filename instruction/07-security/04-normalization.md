@@ -2,9 +2,9 @@
 
 Two components parse the same bytes differently, and the attacker lives in
 the gap. This is the structural weakness behind WAF bypasses
-(`07-security/06-waf.md`), path-based access-control bypasses
-(`05-http-stack/03-router.md`), and — in its purest form — request smuggling
-(`07-security/05-request-smuggling.md`). Normalization is the defense, and
+([`07-security/06-waf.md`](06-waf.md)), path-based access-control bypasses
+([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)), and — in its purest form — request smuggling
+([`07-security/05-request-smuggling.md`](05-request-smuggling.md)). Normalization is the defense, and
 it is a security boundary rather than a preprocessing detail.
 
 ## What to learn
@@ -30,7 +30,7 @@ ambiguity you just resolved.
 
 ### Decode depth
 You URL-decode once; the attacker sends `%252e%252e%252f`, which decodes
-once to `%2e%2e%2f` (no match) and twice to `../`. If the upstream
+once to `%2e%2e%2f` (no match) and twice to [`../`](../..). If the upstream
 framework decodes twice, it sees traversal and you didn't.
 
 Decoding repeatedly until stable has the opposite failure: you now flag
@@ -49,7 +49,7 @@ Lowercasing handles `<ScRiPt>`. It does not handle:
 - **Full-width and homoglyph characters** that a framework may normalize
   into ASCII equivalents after you've inspected them.
 - **Overlong UTF-8 encodings**, where a character is encoded in more bytes
-  than necessary — historically a reliable way to smuggle `/` or `.` past
+  than necessary — historically a reliable way to smuggle `/` or [`.`](..) past
   byte-comparison checks.
 - **Unicode case folding** differences: the Turkish dotless ı, the German
   ß, and characters whose uppercase form is multiple characters.
@@ -86,38 +86,38 @@ will execute; one that inspects only the last misses the reverse.
 
 The rule: inspect **every occurrence of every parameter**, and inspect the
 raw query string as well. The same applies to duplicate headers, and to
-JSON bodies with duplicate keys (`15-parser/` — parser behavior there
+JSON bodies with duplicate keys ([`15-parser/`](../15-parser) — parser behavior there
 varies too).
 
 Gotcha: the framing headers are the extreme case of this, where the
 disagreement gets you a whole smuggled request rather than one bad
-parameter value. `07-security/05-request-smuggling.md` covers it; the
+parameter value. [`07-security/05-request-smuggling.md`](05-request-smuggling.md) covers it; the
 reasoning is identical, one layer down.
 
 ### Paths are their own normalization problem
 Dot segments, encoded separators, duplicate slashes, trailing slashes, and
 case-insensitive filesystems all make the path you routed on differ from
-the path the upstream resolves. `05-http-stack/03-router.md` covers the
+the path the upstream resolves. [`05-http-stack/03-router.md`](../05-http-stack/03-router.md) covers the
 variants and the canonical-form rule; it is the same discipline applied to
 the one input a proxy always parses.
 
 ### Normalize once, early, in one place
 The failure mode that survives all of the above is normalizing in several
 places with slightly different rules. Put normalization at a single point
-in the pipeline (`09-architecture/01-components.md`, before routing), store
+in the pipeline ([`09-architecture/01-components.md`](../09-architecture/01-components.md), before routing), store
 the canonical form on the request, and have every later component —
 router, WAF, logger, upstream forwarder — read *that* rather than
 re-deriving its own.
 
 Gotcha: keep the original bytes available for logging
-(`08-observability/01-logging.md`) so an investigation can see what was
+([`08-observability/01-logging.md`](../08-observability/01-logging.md)) so an investigation can see what was
 actually sent, but make the canonical form the only thing any *decision*
 reads. Two representations is fine; two decision inputs is not.
 
 ## Practice
 Build these in order.
 
-1. In `labs/12-waf`, write the bypass tests before any normalization:
+1. In [`labs/12-waf`](../../labs/12-waf), write the bypass tests before any normalization:
    mixed case, double URL-encoding, an overlong UTF-8 encoding of `/`, a
    payload in the *second* of two same-named parameters, and a body whose
    declared charset differs from its actual encoding. **Done when** every

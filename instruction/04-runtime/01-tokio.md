@@ -5,7 +5,7 @@ Reactor, executor, scheduler.
 ## What to learn
 
 ### Reactor
-The reactor owns the OS event source (epoll on Linux, see `02-linux/07-epoll.md`) and turns readiness events into wakeups. Every `TcpStream`/`TcpListener` registers its fd with the reactor once; when epoll reports the fd readable, the reactor finds the `Waker` associated with the task blocked on that fd and calls `.wake()`. The reactor does not run your code — it only decides *when* a task deserves another `poll()`.
+The reactor owns the OS event source (epoll on Linux, see [`02-linux/07-epoll.md`](../02-linux/07-epoll.md)) and turns readiness events into wakeups. Every `TcpStream`/`TcpListener` registers its fd with the reactor once; when epoll reports the fd readable, the reactor finds the `Waker` associated with the task blocked on that fd and calls `.wake()`. The reactor does not run your code — it only decides *when* a task deserves another `poll()`.
 
 ### Executor & work-stealing scheduler
 Tokio's multi-threaded executor runs N worker threads, each with a local run queue, plus a global injection queue. Idle workers steal tasks from busy workers' queues instead of blocking, which keeps CPUs busy without a central lock on every schedule. `tokio::spawn` puts a task on the current worker's local queue; cheap, but it means a burst of spawns from one connection can starve other workers until the next steal.
@@ -27,7 +27,7 @@ Tokio budgets a number of polls per task before forcing a yield back to the sche
 A reverse proxy is fundamentally "read from one socket, write to another, repeat, times tens of thousands of connections." Tokio's job is to make that cheap: one task per connection (not one thread), non-blocking I/O multiplexed through a handful of OS threads, and a scheduler that keeps all cores busy. Getting the reactor/executor split wrong (e.g. blocking a worker thread) degrades every connection on that worker, not just the slow one.
 
 ## Practice
-1. In the hand-rolled executor you'll build in `03-rust/05-async.md`'s exercise (a scratch project, not part of this workspace), poll a `Vec` of futures in a loop with a no-op waker, and observe it busy-spins instead of sleeping — this is *why* a real reactor + waker exist.
-2. In `labs/00-tcp-server`, log which OS thread ID handles each connection (`std::thread::current().id()`) and confirm connections are spread across workers.
+1. In the hand-rolled executor you'll build in [`03-rust/05-async.md`](../03-rust/05-async.md)'s exercise (a scratch project, not part of this workspace), poll a `Vec` of futures in a loop with a no-op waker, and observe it busy-spins instead of sleeping — this is *why* a real reactor + waker exist.
+2. In [`labs/00-tcp-server`](../../labs/00-tcp-server), log which OS thread ID handles each connection (`std::thread::current().id()`) and confirm connections are spread across workers.
 3. Deliberately call a blocking `std::thread::sleep` inside an async handler in `tcp-server` and observe other connections stall; fix it with `tokio::time::sleep` and again with `spawn_blocking`, and compare.
 4. Read the tokio worker metrics (`tokio::runtime::Handle::metrics()`, requires `tokio_unstable` or the stable subset available) and print steal counts under concurrent load.

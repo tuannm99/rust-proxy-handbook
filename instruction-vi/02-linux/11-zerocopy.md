@@ -19,7 +19,7 @@ chuyển dữ liệu trực tiếp từ page-cache tới socket.
 let sent = unsafe { libc::sendfile(sock_fd, file_fd, std::ptr::null_mut(), len) };
 ```
 Đây là primitive zero-copy kinh điển cho "phục vụ một static file" và
-chính xác là thứ `05-http-stack/05-static.md` nên dùng ở happy path.
+chính xác là thứ [`05-http-stack/05-static.md`](../05-http-stack/05-static.md) nên dùng ở happy path.
 Gotcha: `sendfile` yêu cầu nguồn phải là một *file* — bạn không thể
 `sendfile` socket-tới-socket, điều này quan trọng với một reverse proxy
 relay response từ upstream.
@@ -53,8 +53,8 @@ với `SOL_TLS`) đẩy chính bước encrypt/decrypt vào kernel để `sendfi
 thể hoạt động lại ngay cả với TLS, nhưng đó là một tính năng mới hơn, hỗ
 trợ hẹp hơn (cần kernel + thường cần hỗ trợ offload NIC cụ thể) và hỗ trợ
 từ hệ sinh thái Rust (`ktls`, gắn với `rustls`) kém trưởng thành hơn nhiều
-so với `rustls` thuần. Trong thực tế: `proxy` terminate TLS
-(`01-network/13-tls.md`) sẽ làm một bản copy-và-encrypt ở userspace trên
+so với `rustls` thuần. Trong thực tế: [`proxy`](../../proxy) terminate TLS
+([`01-network/13-tls.md`](../01-network/13-tls.md)) sẽ làm một bản copy-và-encrypt ở userspace trên
 đường response trừ khi bạn cố tình dùng kTLS, và đó là một mặc định bình
 thường, chấp nhận được — đừng coi việc mất zero-copy dưới TLS là một bug.
 
@@ -66,7 +66,7 @@ thường, chấp nhận được — đừng coi việc mất zero-copy dưới
    và xác nhận (qua `strace`) không có copy buffer userspace nào xảy ra.
 3. `mmap` một file, đọc từ mapping, rồi truncate file đó từ một process
    khác và quan sát `SIGBUS`.
-4. Dùng vectored write (`IoSlice`) trong `labs/04-static-server` để ghi
+4. Dùng vectored write (`IoSlice`) trong [`labs/04-static-server`](../../labs/04-static-server) để ghi
    một response header và body trong một syscall thay vì gộp buffer.
 5. Đọc thêm về hỗ trợ kTLS trong `rustls`/crate `ktls` và viết một ghi
-   chú ngắn về việc có đáng theo đuổi cho `proxy` hay không.
+   chú ngắn về việc có đáng theo đuổi cho [`proxy`](../../proxy) hay không.

@@ -32,20 +32,20 @@ không phải `tests/common.rs` ở top-level, không thì cargo coi nó là m�
 test binary riêng không có test nào và cảnh báo.
 
 ### Doctest: ví dụ phải luôn compile được
-Một block ` ```rust ` bên trong doc comment `///` được compile và chạy như
+Một fenced block Rust bên trong doc comment `///` được compile và chạy như
 một test bởi `cargo test`. Đây là loại test Rust duy nhất đảm bảo các ví
 dụ trong documentation của bạn không bao giờ âm thầm mục nát — một bug
 thật rất phổ biến ở các ngôn ngữ khác đơn giản là không thể xảy ra ở đây
 vì nó được compile-check.
 
-```rust
+````rust
 /// Parses a CIDR prefix length.
 ///
 /// ```
 /// assert_eq!(my_crate::prefix_len("/24"), Some(24));
 /// ```
 pub fn prefix_len(s: &str) -> Option<u8> { s.strip_prefix('/')?.parse().ok() }
-```
+````
 Gotcha: một doctest "chỉ chạy" mà không assert gì tạo ra sự tự tin giả —
 viết doctest thực sự check một giá trị, không phải loại chỉ chứng minh
 code không panic.
@@ -56,7 +56,7 @@ của cùng trait mà code production đã phụ thuộc vào — không cần f
 vì trait boundary đã sẵn là đường nối. Thiết kế cho testability nghĩa là
 code đang test phụ thuộc vào `dyn UpstreamPool` (hoặc một generic
 `P: UpstreamPool`), không phải một `HyperUpstreamPool` cụ thể — cùng quyết
-định dispatch như `03-rust/07-traits-and-generics.md`, chỉ áp dụng cho một
+định dispatch như [`03-rust/07-traits-and-generics.md`](07-traits-and-generics.md), chỉ áp dụng cho một
 lý do khác.
 
 ```rust
@@ -95,7 +95,7 @@ Thay vì tự chọn tay các input mẫu, `proptest` sinh hàng trăm input ng�
 nhiên khớp một hình dạng bạn mô tả và assert một invariant giữ đúng cho
 tất cả, tự động shrink một case fail xuống input nhỏ nhất vẫn còn fail.
 Điều này quan trọng nhất cho parser và encoder
-(`05-http-stack/01-parser.md`, `labs/01-http-parser`), nơi các bug thú vị
+([`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md), [`labs/01-http-parser`](../../labs/01-http-parser)), nơi các bug thú vị
 nằm ở những input không ai nghĩ ra để viết tay.
 
 ```rust
@@ -117,15 +117,15 @@ quanh một loop quá nhiễu để tin được ngoài một sanity check thô.
 
 ## Practice
 1. Thêm một `#[cfg(test)] mod tests` vào một hàm parse private trong
-   `labs/01-http-parser` và viết một test gọi trực tiếp một helper private
+   [`labs/01-http-parser`](../../labs/01-http-parser) và viết một test gọi trực tiếp một helper private
    — xác nhận nó sẽ không compile từ ngoài crate.
-2. Viết một integration test trong `tests/` cho `labs/03-router` chỉ dùng
+2. Viết một integration test trong `tests/` cho [`labs/03-router`](../../labs/03-router) chỉ dùng
    `pub` API của crate, và cố tình chạm vào một field private từ đó để
    xác nhận compiler chặn bạn.
 3. Viết một doctest cho một hàm public có `assert_eq!` thật trong đó, rồi
    phá hàm đó và xác nhận `cargo test` fail ở doctest.
 4. Định nghĩa một trait `Clock` (hoặc dependency non-deterministic tương
-   tự) trong `labs/11-rate-limit`, inject một `FixedClock` trong test, và
+   tự) trong [`labs/11-rate-limit`](../../labs/11-rate-limit), inject một `FixedClock` trong test, và
    viết một test sẽ flaky nếu không có nó.
 5. Viết một test round-trip bằng `proptest` cho một cặp encode/decode
    trong workspace của bạn (một hàm normalize header value, một varint

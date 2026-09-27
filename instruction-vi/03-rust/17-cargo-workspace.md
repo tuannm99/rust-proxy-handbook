@@ -59,7 +59,7 @@ Một `build.rs` ở gốc một crate được compile và chạy trước chí
 và có thể viết file vào `OUT_DIR` mà code của chính crate đó `include!`
 vào. Trường hợp cụ thể handbook này cần nó: `tonic-build`/`prost-build`
 compile file `.proto` thành struct Rust cho hỗ trợ gRPC
-(`05-http-stack/10-grpc.md`) — code client/server được sinh ra không tồn
+([`05-http-stack/10-grpc.md`](../05-http-stack/10-grpc.md)) — code client/server được sinh ra không tồn
 tại như source bạn viết tay, nó được sinh lại mỗi lần build từ schema
 `.proto`.
 
@@ -107,7 +107,7 @@ consumer phải trả giá compile `tokio-rustls` dù feature tắt.
    `cargo tree -e features` hoặc tương tự) một crate anh em dùng cùng
    dependency đó cũng có feature đó bật lên.
 4. Nối `build.rs` với `tonic-build` trong crate xử lý bài tập
-   `05-http-stack/10-grpc.md`, để compile một file `.proto`, và xem code
+   [`05-http-stack/10-grpc.md`](../05-http-stack/10-grpc.md), để compile một file `.proto`, và xem code
    được sinh dưới `target/*/build/*/out/`.
 5. Đo thời gian clean build trước và sau khi thêm bước compile schema vào
    `build.rs`, và quyết định check in code được sinh có đáng cho kích

@@ -60,7 +60,7 @@ và được giãn cách cho công việc web chung chung — nếu p99 của pr
 bên trong nó, cho ra một con số trông chắc chắn nhưng về cơ bản là bịa ra.
 
 Hãy chọn bucket quanh khoảng latency mà bạn thực sự quan tâm, và đặt một
-ranh giới đúng ngay ngưỡng SLO của bạn (`08-observability/06-alerting.md`):
+ranh giới đúng ngay ngưỡng SLO của bạn ([`08-observability/06-alerting.md`](06-alerting.md)):
 với một cạnh bucket ở 250ms, "tỉ lệ request dưới 250ms" trở thành một con
 số đếm chính xác thay vì một phép nội suy.
 
@@ -81,22 +81,22 @@ Với mỗi hop (client-facing và mỗi upstream) theo dõi: **R**ate
 Với riêng một proxy, đo duration ở **cả hai** đầu và export phần chênh
 lệch. Tổng latency client quan sát được trừ đi thời gian phản hồi của
 upstream chính là overhead của riêng proxy — queueing, TLS, kiểm tra WAF
-(`07-security/06-waf.md`), lấy connection từ pool. Không có phép trừ đó,
+([`07-security/06-waf.md`](../07-security/06-waf.md)), lấy connection từ pool. Không có phép trừ đó,
 mọi cuộc điều tra latency đều bắt đầu bằng "do mình hay do họ?" mà không
 có dữ liệu để trả lời.
 
 Các tín hiệu đặc thù của proxy nên có ngay từ ngày đầu, không cái nào nằm
 trong một dashboard RED chung chung:
 - **Độ bão hòa connection pool** trên mỗi upstream
-  (`06-proxy/01-upstream.md`) — việc chờ một connection trong pool là vô
+  ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)) — việc chờ một connection trong pool là vô
   hình trong thời gian phản hồi của upstream.
-- **Trạng thái retry và circuit-breaker** (`06-proxy/05-retry.md`) — tỉ lệ
+- **Trạng thái retry và circuit-breaker** ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)) — tỉ lệ
   retry, cạn ngân sách retry, các lần chuyển trạng thái circuit.
 - **Số lượng upstream healthy** dưới dạng gauge
-  (`06-proxy/03-healthcheck.md`).
-- **Tỉ lệ cache hit** (`05-http-stack/07-cache.md`), giải thích các thay
+  ([`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)).
+- **Tỉ lệ cache hit** ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)), giải thích các thay
   đổi tải upstream không liên quan gì tới traffic của client.
-- **Độ sâu queue / số lượng bị shed** (`07-security/09-ddos.md`), tín
+- **Độ sâu queue / số lượng bị shed** ([`07-security/09-ddos.md`](../07-security/09-ddos.md)), tín
   hiệu sớm nhất của tình trạng quá tải.
 
 ### Bùng nổ cardinality
@@ -125,7 +125,7 @@ mỗi upstream, mỗi port, mỗi cách diễn đạt.
 Mỗi lần cập nhật metric xảy ra trên mỗi request. Một counter là một phép
 tăng nguyên tử, rẻ nhưng không miễn phí — một counter toàn cục duy nhất
 được 16 worker thread cùng chạm vào là một cache line bị tranh chấp
-(`17-performance/02-false-sharing.md`), và ở tốc độ request cao điều này
+([`17-performance/02-false-sharing.md`](../17-performance/02-false-sharing.md)), và ở tốc độ request cao điều này
 sẽ hiện ra trong một profile.
 
 Chi phí lớn hơn thường là *tra cứu label*: `with_label_values(&["GET",
@@ -135,7 +135,7 @@ connection) và giữ handle kết quả, thay vì tra cứu lại mỗi request
 
 Gotcha: hãy đo thay vì đoán. Overhead của metrics thường đủ nhỏ để bỏ qua
 và thỉnh thoảng chiếm 5% CPU — và bạn không thể biết cái nào đúng nếu
-không có một flamegraph (`08-observability/04-profiling.md`).
+không có một flamegraph ([`08-observability/04-profiling.md`](04-profiling.md)).
 
 ### Push vs pull, và OpenTelemetry đứng ở đâu
 Prometheus pull (scrape `/metrics` theo chu kỳ); metrics của OTel có thể
@@ -149,7 +149,7 @@ production, bind vào một interface nội bộ. Trên listener chính, nó có
 truy cập được bởi bất kỳ ai, và nó làm rò rỉ một bản đồ chi tiết về các
 upstream, tên route, và khối lượng traffic của bạn — chưa kể việc scrape
 nó trở thành một cách rẻ tiền để tiêu tốn CPU của proxy
-(`07-security/09-ddos.md`). Nó cũng có nghĩa là metrics vẫn scrape được
+([`07-security/09-ddos.md`](../07-security/09-ddos.md)). Nó cũng có nghĩa là metrics vẫn scrape được
 khi listener chính đang bão hòa hoặc đang shed tải, đúng lúc bạn cần chúng
 nhất.
 
@@ -161,10 +161,10 @@ metrics. Hãy theo dõi thời gian scrape như một metric riêng của nó.
 ## Practice
 Xây dựng theo thứ tự sau.
 
-1. Trong `labs/15-prometheus`, expose `/metrics` bằng `TextEncoder` của
+1. Trong [`labs/15-prometheus`](../../labs/15-prometheus), expose `/metrics` bằng `TextEncoder` của
    crate `prometheus` và tự tay scrape nó. **Xong khi** `curl` trả về một
    response đúng định dạng exposition.
-2. Thêm metrics RED phía client vào `proxy` trên một listener nội bộ
+2. Thêm metrics RED phía client vào [`proxy`](../../proxy) trên một listener nội bộ
    riêng. **Xong khi** `/metrics` không truy cập được từ listener công
    khai và vẫn được phục vụ khi listener chính đang bão hòa.
 3. Thêm RED theo từng upstream, khóa theo *tên* upstream, cộng với các tín
@@ -185,7 +185,7 @@ Xây dựng theo thứ tự sau.
    nó bằng route templating và xác nhận nó bị giới hạn bởi kích thước
    route table.
 7. Pre-resolve các handle label trên hot path và profile
-   (`08-observability/04-profiling.md`). **Xong khi** bạn có thể nói chi
+   ([`08-observability/04-profiling.md`](04-profiling.md)). **Xong khi** bạn có thể nói chi
    phí CPU của metrics dưới dạng phần trăm, trước và sau.
 8. Theo dõi thời gian render `/metrics` như một metric riêng của nó.
    **Xong khi** bạn biết một lần scrape mất bao lâu ở số lượng series hiện

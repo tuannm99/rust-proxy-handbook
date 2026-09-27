@@ -16,7 +16,7 @@ QUIC multiplexes independent streams the same way HTTP/2 does, but because
 loss recovery happens per-stream inside QUIC (not per-connection the way
 TCP retransmission does), a lost packet on one stream doesn't stall the
 other streams. This fixes the TCP-level HOL blocking that HTTP/2 over TCP
-still has (see `11-http2.md`).
+still has (see [`11-http2.md`](11-http2.md)).
 
 ### Connection migration and 0-RTT
 QUIC connections are identified by a Connection ID, not a
@@ -31,7 +31,7 @@ non-idempotent requests — a proxy accepting 0-RTT data must treat it as
 QUIC doesn't layer TLS on top the way TCP+TLS does — the QUIC handshake
 *is* a TLS 1.3 handshake carried in QUIC transport parameters, so there's
 no cleartext QUIC. This means every HTTP/3 deployment needs the same
-cert/SNI/ALPN machinery as `13-tls.md`, just carried differently on the wire.
+cert/SNI/ALPN machinery as [`13-tls.md`](13-tls.md), just carried differently on the wire.
 
 ### One UDP socket, many connections
 The operational shift is bigger than "UDP instead of TCP". With TCP,
@@ -46,7 +46,7 @@ Consequences that show up immediately: the receive loop is a hot single
 point (`quinn` mitigates with `recvmmsg` batching and `SO_REUSEPORT` across
 workers), and there is no `accept()` backpressure — datagrams arrive
 whether you are ready or not, so the accept-rate limiting from
-`07-security/09-ddos.md` has to happen after parsing enough of the packet to
+[`07-security/09-ddos.md`](../07-security/09-ddos.md) has to happen after parsing enough of the packet to
 know it is a new connection attempt.
 
 Gotcha: UDP buffer sizes matter far more than for TCP. The kernel's default
@@ -96,7 +96,7 @@ advertised it.
 `quinn` is the primary async QUIC implementation; `h3` (built on `quinn`)
 implements HTTP/3 framing on top of it. As of this writing neither `hyper`
 nor `hyper-util` speak HTTP/3 directly — it's a separate integration, which
-is why `proxy` treats HTTP/3 as a stretch goal
+is why [`proxy`](../../proxy) treats HTTP/3 as a stretch goal
 rather than a baseline requirement.
 
 ## Practice
@@ -106,13 +106,13 @@ rather than a baseline requirement.
    UDP on the wire, not TCP.
 2. Read the `quinn` crate's example client/server and identify where the
    TLS 1.3 handshake happens relative to the QUIC handshake.
-3. Build a minimal QUIC echo endpoint in `labs/09-http3` with `quinn`,
+3. Build a minimal QUIC echo endpoint in [`labs/09-http3`](../../labs/09-http3) with `quinn`,
    then as a stretch exercise add an HTTP/3 listener using `quinn` + `h3`
-   to `proxy` alongside the existing HTTP/1.1/2 listener, and compare what
+   to [`proxy`](../../proxy) alongside the existing HTTP/1.1/2 listener, and compare what
    had to change in your TLS config.
 4. Explain in your own words why 0-RTT data should never be trusted for a
    non-idempotent request like `POST /transfer-funds`.
-5. In `labs/09-http3`, run two concurrent QUIC connections against your one
+5. In [`labs/09-http3`](../../labs/09-http3), run two concurrent QUIC connections against your one
    UDP socket and log the Connection ID demux — confirm you can see both
    being routed from the same socket.
 6. Check `net.core.rmem_max` on your machine, then drive the endpoint hard

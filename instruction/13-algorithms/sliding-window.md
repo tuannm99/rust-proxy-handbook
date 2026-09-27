@@ -1,6 +1,6 @@
 # Sliding Window Rate Limiting
 
-`07-security/07-ratelimit.md` and `13-algorithms/token-bucket.md` cover token
+[`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) and [`13-algorithms/token-bucket.md`](token-bucket.md) cover token
 bucket and leaky bucket. This file covers the other family: limiting by
 counting requests in a moving time window instead of modeling a bucket.
 
@@ -79,7 +79,7 @@ true count. Pick based on which guarantee the limit is actually promising
 to a client or a downstream.
 
 ## Practice
-1. In `labs/11-rate-limit`, implement the fixed window counter first and
+1. In [`labs/11-rate-limit`](../../labs/11-rate-limit), implement the fixed window counter first and
    write the boundary-burst test explicitly: send `limit` requests at
    `window_end - 1ms` and another `limit` at `window_end + 1ms`, and
    observe both succeed despite `2x` the intended rate in ~2ms.
@@ -92,7 +92,7 @@ to a client or a downstream.
 4. Reproduce the atomic-rollover bug on purpose (roll over `curr`→`prev`
    and reset as two separate, non-atomic steps under concurrent access),
    observe undercounting, then fix it.
-5. (Stretch) Compare sliding window counter against your `token-bucket.md`
+5. (Stretch) Compare sliding window counter against your [`token-bucket.md`](token-bucket.md)
    GCRA implementation on an identical bursty traffic trace and describe,
    in your own words, which one a client would experience as more
    "unfair" and why.

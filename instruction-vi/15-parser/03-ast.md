@@ -1,7 +1,7 @@
 # AST
 
 Cái cây mà một parser tạo ra, và câu hỏi liệu bạn có cần nó hay không.
-Nối tiếp `15-parser/02-parser.md`.
+Nối tiếp [`15-parser/02-parser.md`](02-parser.md).
 
 ## What to learn
 
@@ -31,14 +31,14 @@ Quyết định trung tâm. Có hai câu trả lời hợp lệ:
 
 - **Parse trực tiếp vào struct đích.** Các hành động của parser xây dựng
   `Config`/`Request` của bạn khi nó chạy; không có cây trung gian nào cả.
-  Đây là những gì `05-http-stack/01-parser.md` làm — một HTTP request đã
+  Đây là những gì [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) làm — một HTTP request đã
   parse *chính là* cấu trúc hữu ích, và chèn thêm một AST chỉ là overhead
   thuần túy. Chọn cách này khi dạng đã parse chính là dạng bạn dùng.
 - **Xây một AST trước, rồi xử lý nó.** Chọn cách này khi cùng một input đã
   parse nuôi *nhiều* consumer, hoặc cần nhiều pass: validate, rồi resolve
   reference, rồi lower xuống dạng runtime. Một config hỗ trợ directive
   `include`, nội suy biến, hay default kế thừa từ block cha thì sạch hơn
-  nhiều khi là một cây bạn duyệt qua (xem `15-parser/04-visitor.md`) so
+  nhiều khi là một cây bạn duyệt qua (xem [`15-parser/04-visitor.md`](04-visitor.md)) so
   với thứ được ráp trong một pass.
 
 Failure mode là xây một AST theo phản xạ chỉ vì tutorial làm vậy. Nếu chỉ
@@ -47,8 +47,8 @@ gì.
 
 ### Cây dạng arena: hình dạng idiomatic trong Rust
 Một cây gồm các node `Box` với con trỏ tới cha đánh nhau với borrow
-checker (`03-rust/01-ownership.md`) và làm phân mảnh heap. Câu trả lời
-idiomatic, giống hệt mẹo trong `13-algorithms/lru.md`, là lưu mọi node
+checker ([`03-rust/01-ownership.md`](../03-rust/01-ownership.md)) và làm phân mảnh heap. Câu trả lời
+idiomatic, giống hệt mẹo trong [`13-algorithms/lru.md`](../13-algorithms/lru.md), là lưu mọi node
 trong một `Vec` duy nhất và liên kết chúng bằng index `usize`:
 
 ```rust
@@ -66,11 +66,11 @@ lifetime. Nhược điểm: index không được type-check theo cách referenc
 Gắn byte range mà mỗi node đến từ đó. Các lỗi ngữ nghĩa phát hiện *sau*
 khi parse ("upstream `web` được tham chiếu ở đây chưa bao giờ được định
 nghĩa") khi đó có thể trỏ tới đúng dòng, giống như lỗi của lexer
-(`15-parser/01-lexer.md`). Một cây không có span buộc mọi lỗi về sau chỉ
+([`15-parser/01-lexer.md`](01-lexer.md)). Một cây không có span buộc mọi lỗi về sau chỉ
 có thể nói "đâu đó trong config của bạn."
 
 ## Practice
-1. Với grammar config từ `15-parser/02-parser.md`, quyết định tường minh
+1. Với grammar config từ [`15-parser/02-parser.md`](02-parser.md), quyết định tường minh
    xem có parse thẳng vào struct `Config` của bạn hay qua một AST — ghi
    lại lý do. Nếu format không có include hay nội suy, câu trả lời thành
    thật thường là "không cần AST."
@@ -81,6 +81,6 @@ có thể nói "đâu đó trong config của bạn."
    node `Box`, và duyệt nó để xác nhận không có ma sát về lifetime.
 4. Gắn một source span cho mỗi node và tạo ra một lỗi ngữ nghĩa sau-khi-
    parse ("directive `listen` trùng lặp") trỏ đúng vào dòng gây lỗi.
-5. Đối chiếu điều này với `05-http-stack/01-parser.md`: diễn giải vì sao
+5. Đối chiếu điều này với [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md): diễn giải vì sao
    một HTTP request được parse trực tiếp vào một struct mà không có AST,
    và điều gì phải thay đổi về bài toán để một cái cây trở nên đáng giá.

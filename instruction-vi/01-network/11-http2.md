@@ -19,7 +19,7 @@ một kết nối TCP, mỗi cái được flow-control độc lập. Đây là 
 giải quyết head-of-line blocking ở *tầng kết nối* nhưng không giải quyết
 HOL blocking ở *tầng TCP* — một TCP segment bị mất vẫn khựng mọi stream
 trên kết nối đó cho tới khi nó được retransmit (đây chính xác là thứ
-HTTP/3 trên QUIC sửa, xem `12-http3.md`).
+HTTP/3 trên QUIC sửa, xem [`12-http3.md`](12-http3.md)).
 
 ### Nén header HPACK
 Header được nén bằng HPACK: một bảng tĩnh chứa các cặp tên/giá trị header
@@ -51,7 +51,7 @@ theo từng kết nối, và nó ánh xạ trực tiếp tới việc một kế
 thể tạo ra bao nhiêu request upstream.
 
 Gotcha: `GOAWAY` mang stream ID cuối cùng bên gửi sẽ xử lý, đây chính là
-thứ khiến graceful shutdown (`09-architecture/04-graceful-shutdown.md`)
+thứ khiến graceful shutdown ([`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md))
 khả thi — các stream dưới nó hoàn tất, các stream trên nó client có thể
 an toàn retry ở nơi khác. Một proxy đóng kết nối TCP mà không có `GOAWAY`
 biến một lần drain sạch thành các lỗi hiển thị với client.
@@ -73,7 +73,7 @@ thái decode cho phía client, trạng thái encode cho phía upstream.
 **Decompression là một vector khuếch đại.** Một khối header đã nén nhỏ có
 thể phình to khủng khiếp ("HPACK bomb"), nên hãy giới hạn kích thước header
 *đã giải nén*, không chỉ kích thước frame. Đây là phiên bản HTTP/2 của
-cùng kỷ luật giới hạn như `05-http-stack/01-parser.md`.
+cùng kỷ luật giới hạn như [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md).
 
 ### Flow control trong một proxy: backpressure thực sự đổ vào đâu
 Có hai window độc lập: theo stream và theo kết nối. Bên gửi phải tôn
@@ -112,13 +112,13 @@ server, và một proxy phải giới hạn từng loại:
 Pattern chung: bất kỳ frame nào rẻ với client và chưa được tính vào một
 giới hạn có sẵn đều cần rate limit riêng của nó. `h2` đã sửa từng cái
 trong số này, đây là một luận điểm cụ thể cho lập trường trong
-`05-http-stack/01-parser.md` — dùng implementation được bảo trì.
+[`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) — dùng implementation được bảo trì.
 
 ### Rust nằm ở đâu trong bức tranh này
 `h2` (được `hyper` dùng nội bộ khi feature `http2` bật) là implementation
 HTTP/2 trên thực tế trong hệ sinh thái Rust; auto server builder của
-`hyper-util` trong `labs/02-http-server`/`reverse-proxy` negotiate
-HTTP/1.1 vs HTTP/2 qua ALPN (xem `13-tls.md`) nên bạn có được điều này
+`hyper-util` trong [`labs/02-http-server`](../../labs/02-http-server)/`reverse-proxy` negotiate
+HTTP/1.1 vs HTTP/2 qua ALPN (xem [`13-tls.md`](13-tls.md)) nên bạn có được điều này
 "miễn phí" một khi TLS đã được cắm vào, nhưng bạn vẫn nên giải thích được
 chuyện gì đang xảy ra bên dưới abstraction đó.
 
@@ -126,9 +126,9 @@ chuyện gì đang xảy ra bên dưới abstraction đó.
 
 1. Capture một kết nối HTTP/2 bằng Wireshark (hoặc `nghttp -v`) và xác
    định ít nhất 4 loại frame khác nhau trên đường truyền.
-2. Bật feature `http2` trên hyper server trong `labs/02-http-server` và
+2. Bật feature `http2` trên hyper server trong [`labs/02-http-server`](../../labs/02-http-server) và
    xác nhận qua `curl --http2` rằng nó negotiate HTTP/2 qua TLS (ALPN).
-3. Trong `labs/08-http2`, gửi hai request đồng thời trên cùng một kết nối
+3. Trong [`labs/08-http2`](../../labs/08-http2), gửi hai request đồng thời trên cùng một kết nối
    HTTP/2 bằng `curl --http2 -v` và xác nhận cả hai stream hoàn tất trên
    một kết nối TCP (kiểm tra bằng `ss` hoặc `lsof`); rồi thu nhỏ window
    ban đầu và quan sát stream thứ hai bị khựng lại vì flow control.
@@ -136,7 +136,7 @@ chuyện gì đang xảy ra bên dưới abstraction đó.
    bạn, chuyện gì xảy ra nếu kết nối phía client-facing của proxy bạn là
    HTTP/2 nhưng kết nối upstream là HTTP/1.1 — sự lệch pha flow-control
    được hấp thụ ở đâu?
-5. Chứng minh backpressure từ đầu tới cuối trong `labs/08-http2`: phục vụ
+5. Chứng minh backpressure từ đầu tới cuối trong [`labs/08-http2`](../../labs/08-http2): phục vụ
    một response lớn cho một client đọc chậm (hoặc ngừng đọc hẳn), và xác
    nhận bộ nhớ của proxy bạn giữ phẳng thay vì buffer toàn bộ body.
 6. Đặt `SETTINGS_MAX_CONCURRENT_STREAMS` thấp (ví dụ 2), mở nhiều stream

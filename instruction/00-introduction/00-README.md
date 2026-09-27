@@ -18,26 +18,26 @@ as a dependency chain: each numbered directory assumes the ones before it.
 12 testing       -> load testing, fuzzing, chaos testing for what you built
 ```
 
-(`13-algorithms/` through `21-reading-list/` are a deep-dive/appendix layer
-outside this dependency chain — see `CLAUDE.md`.)
+([`13-algorithms/`](../13-algorithms) through [`21-reading-list/`](../21-reading-list) are a deep-dive/appendix layer
+outside this dependency chain — see [`CLAUDE.md`](../../CLAUDE.md).)
 
-A companion Cargo workspace lives at the repo root (`labs/`, `proxy/`) —
-see the root `00-README.md`. `proxy/` is the actual deliverable; `labs/` are
+A companion Cargo workspace lives at the repo root ([`labs/`](../../labs), [`proxy/`](../../proxy)) —
+see the root [`00-README.md`](00-README.md). [`proxy/`](../../proxy) is the actual deliverable; [`labs/`](../../labs) are
 18 numbered, progressively harder exercises that build up the skills
-`proxy/` needs. Each handbook topic's `## Practice` section points at a
-specific `labs/` or `proxy/` crate to implement.
+[`proxy/`](../../proxy) needs. Each handbook topic's `## Practice` section points at a
+specific [`labs/`](../../labs) or [`proxy/`](../../proxy) crate to implement.
 
 ## How to use this handbook
 
-1. Work through directories roughly in numeric order — `06-proxy` assumes
-   `04-runtime` and `05-http-stack`, not just "some Rust experience".
+1. Work through directories roughly in numeric order — [`06-proxy`](../06-proxy) assumes
+   [`04-runtime`](../04-runtime) and [`05-http-stack`](../05-http-stack), not just "some Rust experience".
 2. For each topic file, read `## What to learn`, then do the linked exercise
    in `## Practice` before moving on. Don't binge-read all 13 directories
-   before writing any code — the `labs/` and `proxy/` crates are where the
+   before writing any code — the [`labs/`](../../labs) and [`proxy/`](../../proxy) crates are where the
    concepts actually stick.
-3. Use `21-reading-list/` as background reading in parallel, not a
+3. Use [`21-reading-list/`](../21-reading-list) as background reading in parallel, not a
    prerequisite — nothing in `01`-`09` requires having read a book first.
-4. Treat `12-testing/` as an exercise to run *after* a project is working,
+4. Treat [`12-testing/`](../12-testing) as an exercise to run *after* a project is working,
    not before — you need a running proxy to load-test or fuzz.
 
 ## Scope
@@ -50,4 +50,4 @@ Out of scope: L3/L4-only load balancers (e.g. IPVS-style), non-HTTP
 protocols (gRPC gets a passing mention where it affects HTTP/2 handling but
 isn't its own topic), and cloud/infra concerns (Kubernetes Ingress
 controllers, service meshes) beyond the "what would plug in here" pointers
-in `09-architecture/`.
+in [`09-architecture/`](../09-architecture).

@@ -1,6 +1,6 @@
 # LRU and Cache Eviction
 
-`05-http-stack/07-cache.md` covers HTTP caching semantics (freshness, `Vary`,
+[`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md) covers HTTP caching semantics (freshness, `Vary`,
 invalidation). This file covers the eviction policy underneath: what to
 throw away when the cache is full.
 
@@ -23,10 +23,10 @@ struct Node<K, V> {
 
 Gotcha: writing this with `Rc<RefCell<Node>>` produces reference cycles
 that never free, and writing it with raw pointers means real `unsafe`
-(see `03-rust/03-unsafe.md`). The idiomatic Rust answer is an arena — store
+(see [`03-rust/03-unsafe.md`](../03-rust/03-unsafe.md)). The idiomatic Rust answer is an arena — store
 nodes in a `Vec` and use `usize` indices as links, which makes the whole
 structure safe, compact, and cache-friendly. This is the same technique as
-`13-algorithms/slab.md`; a slab is the natural backing store for an LRU.
+[`13-algorithms/slab.md`](slab.md); a slab is the natural backing store for an LRU.
 In production, reach for the `lru` or `moka` crate rather than
 hand-rolling.
 
@@ -54,7 +54,7 @@ eviction, a hand sweeps the circle: if the bit is set, clear it and move
 on; if clear, evict. Entries touched since the last sweep survive one
 round, approximating recency closely enough for most workloads at a
 fraction of the coordination cost. This is what the Linux page cache uses
-(`16-kernel/08-page-cache.md`).
+([`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md)).
 
 ### LRU's blind spot: scans
 A single pass over a large set of one-shot items (a crawler walking every
@@ -70,7 +70,7 @@ count today. The practical answers combine both:
   between them based on which is producing hits.
 - **TinyLFU / W-TinyLFU** puts a small LRU admission window in front of a
   frequency-based main cache, using a count-min sketch
-  (`13-algorithms/count-min-sketch.md`) to estimate frequency in a few
+  ([`13-algorithms/count-min-sketch.md`](count-min-sketch.md)) to estimate frequency in a few
   bits per key. A new item is admitted only if its estimated frequency
   beats the entry it would evict. This is the current default choice — it
   is what `moka` implements — and it is scan-resistant by construction.
@@ -87,7 +87,7 @@ object fits. Cap the maximum cacheable object size too, or one large
 response evicts thousands of small hot ones.
 
 ## Practice
-1. In `labs/10-cache`, implement an arena-backed LRU (indices, not
+1. In [`labs/10-cache`](../../labs/10-cache), implement an arena-backed LRU (indices, not
    pointers) bounded by total response bytes rather than entry count; add
    a max-cacheable-object-size cap.
 2. Write the eviction test that matters: insert until full, verify the

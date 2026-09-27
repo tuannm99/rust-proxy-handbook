@@ -1,6 +1,6 @@
 # XDP
 
-eXpress Data Path: chạy một chương trình eBPF (`16-kernel/09-ebpf.md`)
+eXpress Data Path: chạy một chương trình eBPF ([`16-kernel/09-ebpf.md`](09-ebpf.md))
 ngay trong NIC driver, trước khi kernel dựng bất kỳ state per-packet nào.
 Nơi rẻ nhất để drop một packet trên Linux.
 
@@ -19,7 +19,7 @@ và một TCP handshake. Khoảng cách đo được là gần một bậc độ
 magnitude) mỗi bước — XDP duy trì được hàng chục triệu packet mỗi giây
 trên mỗi core, trong khi iptables chạm trần ở mức thấp triệu.
 
-Đó là toàn bộ giá trị đề xuất cho `07-security/09-ddos.md`: dưới một đợt
+Đó là toàn bộ giá trị đề xuất cho [`07-security/09-ddos.md`](../07-security/09-ddos.md): dưới một đợt
 flood dạng volumetric, chi phí *từ chối* traffic là thứ quyết định bạn có
 sống sót hay không.
 
@@ -94,7 +94,7 @@ nhiều packet, và TLS nghĩa là nó bị mã hóa dù sao đi nữa), hoặc 
 Kiến trúc đúng là phân lớp: XDP drop những gì chứng minh được là thù địch
 ở tốc độ đường dây, và mọi thứ khác đi qua rate-limiting ở accept của
 chính proxy cùng các lớp phòng thủ ở tầng HTTP
-(`07-security/07-ratelimit.md`, `07-security/06-waf.md`). Blocklist đến
+([`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md), [`07-security/06-waf.md`](../07-security/06-waf.md)). Blocklist đến
 *từ* proxy — nơi thấy được các request — và được đẩy *vào* map của XDP từ
 user space, đó là vòng feedback khiến cả hai lớp trở nên hữu dụng.
 
@@ -104,7 +104,7 @@ block cài trong XDP một TTL mà user space làm mới, để một bug tự h
 thay vì tồn tại cho tới khi ai đó nhận ra.
 
 ## Practice
-1. Trong `labs/17-ebpf`, attach một chương trình XDP đếm và pass mọi
+1. Trong [`labs/17-ebpf`](../../labs/17-ebpf), attach một chương trình XDP đếm và pass mọi
    packet. Xác nhận bằng `bpftool net show` bạn nhận chế độ attach nào —
    nếu là generic, tìm hiểu vì sao.
 2. Thêm việc parse Ethernet + IPv4 với bounds check đúng; drop packet từ
@@ -114,8 +114,8 @@ thay vì tồn tại cho tới khi ai đó nhận ra.
 4. Thay IP hardcode bằng một map `LPM_TRIE` được điền từ user space; thêm
    và xóa CIDR lúc runtime trong khi chương trình vẫn đang attach.
 5. Benchmark tỷ lệ drop cho cùng một blocklist được implement ba cách:
-   XDP, iptables, và trong accept loop của `proxy`. Dùng một packet
+   XDP, iptables, và trong accept loop của [`proxy`](../../proxy). Dùng một packet
    generator và so sánh cả throughput lẫn CPU host.
-6. Đóng vòng feedback: cho `proxy` phát hiện một nguồn lạm dụng qua
-   `07-security/07-ratelimit.md` và đẩy nó vào map XDP với một TTL; xác
+6. Đóng vòng feedback: cho [`proxy`](../../proxy) phát hiện một nguồn lạm dụng qua
+   [`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) và đẩy nó vào map XDP với một TTL; xác
    nhận traffic ngừng chạm tới user space, và entry đó tự hết hạn.

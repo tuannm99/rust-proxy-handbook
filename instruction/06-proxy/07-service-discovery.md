@@ -2,9 +2,9 @@
 
 ## What to learn
 ### Static config vs dynamic discovery
-`01-upstream.md` assumes a fixed upstream list. Real deployments change
+[`01-upstream.md`](01-upstream.md) assumes a fixed upstream list. Real deployments change
 upstream sets constantly (autoscaling, rolling deploys, node failures).
-Static config (a list in a config file, reloaded per `09-architecture/03-config.md`)
+Static config (a list in a config file, reloaded per [`09-architecture/03-config.md`](../09-architecture/03-config.md))
 is simplest and fine for small/stable fleets. Dynamic discovery — DNS SRV
 records, Consul, or Kubernetes Endpoints/EndpointSlices — is needed once
 upstream membership changes faster than you want to hand-edit config.
@@ -20,7 +20,7 @@ Resolve a DNS name (often an SRV record, which also carries port + weight,
 unlike plain A/AAAA) on an interval and diff the result against the
 current pool. Cheap, dependency-free, but bounded by DNS TTL — you cannot
 react faster than the TTL, and stale resolver caches (see
-`01-network/09-dns.md`) can leave you pointed at a decommissioned upstream
+[`01-network/09-dns.md`](../01-network/09-dns.md)) can leave you pointed at a decommissioned upstream
 briefly after a change.
 
 Gotcha, and this is the classic one: **resolving once at startup is not
@@ -56,7 +56,7 @@ dependency on that control plane being reachable.
 Gotcha: watches break. Connections drop, the server restarts, a resource
 version expires and the API tells you to start over. A watch-based
 implementation is not "subscribe once" — it is a supervised loop that
-reconnects with backoff (`05-retry.md`), re-lists the full state on
+reconnects with backoff ([`05-retry.md`](05-retry.md)), re-lists the full state on
 reconnect, and reconciles that full state against what it currently holds.
 Getting the re-list path right matters more than the happy path, because
 the happy path is what you test and the re-list is what runs during an
@@ -92,7 +92,7 @@ ones. A poll that removes 90% of upstreams at once is more likely a
 partial view than a real event. A maximum-churn guard ("never remove more
 than X% of the pool in one update without a second confirming poll") is
 cheap insurance; Envoy's equivalent is its panic threshold
-(`03-healthcheck.md`), applied at the membership layer instead.
+([`03-healthcheck.md`](03-healthcheck.md)), applied at the membership layer instead.
 
 ### Fail static
 Generalizing the above: when the control plane is unreachable, keep
@@ -136,20 +136,20 @@ traffic:
 2. **Let in-flight requests finish** — the refcount behavior above handles
    this if you hold `Arc<Upstream>` per request, with a deadline for the
    ones that never finish.
-3. **Close its pooled idle connections** (`01-upstream.md`) last. Skipping
+3. **Close its pooled idle connections** ([`01-upstream.md`](01-upstream.md)) last. Skipping
    this step is the common bug: the connection pool keeps warm sockets to
    a host that discovery removed, and if your pool is keyed by address
    rather than by `Arc<Upstream>` identity, a later host at the same
    address inherits them.
 
-Gotcha: a graceful-shutdown path (`09-architecture/04-graceful-shutdown.md`)
+Gotcha: a graceful-shutdown path ([`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md))
 and a discovery-removal path are the same drain logic at different scopes.
 Write it once.
 
 ## Practice
 Build these in order.
 
-1. In `labs/05-reverse-proxy`, move the hardcoded upstream list behind a
+1. In [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), move the hardcoded upstream list behind a
    `Discovery` trait with a static implementation. **Done when** the proxy
    behaves identically to before and nothing outside the trait knows where
    the list came from.

@@ -24,7 +24,7 @@ response này như một HTTP response bình thường — chỉ vậy thôi. Đ
 giờ đọc yếu tố bảo mật vào nó.
 
 Gotcha: `Connection` và `Upgrade` là header hop-by-hop
-(`05-http-stack/04-keepalive.md`). Một proxy không được forward chúng mù
+([`05-http-stack/04-keepalive.md`](04-keepalive.md)). Một proxy không được forward chúng mù
 quáng — nó kết thúc một lần upgrade và khởi tạo một lần khác, sinh lại cả
 hai header cho leg upstream. Một proxy strip header hop-by-hop đúng đắn
 rồi *sau đó* quên thêm lại chúng cho request upgrade làm hỏng WebSocket
@@ -54,14 +54,14 @@ service của bạn thay vì để nó mặc định là được phép.
 Gotcha: auth dựa trên token ngay trên chính WebSocket (một token trong
 URL hoặc trong message đầu tiên) né hoàn toàn vấn đề cookie, và là thiết
 kế vững chắc hơn — nhưng một token trong query string sẽ lọt vào access
-log (`08-observability/01-logging.md`), nên hãy xóa nó ở đó.
+log ([`08-observability/01-logging.md`](../08-observability/01-logging.md)), nên hãy xóa nó ở đó.
 
 ### Vì sao một proxy không thể coi đây là request/response sau khi upgrade
 Một khi `101` được gửi, cả router lẫn bất kỳ middleware theo-từng-request nào (auth, compression, caching) được xây quanh mô hình "một request vào, một response ra" không còn áp dụng — không có request tiếp theo trên connection này, chỉ có một ống byte hai chiều. Một reverse proxy phải xử lý Upgrade như một trường hợp đặc biệt: sau khi forward handshake, nó chuyển sang relay byte thô cả hai chiều cho tới khi một trong hai bên đóng.
 
 Điều này có hệ quả cho mọi timeout và giới hạn bạn cấu hình dựa trên mô
 hình tinh thần request/response. Read timeout dùng để bắt một request bị
-treo (`06-proxy/01-upstream.md`) giờ nổ trên một WebSocket rảnh hoàn toàn
+treo ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)) giờ nổ trên một WebSocket rảnh hoàn toàn
 khỏe mạnh. Giới hạn "tổng thời gian request" giết một connection đáng lẽ
 sống nhiều giờ. **Áp request timeout lên connection đã upgrade là bug
 WebSocket-qua-proxy phổ biến nhất**, và nó biểu hiện như "app của chúng
@@ -80,7 +80,7 @@ kích thước message), trường độ dài mở rộng 64-bit nằm dưới q
 soát của attacker. Một header frame khai một payload 2^63 byte phải bị
 reject theo một giới hạn cấu hình *trước* bất kỳ lần cấp phát nào — không
 bao giờ `Vec::with_capacity(declared_len)`. Đây là cùng loại bug với một
-decompression bomb (`07-security/09-ddos.md`): tin vào một trường độ dài
+decompression bomb ([`07-security/09-ddos.md`](../07-security/09-ddos.md)): tin vào một trường độ dài
 do peer chọn.
 
 ### Keepalive qua ping/pong
@@ -90,7 +90,7 @@ Gotcha: ping phải chạy theo một đồng hồ *và* có một deadline cho 
 Gửi ping mà không theo dõi pong có quay lại không thì không phát hiện
 được gì — connection chết dù sao đi nữa, bạn chỉ cảm thấy yên tâm hơn một
 chút. Đóng connection sau một pong bị bỏ lỡ, và đếm các lần đóng đó như
-một metric (`08-observability/02-metrics.md`): tỉ lệ tăng thường nghĩa là
+một metric ([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)): tỉ lệ tăng thường nghĩa là
 một intermediary đang drop connection rảnh, điều có thể hành động được.
 
 ### Backpressure
@@ -105,7 +105,7 @@ rằng "có giới hạn" nghĩa là một client chậm cuối cùng sẽ chặ
 upstream, điều đó là đúng đắn.
 
 Gotcha: một connection WebSocket là một tài nguyên *sống lâu*, nên cách
-tính toán từ `07-security/09-ddos.md` thay đổi hình dạng. Mười nghìn
+tính toán từ [`07-security/09-ddos.md`](../07-security/09-ddos.md) thay đổi hình dạng. Mười nghìn
 WebSocket rảnh tốn mười nghìn fd, socket, và cặp buffer, vô thời hạn,
 trong khi không sinh request nào cả — nên giới hạn tốc độ request không
 ràng buộc được chúng. Giới hạn số connection đã upgrade đồng thời tường
@@ -117,7 +117,7 @@ RFC 8441 mang WebSocket qua HTTP/2 dùng một `CONNECT` mở rộng với một
 ## Practice
 Làm theo thứ tự này.
 
-1. Trong `labs/02-http-server`, implement upgrade handshake bằng tay —
+1. Trong [`labs/02-http-server`](../../labs/02-http-server), implement upgrade handshake bằng tay —
    validate `Sec-WebSocket-Version`, tính `Sec-WebSocket-Accept`, không
    dùng crate WebSocket nào. **Xong khi** một browser thật hoặc client
    `websocat` hoàn thành handshake với nó.
@@ -129,7 +129,7 @@ Làm theo thứ tự này.
    để unmask và re-frame. **Xong khi** một client round-trip được cả
    message text lẫn binary, và một frame khai một payload length phi lý
    bị reject mà không cấp phát.
-4. Trong `labs/05-reverse-proxy`, thêm pass-through proxying: forward
+4. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), thêm pass-through proxying: forward
    handshake (sinh lại header hop-by-hop), rồi relay bằng
    `tokio::io::copy_bidirectional`. **Xong khi** một WebSocket end-to-end
    hoạt động qua proxy.

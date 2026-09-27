@@ -2,14 +2,14 @@
 
 Where auth sits in a proxy's pipeline, and what the proxy does with an
 identity once it has one. The two mechanisms have their own files:
-`07-security/02-jwt.md` (bearer tokens) and `07-security/03-mtls.md` (client
+[`07-security/02-jwt.md`](02-jwt.md) (bearer tokens) and [`07-security/03-mtls.md`](03-mtls.md) (client
 certificates). They are frequently combined — mTLS authenticating the
 calling *service*, a JWT authenticating the *user* on top of it.
 
 ## What to learn
 ### Where auth belongs in the pipeline
 Auth should run as early as possible in the component pipeline (see
-`09-architecture/01-components.md`: right after routing determines which
+[`09-architecture/01-components.md`](../09-architecture/01-components.md): right after routing determines which
 route's auth policy applies, before any upstream call or expensive
 processing like WAF body inspection). Reject unauthenticated/invalid
 requests before they consume upstream capacity.
@@ -70,12 +70,12 @@ for name in IDENTITY_HEADERS {          // X-User-Id, X-Auth-*, etc.
 req.headers_mut().insert("x-user-id", claims.sub.parse()?);
 ```
 Gotcha: this is the same trust-boundary bug as `X-Forwarded-For` in
-`07-security/08-ip-filtering.md`. Any header your infrastructure treats as
+[`07-security/08-ip-filtering.md`](08-ip-filtering.md). Any header your infrastructure treats as
 trusted must be stripped at the edge, every time, on every path —
 including error paths and any route that skips auth.
 
 Gotcha: stripping must happen at a single, early point, alongside
-hop-by-hop header removal (`05-http-stack/02-hop-by-hop-headers.md`), not
+hop-by-hop header removal ([`05-http-stack/02-hop-by-hop-headers.md`](../05-http-stack/02-hop-by-hop-headers.md)), not
 inside the auth module. A route configured `Public` skips the auth module
 entirely — and if stripping lived there, that route forwards forged
 identity headers straight through.
@@ -118,8 +118,8 @@ Build these in order.
 3. Verify stripping on the paths that skip auth. **Done when** a route
    configured `Public` still strips forged identity headers, and so does
    the 404 path.
-4. Implement the mechanisms: `07-security/02-jwt.md` for bearer tokens,
-   `07-security/03-mtls.md` for client certs. **Done when** a route
+4. Implement the mechanisms: [`07-security/02-jwt.md`](02-jwt.md) for bearer tokens,
+   [`07-security/03-mtls.md`](03-mtls.md) for client certs. **Done when** a route
    configured `Both` requires a valid cert *and* a valid token.
 5. Add a constant-time comparison to any static-secret path. **Done when**
    a timing test over many samples cannot distinguish a wrong-first-byte

@@ -1,6 +1,6 @@
 # RPS (Receive Packet Steering)
 
-`16-kernel/05-rss.md` nói về việc dàn xử lý packet ra nhiều core bằng
+[`16-kernel/05-rss.md`](05-rss.md) nói về việc dàn xử lý packet ra nhiều core bằng
 hardware. RPS là phiên bản tương đương bằng phần mềm của kernel, dành cho
 các NIC không cho đủ hardware queue để làm điều đó — phổ biến trên cloud
 VM với interface virtio-net một queue.
@@ -38,7 +38,7 @@ echo 2048 > /sys/class/net/eth0/queues/rx-0/rps_flow_cnt
 ```
 
 ### Khi nào nó thực sự quan trọng với một proxy
-Kiểm tra `ethtool -l` trước (theo bài tập của `16-kernel/05-rss.md`): nếu
+Kiểm tra `ethtool -l` trước (theo bài tập của [`16-kernel/05-rss.md`](05-rss.md)): nếu
 NIC đã lộ ra nhiều hardware queue với RSS được dàn đúng ra các core, RPS
 chỉ thêm overhead IPI mà không có lợi ích gì — nó là phương án dự phòng
 cho khi điều hướng bằng hardware không khả dụng hoặc không đủ (một NIC
@@ -61,8 +61,8 @@ nút thắt từ "một core làm mọi thứ" sang "mọi core đều tốn cyc
    quyết.
 2. Bật RPS bằng cách set `rps_cpus` cho receive queue, và RFS qua các
    sysctl flow-table ở trên.
-3. Tạo tải liên tục vào `proxy` và so sánh phân bố CPU theo từng core cùng
+3. Tạo tải liên tục vào [`proxy`](../../proxy) và so sánh phân bố CPU theo từng core cùng
    throughput/latency khi RPS bật so với tắt.
 4. Nếu bạn có quyền truy cập một NIC multi-queue từ bài tập
-   `16-kernel/05-rss.md`, so sánh phân bố core mà RPS đạt được và overhead
+   [`16-kernel/05-rss.md`](05-rss.md), so sánh phân bố core mà RPS đạt được và overhead
    của nó với kết quả dựa-trên-hardware của RSS trên cùng một workload.

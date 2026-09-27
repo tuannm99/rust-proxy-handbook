@@ -1,9 +1,9 @@
 # Lexer
 
 Biến một stream byte phẳng thành một stream token có ý nghĩa — giai đoạn
-trước khi bất kỳ cấu trúc nào tồn tại. `05-http-stack/01-parser.md` làm
+trước khi bất kỳ cấu trúc nào tồn tại. [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) làm
 việc này inline cho HTTP; file này là lý thuyết tái sử dụng bên dưới, áp
-dụng được y hệt cho config parser trong `09-architecture/03-config.md`.
+dụng được y hệt cho config parser trong [`09-architecture/03-config.md`](../09-architecture/03-config.md).
 
 ## What to learn
 
@@ -29,7 +29,7 @@ Gotcha: hãy để token mượn input (lưu byte range), không sở hữu bả
 Một config file hay HTTP message chỉ được parse một lần rồi bỏ đi; copy
 mỗi identifier vào một `String` nhân đôi allocation mà không mang lại lợi
 ích gì. Đây là cùng kỷ luật "byte, không phải String" như trong
-`05-http-stack/01-parser.md`.
+[`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md).
 
 ### Vòng lặp cốt lõi: nhìn trước một byte
 Phần lớn lexer là một vòng lặp duy nhất với một con trỏ cursor và một
@@ -71,7 +71,7 @@ token và chỉ tính dòng/cột một cách lazy khi thực sự có lỗi đ�
 
 ### Ranh giới giữa lexing và parsing đôi khi mờ nhạt
 Không phải format nào cũng có một ranh giới lexer/parser rõ ràng. Dòng
-request của HTTP/1.1 đơn giản đến mức `05-http-stack/01-parser.md` scan
+request của HTTP/1.1 đơn giản đến mức [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) scan
 byte trực tiếp mà không cần kiểu token nào — đưa một lexer vào đó chỉ thêm
 nghi thức mà không mang lại giá trị. Việc tách ra chỉ đáng giá khi grammar
 có nesting và precedence thực sự (một config language, một expression
@@ -83,7 +83,7 @@ tự, không phải trước đó.
 1. Viết một lexer cho một grammar config nhỏ — dòng `key value;`, block
    `{}`, comment `#`, số với hậu tố đơn vị tùy chọn (`10s`, `4k`) — phát ra
    token dạng borrowed-range. Đây là nửa đầu của phần config trong
-   `labs/13-hot-reload`.
+   [`labs/13-hot-reload`](../../labs/13-hot-reload).
 2. Xử lý đúng maximal munch cho một operator hai ký tự (`>=` hoặc `//`):
    viết test fail trước (`a>=b` phải lex thành ba token), rồi mới viết
    logic peek để nó pass.
@@ -93,6 +93,6 @@ tự, không phải trước đó.
    `String` mỗi identifier trên một config lớn; xác nhận khác biệt về số
    lượng allocation.
 5. So sánh scanner viết tay của bạn với việc scan HTTP inline của
-   `05-http-stack/01-parser.md` và diễn giải vì sao HTTP *không* dùng một
+   [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) và diễn giải vì sao HTTP *không* dùng một
    kiểu token riêng — khi nào việc tách ra có ích và khi nào nó chỉ là
    nghi thức.

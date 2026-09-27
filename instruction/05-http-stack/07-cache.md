@@ -1,7 +1,7 @@
 # HTTP Cache
 
 Eviction algorithms (LRU, LFU, ARC, TinyLFU) are covered in
-`13-algorithms/`; this file covers proxy-specific caching semantics.
+[`13-algorithms/`](../13-algorithms); this file covers proxy-specific caching semantics.
 
 ## What to learn
 
@@ -15,7 +15,7 @@ Four more that earn their keep:
   critical response needs.
 - **`immutable`**: this will never change within its freshness lifetime,
   so don't even revalidate on a user-initiated reload. Pairs with
-  content-hashed asset filenames (`05-http-stack/05-static.md`).
+  content-hashed asset filenames ([`05-http-stack/05-static.md`](05-static.md)).
 - **`stale-while-revalidate=N`**: serve the stale copy immediately and
   refresh in the background for up to N seconds. This is the single
   highest-leverage directive for a proxy cache — it decouples user-facing
@@ -30,7 +30,7 @@ and clients use it to compute remaining freshness; omitting it makes every
 cache below you treat your stale response as brand new.
 
 ### Freshness vs validation
-A cached response is either *fresh* (within its `max-age`) and can be served as-is, or *stale* and must be revalidated with the origin (a conditional request using `ETag`/`Last-Modified`, see `05-http-stack/05-static.md`) before being reused. Serving stale data without revalidation is a correctness bug, not an optimization.
+A cached response is either *fresh* (within its `max-age`) and can be served as-is, or *stale* and must be revalidated with the origin (a conditional request using `ETag`/`Last-Modified`, see [`05-http-stack/05-static.md`](05-static.md)) before being reused. Serving stale data without revalidation is a correctness bug, not an optimization.
 
 Gotcha: what happens when the origin sends *no* freshness information at
 all? RFC 9111 permits **heuristic freshness** — typically 10% of the time
@@ -89,7 +89,7 @@ points every subsequent visitor at the attacker's domain.
 
 Two defenses, both needed. Strip headers the origin shouldn't be seeing
 from clients anyway (the trust-boundary discipline from
-`07-security/08-ip-filtering.md` and `07-security/01-auth.md`). And treat any
+[`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md) and [`07-security/01-auth.md`](../07-security/01-auth.md)). And treat any
 header you deliberately forward as a key input unless you have positively
 established the response doesn't depend on it.
 
@@ -105,14 +105,14 @@ moment it stops helping. Request coalescing (single-flight) plus
 `stale-while-revalidate` removes it entirely, and a cold start after a
 restart is the same problem for every key at once.
 
-See `05-http-stack/08-cache-stampede.md`.
+See [`05-http-stack/08-cache-stampede.md`](08-cache-stampede.md).
 
 ### Invalidation
 Time-based expiry (`max-age`) is the easy case. Explicit invalidation (origin pushes a purge, or a write invalidates a related read) is the hard case every real cache eventually needs — plan for a purge-by-key or purge-by-prefix mechanism from the start rather than bolting it on later.
 
 Gotcha: with N proxy instances, each holds its own cache, so a purge must
 reach all of them — and a purge endpoint that any client can call is a
-cache-flushing denial of service (`07-security/09-ddos.md`). Authenticate the
+cache-flushing denial of service ([`07-security/09-ddos.md`](../07-security/09-ddos.md)). Authenticate the
 purge path, and accept that propagation is eventually-consistent: design
 for "purge reaches all instances within a few seconds", not instantly.
 
@@ -127,7 +127,7 @@ A CDN caches at the edge, close to users, across many origins. An L7 proxy's cac
 ## Practice
 Build these in order.
 
-1. In `labs/10-cache`, add an in-memory cache keyed by method+URI for
+1. In [`labs/10-cache`](../../labs/10-cache), add an in-memory cache keyed by method+URI for
    `GET` only. **Done when** a second identical request is served from
    cache without touching the origin (prove it with an origin-side
    counter).
@@ -143,7 +143,7 @@ Build these in order.
    revalidation via conditional requests. **Done when** a stale entry
    triggers exactly one conditional request and a `304` refreshes it
    without transferring the body.
-5. Work through `05-http-stack/08-cache-stampede.md`'s exercises. **Done
+5. Work through [`05-http-stack/08-cache-stampede.md`](08-cache-stampede.md)'s exercises. **Done
    when** 500 concurrent requests for one expired key produce exactly one
    origin hit, and `stale-while-revalidate` means none of them wait.
 6. Add `stale-if-error`. **Done when** taking the origin fully offline

@@ -1,6 +1,6 @@
 # Processes and Threads
 
-Part of the from-scratch fundamentals series — see `02-linux/01-fundamentals.md`
+Part of the from-scratch fundamentals series — see [`02-linux/01-fundamentals.md`](01-fundamentals.md)
 for the full index.
 
 ## What to learn
@@ -9,9 +9,9 @@ for the full index.
 A **process** is a running program with its own private address space —
 its own view of memory, isolated from every other process, enforced by
 the kernel's memory-management hardware (the MMU, see
-`04-memory-basics.md`). Two processes cannot read or corrupt each other's
+[`04-memory-basics.md`](04-memory-basics.md)). Two processes cannot read or corrupt each other's
 memory by accident. A process also owns its own set of open file
-descriptors (`03-kernel-and-syscalls.md`), its own process ID, and its
+descriptors ([`03-kernel-and-syscalls.md`](03-kernel-and-syscalls.md)), its own process ID, and its
 own resource limits.
 
 Creating a new process (`fork()` on Unix, under the hood of
@@ -44,13 +44,13 @@ let c2 = counter.clone();
 std::thread::spawn(move || { *c2.lock().unwrap() += 1; });
 ```
 
-`03-rust/04-sync.md`'s entire subject — `Arc`, `Mutex`, atomics — exists
+[`03-rust/04-sync.md`](../03-rust/04-sync.md)'s entire subject — `Arc`, `Mutex`, atomics — exists
 because tokio runs your async tasks on a pool of OS threads sharing one
 address space, and Rust's type system is what catches the shared-memory
 risk described above at compile time instead of at 3am in production.
 
 ### Tokio tasks are neither: cheaper than both
-Tokio's runtime (`04-runtime/01-tokio.md`) is a small pool of real OS
+Tokio's runtime ([`04-runtime/01-tokio.md`](../04-runtime/01-tokio.md)) is a small pool of real OS
 threads, each capable of running many of your `async fn` tasks,
 cooperatively switching between them. A tokio task is not a thread and
 not a process — it's much cheaper than either (no kernel stack, no
@@ -67,13 +67,13 @@ gives you only the first.
 With more runnable threads than CPU cores — normal on any real machine —
 the kernel's scheduler decides which thread runs on which core for how
 long, switching between them (a context switch,
-`03-kernel-and-syscalls.md`'s subject). Tokio has its *own* scheduler one
+[`03-kernel-and-syscalls.md`](03-kernel-and-syscalls.md)'s subject). Tokio has its *own* scheduler one
 level up, deciding which of *your* tasks a given OS thread works on next.
 These are genuinely two different, independently-acting schedulers: the
 kernel doesn't know your tokio tasks exist at all, and tokio doesn't
 control which core its own worker threads land on. When you're
-diagnosing an unexpected delay (`04-runtime/02-waker.md`,
-`08-observability/04-profiling.md`), knowing which of the two layers you
+diagnosing an unexpected delay ([`04-runtime/02-waker.md`](../04-runtime/02-waker.md),
+[`08-observability/04-profiling.md`](../08-observability/04-profiling.md)), knowing which of the two layers you
 're looking at is often the whole question.
 
 Gotcha: a tokio task that runs a long synchronous computation blocks the
@@ -92,7 +92,7 @@ thing).
    machine (e.g. your browser, or a running `tokio` program) — count how
    many threads (LWPs) it has versus one for a single-threaded process
    like a shell.
-3. Spawn a `labs/00-tcp-server` instance and, while it's handling several
+3. Spawn a [`labs/00-tcp-server`](../../labs/00-tcp-server) instance and, while it's handling several
    idle connections, check `ps -eLf | grep tcp-server` — confirm the
    number of OS threads is small and roughly matches your core count, not
    your connection count.

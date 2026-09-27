@@ -33,8 +33,8 @@ The strategy is to keep each worker's memory on the worker's node:
   initialized elsewhere.
 - This turns the whole proxy into a shared-nothing, per-core design — which
   is what pingora and the DPDK-style data planes do, and it composes with
-  the per-core counters in `17-performance/02-false-sharing.md` and the
-  per-core caches in `13-algorithms/lru.md`.
+  the per-core counters in [`17-performance/02-false-sharing.md`](02-false-sharing.md) and the
+  per-core caches in [`13-algorithms/lru.md`](../13-algorithms/lru.md).
 
 ```text
 run per socket:  ./proxy  →  numactl --cpunodebind=0 --membind=0 ./proxy (inst A)
@@ -51,14 +51,14 @@ solve carefully.
 A NIC's interrupts land on some node; if packets are DMA'd into node 0's
 memory but processed by a worker on node 1, you pay the remote cost per
 packet before your code even runs. Aligning NIC IRQ affinity (and RSS/RPS,
-`16-kernel/`) with the workers that process those packets is the other half
+[`16-kernel/`](../16-kernel)) with the workers that process those packets is the other half
 of NUMA tuning, and often matters more than where your heap lives.
 
 ### Measuring it
 `numastat` shows per-node allocation and, crucially, `numa_miss` /
 `numa_foreign` counts — remote accesses that wanted to be local. `perf` can
 attribute remote-memory stalls. As with the rest of
-`17-performance/`, do not tune speculatively: confirm you are actually
+[`17-performance/`](.), do not tune speculatively: confirm you are actually
 NUMA-bound (throughput scales poorly across sockets, high remote-access
 counts) before pinning anything, because on a single-socket box this is all
 wasted effort.
@@ -73,8 +73,8 @@ wasted effort.
    `numa_foreign`.
 3. Fix it by having each pinned worker first-touch its own buffers;
    re-measure `numa_miss`/`numa_foreign` and throughput.
-4. Compare the two deployment shapes for `proxy`: one NUMA-aware process
+4. Compare the two deployment shapes for [`proxy`](../../proxy): one NUMA-aware process
    vs two `numactl`-pinned instances behind a balancer, under
-   `12-testing/01-load-testing.md` load.
+   [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md) load.
 5. Align NIC IRQ affinity with your worker sockets and measure whether
-   per-packet remote cost drops — connect this to RSS/RPS in `16-kernel/`.
+   per-packet remote cost drops — connect this to RSS/RPS in [`16-kernel/`](../16-kernel).

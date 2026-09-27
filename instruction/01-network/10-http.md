@@ -15,7 +15,7 @@ confirmed idempotency breaks the contract.
 ### Methods and idempotency
 GET/HEAD/PUT/DELETE are idempotent (repeating has the same effect as doing
 it once); POST/PATCH generally aren't. This is the deciding factor for
-whether your proxy's retry logic (`06-proxy/05-retry.md`) is safe to apply
+whether your proxy's retry logic ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)) is safe to apply
 automatically or needs an explicit opt-in/idempotency key.
 
 ### Status codes a proxy actually generates
@@ -23,7 +23,7 @@ Most status codes a proxy returns are about the proxy layer itself, not the
 backend: `502 Bad Gateway` (upstream unreachable/invalid response), `503
 Service Unavailable` (no healthy upstream, or deliberate load-shedding),
 `504 Gateway Timeout` (upstream too slow), `429 Too Many Requests` (rate
-limit, see `07-security/07-ratelimit.md`). Returning `500` for these is a
+limit, see [`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md)). Returning `500` for these is a
 common beginner mistake — it hides whether the failure was your proxy's or
 the backend's.
 
@@ -49,7 +49,7 @@ zero-size chunk. A message must not specify both `Content-Length` and
 `Transfer-Encoding: chunked` — RFC 9112 says a recipient must reject or
 normalize that ambiguity. This is exactly the ambiguity request-smuggling
 attacks exploit when a front-end and back-end parser disagree on which
-header wins — see `07-security/05-request-smuggling.md`.
+header wins — see [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md).
 
 ## Practice
 
@@ -58,10 +58,10 @@ header wins — see `07-security/05-request-smuggling.md`.
 2. Send a request with both `Content-Length` and
    `Transfer-Encoding: chunked` to a test server you control and observe
    how it's rejected (or isn't — try more than one HTTP library).
-3. In `labs/02-http-server`, implement correct hop-by-hop header
+3. In [`labs/02-http-server`](../../labs/02-http-server), implement correct hop-by-hop header
    stripping for both the request and response path.
-4. In `labs/05-reverse-proxy`, return `502`/`503`/`504`
+4. In [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), return `502`/`503`/`504`
    distinctly for "upstream refused connection", "no healthy upstream", and
    "upstream timed out" respectively.
-5. Read `05-http-stack/01-parser.md` and `07-security/05-request-smuggling.md` to
+5. Read [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) and [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md) to
    connect this file's framing discussion to how a parser must enforce it.

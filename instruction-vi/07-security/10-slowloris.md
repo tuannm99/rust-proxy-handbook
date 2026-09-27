@@ -1,7 +1,7 @@
 # Tấn công Slow-Client
 
 Kiểu denial-of-service rẻ nhất: giữ kết nối mở bằng cách chậm, không phải
-bằng cách ồn ào. `07-security/09-ddos.md` bao quát phía volumetric và
+bằng cách ồn ào. [`07-security/09-ddos.md`](09-ddos.md) bao quát phía volumetric và
 connection-flood; file này bao quát nhóm tấn công tốn gần như không băng
 thông của attacker.
 
@@ -9,7 +9,7 @@ thông của attacker.
 ### Vì sao sự chậm chạp là một cuộc tấn công
 Mỗi kết nối mở tốn proxy một file descriptor, kernel socket buffer, và
 state riêng của kết nối (phép tính trần tài nguyên của
-`07-security/09-ddos.md`). Một attacker mở kết nối và giữ chúng *về mặt kỹ
+[`07-security/09-ddos.md`](09-ddos.md)). Một attacker mở kết nối và giữ chúng *về mặt kỹ
 thuật vẫn sống* — gửi vừa đủ để tránh mọi timeout — tiêu tốn các tài
 nguyên đó với chi phí gần như bằng 0 cho chính họ. Vài ngàn kết nối từ một
 host có thể làm cạn một proxy vốn thừa sức chịu cả triệu request mỗi giây.
@@ -26,7 +26,7 @@ attacker gửi một byte mỗi phút, đổi lấy một kết nối của bạ
   một `Content-Length` lớn; body sau đó đến từng byte một mỗi khoảng thời
   gian. Một deadline ở phase header không còn áp dụng nữa — header đã ổn.
   Cái này còn giữ chặt bất kỳ body buffering nào bạn làm cho WAF inspection
-  (`07-security/06-waf.md`) hoặc retry replay (`06-proxy/05-retry.md`)
+  ([`07-security/06-waf.md`](06-waf.md)) hoặc retry replay ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md))
   trong suốt cả lần upload chậm.
 - **Slow read.** Attacker gửi một request hoàn toàn bình thường cho một
   response lớn, rồi đọc response ở tốc độ một byte mỗi khoảng thời gian,
@@ -70,14 +70,14 @@ Nghĩa là một deadline tiến độ trên response write: nếu socket không
 
 ### Các giới hạn này nằm ở đâu
 Đây là vấn đề vòng đời kết nối, không phải xử lý request, nên nó thuộc về
-connection manager (`09-architecture/01-components.md`) — phải áp dụng
+connection manager ([`09-architecture/01-components.md`](../09-architecture/01-components.md)) — phải áp dụng
 trước và độc lập với bất cứ thứ gì giả định một request đã hoàn chỉnh.
-`05-http-stack/01-parser.md` và `labs/01-http-parser` là nơi một request
+[`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) và [`labs/01-http-parser`](../../labs/01-http-parser) là nơi một request
 thực sự được nạp từng byte một, và nơi floor của phase header phải được
 enforce.
 
 Gotcha: miễn trừ cho các kết nối upgraded và streaming
-(`05-http-stack/09-websocket.md`, `05-http-stack/10-grpc.md`) khỏi các
+([`05-http-stack/09-websocket.md`](../05-http-stack/09-websocket.md), [`05-http-stack/10-grpc.md`](../05-http-stack/10-grpc.md)) khỏi các
 deadline theo hình dạng request nhưng *không* khỏi liveness checking — một
 WebSocket idle là hợp lệ, một cái không phản hồi thì không, đó là mục đích
 của ping/pong deadline.
@@ -87,14 +87,14 @@ Multiplexing thay đổi hình dạng nhưng không thay đổi nguyên lý. M�
 attacker có thể mở nhiều stream trên một kết nối và bỏ chúng chưa hoàn
 thành, hoặc điều khiển flow-control window để buộc server giữ data mà nó
 không thể gửi. `SETTINGS_MAX_CONCURRENT_STREAMS` của HTTP/2 chặn cái đầu;
-per-connection memory accounting chặn cái sau. Xem `01-network/11-http2.md`,
+per-connection memory accounting chặn cái sau. Xem [`01-network/11-http2.md`](../01-network/11-http2.md),
 cũng bao quát Rapid Reset — cuộc tấn công nghịch, nơi stream được mở và
 hủy nhanh nhất có thể.
 
 ## Practice
 Làm theo thứ tự này.
 
-1. Viết ba attacker dưới dạng test client nhắm vào `proxy`: slow header,
+1. Viết ba attacker dưới dạng test client nhắm vào [`proxy`](../../proxy): slow header,
    slow body, slow read. **Xong khi** cả ba đều giữ được một kết nối mở
    nhiều phút chống lại config hiện tại của bạn — bạn cần cuộc tấn công
    hoạt động trước khi biện pháp phòng thủ có ý nghĩa.
@@ -110,7 +110,7 @@ Làm theo thứ tự này.
    KB/s bằng `tc` hoặc một proxy rate-limit). **Xong khi** nó *không* bị
    ngắt kết nối — nếu bị, floor của bạn đang đặt theo giả định datacenter.
 6. Chạy cả ba cuộc tấn công đồng thời với một load test bình thường
-   (`12-testing/01-load-testing.md`). **Xong khi** p99 latency hợp lệ
+   ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)). **Xong khi** p99 latency hợp lệ
    không đổi và số kết nối vẫn bị chặn giới hạn.
 7. Xác nhận các miễn trừ. **Xong khi** một WebSocket idle sống sót vô hạn
    trong khi một cái không phản hồi (không pong) bị đóng.

@@ -1,12 +1,12 @@
 # Virtual Host / Multi-Tenant Routing
 
 Route tới backend khác nhau theo *site nào* mà một request nhắm tới,
-không chỉ path của nó — thứ mà `03-router.md` giả định đã được quyết
+không chỉ path của nó — thứ mà [`03-router.md`](03-router.md) giả định đã được quyết
 định rồi.
 
 ## What to learn
 ### Routing theo Host header (sau TLS, tầng HTTP)
-`03-router.md` bao quát việc match path và method trong bảng route của một backend. Một proxy đứng trước nhiều site/tenant trước tiên phải chọn *bảng route nào* để dùng, dựa trên header `Host` (HTTP/1.1) hoặc pseudo-header `:authority` (HTTP/2, xem `01-network/11-http2.md`) — cả hai mang cùng thông tin, chỉ framing khác nhau. Lookup này xảy ra sau khi TLS đã terminate, vì header nằm trong request đã mã hóa.
+[`03-router.md`](03-router.md) bao quát việc match path và method trong bảng route của một backend. Một proxy đứng trước nhiều site/tenant trước tiên phải chọn *bảng route nào* để dùng, dựa trên header `Host` (HTTP/1.1) hoặc pseudo-header `:authority` (HTTP/2, xem [`01-network/11-http2.md`](../01-network/11-http2.md)) — cả hai mang cùng thông tin, chỉ framing khác nhau. Lookup này xảy ra sau khi TLS đã terminate, vì header nằm trong request đã mã hóa.
 
 ```rust
 use std::collections::HashMap;
@@ -31,7 +31,7 @@ cache-poisoning xảy ra — một attacker gửi một `Host` bất ngờ và b
 tới nơi không định trước, hoặc một cache key lỏng lẻo theo Host serve
 response của tenant sai cho người khác.
 
-Gotcha: normalize trước khi lookup, cùng cách `03-router.md` normalize
+Gotcha: normalize trước khi lookup, cùng cách [`03-router.md`](03-router.md) normalize
 path. Hostname không phân biệt hoa thường (`EXAMPLE.com` phải khớp
 `example.com`), một dấu chấm cuối là hợp lệ và mang cùng nghĩa
 (`example.com.`), và các dạng IDN/punycode (`xn--...`) phải ánh xạ về
@@ -58,7 +58,7 @@ hai khớp nhau và reject khi chúng không khớp. Nếu một client hợp l�
 sự cần chúng khác nhau, điều đó nên là một cấu hình tường minh, không
 phải một tai nạn.
 
-Gotcha: đây là cùng kiểm tra mà `03-router.md` mô tả cho tính nhất quán
+Gotcha: đây là cùng kiểm tra mà [`03-router.md`](03-router.md) mô tả cho tính nhất quán
 `Host`/`:authority`/SNI. Làm nó một lần, ở một chỗ, tại điểm mà metadata
 TLS của connection vẫn còn sẵn cùng với request — không phải ở hai
 component có thể bất đồng về cái nào là authoritative.
@@ -71,7 +71,7 @@ Gotcha: nhìn trộm nghĩa là đọc byte từ socket mà sau đó bạn phả
 Buffer và replay nó thay vì tiêu thụ nó, và giới hạn cả buffer lẫn thời
 gian bạn sẽ chờ một ClientHello hoàn chỉnh, nếu không một client connect
 rồi gửi 3 byte mãi mãi là một vector làm cạn connection
-(`07-security/09-ddos.md`).
+([`07-security/09-ddos.md`](../07-security/09-ddos.md)).
 
 Gotcha: SNI là tùy chọn. Một client connect bằng IP, một client cũ, hay
 một probe cố ý có thể không gửi gì cả — quyết định đó là một backend mặc
@@ -89,7 +89,7 @@ mối quan tâm thực tế theo sau:
 - **Callback nằm trên hot path của handshake.** Nạp và parse một chứng
   chỉ từ đĩa ở đó thêm latency vào mỗi connection mới; giữ chứng chỉ đã
   parse trong memory, key theo hostname, và reload khi config thay đổi
-  (`09-architecture/03-config.md`) thay vì mỗi lần handshake.
+  ([`09-architecture/03-config.md`](../09-architecture/03-config.md)) thay vì mỗi lần handshake.
 - **Wildcard và match chính xác phải có precedence rõ ràng.** Với cả
   `example.com` lẫn `*.example.com` được cấu hình, một match chính xác
   nên thắng; wildcard chỉ match đúng một label (`*.example.com` bao phủ
@@ -97,31 +97,31 @@ mối quan tâm thực tế theo sau:
 - **Hết hạn là theo từng tenant và im lặng.** Chứng chỉ hết hạn của một
   tenant chỉ làm fail handshake của tenant đó, nên traffic tổng thể
   trông vẫn ổn. Export thời gian-tới-khi-hết-hạn như một metric theo
-  từng chứng chỉ (`08-observability/06-alerting.md`); đây là gotcha mTLS
-  từ `07-security/01-auth.md` nhân lên theo số tenant.
+  từng chứng chỉ ([`08-observability/06-alerting.md`](../08-observability/06-alerting.md)); đây là gotcha mTLS
+  từ [`07-security/01-auth.md`](../07-security/01-auth.md) nhân lên theo số tenant.
 
 ### Chứng chỉ wildcard/multi-domain tương tác với cả hai
-Một chứng chỉ wildcard (`*.example.com`) hay một chứng chỉ SAN bao phủ nhiều hostname cho phép một instance terminate-TLS trả lời cho nhiều vhost dưới một handshake — đơn giản hóa routing theo Host header (một chứng chỉ, nhiều giá trị `Host`) nhưng làm routing theo SNI trở nên vô nghĩa cho các hostname đó (chúng đều là cùng một backend theo định nghĩa). Xem `01-network/13-tls.md` cho cơ chế handshake mà điều này phụ thuộc vào.
+Một chứng chỉ wildcard (`*.example.com`) hay một chứng chỉ SAN bao phủ nhiều hostname cho phép một instance terminate-TLS trả lời cho nhiều vhost dưới một handshake — đơn giản hóa routing theo Host header (một chứng chỉ, nhiều giá trị `Host`) nhưng làm routing theo SNI trở nên vô nghĩa cho các hostname đó (chúng đều là cùng một backend theo định nghĩa). Xem [`01-network/13-tls.md`](../01-network/13-tls.md) cho cơ chế handshake mà điều này phụ thuộc vào.
 
 ### Cách ly giữa các tenant, không chỉ routing
-Routing tách *traffic* của các tenant; nó không làm gì để tách *tiêu thụ tài nguyên* của chúng. Một đợt tăng traffic của một tenant tiêu thụ ngân sách connection chung (`07-security/09-ddos.md`), concurrency của upstream pool chung, dung lượng cache chung (`05-http-stack/07-cache.md`), và worker thread — nên mọi tenant khác đều tệ đi. Đó là vấn đề noisy-neighbor, và trong một proxy multi-tenant nó là hành vi mặc định trừ khi bạn thiết kế để chống lại nó.
+Routing tách *traffic* của các tenant; nó không làm gì để tách *tiêu thụ tài nguyên* của chúng. Một đợt tăng traffic của một tenant tiêu thụ ngân sách connection chung ([`07-security/09-ddos.md`](../07-security/09-ddos.md)), concurrency của upstream pool chung, dung lượng cache chung ([`05-http-stack/07-cache.md`](07-cache.md)), và worker thread — nên mọi tenant khác đều tệ đi. Đó là vấn đề noisy-neighbor, và trong một proxy multi-tenant nó là hành vi mặc định trừ khi bạn thiết kế để chống lại nó.
 
 Các cơ chế kiểm soát là phiên bản theo-từng-tenant của những thứ bạn đã
-có: rate limit key theo tenant (`07-security/07-ratelimit.md`), một giới
+có: rate limit key theo tenant ([`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md)), một giới
 hạn concurrency theo từng vhost để một tenant không thể giữ toàn bộ
 connection upstream, và tính toán cache theo từng tenant để object lớn
 của một tenant không evict working set của tenant khác.
 
 Gotcha: làm identity của tenant thành một phần của mọi key xuyên suốt, và
 làm điều đó sớm. Thêm chiều tenant vào cache key, nhãn metric
-(`08-observability/02-metrics.md`), và key rate-limit sau khi đã xây xong
+([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)), và key rate-limit sau khi đã xây xong
 là một thay đổi lớn, dễ sai — và kiểu sai đó là serve response đã cache
 của một tenant cho tenant khác.
 
 ## Practice
 Làm theo thứ tự này.
 
-1. Trong `proxy`, thêm một vhost map key theo `Host` đã normalize (viết
+1. Trong [`proxy`](../../proxy), thêm một vhost map key theo `Host` đã normalize (viết
    thường, bỏ dấu chấm cuối, bỏ port với IPv6 được xử lý riêng), nạp từ
    config. **Xong khi** `EXAMPLE.com.`, `example.com:443`, và
    `example.com` đều resolve về cùng một tenant.
@@ -139,7 +139,7 @@ Làm theo thứ tự này.
 5. Export thời gian-tới-khi-hết-hạn theo từng chứng chỉ như một metric.
    **Xong khi** một chứng chỉ hết hạn trong 7 ngày thấy được mà không ai
    phải tự kiểm tra.
-6. Thêm một test config-reload cho vhost map (`labs/13-hot-reload`).
+6. Thêm một test config-reload cho vhost map ([`labs/13-hot-reload`](../../labs/13-hot-reload)).
    **Xong khi** swap map dưới tải đồng thời thay đổi routing cho request
    mới mà không ảnh hưởng bất kỳ request nào đang bay.
 7. Thêm giới hạn concurrency và rate limit theo từng tenant, với tenant

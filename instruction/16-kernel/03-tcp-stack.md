@@ -1,6 +1,6 @@
 # The Kernel TCP Stack
 
-`01-network/08-tcp.md` covers TCP from the application's side (the
+[`01-network/08-tcp.md`](../01-network/08-tcp.md) covers TCP from the application's side (the
 handshake, byte-stream framing). This file covers what the kernel is
 doing underneath — the state machine and buffers a proxy's connection
 count and traffic pattern actually stress.
@@ -12,7 +12,7 @@ A listening socket has two separate queues, and confusing them is a
 common source of "why are we dropping connections under load" bugs:
 - **SYN backlog** (half-open connections, in `SYN_RCVD`, waiting for the
   final ACK): sized by `net.ipv4.tcp_max_syn_backlog`. This is what a
-  SYN flood exhausts (`07-security/09-ddos.md`).
+  SYN flood exhausts ([`07-security/09-ddos.md`](../07-security/09-ddos.md)).
 - **Accept backlog** (fully established connections waiting for your
   process to call `accept()`): sized by the smaller of `listen()`'s
   `backlog` argument and `net.core.somaxconn`. A proxy whose accept loop
@@ -26,7 +26,7 @@ receive buffer up to a max as throughput demands it — good for a single
 high-throughput connection, but multiply that max by connection count: a
 proxy holding 100,000 idle-ish connections at even a modest 64 KB buffer
 each is 6.4 GB of kernel memory that never shows up in your process's own
-RSS accounting (`02-linux/09-memory.md`). Watch `/proc/net/sockstat` and
+RSS accounting ([`02-linux/09-memory.md`](../02-linux/09-memory.md)). Watch `/proc/net/sockstat` and
 `ss -m`, not just your process's memory metrics, when diagnosing memory
 under high connection counts.
 
@@ -39,7 +39,7 @@ opens and closes short-lived upstream connections per-request accumulates
 `TIME_WAIT` entries fast enough to exhaust ephemeral ports or the
 connection-tracking table. Mitigations, in order of how much they
 actually fix the root cause rather than paper over it: reuse upstream
-connections (`06-proxy/01-upstream.md`'s pooling, which avoids opening and
+connections ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)'s pooling, which avoids opening and
 closing at all), let the *upstream* be the one to close first when a
 choice exists, and only reach for `SO_REUSEADDR`/tuning
 `net.ipv4.tcp_tw_reuse` as a last resort for the client-facing side.
@@ -56,8 +56,8 @@ detecting certain classes of scanning/attack traffic.
 
 ## Practice
 1. Watch `ss -tan state time-wait | wc -l` while driving load at
-   `labs/05-reverse-proxy` opening a fresh upstream connection per
-   request; then add connection pooling (`06-proxy/01-upstream.md`) and
+   [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) opening a fresh upstream connection per
+   request; then add connection pooling ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)) and
    compare the count.
 2. Deliberately make an accept loop slow (sleep before each `accept()`)
    and overflow the accept backlog with a burst of connections; observe
@@ -65,7 +65,7 @@ detecting certain classes of scanning/attack traffic.
    half-open-connection flood (e.g. via a raw SYN, in a lab environment
    you control).
 3. Watch `/proc/net/sockstat` and `ss -m` while holding 10,000+ idle
-   connections open against `labs/00-tcp-server`; compare the kernel-side
+   connections open against [`labs/00-tcp-server`](../../labs/00-tcp-server); compare the kernel-side
    buffer memory against what your process's own RSS reports.
 4. Trigger both a clean close and a `RST` against a connection your code
    holds open, and confirm you can distinguish the two `io::Error` kinds

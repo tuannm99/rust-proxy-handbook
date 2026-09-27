@@ -24,7 +24,7 @@ response as a normal HTTP response — nothing more. Never read security
 into it.
 
 Gotcha: `Connection` and `Upgrade` are hop-by-hop headers
-(`05-http-stack/04-keepalive.md`). A proxy must not blindly forward them —
+([`05-http-stack/04-keepalive.md`](04-keepalive.md)). A proxy must not blindly forward them —
 it terminates one upgrade and initiates another, regenerating both headers
 for the upstream leg. A proxy that strips hop-by-hop headers correctly and
 *then* forgets to re-add them for upgrade requests breaks WebSockets
@@ -54,14 +54,14 @@ letting it default to allowed.
 Gotcha: token-based auth on the WebSocket itself (a token in the URL or in
 the first message) sidesteps the cookie problem entirely, and is the more
 robust design — but a token in the query string ends up in access logs
-(`08-observability/01-logging.md`), so scrub it there.
+([`08-observability/01-logging.md`](../08-observability/01-logging.md)), so scrub it there.
 
 ### Why a proxy can't treat this as request/response after the upgrade
 Once the `101` is sent, both the router and any per-request middleware (auth, compression, caching) built around "one request in, one response out" no longer apply — there is no next request on this connection, just a bidirectional byte pipe. A reverse proxy must special-case Upgrade: after forwarding the handshake, it switches to relaying raw bytes both directions until either side closes.
 
 This has a consequence for every timeout and limit you configured against
 a request/response mental model. The read timeout meant to catch a stalled
-request (`06-proxy/01-upstream.md`) now fires on a perfectly healthy idle
+request ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)) now fires on a perfectly healthy idle
 WebSocket. The "total request duration" cap kills a connection that is
 supposed to live for hours. **Applying request timeouts to upgraded
 connections is the single most common WebSocket-through-a-proxy bug**, and
@@ -80,7 +80,7 @@ size), the 64-bit extended length field is attacker-controlled. A frame
 header claiming a 2^63-byte payload must be rejected against a configured
 maximum *before* any allocation — never `Vec::with_capacity(declared_len)`.
 This is the same class of bug as a decompression bomb
-(`07-security/09-ddos.md`): trusting a length field the peer chose.
+([`07-security/09-ddos.md`](../07-security/09-ddos.md)): trusting a length field the peer chose.
 
 ### Keepalive via ping/pong
 Long-lived idle WebSocket connections look identical to a dead connection from the network's perspective (a NAT box or LB can silently drop them). Either side can send a `ping` frame; the other must reply `pong` with the same payload. A proxy relaying WebSocket traffic should either pass these through transparently or, if terminating and re-establishing two separate WebSocket legs, generate its own keepalive pings on each leg independently.
@@ -89,7 +89,7 @@ Gotcha: pings must be on a timer *and* have a pong deadline. Sending pings
 without tracking whether pongs come back detects nothing — the connection
 is dead either way, you just feel better about it. Close the connection
 after a missed pong, and count those closures as a metric
-(`08-observability/02-metrics.md`): a rising rate usually means an
+([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)): a rising rate usually means an
 intermediary is dropping idle connections, which is actionable.
 
 ### Backpressure
@@ -104,7 +104,7 @@ understand that "bounded" means a slow client eventually blocks the
 upstream read, which is correct.
 
 Gotcha: a WebSocket connection is a *long-lived* resource, so the
-accounting from `07-security/09-ddos.md` changes shape. Ten thousand idle
+accounting from [`07-security/09-ddos.md`](../07-security/09-ddos.md) changes shape. Ten thousand idle
 WebSockets cost ten thousand fds, sockets, and buffer pairs, indefinitely,
 while generating no requests at all — so request-rate limits don't
 constrain them. Cap concurrent upgraded connections explicitly, and
@@ -122,7 +122,7 @@ before promising WebSocket support over HTTP/2.
 ## Practice
 Build these in order.
 
-1. In `labs/02-http-server`, implement the upgrade handshake by hand —
+1. In [`labs/02-http-server`](../../labs/02-http-server), implement the upgrade handshake by hand —
    validate `Sec-WebSocket-Version`, compute `Sec-WebSocket-Accept`, no
    WebSocket crate. **Done when** a real browser or `websocat` client
    completes the handshake against it.
@@ -134,7 +134,7 @@ Build these in order.
    enough to unmask and re-frame. **Done when** a client round-trips text
    and binary messages, and a frame declaring an absurd payload length is
    rejected without allocating.
-4. In `labs/05-reverse-proxy`, add pass-through proxying: forward the
+4. In [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), add pass-through proxying: forward the
    handshake (regenerating hop-by-hop headers), then relay with
    `tokio::io::copy_bidirectional`. **Done when** an end-to-end WebSocket
    works through the proxy.

@@ -1,7 +1,7 @@
 # Outlier Detection
 
 Deciding an upstream is bad from the traffic you're already sending it,
-rather than from a dedicated probe. `06-proxy/03-healthcheck.md` covers
+rather than from a dedicated probe. [`06-proxy/03-healthcheck.md`](03-healthcheck.md) covers
 active probing; this file covers the passive half and the damping that
 keeps either of them from causing more harm than the failure did.
 
@@ -26,10 +26,10 @@ counting 4xx toward a failure threshold lets one client with a broken URL
 scheme mark your entire fleet unhealthy. Count connection errors,
 timeouts, and 5xx — and be deliberate about 503, which often means "this
 upstream is deliberately shedding load"
-(`07-security/11-load-shedding.md`) rather than "broken".
+([`07-security/11-load-shedding.md`](../07-security/11-load-shedding.md)) rather than "broken".
 
 Gotcha: this is the same failure-classification question as
-`06-proxy/06-circuit-breaker.md`'s trip condition, and the two should agree.
+[`06-proxy/06-circuit-breaker.md`](06-circuit-breaker.md)'s trip condition, and the two should agree.
 An upstream whose circuit is open but which passive health checking still
 considers healthy produces contradictory routing decisions.
 
@@ -60,7 +60,7 @@ Passive detection at scale can eject faster than you intend: a shared
 dependency hiccups, every upstream fails a few requests at once, and the
 thresholds trip across the whole pool simultaneously. That's the same
 correlated-failure shape as a deep health check
-(`06-proxy/03-healthcheck.md`), reached by a different route.
+([`06-proxy/03-healthcheck.md`](03-healthcheck.md)), reached by a different route.
 
 Envoy's answer is `max_ejection_percent` — never eject more than a
 configured fraction of the pool, no matter what the signal says. Below
@@ -70,7 +70,7 @@ explanation is that the problem isn't the hosts.
 ### Slow start: the recovery stampede
 An upstream that just came back healthy has zero active connections, which
 makes it the most attractive candidate for least-connection balancing
-(`06-proxy/02-load-balancer.md`) and for any consistent-hash ring that just
+([`06-proxy/02-load-balancer.md`](02-load-balancer.md)) and for any consistent-hash ring that just
 re-added it. It receives a disproportionate burst of traffic in the first
 seconds after recovery — into a process with cold caches, an empty
 connection pool, and a JIT/page cache that hasn't warmed — and frequently
@@ -84,7 +84,7 @@ weight, so it receives a growing trickle rather than a flood. nginx
 this.
 
 Gotcha: the same ramp applies to a *newly added* upstream from service
-discovery (`06-proxy/07-service-discovery.md`), not just a recovered one —
+discovery ([`06-proxy/07-service-discovery.md`](07-service-discovery.md)), not just a recovered one —
 a freshly-scaled-out instance is cold in exactly the same way, and
 least-connection routing finds it just as attractive.
 
@@ -102,7 +102,7 @@ costs nothing now.
 ## Practice
 Build these in order.
 
-1. In `labs/05-reverse-proxy`, add passive health checking on real request
+1. In [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), add passive health checking on real request
    failures, counting only connection errors, timeouts, and 5xx. **Done
    when** a load test against a killed upstream marks it down in under one
    active probe interval, and a test sending 1000 requests for a
@@ -124,5 +124,5 @@ Build these in order.
    disappears under a load test that pushes the upstream near its
    capacity limit.
 7. Apply the ramp to newly discovered upstreams too
-   (`06-proxy/07-service-discovery.md`). **Done when** adding an instance
+   ([`06-proxy/07-service-discovery.md`](07-service-discovery.md)). **Done when** adding an instance
    mid-load-test gives it a ramp rather than an immediate full share.

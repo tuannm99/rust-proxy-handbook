@@ -4,29 +4,29 @@ Listener -> ConnMgr -> Codec -> Router -> Modules
 ## What to learn
 ### What each stage owns
 - **Listener**: binds the socket(s), accepts connections, may do TLS termination (handing off a decrypted stream). Owns nothing about HTTP semantics.
-- **ConnMgr (connection manager)**: tracks live connections, enforces per-connection limits/timeouts, drives graceful shutdown (stop handing new connections in, let existing ones drain — see `09-architecture/04-graceful-shutdown.md`).
-- **Codec**: turns bytes into typed `Request`/`Response` values and back (HTTP/1.1 parsing, HTTP/2 framing) — this is where hyper sits if you use it, or your own parser if you did `labs/01-http-parser`.
+- **ConnMgr (connection manager)**: tracks live connections, enforces per-connection limits/timeouts, drives graceful shutdown (stop handing new connections in, let existing ones drain — see [`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)).
+- **Codec**: turns bytes into typed `Request`/`Response` values and back (HTTP/1.1 parsing, HTTP/2 framing) — this is where hyper sits if you use it, or your own parser if you did [`labs/01-http-parser`](../../labs/01-http-parser).
 - **Router**: matches a request to a destination — a specific upstream pool, or a local handler (health endpoint, metrics endpoint). Pure decision logic, no I/O.
 - **Modules**: everything that wraps the request/response on the way through — auth, rate limiting, WAF, logging, metrics. Order matters (e.g. rate limit before auth to reject cheaply; WAF before both to reject malicious bodies early).
 
 ### Module order is a security decision, not a preference
-Scattered through `07-security/` and `05-http-stack/` are ordering
+Scattered through [`07-security/`](../07-security) and [`05-http-stack/`](../05-http-stack) are ordering
 constraints that each look local and together define the pipeline. Collected:
 
 | Position | Stage | Why here |
 | --- | --- | --- |
-| 1 | Connection/accept limits | Cheapest possible rejection, before any parsing (`07-security/09-ddos.md`) |
-| 2 | IP filtering on the real peer | Before anything expensive; uses the socket address, not headers (`07-security/08-ip-filtering.md`) |
-| 3 | TLS termination | Client-cert rejection should happen at handshake, not after (`07-security/01-auth.md`) |
-| 4 | Codec / parse | Framing validation and smuggling rejection (`07-security/05-request-smuggling.md`) |
-| 5 | **Strip hop-by-hop and identity headers** | Must happen before anything reads them (`05-http-stack/04-keepalive.md`, `07-security/01-auth.md`) |
-| 6 | Path normalization | Before routing, or routing decides on a different path than the upstream sees (`05-http-stack/03-router.md`) |
+| 1 | Connection/accept limits | Cheapest possible rejection, before any parsing ([`07-security/09-ddos.md`](../07-security/09-ddos.md)) |
+| 2 | IP filtering on the real peer | Before anything expensive; uses the socket address, not headers ([`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)) |
+| 3 | TLS termination | Client-cert rejection should happen at handshake, not after ([`07-security/01-auth.md`](../07-security/01-auth.md)) |
+| 4 | Codec / parse | Framing validation and smuggling rejection ([`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md)) |
+| 5 | **Strip hop-by-hop and identity headers** | Must happen before anything reads them ([`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md), [`07-security/01-auth.md`](../07-security/01-auth.md)) |
+| 6 | Path normalization | Before routing, or routing decides on a different path than the upstream sees ([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)) |
 | 7 | Routing | Needed to know *which* policy applies to the rest |
-| 8 | Per-route rate limiting | Cheap rejection before expensive work (`07-security/07-ratelimit.md`) |
+| 8 | Per-route rate limiting | Cheap rejection before expensive work ([`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md)) |
 | 9 | Auth | Before body inspection and before any upstream cost |
-| 10 | WAF / body inspection | Most expensive check, runs last and only for authenticated, non-rate-limited traffic (`07-security/06-waf.md`) |
-| 11 | Cache lookup | Before the upstream call, after auth (or you serve one user's response to another — `05-http-stack/07-cache.md`) |
-| 12 | Upstream call | Load balancing, retries, circuit breaking (`06-proxy/`) |
+| 10 | WAF / body inspection | Most expensive check, runs last and only for authenticated, non-rate-limited traffic ([`07-security/06-waf.md`](../07-security/06-waf.md)) |
+| 11 | Cache lookup | Before the upstream call, after auth (or you serve one user's response to another — [`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)) |
+| 12 | Upstream call | Load balancing, retries, circuit breaking ([`06-proxy/`](../06-proxy)) |
 
 Logging and metrics wrap the whole thing, since they must observe requests
 that were rejected at every stage above.
@@ -54,7 +54,7 @@ Gotcha: `Service::poll_ready` is tower's backpressure mechanism and it is
 routinely ignored. A service that returns `Poll::Pending` from
 `poll_ready` is saying "I am at capacity, don't send me a request yet" —
 which is how a concurrency limit propagates *back* through the stack
-instead of queueing internally (`07-security/09-ddos.md`'s shed-vs-queue
+instead of queueing internally ([`07-security/09-ddos.md`](../07-security/09-ddos.md)'s shed-vs-queue
 argument). A module that always returns `Ready` and buffers internally has
 silently converted backpressure into unbounded memory.
 
@@ -100,7 +100,7 @@ process-wide crash, which changes this calculation entirely. Know which
 you've configured.
 
 ### Why this shape, not "one big async fn"
-A single giant handler function works for a toy but becomes untestable and unreadable once you have 5+ cross-cutting concerns. Splitting into Listener/ConnMgr/Codec/Router/Modules means each piece maps to one handbook section (`01-network`, `04-runtime`, `05-http-stack`, `06-proxy`, `07-security`) and can be built/tested in isolation before wiring together in `proxy`.
+A single giant handler function works for a toy but becomes untestable and unreadable once you have 5+ cross-cutting concerns. Splitting into Listener/ConnMgr/Codec/Router/Modules means each piece maps to one handbook section ([`01-network`](../01-network), [`04-runtime`](../04-runtime), [`05-http-stack`](../05-http-stack), [`06-proxy`](../06-proxy), [`07-security`](../07-security)) and can be built/tested in isolation before wiring together in [`proxy`](../../proxy).
 
 ### Data flow through the pipeline
 Inbound: `TcpStream` → (TLS decrypt) → Codec decodes → `Request` flows through Module stack → Router picks upstream → Codec encodes outbound `Request` → forwarded. Response flows back through the same Module stack in reverse (so a logging module sees both the original request and the final response/status).
@@ -110,21 +110,21 @@ opposite order from its request-side work, which is usually what you want
 (logging outermost sees the final status) and occasionally not
 (compression must run *inside* caching, so the cache stores one
 representation rather than a compressed one it can't re-serve to a
-different client — `05-http-stack/06-compression.md`,
-`05-http-stack/07-cache.md`). Write the response path's order down
+different client — [`05-http-stack/06-compression.md`](../05-http-stack/06-compression.md),
+[`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)). Write the response path's order down
 explicitly; don't assume it falls out correctly.
 
 Gotcha: a streaming response means the response "passes through" modules
 before the body has been produced. A module that wants to inspect or
 transform the body is choosing to buffer it
-(`07-security/06-waf.md`'s limit discussion) — and a module that merely wants
+([`07-security/06-waf.md`](../07-security/06-waf.md)'s limit discussion) — and a module that merely wants
 the status code must not accidentally force buffering by awaiting the
 whole body.
 
 ## Practice
 Build these in order.
 
-1. Sketch the pipeline for `proxy` — modules, order, and why — against the
+1. Sketch the pipeline for [`proxy`](../../proxy) — modules, order, and why — against the
    table above. **Done when** you can justify each position from a
    specific failure it prevents, not from convention.
 2. Implement the Router and one module (rate limiting) as separate
@@ -142,7 +142,7 @@ Build these in order.
    panic.
 6. Implement `poll_ready`-based backpressure in a concurrency-limiting
    module. **Done when** overload causes the stack to shed
-   (`07-security/09-ddos.md`) rather than buffer — measure memory under
+   ([`07-security/09-ddos.md`](../07-security/09-ddos.md)) rather than buffer — measure memory under
    sustained overload to prove nothing is queueing invisibly.
 7. Add panic containment at the pipeline boundary. **Done when** a module
    that panics on one request returns 500 for that request and the
@@ -152,5 +152,5 @@ Build these in order.
    test proves a cached entry can be served to clients with different
    `Accept-Encoding`.
 9. Add graceful shutdown at the ConnMgr layer
-   (`09-architecture/04-graceful-shutdown.md`). **Done when** in-flight
+   ([`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)). **Done when** in-flight
    requests complete before exit.

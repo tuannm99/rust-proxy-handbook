@@ -23,7 +23,7 @@ The compiler turns an `async fn`'s body into an anonymous struct implementing
 variant holds exactly the local variables still needed after that point.
 This is why the future's size is fixed at compile time and why locals held
 across `.await` must satisfy whatever bounds the future needs (usually
-`Send`, if you plan to `tokio::spawn` it) — see `03-rust/02-lifetimes.md` for
+`Send`, if you plan to `tokio::spawn` it) — see [`03-rust/02-lifetimes.md`](02-lifetimes.md) for
 what breaks when a borrow is one of those held-across-await locals.
 
 ### Cooperative scheduling and blocking
@@ -66,7 +66,7 @@ tokio::select! {
 
 Gotcha: a dropped future does not mean the underlying OS-level operation
 (e.g. an in-flight write syscall) is un-done — cancellation is cooperative at
-the Rust level, not at the kernel level. See `06-proxy/05-retry.md` for what
+the Rust level, not at the kernel level. See [`06-proxy/05-retry.md`](../06-proxy/05-retry.md) for what
 this means for retry safety (idempotency).
 
 ## Practice
@@ -87,5 +87,5 @@ this means for retry safety (idempotency).
    tokio's.
 5. In that same scratch executor, implement a `Waker` (via `std::task::Wake`
    or `RawWakerVTable`) and a single run-queue executor that polls a task
-   only when its waker is called — this is the mechanism `04-runtime/02-waker.md`
+   only when its waker is called — this is the mechanism [`04-runtime/02-waker.md`](../04-runtime/02-waker.md)
    and tokio's reactor both build on.

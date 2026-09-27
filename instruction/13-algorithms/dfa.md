@@ -1,6 +1,6 @@
 # DFA (Deterministic Finite Automata)
 
-`13-algorithms/regex-engine.md` covers how a regex engine uses a DFA
+[`13-algorithms/regex-engine.md`](regex-engine.md) covers how a regex engine uses a DFA
 underneath. This file covers the DFA itself — the general theory any
 table-driven state machine (a protocol parser, a config lexer) rests on.
 
@@ -33,10 +33,10 @@ no allocation.
 
 ### Where a DFA comes from: subset construction
 DFAs are rarely written by hand; they're derived from an NFA (built by
-Thompson construction, see `13-algorithms/regex-engine.md`) via **subset
+Thompson construction, see [`13-algorithms/regex-engine.md`](regex-engine.md)) via **subset
 construction**: each DFA state is the *set* of NFA states reachable on
 some input prefix. The number of subsets is exponential in the worst
-case — this is exactly the memory blowup `regex-engine.md`'s lazy-DFA
+case — this is exactly the memory blowup [`regex-engine.md`](regex-engine.md)'s lazy-DFA
 section describes and solves by building states on demand; don't
 duplicate that discussion, read it there.
 
@@ -61,10 +61,10 @@ every request); pick sparse when it's large and checked rarely.
 ## Practice
 1. Hand-build the DFA (not the NFA) for matching one of the fixed set of
    HTTP methods (`GET`, `POST`, `PUT`, ...) as a table, and use it as the
-   first byte-classification step in `labs/01-http-parser`.
+   first byte-classification step in [`labs/01-http-parser`](../../labs/01-http-parser).
 2. Apply subset construction by hand to a small NFA for `a(b|c)*d` and
    confirm your resulting DFA table gives the same accept/reject verdicts
-   as tracing the NFA state set (the exercise in `regex-engine.md`).
+   as tracing the NFA state set (the exercise in [`regex-engine.md`](regex-engine.md)).
 3. Find two behaviorally-equivalent states in a DFA you built and merge
    them manually; confirm the merged automaton still accepts the same
    language.

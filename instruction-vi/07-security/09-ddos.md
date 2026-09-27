@@ -1,6 +1,6 @@
 # DDoS & Giảm thiểu tấn công Volumetric
 
-Lớp nằm dưới `07-ratelimit.md` và `06-waf.md`: các cuộc tấn công cố gắng
+Lớp nằm dưới [`07-ratelimit.md`](07-ratelimit.md) và [`06-waf.md`](06-waf.md): các cuộc tấn công cố gắng
 làm cạn kết nối hoặc băng thông trước khi bất kỳ request nào được parse.
 
 ## What to learn
@@ -18,7 +18,7 @@ làm cho con đường đắt đỏ không khả dụng cho tới khi client ch�
 cả hai phía trước khi quyết định nó có tác dụng.
 
 ### Khác biệt với rate limiting và WAF
-`07-ratelimit.md` và `06-waf.md` hoạt động trên các HTTP request đã được
+[`07-ratelimit.md`](07-ratelimit.md) và [`06-waf.md`](06-waf.md) hoạt động trên các HTTP request đã được
 parse — chúng giả định kết nối đã được accept và proxy đang đọc byte từ
 đó. Một cuộc tấn công volumetric hoặc làm cạn kết nối (SYN flood, một
 flood các connection attempt trông hợp lệ, tấn công slow-client) cố gắng
@@ -39,7 +39,7 @@ established, không phải thay thế một lớp scrubbing.
 Vẫn nên biết cơ chế này, vì nó giải thích ranh giới: SYN cookie cho phép
 kernel ngừng cấp state cho các kết nối half-open bằng cách encode các
 tham số kết nối ngay vào sequence number, nên SYN backlog
-(`16-kernel/03-tcp-stack.md`) không thể bị làm cạn. Chi phí là các TCP
+([`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md)) không thể bị làm cạn. Chi phí là các TCP
 option được negotiate trong SYN bị mất một phần — đó là lý do nó là một
 fallback được kích hoạt dưới áp lực chứ không phải mặc định.
 
@@ -48,9 +48,9 @@ fallback được kích hoạt dưới áp lực chứ không phải mặc đị
 attacker tìm ra nó thay bạn. Trên mỗi kết nối, một proxy tốn: một file
 descriptor (`ulimit -n`, thường vẫn là 1024 theo mặc định trong container —
 kiểm tra, đừng giả định), kernel socket buffer ở cả gửi và nhận
-(`16-kernel/03-tcp-stack.md`: hàng chục KB mỗi cái, và *không* được tính vào
+([`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md): hàng chục KB mỗi cái, và *không* được tính vào
 RSS của process bạn), buffer đọc/viết của riêng bạn
-(`14-memory/04-buffer-pool.md`), và một task với state machine của nó.
+([`14-memory/04-buffer-pool.md`](../14-memory/04-buffer-pool.md)), và một task với state machine của nó.
 
 Ở 100k kết nối đồng thời, chỉ 64 KB kernel buffer mỗi kết nối đã là 6.4 GB
 bộ nhớ kernel. Hãy tự làm phép nhân này cho config của bạn, rồi set connection
@@ -114,26 +114,26 @@ biến thể (slow header, slow body, slow read), và biện pháp phòng thủ 
 một *rate* dữ liệu tối thiểu mỗi phase thay vì một deadline tổng mà một
 attacker biết tính toán chỉ cần chờ qua.
 
-Xem `07-security/10-slowloris.md` cho ba biến thể và thiết kế rate floor.
+Xem [`07-security/10-slowloris.md`](10-slowloris.md) cho ba biến thể và thiết kế rate floor.
 
 ### Layer 7: flood vào endpoint đắt đỏ
 Cuộc tấn công hiệu quả nhất thường không hề volumetric — nó là tìm ra
 endpoint mà một request rẻ tốn bạn nhiều nhất. Một search query không có
 index, một endpoint render report, một regex trên input lớn
-(`13-algorithms/regex-engine.md`), một image resize. Vài trăm request mỗi
+([`13-algorithms/regex-engine.md`](../13-algorithms/regex-engine.md)), một image resize. Vài trăm request mỗi
 giây — thấp hơn hẳn bất kỳ rate limit hợp lý nào — làm bão hòa upstream mà
 vẫn trông như traffic bình thường.
 
 Biện pháp phòng thủ là theo từng endpoint chứ không toàn cục: rate limit
-riêng, chặt hơn, cho các route đắt đỏ (`07-ratelimit.md` key theo route,
+riêng, chặt hơn, cho các route đắt đỏ ([`07-ratelimit.md`](07-ratelimit.md) key theo route,
 không chỉ theo client), giới hạn concurrency theo route để một endpoint
 không thể tiêu hết cả upstream pool, và — cách sửa mang tính cấu trúc — coi
-"endpoint nào đắt đỏ" là thứ bạn *đo* (`08-observability/02-metrics.md`
+"endpoint nào đắt đỏ" là thứ bạn *đo* ([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)
 latency theo route và thời gian upstream) thay vì đoán.
 
 ### Decompression bomb
 Nếu proxy nhận `Content-Encoding: gzip` trên request body và decompress nó
-để inspect (`06-waf.md`) hoặc transform, thì một upload 10 KB có thể phình
+để inspect ([`06-waf.md`](06-waf.md)) hoặc transform, thì một upload 10 KB có thể phình
 ra 10 GB. Tỷ lệ compression là leverage của attacker và nó cực lớn — đây là
 sự bất cân xứng chi phí tệ nhất có ở layer 7.
 
@@ -149,7 +149,7 @@ let n = limited.read_to_end(&mut buf)?;   // dừng ở cap, không dừng ở k
 Gotcha: cũng chặn *tỷ lệ*, không chỉ kích thước tuyệt đối. Một body phình
 ra 1000:1 là thù địch dù nó có nằm dưới cap của bạn, và tỷ lệ là một tín
 hiệu tốt hơn nhiều so với kích thước đơn thuần để phân biệt một cuộc tấn
-công với một upload lớn hợp lệ. Xem `05-http-stack/06-compression.md` cho
+công với một upload lớn hợp lệ. Xem [`05-http-stack/06-compression.md`](../05-http-stack/06-compression.md) cho
 mặt gương phía response của vấn đề này.
 
 ### Load shedding thắng queueing
@@ -158,7 +158,7 @@ một death spiral về latency — đến lúc một request được xếp hà
 client của nó đã timeout và retry rồi. Reject ngay, rẻ, và càng sớm càng
 tốt trong pipeline là điều giữ throughput hữu ích khỏi sụp đổ.
 
-Xem `07-security/11-load-shedding.md` cho lập luận shed-so-với-queue, các
+Xem [`07-security/11-load-shedding.md`](11-load-shedding.md) cho lập luận shed-so-với-queue, các
 giới hạn dựa trên thời gian, priority shedding, và adaptive concurrency
 limit.
 
@@ -166,9 +166,9 @@ limit.
 Mọi thứ ở trên chạy sau một bắt tay TCP (và thường cả TLS) mà bạn đã trả
 tiền rồi. Khi đã *xác định* được một attacker, nơi rẻ để drop họ nằm thấp
 hơn nhiều: một entry `nftables`/`ipset`, hoặc XDP ở driver
-(`16-kernel/10-xdp.md`), nơi một packet chết trước khi một socket tồn tại.
+([`16-kernel/10-xdp.md`](../16-kernel/10-xdp.md)), nơi một packet chết trước khi một socket tồn tại.
 
-Đây là feedback loop mà `labs/17-ebpf` xây dựng: proxy có context ứng dụng
+Đây là feedback loop mà [`labs/17-ebpf`](../../labs/17-ebpf) xây dựng: proxy có context ứng dụng
 để quyết định ai là kẻ lạm dụng, kernel có vị trí để drop họ miễn phí. Giữ
 quyết định ở proxy và enforcement càng thấp càng tốt.
 
@@ -176,26 +176,26 @@ quyết định ở proxy và enforcement càng thấp càng tốt.
 Làm theo thứ tự này.
 
 1. Tính trần của bạn trước. **Xong khi** bạn đã viết ra, cho config của
-   `proxy`: `ulimit -n`, kích thước kernel socket buffer mỗi kết nối,
+   [`proxy`](../../proxy): `ulimit -n`, kích thước kernel socket buffer mỗi kết nối,
    allocation buffer của riêng bạn mỗi kết nối, và số kết nối tối đa suy
    ra — và đã xác minh con số đó bằng cách thực sự giữ mở đúng số kết nối
    idle đó.
 2. Thêm bộ giới hạn accept-rate/concurrency, với metrics riêng khỏi 429 ở
-   tầng application (`07-ratelimit.md`). **Xong khi** vượt cap đóng kết nối
+   tầng application ([`07-ratelimit.md`](07-ratelimit.md)). **Xong khi** vượt cap đóng kết nối
    mới ngay và số lượng reject hiển thị như một metric riêng.
 3. Xử lý `EMFILE` đúng cách trong accept loop. **Xong khi** hạ `ulimit -n`
    xuống một số nhỏ và làm ngập kết nối tạo ra backoff và reject sạch sẽ
    thay vì một cú spin 100% CPU — xem `top` để xác nhận.
-4. Làm các bài tập trong `07-security/10-slowloris.md`. **Xong khi** cả ba
+4. Làm các bài tập trong [`07-security/10-slowloris.md`](10-slowloris.md). **Xong khi** cả ba
    biến thể slow-client bị shed và một client chậm nhưng hợp lệ thì không.
 5. Thêm một giới hạn decompression trên request body với cả cap tuyệt đối
    và cap tỷ lệ. **Xong khi** một gzip bomb bị reject mà chỉ allocate tới
    cap của bạn (đo RSS trong lúc test để chứng minh), và một body 50 MB
    compress hợp lệ vẫn hoạt động.
-6. Làm các bài tập trong `07-security/11-load-shedding.md`. **Xong khi**
+6. Làm các bài tập trong [`07-security/11-load-shedding.md`](11-load-shedding.md). **Xong khi**
    overload một route đắt đỏ trả 503 nhanh thay vì xếp hàng, và các route
    khác vẫn serve bình thường.
-7. Viết ra, trong README của `proxy`, những nhóm tấn công nào `proxy` tự
+7. Viết ra, trong README của [`proxy`](../../proxy), những nhóm tấn công nào [`proxy`](../../proxy) tự
    giảm thiểu so với những nhóm cần hạ tầng đứng trước nó. **Xong khi**
    ranh giới đó rõ ràng — đây là quyết định thiết kế thật sự, không phải
    một chi tiết để bỏ qua.

@@ -4,7 +4,7 @@
 - Consistent Hash
 
 Các biến thể sâu hơn (chi tiết smooth WRR, rendezvous hashing, Maglev) nằm
-trong `13-algorithms/`.
+trong [`13-algorithms/`](../13-algorithms).
 
 ## What to learn
 
@@ -33,14 +33,14 @@ Gotcha: round robin thuần bỏ qua load — nếu một upstream chậm, nó v
 một phần bằng nhau trong các request mới và hàng đợi của nó chất đống.
 
 Gotcha: `fetch_add` trên một counter dùng chung là một cache line bị tranh
-chấp trên mọi worker thread ở mọi request (`17-performance/02-false-sharing.md`)
+chấp trên mọi worker thread ở mọi request ([`17-performance/02-false-sharing.md`](../17-performance/02-false-sharing.md))
 — ở request rate cao, một atomic duy nhất này trở nên đo được. Một counter
 riêng cho mỗi worker, mỗi cái bắt đầu ở một offset khác nhau, cho cùng
 phân phối mà không có traffic xuyên core nào cả, và là cách sửa tiêu chuẩn
 khi round robin xuất hiện trong một profile.
 
 Gotcha: `% upstreams.len()` trên một pool *đang thay đổi* âm thầm xáo trộn
-mọi thứ khi độ dài thay đổi dù chỉ một (`07-service-discovery.md`) — ổn
+mọi thứ khi độ dài thay đổi dù chỉ một ([`07-service-discovery.md`](07-service-discovery.md)) — ổn
 với round robin không trạng thái, chết người nếu bất cứ thứ gì phía sau
 giả định sự ổn định. Sự khác biệt đó chính xác là lý do consistent hashing
 tồn tại.
@@ -50,13 +50,13 @@ Chọn upstream có ít `active_conns` nhất ngay lúc này. Tốt hơn round r
 khi chi phí request không đồng đều (một số request rẻ, một số đắt) vì nó
 phản ứng với load thực tế, không chỉ số lượng. Cần một counter
 `active_conns` chính xác, chi phí thấp cho mỗi upstream (xem
-`01-upstream.md`) — quét qua N upstream mỗi lượt chọn thì ổn với hàng chục
+[`01-upstream.md`](01-upstream.md)) — quét qua N upstream mỗi lượt chọn thì ổn với hàng chục
 upstream, không ổn với hàng nghìn (dùng một heap,
-`13-algorithms/heap.md`, nếu bạn cần scale xa hơn).
+[`13-algorithms/heap.md`](../13-algorithms/heap.md), nếu bạn cần scale xa hơn).
 
 Gotcha: least-connection có thể gây thundering herd lên một upstream vừa
 hồi phục (0 kết nối trông hấp dẫn nhất) — kết hợp với slow start / ramp-up
-kết nối (`03-healthcheck.md`).
+kết nối ([`03-healthcheck.md`](03-healthcheck.md)).
 
 Gotcha, và cái này mang tính cấu trúc: **số đếm kết nối của bạn là cục
 bộ.** Với M instance proxy, mỗi instance chỉ biết những kết nối *chính nó*
@@ -90,7 +90,7 @@ gì. Đây là mặc định trong linkerd và có sẵn trong Envoy, và nói c
 cũng nên là mặc định của bạn.
 
 Gotcha: P2C chỉ tốt bằng metric tải mà bạn đem so sánh. Với `active_conns`
-nó thừa hưởng bug leak-khi-cancellation từ `01-upstream.md` (một counter bị
+nó thừa hưởng bug leak-khi-cancellation từ [`01-upstream.md`](01-upstream.md) (một counter bị
 leak làm một host khỏe mạnh trở nên vĩnh viễn kém hấp dẫn); với latency nó
 thừa hưởng vấn đề host-nguội bên dưới.
 
@@ -101,7 +101,7 @@ Peak EWMA chấm điểm mỗi upstream bằng một exponentially-weighted movi
 average của latency phản hồi quan sát được, nhân với số request đang chờ,
 và chọn điểm thấp nhất (thường kết hợp với P2C thay vì quét toàn cục). Nó
 phản ứng với một host đã trở nên chậm mà không hề fail — trường hợp
-degradation một phần mà health check hoàn toàn bỏ lỡ (`03-healthcheck.md`).
+degradation một phần mà health check hoàn toàn bỏ lỡ ([`03-healthcheck.md`](03-healthcheck.md)).
 
 Gotcha: một host không nhận traffic thì không có mẫu latency gần đây, nên
 EWMA của nó cũ — và cũ-mà-nhanh trông giống host tốt nhất trong pool, gửi
@@ -142,14 +142,14 @@ chảy.
 Gotcha: hash phải ổn định qua các process và các lần restart. `DefaultHasher`
 của `std` được nói rõ là không ổn định qua các bản Rust, và `SipHash` của
 `HashMap` được seed ngẫu nhiên theo từng process (xem
-`13-algorithms/hashmap.md`) — hai instance proxy dùng nó sẽ xây *các ring
+[`13-algorithms/hashmap.md`](../13-algorithms/hashmap.md)) — hai instance proxy dùng nó sẽ xây *các ring
 khác nhau* từ cùng một config và bất đồng về mọi key. Dùng một hash
 fixed-seed, chỉ định rõ ràng (xxHash, hoặc SipHash với một key hằng số)
 cho bất cứ thứ gì mà kết quả phải khớp qua các process.
 
 ### Chọn giữa các thuật toán
 Một hướng dẫn quyết định ngắn gọn, vì đây là câu hỏi thật sự khi bạn ngồi
-xuống viết `proxy/`:
+xuống viết [`proxy/`](../../proxy):
 - Không cần affinity, chi phí request đồng đều, pool nhỏ → round robin.
   Nó rẻ và điểm yếu của nó không phát tác.
 - Không cần affinity, chi phí request thay đổi → **P2C trên một load
@@ -162,7 +162,7 @@ xuống viết `proxy/`:
 ## Practice
 Xây theo thứ tự — mỗi bước cần các phép đo của bước trước để đánh giá.
 
-1. Trong `labs/06-load-balancer`, cài đặt round robin. **Xong khi** một
+1. Trong [`labs/06-load-balancer`](../../labs/06-load-balancer), cài đặt round robin. **Xong khi** một
    load test cho thấy request được phân phối trong ±1% giữa 3 upstream giả
    bằng nhau.
 2. Thêm một upstream cố ý chậm (inject 200ms vào một backend) và chạy lại

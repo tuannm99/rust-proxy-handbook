@@ -52,7 +52,7 @@ lands in the first bucket and `histogram_quantile` interpolates within it,
 producing a confident number that is essentially made up.
 
 Choose buckets around the latencies you actually care about, and put a
-boundary exactly at your SLO threshold (`08-observability/06-alerting.md`):
+boundary exactly at your SLO threshold ([`08-observability/06-alerting.md`](06-alerting.md)):
 with a bucket edge at 250ms, "fraction of requests under 250ms" becomes an
 exact count rather than an interpolation.
 
@@ -67,20 +67,20 @@ For every hop (client-facing and per-upstream) track: **R**ate (requests/sec), *
 For a proxy specifically, measure duration at **both** ends and export the
 difference. Total client-observed latency minus upstream response time is
 the proxy's own overhead — queueing, TLS, WAF inspection
-(`07-security/06-waf.md`), connection acquisition from the pool. Without that
+([`07-security/06-waf.md`](../07-security/06-waf.md)), connection acquisition from the pool. Without that
 split, every latency investigation starts with "is it us or them?" and no
 data to answer it.
 
 The proxy-specific signals worth having from day one, none of which are in
 a generic RED dashboard:
-- **Connection pool saturation** per upstream (`06-proxy/01-upstream.md`) —
+- **Connection pool saturation** per upstream ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)) —
   waiting for a pooled connection is invisible in upstream response time.
-- **Retry and circuit-breaker state** (`06-proxy/05-retry.md`) — retry rate,
+- **Retry and circuit-breaker state** ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)) — retry rate,
   budget exhaustion, circuit transitions.
-- **Healthy upstream count** as a gauge (`06-proxy/03-healthcheck.md`).
-- **Cache hit ratio** (`05-http-stack/07-cache.md`), which explains upstream
+- **Healthy upstream count** as a gauge ([`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)).
+- **Cache hit ratio** ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)), which explains upstream
   load changes that have nothing to do with client traffic.
-- **Queue depth / shed count** (`07-security/09-ddos.md`), the earliest
+- **Queue depth / shed count** ([`07-security/09-ddos.md`](../07-security/09-ddos.md)), the earliest
   signal of overload.
 
 ### Cardinality explosion
@@ -103,7 +103,7 @@ port, per phrasing.
 Every metric update happens on every request. A counter is an atomic
 increment, which is cheap but not free — a single global counter touched
 by 16 worker threads is a contended cache line
-(`17-performance/02-false-sharing.md`), and at high request rates that shows
+([`17-performance/02-false-sharing.md`](../17-performance/02-false-sharing.md)), and at high request rates that shows
 up in a profile.
 
 The bigger cost is usually the *label lookup*: `with_label_values(&["GET",
@@ -114,7 +114,7 @@ request.
 
 Gotcha: measure this rather than assuming. Metrics overhead is usually
 small enough to ignore and occasionally 5% of CPU — and you cannot tell
-which without a flamegraph (`08-observability/04-profiling.md`).
+which without a flamegraph ([`08-observability/04-profiling.md`](04-profiling.md)).
 
 ### Push vs pull, and where OpenTelemetry fits
 Prometheus pulls (scrapes `/metrics` on an interval); OTel metrics can push to a collector, which then exports to Prometheus/Datadog/etc. A proxy typically exposes a `/metrics` endpoint for scraping — simple, no extra network dependency, and it survives the proxy being temporarily unreachable from the collector (data is just missed, not queued and lost).
@@ -123,7 +123,7 @@ Gotcha: expose `/metrics` on a **separate listener** from production
 traffic, bound to an internal interface. On the main listener it's
 reachable by anyone, and it leaks a detailed map of your upstreams, route
 names, and traffic volumes — plus scraping it becomes a cheap way to
-consume proxy CPU (`07-security/09-ddos.md`). It also means metrics stay
+consume proxy CPU ([`07-security/09-ddos.md`](../07-security/09-ddos.md)). It also means metrics stay
 scrapeable when the main listener is saturated or shedding, which is
 exactly when you need them.
 
@@ -135,10 +135,10 @@ serializing metrics. Watch scrape duration as its own metric.
 ## Practice
 Build these in order.
 
-1. In `labs/15-prometheus`, expose `/metrics` with the `prometheus`
+1. In [`labs/15-prometheus`](../../labs/15-prometheus), expose `/metrics` with the `prometheus`
    crate's `TextEncoder` and scrape it by hand. **Done when** `curl`
    returns a valid exposition-format response.
-2. Add client-side RED metrics to `proxy` on a separate internal listener.
+2. Add client-side RED metrics to [`proxy`](../../proxy) on a separate internal listener.
    **Done when** `/metrics` is unreachable from the public listener and
    still served while the main listener is saturated.
 3. Add per-upstream RED keyed by upstream *name*, plus the proxy-specific
@@ -159,7 +159,7 @@ Build these in order.
    then fixed it with route templating and confirmed it's bounded by the
    route table size.
 7. Pre-resolve label handles on the hot path and profile
-   (`08-observability/04-profiling.md`). **Done when** you can state metrics'
+   ([`08-observability/04-profiling.md`](04-profiling.md)). **Done when** you can state metrics'
    CPU cost as a percentage, before and after.
 8. Watch `/metrics` render time as its own metric. **Done when** you know
    how long a scrape takes at your current series count and how that

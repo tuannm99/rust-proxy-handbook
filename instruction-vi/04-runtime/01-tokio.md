@@ -6,7 +6,7 @@ Reactor, executor, scheduler.
 
 ### Reactor
 Reactor sở hữu event source của OS (epoll trên Linux, xem
-`02-linux/07-epoll.md`) và biến readiness event thành wakeup. Mỗi
+[`02-linux/07-epoll.md`](../02-linux/07-epoll.md)) và biến readiness event thành wakeup. Mỗi
 `TcpStream`/`TcpListener` đăng ký fd của nó với reactor một lần; khi
 epoll báo fd readable, reactor tìm `Waker` gắn với task đang block trên
 fd đó và gọi `.wake()`. Reactor không chạy code của bạn — nó chỉ quyết
@@ -54,12 +54,12 @@ worker thread) làm suy giảm mọi kết nối trên worker đó, không chỉ
 chậm.
 
 ## Practice
-1. Trong executor tự viết tay bạn sẽ xây ở bài tập `03-rust/05-async.md`
+1. Trong executor tự viết tay bạn sẽ xây ở bài tập [`03-rust/05-async.md`](../03-rust/05-async.md)
    (một scratch project, không thuộc workspace này), poll một `Vec`
    future trong một vòng lặp với một waker no-op, và quan sát nó
    busy-spin thay vì ngủ — đây chính là *lý do* một reactor + waker thật
    sự tồn tại.
-2. Trong `labs/00-tcp-server`, log OS thread ID nào xử lý mỗi kết nối
+2. Trong [`labs/00-tcp-server`](../../labs/00-tcp-server), log OS thread ID nào xử lý mỗi kết nối
    (`std::thread::current().id()`) và xác nhận các kết nối được rải đều
    trên các worker.
 3. Cố tình gọi một `std::thread::sleep` blocking bên trong một handler

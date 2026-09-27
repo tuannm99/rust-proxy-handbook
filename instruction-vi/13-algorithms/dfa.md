@@ -1,6 +1,6 @@
 # DFA (Deterministic Finite Automata)
 
-`13-algorithms/regex-engine.md` nói về cách một regex engine dùng DFA bên
+[`13-algorithms/regex-engine.md`](regex-engine.md) nói về cách một regex engine dùng DFA bên
 dưới. File này nói về bản thân DFA — lý thuyết tổng quát mà bất kỳ state
 machine dựa trên bảng nào (một protocol parser, một config lexer) đứng
 trên đó.
@@ -34,11 +34,11 @@ quy, không cấp phát.
 
 ### DFA đến từ đâu: subset construction
 DFA hiếm khi được viết tay; chúng được suy ra từ một NFA (xây bằng
-Thompson construction, xem `13-algorithms/regex-engine.md`) qua **subset
+Thompson construction, xem [`13-algorithms/regex-engine.md`](regex-engine.md)) qua **subset
 construction**: mỗi state của DFA là *tập hợp* các state NFA có thể tới
 được với một tiền tố input nào đó. Số lượng tập con là hàm mũ trong
 trường hợp xấu nhất — đây chính xác là hiện tượng bùng nổ bộ nhớ mà phần
-lazy-DFA của `regex-engine.md` mô tả và giải quyết bằng cách xây state
+lazy-DFA của [`regex-engine.md`](regex-engine.md) mô tả và giải quyết bằng cách xây state
 theo yêu cầu; không lặp lại thảo luận đó ở đây, hãy đọc ở file kia.
 
 ### Minimization
@@ -62,11 +62,11 @@ khi nó lớn và hiếm khi được check.
 ## Practice
 1. Tự tay xây DFA (không phải NFA) để match một tập cố định các HTTP
    method (`GET`, `POST`, `PUT`, ...) dưới dạng bảng, và dùng nó làm bước
-   phân loại byte đầu tiên trong `labs/01-http-parser`.
+   phân loại byte đầu tiên trong [`labs/01-http-parser`](../../labs/01-http-parser).
 2. Áp dụng subset construction bằng tay lên một NFA nhỏ cho `a(b|c)*d` và
    xác nhận bảng DFA kết quả của bạn cho ra cùng phán quyết
    accept/reject như khi trace tập state NFA (bài tập trong
-   `regex-engine.md`).
+   [`regex-engine.md`](regex-engine.md)).
 3. Tìm hai state tương đương về hành vi trong một DFA bạn đã xây và gộp
    chúng bằng tay; xác nhận automaton đã gộp vẫn chấp nhận cùng một ngôn
    ngữ.

@@ -20,7 +20,7 @@ file I/O (không như socket) hoàn toàn không có khái niệm readiness dư�
 epoll — io_uring là API đầu tiên của Linux cho bạn async file I/O thật
 sự. Với một proxy L7 chủ yếu là socket-tới-socket, phần thắng nhỏ hơn so
 với một workload nặng về storage; io_uring đáng giá nhất khi bạn cũng
-phục vụ static file (`05-http-stack/05-static.md`) hoặc làm caching nặng
+phục vụ static file ([`05-http-stack/05-static.md`](../05-http-stack/05-static.md)) hoặc làm caching nặng
 dựa trên disk.
 
 ### Bối cảnh crate Rust
@@ -60,10 +60,10 @@ phải một mặc định.
    file với một vòng SQE/CQE duy nhất.
 2. Mở rộng nó để nộp nhiều lần đọc trước khi thu bất kỳ completion nào,
    và quan sát việc gộp trong `strace`.
-3. Chuyển echo server raw-epoll từ bài tập `02-linux/07-epoll.md` sang
+3. Chuyển echo server raw-epoll từ bài tập [`02-linux/07-epoll.md`](07-epoll.md) sang
    `tokio-uring` và so sánh độ phức tạp code và hành vi dưới connection
    churn.
 4. Kiểm tra `uname -r` trên máy dev của bạn và bất kỳ môi trường triển
    khai đích nào; xác nhận io_uring có khả dụng/bật ở đó không.
-5. Viết ra, bằng lời của bạn, vì sao `proxy` nên mặc định dùng reactor
+5. Viết ra, bằng lời của bạn, vì sao [`proxy`](../../proxy) nên mặc định dùng reactor
    dựa trên epoll của tokio thay vì io_uring.

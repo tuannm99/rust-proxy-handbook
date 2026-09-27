@@ -5,23 +5,23 @@
 ### Mô hình của tokio, nhìn lại như một lựa chọn thiết kế
 Runtime multi-threaded của tokio là work-stealing: bất kỳ task nào cũng
 có thể chạy trên bất kỳ worker thread nào, và worker rảnh ăn cắp từ worker
-bận (`04-runtime/01-tokio.md`). Điều này tối ưu cho cân bằng tải giữa các
+bận ([`04-runtime/01-tokio.md`](01-tokio.md)). Điều này tối ưu cho cân bằng tải giữa các
 core với ít tinh chỉnh thủ công nhất — bạn không phải nghĩ về việc kết nối
 nào rơi vào core nào. Cái giá: một task di chuyển giữa các core nghĩa là
 dữ liệu của nó (một cache line của `Arc<Mutex<_>>`, một cấp phát cục bộ
 NUMA) giờ có thể bị đụng từ một core khác với nơi nó được cấp phát —
-overhead thật, dù thường nhỏ (`17-performance/03-numa.md`).
+overhead thật, dù thường nhỏ ([`17-performance/03-numa.md`](../17-performance/03-numa.md)).
 
 ### Giải pháp thay thế thread-per-core: `glommio`, `monoio`
 Một runtime thread-per-core ("shard-per-core") pin một thread cho mỗi
 core, cho nó event loop riêng và thường là một instance `io_uring` riêng
-(`02-linux/08-io_uring.md`), và không bao giờ di chuyển một task khỏi
+([`02-linux/08-io_uring.md`](../02-linux/08-io_uring.md)), và không bao giờ di chuyển một task khỏi
 core nó bắt đầu. Cấu trúc dữ liệu có thể là `Rc<RefCell<_>>` thay vì
 `Arc<Mutex<_>>` bên trong một shard, vì không có gì khác từng đụng vào
 memory của shard đó — không atomic, không cache-line nảy qua lại giữa
 các core. Cái giá chuyển sang chỗ khác: mất cân bằng tải giữa các shard
 phải được giải quyết ở tầng kiến trúc (`SO_REUSEPORT` cộng với việc phân
-phối kết nối của kernel, `16-kernel/05-rss.md`/`06-rps.md`) thay vì để
+phối kết nối của kernel, [`16-kernel/05-rss.md`](../16-kernel/05-rss.md)/`06-rps.md`) thay vì để
 một scheduler tự động ăn cắp việc.
 
 ```rust
@@ -50,17 +50,17 @@ với các chi phí đó. Kiến trúc thread-per-core xứng đáng với độ
 của nó ở workload connection-churn rất cao, request rất ngắn (hàng triệu
 op nhỏ mỗi giây, nghĩ tới một cache hay KV proxy) nơi chính overhead mỗi
 request, không phải chờ I/O, chiếm ưu thế — chính xác nơi các lựa chọn
-cấu trúc dữ liệu kiểu `13-algorithms/` và các mối quan tâm cache/NUMA của
-`17-performance/` bắt đầu quan trọng hơn việc chọn mô hình async nào.
+cấu trúc dữ liệu kiểu [`13-algorithms/`](../13-algorithms) và các mối quan tâm cache/NUMA của
+[`17-performance/`](../17-performance) bắt đầu quan trọng hơn việc chọn mô hình async nào.
 
-### `proxy` đứng ở đâu
-`proxy` được xây trên mô hình work-stealing của tokio một cách có chủ đích
-(`04-runtime/00-README.md`) — không phải vì thread-per-core sai, mà vì
+### [`proxy`](../../proxy) đứng ở đâu
+[`proxy`](../../proxy) được xây trên mô hình work-stealing của tokio một cách có chủ đích
+([`04-runtime/00-README.md`](00-README.md)) — không phải vì thread-per-core sai, mà vì
 proxy HTTP L7 không rõ ràng cần nó, và hệ sinh thái của tokio (hyper,
 rustls, h2, quinn) là thứ phần còn lại của handbook này giả định. Hiểu
 giải pháp thay thế là thứ giúp bạn nhận ra sau này, liệu một hot path cụ
-thể bên trong `proxy` (một lần tra cứu cache rất nóng,
-`05-http-stack/07-cache.md`) có được lợi từ việc tách ra thành component
+thể bên trong [`proxy`](../../proxy) (một lần tra cứu cache rất nóng,
+[`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)) có được lợi từ việc tách ra thành component
 shard-per-core riêng của nó thay vì luôn giả định mặc định của tokio là
 công cụ đúng.
 
@@ -68,18 +68,18 @@ công cụ đúng.
 1. Đọc README của `glommio` hay `monoio` và xác định cụ thể những API nào
    của tokio (đặc biệt các API dựa trên `Arc<Mutex<_>>`) không có tương
    đương trực tiếp trong mô hình lập trình của chúng, và ghi lại vì sao.
-2. Benchmark `labs/05-reverse-proxy` dưới connection churn cao (nhiều kết
+2. Benchmark [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) dưới connection churn cao (nhiều kết
    nối ngắn hạn) và dùng `perf top` hay `tokio-console` để tìm bottleneck
    thực sự nằm ở đâu — xác nhận đó là overhead scheduler hay thứ khác
    (chi phí TLS handshake, chi phí accept-loop).
 3. Giải thích, bằng lời của bạn, vì sao `SO_REUSEPORT`
-   (`01-network/07-socket.md`) là nền tảng cho một thiết kế thread-per-core
+   ([`01-network/07-socket.md`](../01-network/07-socket.md)) là nền tảng cho một thiết kế thread-per-core
    theo cách nó không phải với mô hình work-stealing của tokio.
-4. Đọc `16-kernel/05-rss.md` và `06-rps.md`, và nối việc điều hướng packet
+4. Đọc [`16-kernel/05-rss.md`](../16-kernel/05-rss.md) và `06-rps.md`, và nối việc điều hướng packet
    ở mức NIC với vì sao một proxy thread-per-core quan tâm packet của một
    kết nối rơi vào core nào, trong khi một proxy work-stealing thì hầu
    như không.
 5. Viết một đoạn văn bảo vệ lựa chọn tokio thay vì một runtime
-   thread-per-core của `proxy`, cụ thể theo những gì `proxy` thực sự làm
+   thread-per-core của [`proxy`](../../proxy), cụ thể theo những gì [`proxy`](../../proxy) thực sự làm
    (terminate và proxy HTTP L7) thay vì một lập luận chung chung "tokio
    phổ biến hơn."

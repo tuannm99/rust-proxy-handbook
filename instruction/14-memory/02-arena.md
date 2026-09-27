@@ -1,6 +1,6 @@
 # Arena Allocation
 
-`14-memory/01-allocator.md` covers general-purpose allocation. An arena is
+[`14-memory/01-allocator.md`](01-allocator.md) covers general-purpose allocation. An arena is
 the opposite strategy for a specific shape of workload — one a proxy has
 constantly: many small allocations that all die together at the end of
 one request.
@@ -40,7 +40,7 @@ transformation — all of which are only needed until the response is
 sent. Allocating every one of them into a per-request arena and dropping
 the whole arena when the request completes turns what would be dozens of
 individual frees into one. This is also exactly the fix
-`14-memory/06-fragmentation.md` recommends for the "mixed lifetimes"
+[`14-memory/06-fragmentation.md`](06-fragmentation.md) recommends for the "mixed lifetimes"
 fragmentation trigger: request-scoped data never gets a chance to
 interleave with longer-lived connection state if it lives in its own
 arena.
@@ -51,7 +51,7 @@ cannot outlive the arena without being copied out first. In an async
 handler, this means the arena (or a reference into it) must live at
 least as long as every `.await` point that touches data borrowed from
 it, which is exactly the kind of self-referential-across-await-points
-situation `03-rust/06-pin.md` describes. Concretely: don't allocate into an
+situation [`03-rust/06-pin.md`](../03-rust/06-pin.md) describes. Concretely: don't allocate into an
 arena that's a local variable and then try to hold a reference into it
 across a suspended future that outlives the function — either own the
 arena inside the future's state, or copy the data out before the
@@ -62,11 +62,11 @@ An arena that grows without limit (e.g. one processing an attacker-
 controlled, unbounded request body into arena-allocated pieces) removes
 the natural backpressure a per-allocation limit would have provided.
 Cap the arena's total size per request and reject/error past it, the same
-way you'd cap any other per-request resource (`07-security/09-ddos.md`).
+way you'd cap any other per-request resource ([`07-security/09-ddos.md`](../07-security/09-ddos.md)).
 
 ## Practice
 1. Use `bumpalo` to arena-allocate the parsed headers for one request in
-   `labs/01-http-parser`, replacing per-header `String`/`Vec` allocations.
+   [`labs/01-http-parser`](../../labs/01-http-parser), replacing per-header `String`/`Vec` allocations.
 2. Measure allocation count and total time for parsing a request with 20
    headers, with and without the arena, at high concurrency.
 3. Deliberately try to return a reference borrowed from a function-local

@@ -45,7 +45,7 @@ Hai hệ quả:
   flamegraph. Nếu proxy của bạn chậm vì nó đang chờ, flamegraph sẽ trông
   hoàn toàn khỏe mạnh và không nói cho bạn biết gì.
 
-Hãy dùng trace (`08-observability/03-tracing.md`) cho việc quy kết
+Hãy dùng trace ([`08-observability/03-tracing.md`](03-tracing.md)) cho việc quy kết
 causality và latency; dùng flamegraph cho "cái gì đang đốt CPU." Chúng trả
 lời các câu hỏi khác nhau, và nhầm lẫn giữa chúng lãng phí rất nhiều thời
 gian.
@@ -59,13 +59,13 @@ nơi latency của một proxy thường nằm ở đó.
 Với riêng async, `tokio-console` là công cụ nhắm đúng: nó cho thấy số lần
 poll theo từng task, thời lượng poll, và — tín hiệu quan trọng — các task
 mà mỗi lần poll mất nhiều thời gian. Một lần poll chạy nhiều mili-giây là
-một task đang chặn executor thread (`03-rust/05-async.md`'s cooperative
+một task đang chặn executor thread ([`03-rust/05-async.md`](../03-rust/05-async.md)'s cooperative
 scheduling), làm khựng mọi connection khác trên worker đó. Thủ phạm phổ
 biến trong một proxy: một lần đọc file đồng bộ
-(`05-http-stack/05-static.md`), một lần nén lớn
-(`05-http-stack/06-compression.md`), regex trên một body lớn
-(`07-security/06-waf.md`), hoặc một lần ghi log đồng bộ
-(`08-observability/01-logging.md`).
+([`05-http-stack/05-static.md`](../05-http-stack/05-static.md)), một lần nén lớn
+([`05-http-stack/06-compression.md`](../05-http-stack/06-compression.md)), regex trên một body lớn
+([`07-security/06-waf.md`](../07-security/06-waf.md)), hoặc một lần ghi log đồng bộ
+([`08-observability/01-logging.md`](01-logging.md)).
 
 Gotcha: một executor thread bị chặn xuất hiện như *latency trên các
 request không liên quan*, đó là lý do vì sao nó khó chẩn đoán chỉ từ dữ
@@ -84,22 +84,22 @@ bpftrace -e 'tracepoint:syscalls:sys_enter_read /pid == $1/ { @start[tid] = nsec
 ```
 
 ### Thời gian của một proxy Rust thực sự đi đâu
-1. Syscall (epoll_wait/read/write) — xem `02-linux/07-epoll.md`,
-   `02-linux/11-zerocopy.md` để biết cách giảm những cái này.
+1. Syscall (epoll_wait/read/write) — xem [`02-linux/07-epoll.md`](../02-linux/07-epoll.md),
+   [`02-linux/11-zerocopy.md`](../02-linux/11-zerocopy.md) để biết cách giảm những cái này.
 2. Allocation — mỗi lần clone `Vec<u8>`/`String` trên hot path đều tốn chi
    phí; profile bằng `heaptrack` hoặc `dhat` (qua crate `dhat`) song song
    với profiling CPU.
 3. TLS — chi phí CPU của handshake là có thật ở connection churn cao (các
    connection ngắn ngày liên tục handshake lại); session resumption
-   (`01-network/13-tls.md`) quan trọng hơn việc micro-optimize parser.
+   ([`01-network/13-tls.md`](../01-network/13-tls.md)) quan trọng hơn việc micro-optimize parser.
 Gotcha: profile một build debug gần như vô nghĩa — luôn profile
 `--release`, và profile dưới tải đồng thời thực tế (xem
-`12-testing/01-load-testing.md`), không phải một request curl đơn lẻ.
+[`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)), không phải một request curl đơn lẻ.
 
 Gotcha: allocation hiện ra trong một profile CPU dưới dạng frame
 `malloc`/`free`, nhưng *cái giá* thật của một pattern allocation tệ thường
 là fragmentation và RSS tăng dần qua nhiều ngày
-(`14-memory/06-fragmentation.md`), điều mà không profile 30 giây nào thấy
+([`14-memory/06-fragmentation.md`](../14-memory/06-fragmentation.md)), điều mà không profile 30 giây nào thấy
 được. Hãy theo dõi allocated-vs-resident như một gauge song song.
 
 ### Continuous profiling tốt hơn profiling trong lúc sự cố
@@ -111,7 +111,7 @@ Pyroscope) sample ở tần suất thấp mọi lúc, để bạn có thể xem 
 từ *thứ Ba tuần trước lúc 03:14* khi sự cố thực sự xảy ra.
 
 Gotcha: expose endpoint đó trên listener nội bộ, không phải listener công
-khai (cùng lý do như `/metrics` trong `08-observability/02-metrics.md`) —
+khai (cùng lý do như `/metrics` trong [`08-observability/02-metrics.md`](02-metrics.md)) —
 một endpoint profiling vừa là một rò rỉ thông tin vừa là một chi phí CPU
 mà bất kỳ ai cũng có thể kích hoạt.
 
@@ -135,7 +135,7 @@ Xây dựng theo thứ tự sau.
    `force-frame-pointers`) và xác nhận quyền. **Xong khi** `cargo
    flamegraph` nhắm vào `proxy` dưới tải tạo ra một đồ thị với các frame
    Rust sâu, có symbol — không phải một đồ thị phẳng.
-2. Profile dưới tải đồng thời thực tế từ `12-testing/01-load-testing.md`.
+2. Profile dưới tải đồng thời thực tế từ [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md).
    **Xong khi** bạn có thể nêu tên ba frame rộng nhất và phân loại mỗi cái
    là syscall (đúng dự kiến), allocation (có thể sửa), hoặc logic (đúng
    dự kiến).
@@ -145,7 +145,7 @@ Xây dựng theo thứ tự sau.
 4. Chứng minh vấn đề quy kết của async. **Xong khi** bạn có thể cho thấy
    một upstream chậm (tiêm 200ms độ trễ) không làm rộng bất cứ thứ gì
    trong flamegraph, và giải thích chỉ từ profile vì sao lại như vậy.
-5. Chạy `tokio-console` nhắm vào `proxy`. **Xong khi** bạn có thể xác định
+5. Chạy `tokio-console` nhắm vào [`proxy`](../../proxy). **Xong khi** bạn có thể xác định
    task có thời lượng poll đơn lẻ dài nhất — rồi thêm một thao tác đồng
    bộ 10ms bên trong một handler và xem nó trở thành thủ phạm tệ nhất.
 6. Đo thiệt hại của một lần poll bị block. **Xong khi** bạn có thể cho
@@ -159,8 +159,8 @@ Xây dựng theo thứ tự sau.
    instrumentation của bạn bắt đầu.
 8. So sánh profile TLS với profile plaintext. **Xong khi** bạn có thể định
    lượng chi phí CPU của handshake trên mỗi connection và cho thấy nó
-   giảm xuống khi session resumption được bật (`01-network/13-tls.md`).
+   giảm xuống khi session resumption được bật ([`01-network/13-tls.md`](../01-network/13-tls.md)).
 9. (Mở rộng) Expose `pprof-rs` trên listener nội bộ và chụp profile liên
-   tục trong một chaos test (`12-testing/03-chaos.md`). **Xong khi** bạn
+   tục trong một chaos test ([`12-testing/03-chaos.md`](../12-testing/03-chaos.md)). **Xong khi** bạn
    có thể lấy lại profile từ đúng phút một fault được tiêm vào, sau khi
    sự việc đã xảy ra.

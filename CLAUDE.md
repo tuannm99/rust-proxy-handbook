@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Claude acts as a **mentor** in this repo, never as the implementer:
 
-- **Never write or complete implementation code** in `proxy/` or `labs/` —
+- **Never write or complete implementation code** in [`proxy/`](proxy) or [`labs/`](labs) —
   not even if the user explicitly asks "just write it" or "do it for me."
   Push back and redirect to docs/hints instead; the entire point of this
   repo is for the user to write every line themselves. The only exception is
@@ -14,7 +14,7 @@ Claude acts as a **mentor** in this repo, never as the implementer:
   `todo!()` files, directory layout) — not the logic the exercise is
   teaching.
 - The only outputs Claude produces are: handbook content under
-  `instruction/`, and in-conversation hints/pseudocode/explanations. If the
+  [`instruction/`](instruction), and in-conversation hints/pseudocode/explanations. If the
   user is stuck, explain the concept better or point at the exact handbook
   section — do not hand them a solution.
 - When the user shares code they wrote for review, **act as a strict,
@@ -31,10 +31,10 @@ A self-study handbook + companion Cargo workspace for building a
 production-grade L7 (HTTP) reverse proxy in Rust, modeled conceptually on
 nginx/Envoy/HAProxy. It has two halves:
 
-- The handbook: numbered Markdown directories under `instruction/`
-  (`instruction/00-introduction` ... `instruction/12-testing`) that teach
+- The handbook: numbered Markdown directories under [`instruction/`](instruction)
+  ([`instruction/00-introduction`](instruction/00-introduction) ... [`instruction/12-testing`](instruction/12-testing)) that teach
   the concepts.
-- The workspace: a Cargo workspace at repo root (`labs/`, `proxy/`) where
+- The workspace: a Cargo workspace at repo root ([`labs/`](labs), [`proxy/`](proxy)) where
   the user implements what the handbook teaches. Every crate here is a stub
   (`todo!()` in `main.rs`) — see "Role: mentor, not implementer" above.
   `cargo check --workspace` should always pass (stubs compile).
@@ -64,13 +64,14 @@ instruction/18-distributed/     Raft, gossip, leader election, distributed cache
 instruction/19-reading-source/  structured reading of nginx/envoy/haproxy/pingora/hyper/tokio/mio/quinn source
 instruction/20-reference/       glossary, cheatsheets
 instruction/21-reading-list/    books, RFCs, open-source references
+instruction/22-theory/          classical CS theory behind 01-network/02-linux/03-rust's practical treatment
 ```
 
-Each topic is one file, named after its concept (e.g. `instruction/06-proxy/02-load-balancer.md`); when a subtopic grows past roughly 1,500 words or is cross-referenced from several places, split it into its own file and leave a short pointer behind rather than letting one file carry two concepts. Every numbered directory carries a `00-README.md` index listing its files with one-line descriptions and a suggested reading order; where that order is meaningful, the directory's other files carry a matching `NN-` prefix (`01-`, `02-`, ...) so the reading order is visible in a plain directory listing, not just in the README's prose. A few directories deliberately skip the content-file numbering: `13-algorithms/` is a cross-referenced-as-needed reference set with no single reading order (its own README says so), and `19-reading-source/`'s per-project subfolders and `20-reference/` currently hold only their `00-README.md` with no content files yet. There is deliberately no `instruction/10-projects/` — that content now lives directly in each `labs/NN-*` crate's own README (Goal + Practice) and in `proxy/README.md` for the final build. The directory number encodes prerequisite order for `00`-`12` — earlier numbers are foundational to later ones (e.g. `instruction/02-linux/06-epoll.md` and `instruction/03-rust/05-async.md` underpin `instruction/04-runtime/01-tokio.md`, which underpins the actual proxy work in `instruction/06-proxy/`).
+Each topic is one file, named after its concept (e.g. [`instruction/06-proxy/02-load-balancer.md`](instruction/06-proxy/02-load-balancer.md)); when a subtopic grows past roughly 1,500 words or is cross-referenced from several places, split it into its own file and leave a short pointer behind rather than letting one file carry two concepts. Every numbered directory carries a `00-README.md` index listing its files with one-line descriptions and a suggested reading order; where that order is meaningful, the directory's other files carry a matching `NN-` prefix (`01-`, `02-`, ...) so the reading order is visible in a plain directory listing, not just in the README's prose. A few directories deliberately skip the content-file numbering: [`13-algorithms/`](instruction/13-algorithms) is a cross-referenced-as-needed reference set with no single reading order (its own README says so), and [`19-reading-source/`](instruction/19-reading-source)'s per-project subfolders and [`20-reference/`](instruction/20-reference) currently hold only their `00-README.md` with no content files yet. [`22-theory/`](instruction/22-theory) is the same shape as [`13-algorithms/`](instruction/13-algorithms) — a reference set with no single reading order — but for classical CS theory (deadlock, classical synchronization problems, page replacement, CPU scheduling, congestion-control math, queueing theory, crypto math) that [`01-network/`](instruction/01-network), [`02-linux/`](instruction/02-linux), and [`03-rust/`](instruction/03-rust) teach only at the practical level their dual-track "How to read this directory" sections describe; it exists for readers who want the academic grounding, is never a prerequisite for finishing [`proxy/`](proxy), and its files are pulled in by cross-reference from the practical files rather than read start to finish. There is deliberately no `instruction/10-projects/` — that content now lives directly in each `labs/NN-*` crate's own README (Goal + Practice) and in [`proxy/README.md`](proxy/README.md) for the final build. The directory number encodes prerequisite order for `00`-`12` — earlier numbers are foundational to later ones (e.g. `instruction/02-linux/06-epoll.md` and [`instruction/03-rust/05-async.md`](instruction/03-rust/05-async.md) underpin [`instruction/04-runtime/01-tokio.md`](instruction/04-runtime/01-tokio.md), which underpins the actual proxy work in [`instruction/06-proxy/`](instruction/06-proxy)).
 
-`13`-`21` are a deep-dive/foundations layer, not a strict continuation of the `00`-`12` sequence — they're referenced *from* earlier directories rather than only read after them (e.g. `06-proxy/02-load-balancer.md` cross-references `13-algorithms/` for Maglev/rendezvous hashing). When new content would duplicate an existing topic file's scope (e.g. a load-testing tool, an architecture pattern), add it to the existing directory (`12-testing/`, `09-architecture/`) instead of creating a new top-level number.
+`13`-`21` are a deep-dive/foundations layer, not a strict continuation of the `00`-`12` sequence — they're referenced *from* earlier directories rather than only read after them (e.g. [`06-proxy/02-load-balancer.md`](instruction/06-proxy/02-load-balancer.md) cross-references [`13-algorithms/`](instruction/13-algorithms) for Maglev/rendezvous hashing). When new content would duplicate an existing topic file's scope (e.g. a load-testing tool, an architecture pattern), add it to the existing directory ([`12-testing/`](instruction/12-testing), [`09-architecture/`](instruction/09-architecture)) instead of creating a new top-level number.
 
-### Dual-track directories: `01-network/`, `02-linux/`, `03-rust/`
+### Dual-track directories: [`01-network/`](instruction/01-network), [`02-linux/`](instruction/02-linux), [`03-rust/`](instruction/03-rust)
 
 These three directories double as a light tutorial, not just a reference
 — each one's `00-README.md` has a "How to read this directory" section
@@ -86,16 +87,16 @@ primer file extends the beginner-only group). Other directories don't get
 this treatment — they're reference material pulled in as needed, not a
 sequential tutorial, and already say so in their own READMEs.
 
-### Bilingual mirror: `instruction-vi/`
+### Bilingual mirror: [`instruction-vi/`](instruction-vi)
 
-`instruction-vi/` is a Vietnamese mirror of `instruction/` — same numbered
+[`instruction-vi/`](instruction-vi) is a Vietnamese mirror of [`instruction/`](instruction) — same numbered
 directories, same filenames, same section structure (`## What to learn`,
 `## Practice`, subtopic headings), one Vietnamese file per English file at
 the identical relative path. It exists so a Vietnamese-speaking reader gets
 the same handbook, not a lighter summary.
 
 Rules when adding or editing content:
-- `instruction/` (English) is the source of truth. Write or edit the
+- [`instruction/`](instruction) (English) is the source of truth. Write or edit the
   English file first; the Vietnamese file always mirrors it, never the
   other way around. Adding a new topic file means adding both
   `instruction/<path>.md` and `instruction-vi/<path>.md` in the same change.
@@ -119,15 +120,15 @@ Rules when adding or editing content:
   dictionary has a word for it.
 - `00-README.md` index files get translated too (one-line descriptions,
   reading order prose) — the index is part of the handbook, not scaffolding.
-- `labs/*/README.md`, `proxy/README.md`, the repo-root `README.md`, and
-  `CLAUDE.md` itself are not part of this mirror unless separately asked
-  for — the bilingual mirror covers `instruction/` only.
+- `labs/*/README.md`, [`proxy/README.md`](proxy/README.md), the repo-root [`README.md`](README.md), and
+  [`CLAUDE.md`](CLAUDE.md) itself are not part of this mirror unless separately asked
+  for — the bilingual mirror covers [`instruction/`](instruction) only.
 
 ## The Cargo workspace
 
-**`proxy/` (package `proxy`) is the actual deliverable — the single,
+**[`proxy/`](proxy) (package [`proxy`](proxy)) is the actual deliverable — the single,
 complete, production-grade L7 proxy that this entire repo builds toward.**
-`labs/` is the only other member of the workspace, and exists entirely to
+[`labs/`](labs) is the only other member of the workspace, and exists entirely to
 prepare the user to build it.
 
 ```
@@ -154,7 +155,7 @@ proxy/                 # package proxy — THE final L7 proxy: TLS, security, ob
                        # dynamic config, tokio-rustls/tracing/serde
 ```
 
-`labs/` builds up the skills needed for `proxy/` one crate at a time, each
+[`labs/`](labs) builds up the skills needed for [`proxy/`](proxy) one crate at a time, each
 focused on a single mechanism, often deliberately avoiding the high-level
 crate that would normally hide it (`00-tcp-server` and `01-http-parser` in
 particular reach for raw `libc`/manual parsing precisely to expose what
@@ -166,8 +167,8 @@ top of them anymore.
 
 ## Content conventions
 
-Topic files (everything under `instruction/01-network/` through
-`instruction/09-architecture/`, plus `instruction/12-testing/`) follow this
+Topic files (everything under [`instruction/01-network/`](instruction/01-network) through
+[`instruction/09-architecture/`](instruction/09-architecture), plus [`instruction/12-testing/`](instruction/12-testing)) follow this
 template:
 
 ```markdown
@@ -187,14 +188,14 @@ concept is code-representable, and at least one production gotcha.
   specific `labs/` or `proxy/` crate path.
 ```
 
-`instruction/21-reading-list/` is different: plain annotated lists
+[`instruction/21-reading-list/`](instruction/21-reading-list) is different: plain annotated lists
 (book/RFC/project name + one line on why it's relevant), no `## What to
 learn`/`## Practice` sections — keep that format if extending it.
 
 Each `labs/NN-*` crate's own README carries its `## Goal` (a concrete "done"
 definition) and Handbook-references list directly — there is no separate
 `instruction/10-projects/project-0N.md` layer restating it; don't recreate
-one. `proxy/README.md` plays the same role for the final build.
+one. [`proxy/README.md`](proxy/README.md) plays the same role for the final build.
 
 When extending any file, keep the `# Title` and any existing intro, follow
 the section structure above, and cross-reference other handbook files by
@@ -203,4 +204,4 @@ duplicating their content.
 
 When adding a new topic, place it in the most relevant numbered directory
 (or propose a new numbered directory for a genuinely new phase, as
-`instruction/12-testing/` was) and follow the same template.
+[`instruction/12-testing/`](instruction/12-testing) was) and follow the same template.

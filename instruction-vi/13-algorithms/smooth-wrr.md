@@ -1,6 +1,6 @@
 # Smooth Weighted Round Robin
 
-Thuật toán đứng sau directive `weight=` của nginx. `06-proxy/02-load-balancer.md`
+Thuật toán đứng sau directive `weight=` của nginx. [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md)
 giới thiệu WRR và nói rằng các lượt chọn nên "đan xen thay vì dồn cục" —
 file này nói về cách sự đan xen đó thực sự được tạo ra.
 
@@ -53,7 +53,7 @@ sự được cộng ở bước 1. Khi một request tới một upstream thấ
 `effective_weight` của upstream đó; khi thành công, nó tăng trở lại, giới
 hạn ở `weight` đã cấu hình. Kết quả là một load balancer dần dần giảm
 traffic khỏi một upstream đang xuống cấp và dần dần khôi phục lại — mà
-không cần bất kỳ active health check nào (`06-proxy/03-healthcheck.md`)
+không cần bất kỳ active health check nào ([`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md))
 kích hoạt.
 
 Đây là health checking *passive* được biểu diễn thuần túy bằng số học
@@ -74,10 +74,10 @@ nó. Các cách sửa thường gặp là shard load balancer theo từng worker
 (mỗi thread giữ mảng `current_weight` riêng, chấp nhận độ chính xác tỷ lệ
 theo từng thread thay vì toàn cục) hoặc chuyển sang một thuật toán không
 có shared mutable state nào cả, như rendezvous hashing
-(`13-algorithms/rendezvous-hash.md`).
+([`13-algorithms/rendezvous-hash.md`](rendezvous-hash.md)).
 
 ## Practice
-1. Implement smooth WRR trong `labs/06-load-balancer` cho weight `[5,1,1]`
+1. Implement smooth WRR trong [`labs/06-load-balancer`](../../labs/06-load-balancer) cho weight `[5,1,1]`
    và in ra 21 lượt chọn đầu tiên (ba chu kỳ đầy đủ). Xác nhận mỗi chu kỳ
    chứa đúng 5/1/1 lượt chọn và các upstream weight-1 được rải ra thay vì
    nằm cạnh nhau.

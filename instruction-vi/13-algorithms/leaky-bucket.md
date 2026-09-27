@@ -1,6 +1,6 @@
 # Leaky Bucket
 
-`07-security/07-ratelimit.md` giới thiệu leaky bucket như "một hàng đợi
+[`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) giới thiệu leaky bucket như "một hàng đợi
 xả với tốc độ không đổi." File này nói về hai cách câu đó thực sự được
 implement, vì chúng hành xử rất khác nhau dưới tải.
 
@@ -37,7 +37,7 @@ impl LeakyBucketMeter {
 Về mặt toán học đây là ảnh gương của token bucket (đổ đầy so với rút cạn,
 từ chối-khi-đầy so với từ chối-khi-rỗng) và cho ra *cùng* quyết định
 accept/reject như token bucket với cùng capacity và rate — xem GCRA trong
-`13-algorithms/token-bucket.md`. Nếu bạn đã có một token bucket đúng, bạn
+[`13-algorithms/token-bucket.md`](token-bucket.md). Nếu bạn đã có một token bucket đúng, bạn
 không cần implement riêng dạng này; nó tồn tại chủ yếu vì tài liệu của các
 nhà cung cấp (AWS, tài liệu quota của GCP, một số API gateway) mô tả
 limiter của họ theo cách này.
@@ -85,9 +85,9 @@ hàng đợi đầy hơn là block caller trong ngữ cảnh proxy, nơi mỗi t
 block giữ tài nguyên (một kết nối, một task) suốt thời gian chờ.
 
 ## Practice
-1. Trong `labs/11-rate-limit`, implement dạng meter và xác nhận, trên một
+1. Trong [`labs/11-rate-limit`](../../labs/11-rate-limit), implement dạng meter và xác nhận, trên một
    timeline request có kịch bản, nó accept/reject giống hệt implementation
-   `token-bucket.md` của bạn với capacity/rate tương ứng.
+   [`token-bucket.md`](token-bucket.md) của bạn với capacity/rate tương ứng.
 2. Implement dạng queue với một `VecDeque` có giới hạn và một task nền rút
    theo chu kỳ cố định; thêm một `try_enqueue` từ chối ngay khi đầy.
 3. Chứng minh trực tiếp sự khác biệt về làm mượt: bắn một burst
@@ -97,4 +97,4 @@ block giữ tài nguyên (một kết nối, một task) suốt thời gian ch�
    ra tất cả chúng theo `drain_rate`.
 4. Đổi dạng queue thành block-cho-tới-khi-có-chỗ thay vì
    từ-chối-khi-đầy, đo thời gian chờ tệ nhất ở capacity/rate bạn đã chọn,
-   và viết ra vì sao bạn sẽ hoặc sẽ không ship hành vi đó trong `proxy/`.
+   và viết ra vì sao bạn sẽ hoặc sẽ không ship hành vi đó trong [`proxy/`](../../proxy).

@@ -1,6 +1,6 @@
 # Sliding Window Rate Limiting
 
-`07-security/07-ratelimit.md` và `13-algorithms/token-bucket.md` nói về
+[`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) và [`13-algorithms/token-bucket.md`](token-bucket.md) nói về
 token bucket và leaky bucket. File này nói về họ còn lại: giới hạn bằng
 cách đếm số request trong một cửa sổ thời gian di chuyển thay vì mô hình
 hóa một cái bucket.
@@ -80,7 +80,7 @@ việc giới hạn đó thực sự đang hứa hẹn điều gì với một c
 downstream.
 
 ## Practice
-1. Trong `labs/11-rate-limit`, implement fixed window counter trước và viết
+1. Trong [`labs/11-rate-limit`](../../labs/11-rate-limit), implement fixed window counter trước và viết
    tường minh test burst-ở-biên: gửi `limit` request tại `window_end - 1ms`
    và thêm `limit` nữa tại `window_end + 1ms`, và quan sát cả hai đều
    thành công dù đạt `2x` tốc độ dự định trong ~2ms.
@@ -94,6 +94,6 @@ downstream.
    hai bước riêng biệt, không atomic, dưới truy cập đồng thời), quan sát
    việc đếm thiếu, rồi sửa nó.
 5. (Nâng cao) So sánh sliding window counter với implementation GCRA của
-   bạn trong `token-bucket.md` trên cùng một trace traffic có burst, và mô
+   bạn trong [`token-bucket.md`](token-bucket.md) trên cùng một trace traffic có burst, và mô
    tả, bằng lời của bạn, cái nào một client sẽ cảm thấy "bất công" hơn và
    vì sao.

@@ -2,7 +2,7 @@
 
 Thứ tự field của struct, padding, và `#[repr]` — cùng những field đó có
 thể chiếm lượng bộ nhớ rất khác nhau, và vì sao điều này vươn tới cả
-`13-algorithms/slab.md` và `14-memory/06-fragmentation.md`.
+[`13-algorithms/slab.md`](../13-algorithms/slab.md) và [`14-memory/06-fragmentation.md`](../14-memory/06-fragmentation.md).
 
 ## What to learn
 
@@ -25,18 +25,18 @@ và nó thực sự làm vậy, để tự động giảm thiểu padding. Nên 
 rồi. Lý do cần quan tâm là các ngoại lệ: `#[repr(C)]` (cho FFI hoặc một
 wire format) đóng băng thứ tự khai báo, và khi đó sự khác biệt
 `Bad`/`Good` ở trên quay lại nằm trong tay bạn. Các struct map eBPF trong
-`16-kernel/09-ebpf.md` và bất kỳ struct nào bạn memcpy lên đường truyền
+[`16-kernel/09-ebpf.md`](../16-kernel/09-ebpf.md) và bất kỳ struct nào bạn memcpy lên đường truyền
 đều là `repr(C)` và phải được sắp xếp một cách chủ động.
 
 ### Vì sao kích thước vươn tới cả fragmentation và slab
 Đây là phần thưởng, không phải một micro-optimization. Allocator làm tròn
-lên các size class (`14-memory/06-fragmentation.md`): một struct 129 byte
+lên các size class ([`14-memory/06-fragmentation.md`](../14-memory/06-fragmentation.md)): một struct 129 byte
 chiếm một slot 160 byte. Thu nhỏ struct đó xuống dưới 128 — bằng cách bỏ
 padding, hoặc bằng hot/cold split bên dưới — chuyển nó sang class 128 và
 tiết kiệm 32 byte *mỗi instance*. Ở quy mô 100 nghìn connection đó là một
 bước nhảy 3 MB, và nó cũng có nghĩa là nhiều object hơn trên mỗi slab page
-(`13-algorithms/slab.md`), tức là mật độ cache tốt hơn trên hot path
-(`17-performance/01-cpu-cache.md`). Kích thước là đòn bẩy trên ba hệ thống
+([`13-algorithms/slab.md`](../13-algorithms/slab.md)), tức là mật độ cache tốt hơn trên hot path
+([`17-performance/01-cpu-cache.md`](01-cpu-cache.md)). Kích thước là đòn bẩy trên ba hệ thống
 con cùng lúc.
 
 ### Hot/cold splitting
@@ -65,25 +65,25 @@ của enum miễn phí. `Option<&T>` cùng kích thước với `&T` vì null ch
 niche của `None`; `Option<NonZeroU32>` là 4 byte, không phải 8. Điều này
 nghĩa là dùng `NonZero*` và reference thay vì giá trị sentinel (`u32::MAX`
 nghĩa là "không có") có thể thu nhỏ một struct mà không cần đổi code chút
-nào. Dùng nó trong các cấu trúc arena/index (`13-algorithms/lru.md`,
-`15-parser/03-ast.md`) nơi một liên kết "none" là phổ biến.
+nào. Dùng nó trong các cấu trúc arena/index ([`13-algorithms/lru.md`](../13-algorithms/lru.md),
+[`15-parser/03-ast.md`](../15-parser/03-ast.md)) nơi một liên kết "none" là phổ biến.
 
 Gotcha: `#[repr(packed)]` (loại bỏ *toàn bộ* padding) gần như không bao
 giờ là câu trả lời — nó tạo ra các field không align, và lấy một reference
 tới một field như vậy là undefined behavior, nên nó biến một chiến thắng
-về kích thước thành một rủi ro về tính đúng đắn (`03-rust/03-unsafe.md`).
+về kích thước thành một rủi ro về tính đúng đắn ([`03-rust/03-unsafe.md`](../03-rust/03-unsafe.md)).
 Dùng sắp xếp field và niche `NonZero`, không phải `packed`.
 
 ## Practice
 1. Dùng `std::mem::size_of` và `#[repr(C)]` để tái tạo khác biệt
    `Bad`/`Good`, rồi bỏ `repr(C)` và xác nhận Rust đã tự đóng gói nó —
    chứng minh bạn hiếm khi cần tự sắp xếp field.
-2. In `size_of` cho một struct theo từng connection thật của `proxy`;
+2. In `size_of` cho một struct theo từng connection thật của [`proxy`](../../proxy);
    kiểm tra xem nó có nằm ngay sau một ranh giới size-class
-   (`14-memory/06-fragmentation.md`) không và liệu thu nhỏ nó có đưa nó
+   ([`14-memory/06-fragmentation.md`](../14-memory/06-fragmentation.md)) không và liệu thu nhỏ nó có đưa nó
    quay lại dưới ranh giới đó không.
 3. Làm một hot/cold split trên struct đó, đo benchmark hot-path
-   (`17-performance/01-cpu-cache.md`), và chỉ giữ thay đổi nếu con số đó
+   ([`17-performance/01-cpu-cache.md`](01-cpu-cache.md)), và chỉ giữ thay đổi nếu con số đó
    dịch chuyển.
 4. Thay một liên kết kiểu "u32::MAX nghĩa là none" trong một cấu trúc
    arena bằng `Option<NonZeroU32>` và xác nhận struct nhỏ đi mà không có
@@ -91,4 +91,4 @@ Dùng sắp xếp field và niche `NonZero`, không phải `packed`.
 5. Xác minh mối liên kết với fragmentation: cấp phát 100 nghìn struct đó
    trước và sau khi thu nhỏ nó qua một ranh giới size-class và so sánh
    RSS, nối điều này lại với số object-trên-mỗi-page của
-   `13-algorithms/slab.md`.
+   [`13-algorithms/slab.md`](../13-algorithms/slab.md).

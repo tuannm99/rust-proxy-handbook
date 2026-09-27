@@ -39,8 +39,8 @@ impl Middleware for LoggingMiddleware {
 }
 ```
 Đây chính xác là hình dạng `Pin<Box<dyn Future>>` của
-`03-rust/10-smart-pointers-and-interior-mutability.md` và lý do `Pin` tồn
-tại của `03-rust/06-pin.md`, áp dụng ở một trait boundary thay vì bên
+[`03-rust/10-smart-pointers-and-interior-mutability.md`](10-smart-pointers-and-interior-mutability.md) và lý do `Pin` tồn
+tại của [`03-rust/06-pin.md`](06-pin.md), áp dụng ở một trait boundary thay vì bên
 trong một executor viết tay.
 
 ### Crate `async-trait`: cùng cách sửa, qua macro
@@ -49,7 +49,7 @@ trong một executor viết tay.
 vì viết tay signature đã box khi một trait có nhiều method async — phiên
 bản viết tay có signature dài dòng đến mức lặp lại nó bằng tay qua năm
 method còn tệ hơn chấp nhận một allocation mỗi lần gọi do macro sinh ra.
-Điều này nối với `03-rust/12-macros.md`: biết một derive/attribute macro
+Điều này nối với [`03-rust/12-macros.md`](12-macros.md): biết một derive/attribute macro
 expand ra gì là thứ khiến việc dùng `async-trait` là một lựa chọn có chủ
 đích thay vì "câu trả lời ai đó paste từ Stack Overflow".
 
@@ -57,9 +57,9 @@ expand ra gì là thứ khiến việc dùng `async-trait` là một lựa chọ
 Mỗi lần gọi qua một trait method boxed-future allocate một `Box` cho
 future của lần gọi đó, ngay cả khi caller chỉ bao giờ dùng một implementor
 cụ thể và không hề cần dynamic dispatch ở call site cụ thể đó. Với một
-middleware/plugin chain (`09-architecture/02-plugin.md`) được gọi mỗi
+middleware/plugin chain ([`09-architecture/02-plugin.md`](../09-architecture/02-plugin.md)) được gọi mỗi
 request, đây là một chi phí thật, đo được ở tốc độ request cao, không
-phải lỗi làm tròn — profile nó (`08-observability/04-profiling.md`) trước
+phải lỗi làm tròn — profile nó ([`08-observability/04-profiling.md`](../08-observability/04-profiling.md)) trước
 khi giả định nó ổn, và xem xét một enum các middleware đã biết dispatch
 qua `match` (static dispatch) thay vì `Vec<Box<dyn Middleware>>` nếu tập
 plugin thực ra cố định lúc compile.
@@ -72,7 +72,7 @@ hàm generic hoặc một enum dispatch qua `match` tránh hoàn toàn vấn đ�
 trait object `dyn`. Chỉ dùng pattern boxed-future khi bạn thực sự cần
 runtime polymorphism (một plugin load từ config, một `Vec` các handler
 không đồng nhất) — cùng quyết định static-vs-dynamic-dispatch như
-`03-rust/07-traits-and-generics.md`, chỉ thêm async vào trên đó.
+[`03-rust/07-traits-and-generics.md`](07-traits-and-generics.md), chỉ thêm async vào trên đó.
 
 ## Practice
 1. Viết một trait với một method `async fn` gốc, implement nó cho hai
@@ -82,15 +82,15 @@ không đồng nhất) — cùng quyết định static-vs-dynamic-dispatch như
    `Pin<Box<dyn Future<Output = T> + Send + '_>>`, implement cho cùng hai
    type, và xác nhận `Box<dyn YourTrait>` giờ compile và hoạt động.
 3. Làm lại cùng trait với `#[async_trait]` thay vào đó, và dùng
-   `cargo expand` (từ `03-rust/12-macros.md`) để so sánh signature macro
+   `cargo expand` (từ [`03-rust/12-macros.md`](12-macros.md)) để so sánh signature macro
    sinh ra với thứ bạn viết tay.
-4. Trong `labs/14-plugin`, thiết kế trait middleware theo cả hai cách —
+4. Trong [`labs/14-plugin`](../../labs/14-plugin), thiết kế trait middleware theo cả hai cách —
    như `Vec<Box<dyn Middleware>>` với boxed future, và như một enum cố
    định các middleware đã biết dispatch qua `match` — và benchmark (phần
-   `criterion` của `03-rust/16-testing-idioms.md`) một call path nặng
+   `criterion` của [`03-rust/16-testing-idioms.md`](16-testing-idioms.md)) một call path nặng
    allocation so với cái còn lại.
 5. Quyết định, và viết ra, việc chọn strategy của
-   `06-proxy/02-load-balancer.md` trong `labs/06-load-balancer` có thực
+   [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md) trong [`labs/06-load-balancer`](../../labs/06-load-balancer) có thực
    sự cần `dyn LoadBalancer` (cấu hình được lúc runtime) hay sẽ đúng
    tương tự, và nhanh hơn, như một enum lúc compile-time — giải thích câu
    trả lời của bạn bằng những gì format config thực sự cho phép.

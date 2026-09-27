@@ -2,7 +2,7 @@
 
 Google's load balancer hashing scheme: O(1) lookup, near-perfect balance,
 minimal disruption. The choice when consistent hashing's ring
-(`13-algorithms/consistent-hash.md`) is too slow or too skewed.
+([`13-algorithms/consistent-hash.md`](consistent-hash.md)) is too slow or too skewed.
 
 ## What to learn
 
@@ -75,12 +75,12 @@ between them.
 ### When not to use it
 Maglev's cost is the rebuild: O(M) work and an M-sized table per pool. For
 a handful of upstreams behind one proxy, a `BTreeMap` ring or plain HRW
-(`13-algorithms/rendezvous-hash.md`) is simpler, rebuilds instantly, and
+([`13-algorithms/rendezvous-hash.md`](rendezvous-hash.md)) is simpler, rebuilds instantly, and
 the O(log N) or O(N) lookup is not your bottleneck. Maglev earns its
 complexity at hundreds-to-thousands of upstreams and high request rates.
 
 ## Practice
-1. In `labs/06-load-balancer`, implement permutation generation for M=65537
+1. In [`labs/06-load-balancer`](../../labs/06-load-balancer), implement permutation generation for M=65537
    and assert that one upstream's preference list visits all M slots
    exactly once — this is the test that catches a non-prime M.
 2. Implement the population loop with a per-upstream cursor; build a table
@@ -90,7 +90,7 @@ complexity at hundreds-to-thousands of upstreams and high request rates.
    re-time it — confirm the quadratic blowup.
 4. Remove one upstream from 10, rebuild, and measure what fraction of the
    M slots changed owner. Compare to the ~1/10 your consistent-hash ring
-   achieved in `13-algorithms/consistent-hash.md`'s exercise.
+   achieved in [`13-algorithms/consistent-hash.md`](consistent-hash.md)'s exercise.
 5. Build the same table twice from the same upstream set in shuffled input
    order; confirm the tables are identical only once you sort by stable id
    first.

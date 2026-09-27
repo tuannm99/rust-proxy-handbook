@@ -47,7 +47,7 @@ tạo ra hàng nghìn dòng trong một lần restart upstream thông thường,
 level đó không còn mang thông tin gì nữa — nghĩa là lỗi thực sự mới lạ duy
 nhất trở nên vô hình. Những thất bại mà proxy đã *xử lý được* (một retry
 thành công, một circuit mở ra đúng như thiết kế) nhiều nhất chỉ nên là
-`WARN`; tỉ lệ tổng hợp thuộc về metrics (`08-observability/02-metrics.md`),
+`WARN`; tỉ lệ tổng hợp thuộc về metrics ([`08-observability/02-metrics.md`](02-metrics.md)),
 không phải một dòng log cho mỗi lần xảy ra.
 
 ### Redact theo allowlist, không phải denylist
@@ -98,7 +98,7 @@ Một reverse proxy thường là hop đầu tiên, nên nó nên tự sinh mộ
 nếu client không gửi (`X-Request-Id`), luồn nó qua mọi dòng log bằng một
 `tracing::Span`, và forward nó tới upstream để log giữa các service có thể
 join lại với nhau trên đó. Đây là tiền thân công nghệ thấp của distributed
-tracing đầy đủ (xem `08-observability/03-tracing.md`).
+tracing đầy đủ (xem [`08-observability/03-tracing.md`](03-tracing.md)).
 
 ```rust
 let span = tracing::info_span!("request", request_id = %request_id);
@@ -109,7 +109,7 @@ Gotcha: đoạn code trên đúng trong một hàm đồng bộ và **sai trong 
 async**. — giữ một guard `Entered` xuyên qua một `.await` gắn span đó vào
 bất kỳ task nào executor chạy tiếp theo trên thread đó. Hãy dùng
 `.instrument(span)` trên future thay vì thế;
-`08-observability/03-tracing.md` giải thích chi tiết vì sao. Đây là bug
+[`08-observability/03-tracing.md`](03-tracing.md) giải thích chi tiết vì sao. Đây là bug
 instrumentation phổ biến nhất trong async Rust và nó âm thầm phá hỏng
 đúng cái correlation mà bạn xây request ID để có được.
 
@@ -132,7 +132,7 @@ các trang dirty (`16-kernel/09-page-cache.md`) — write đó chặn một toki
 worker thread và làm khựng mọi connection multiplex trên nó.
 `tracing_appender::non_blocking` chuyển việc ghi sang một thread riêng
 đứng sau một queue có giới hạn; queue đó là một ring buffer
-(`13-algorithms/ring-buffer.md`), và bạn phải biết nó làm gì khi đầy.
+([`13-algorithms/ring-buffer.md`](../13-algorithms/ring-buffer.md)), và bạn phải biết nó làm gì khi đầy.
 Drop bớt dòng log khi bị áp lực là mặc định đúng cho một proxy — nhưng
 chỉ khi bạn *đếm* số dòng bị drop, nếu không bạn sẽ tin vào một log
 không đầy đủ mà không hề biết.
@@ -153,7 +153,7 @@ phần nhỏ xác định của phần còn lại.
 ## Practice
 Xây dựng theo thứ tự sau.
 
-1. Trong `proxy`, nối `tracing` + `tracing-subscriber` với formatter JSON
+1. Trong [`proxy`](../../proxy), nối `tracing` + `tracing-subscriber` với formatter JSON
    cấu hình được qua `RUST_LOG`. **Xong khi** một request phát ra một dòng
    JSON parse được chứa method, path, status, và latency.
 2. Thêm một span cho mỗi request mang `request_id`, gắn bằng
@@ -179,7 +179,7 @@ Xây dựng theo thứ tự sau.
    được*.
 7. Đo chi phí của chính việc logging. **Xong khi** bạn có p50/p99 latency
    request với logging bật hoàn toàn, sample, và tắt, theo
-   `12-testing/01-load-testing.md` — khoảng chênh lệch chính là ngân sách
+   [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md) — khoảng chênh lệch chính là ngân sách
    logging của bạn.
 8. Thêm sampling xác định cùng các quy tắc luôn-log cho mã 5xx và request
    chậm. **Xong khi** cùng một request hoặc được log ở mọi hop hoặc không

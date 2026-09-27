@@ -36,8 +36,8 @@ Chiến lược là giữ bộ nhớ của mỗi worker trên node của chính 
 - Điều này biến toàn bộ proxy thành một thiết kế shared-nothing, theo
   từng core — đây chính là những gì pingora và các data plane kiểu DPDK
   làm, và nó kết hợp tốt với các counter theo core trong
-  `17-performance/02-false-sharing.md` và cache theo core trong
-  `13-algorithms/lru.md`.
+  [`17-performance/02-false-sharing.md`](02-false-sharing.md) và cache theo core trong
+  [`13-algorithms/lru.md`](../13-algorithms/lru.md).
 
 ```text
 chạy theo từng socket:  ./proxy  →  numactl --cpunodebind=0 --membind=0 ./proxy (inst A)
@@ -54,7 +54,7 @@ instance shared-nothing né tránh mọi câu hỏi cross-node mà một process
 Interrupt của một NIC rơi vào một node nào đó; nếu packet được DMA vào bộ
 nhớ của node 0 nhưng được xử lý bởi một worker trên node 1, bạn trả giá
 remote cho mỗi packet trước cả khi code của bạn chạy. Căn chỉnh NIC IRQ
-affinity (và RSS/RPS, `16-kernel/`) khớp với các worker xử lý những packet
+affinity (và RSS/RPS, [`16-kernel/`](../16-kernel)) khớp với các worker xử lý những packet
 đó là nửa còn lại của việc tune NUMA, và thường quan trọng hơn cả việc
 heap của bạn nằm ở đâu.
 
@@ -62,7 +62,7 @@ heap của bạn nằm ở đâu.
 `numastat` cho thấy việc cấp phát theo từng node và, quan trọng là, số
 đếm `numa_miss` / `numa_foreign` — các truy cập remote đáng lẽ muốn là
 local. `perf` có thể gán các stall do remote-memory. Như phần còn lại của
-`17-performance/`, đừng tune một cách suy đoán: xác nhận bạn thực sự bị
+[`17-performance/`](.), đừng tune một cách suy đoán: xác nhận bạn thực sự bị
 giới hạn bởi NUMA (throughput scale kém qua các socket, số đếm truy cập
 remote cao) trước khi pin bất cứ thứ gì, vì trên một máy một socket tất cả
 việc này đều lãng phí công sức.
@@ -77,9 +77,9 @@ việc này đều lãng phí công sức.
    `numastat`.
 3. Sửa nó bằng cách để mỗi worker đã pin first-touch buffer của chính nó;
    đo lại `numa_miss`/`numa_foreign` và throughput.
-4. So sánh hai hình dạng deployment cho `proxy`: một process nhận biết
+4. So sánh hai hình dạng deployment cho [`proxy`](../../proxy): một process nhận biết
    NUMA so với hai instance pin bằng `numactl` phía sau một balancer, dưới
-   tải của `12-testing/01-load-testing.md`.
+   tải của [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md).
 5. Căn chỉnh NIC IRQ affinity khớp với các socket của worker và đo xem chi
    phí remote-per-packet có giảm không — kết nối điều này với RSS/RPS
-   trong `16-kernel/`.
+   trong [`16-kernel/`](../16-kernel).

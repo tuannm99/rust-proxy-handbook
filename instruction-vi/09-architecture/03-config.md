@@ -11,8 +11,8 @@ field đó không ảnh hưởng tới request in-flight).
 
 ### SIGHUP như trigger reload
 Quy ước Unix (nginx, hầu hết daemon) là: `SIGHUP` = "reload config,"
-`SIGTERM` = "shutdown gracefully" (xem `02-linux/10-signals.md`,
-`09-architecture/04-graceful-shutdown.md`). Lắng nghe nó bằng
+`SIGTERM` = "shutdown gracefully" (xem [`02-linux/10-signals.md`](../02-linux/10-signals.md),
+[`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)). Lắng nghe nó bằng
 `tokio::signal::unix::signal(SignalKind::hangup())` thay vì blocking
 signal handling — điều này giữ reload async và không gây gián đoạn I/O
 in-flight.
@@ -58,9 +58,9 @@ là một no-op, không phải một outage.**
 "Đã validate" phải có nghĩa nhiều hơn "đã parse." Các kiểm tra thực sự bắt
 được sự cố thật là những cái thử các side effect:
 - **Certificate và key thực sự load và khớp nhau**
-  (`01-network/13-tls.md`) — một lỗi gõ đường dẫn hay một cặp không khớp
+  ([`01-network/13-tls.md`](../01-network/13-tls.md)) — một lỗi gõ đường dẫn hay một cặp không khớp
   là một outage toàn phần cho vhost đó.
-- **Route không xung đột** (`05-http-stack/03-router.md`) — hai rule
+- **Route không xung đột** ([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)) — hai rule
   không bao giờ phân biệt được nghĩa là một endpoint âm thầm biến mất.
 - **Upstream pool được tham chiếu tồn tại** — một route trỏ tới một tên
   pool chưa được định nghĩa nên fail validation, không phải 502 lúc
@@ -76,7 +76,7 @@ trong lúc prepare để lại config đang chạy hoàn toàn không bị đụ
 
 Gotcha: validation chạm vào mạng (resolve DNS upstream, kết nối để kiểm
 tra liveness) khiến reload fail khi một *dependency* down, đó là vấn đề
-fail-static từ `06-proxy/07-service-discovery.md` mặc bộ đồ khác. Validate
+fail-static từ [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md) mặc bộ đồ khác. Validate
 cú pháp và tính nhất quán nội bộ một cách nghiêm ngặt; coi một upstream
 không resolve được là vấn đề của health check, không phải lý do để reject
 một config nếu không thì hợp lệ.
@@ -93,7 +93,7 @@ Gotcha: âm thầm bỏ qua một field không-reload-được đã thay đổi 
 reject nó. Một operator sửa listen port, gửi `SIGHUP`, thấy "reload
 thành công," và phát hiện port cũ vẫn đang phục vụ đã bị đánh lừa một
 cách chủ động. Hoặc apply nó (rebind, thứ
-`09-architecture/05-rolling-restart.md` xử lý đúng cách), hoặc fail reload
+[`09-architecture/05-rolling-restart.md`](05-rolling-restart.md) xử lý đúng cách), hoặc fail reload
 với một thông báo nêu tên field.
 
 ### Biểu diễn "config hiện tại" cho các reader đồng thời
@@ -119,13 +119,13 @@ request load config để chọn một upstream pool và load lại nó để đ
 timeout của pool đó có thể vắt ngang qua một lần reload và trộn các field
 từ hai config khác nhau. Load **một lần** ở đầu request, giữ `Arc` cho
 suốt thời gian sống của nó, và truyền nó xuống pipeline (các extension của
-`09-architecture/01-components.md`). Bug này hiếm, hoàn toàn không tất
+[`09-architecture/01-components.md`](01-components.md)). Bug này hiếm, hoàn toàn không tất
 định, và về cơ bản không debug được sau khi xảy ra.
 
 Gotcha: giữ `Arc` đó cho suốt thời gian sống của request cũng là thứ giữ
 config cũ sống trong khi các request in-flight dùng nó — bộ nhớ được giải
 phóng khi request cuối cùng giữ nó hoàn thành, đó chính xác là drain dẫn
-dắt bởi refcount từ `06-proxy/07-service-discovery.md`. Một request
+dắt bởi refcount từ [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md). Một request
 streaming sống lâu ghim một phiên bản config; điều đó đúng, và đáng biết
 khi bạn thắc mắc vì sao một config cũ chưa bị drop.
 
@@ -134,7 +134,7 @@ Config được đọc từ đĩa, được log lúc reload, dump ra ở debug o
 thường bị commit vào một repository do vô ý. Giữ credential (auth
 upstream, key ký JWT) trong biến môi trường hoặc một secrets store được
 tham chiếu *theo tên* từ config, và bọc chúng trong một newtype tự redact
-(`08-observability/01-logging.md`) để `{:?}` trên config không thể làm lộ
+([`08-observability/01-logging.md`](../08-observability/01-logging.md)) để `{:?}` trên config không thể làm lộ
 chúng.
 
 Gotcha: log config lúc reload thực sự hữu ích để audit những gì đã thay
@@ -145,21 +145,21 @@ field không phải bí mật — không bao giờ log cả struct.
 Giữ N config hợp lệ gần nhất (hoặc ít nhất là cái gần nhất) để một
 operator có thể rollback ngay lập tức nếu một config hợp cú pháp nhưng sai
 về logic gây ra tỷ lệ lỗi tăng cao — gắn quyết định rollback với các metric
-tỷ lệ lỗi từ `09-architecture/06-canary-deploy.md`/`08-observability/02-metrics.md`.
+tỷ lệ lỗi từ [`09-architecture/06-canary-deploy.md`](06-canary-deploy.md)/[`08-observability/02-metrics.md`](../08-observability/02-metrics.md).
 
 Gotcha: một lần reload *thành công* rồi mới làm suy giảm traffic là
 trường hợp nguy hiểm, vì không gì cảnh báo cả — validation đã pass. Phát
 ra một version/hash config như một metric label hoặc một gauge để
 dashboard có thể tương quan "tỷ lệ lỗi tăng" với "config đổi lúc này", và
 alert trên các lần reload *thất bại* như một ticket
-(`08-observability/06-alerting.md`): một proxy chạy vui vẻ trên config cũ
+([`08-observability/06-alerting.md`](../08-observability/06-alerting.md)): một proxy chạy vui vẻ trên config cũ
 trong khi mọi lần reload đều fail là một sự lệch pha thầm lặng, ngày càng
 lớn, so với những gì operator tin là đang được deploy.
 
 ## Practice
 Xây theo thứ tự.
 
-1. Làm bước 1-5 trong `labs/13-hot-reload`, rồi lặp lại trong `proxy`.
+1. Làm bước 1-5 trong [`labs/13-hot-reload`](../../labs/13-hot-reload), rồi lặp lại trong [`proxy`](../../proxy).
    Định nghĩa một struct `Config` với `serde` + `toml` (upstream, route,
    rate limit, đường dẫn TLS). **Xong khi** nó load lúc khởi động đứng sau
    một `ArcSwap` và các handler đọc qua `.load()`.

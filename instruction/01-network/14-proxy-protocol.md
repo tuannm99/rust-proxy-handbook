@@ -55,18 +55,18 @@ Only accept a PROXY protocol header from connections you actually trust
 (i.e. your known upstream LB's IP range) — anyone who can reach your
 listener directly can otherwise *forge* the client address the same way an
 unvalidated `X-Forwarded-For` can be forged at the HTTP layer (see
-`07-security/08-ip-filtering.md`). Decide per-listener whether PROXY protocol
+[`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)). Decide per-listener whether PROXY protocol
 is expected at all; don't accept it unconditionally on a public listener.
 
 ## Practice
 
 1. Send a raw PROXY v1 line by hand with `nc` in front of a test server and
    confirm the server can parse the original client address out of it.
-2. Implement v1 detection/parsing in `proxy`'s
+2. Implement v1 detection/parsing in [`proxy`](../../proxy)'s
    connection-accept path, exposing the real client IP to the rest of the
    request pipeline (logging, rate limiting, WAF).
 3. Add v2 (binary) support and test both formats against the same listener.
 4. Add a trusted-source check: only honor a PROXY header if the connecting
-   peer's IP is in an allowed list (tie to `07-security/08-ip-filtering.md`).
+   peer's IP is in an allowed list (tie to [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)).
 5. Explain why a client should never be able to send a PROXY protocol
    header directly and have it trusted.

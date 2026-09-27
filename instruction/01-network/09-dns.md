@@ -51,7 +51,7 @@ Many systems (Kubernetes headless Services, Consul DNS interface) expose
 their service registry *as* DNS — an `A` record that returns multiple IPs,
 or changes over time as pods/instances come and go. A proxy that re-resolves
 periodically and swaps its upstream set atomically gets basic dynamic
-service discovery almost for free; see `06-proxy/07-service-discovery.md` for
+service discovery almost for free; see [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md) for
 how that swap needs to happen without dropping in-flight requests.
 
 ## Practice
@@ -61,10 +61,10 @@ how that swap needs to happen without dropping in-flight requests.
    recursive resolver's cache).
 2. Write a small standalone Rust program using `hickory-resolver` (async)
    that resolves a hostname to multiple `A` records and prints their TTLs.
-3. In `labs/05-reverse-proxy`, resolve upstream hostnames instead
+3. In [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), resolve upstream hostnames instead
    of hardcoding IPs, and re-resolve on a timer respecting the record's TTL.
 4. Simulate a backend IP change: point a hostname at IP A, start your
    proxy, then change DNS to IP B. Measure how long your proxy takes to
    notice, and whether any requests failed during the switch.
-5. Read `06-proxy/07-service-discovery.md` and note which parts of it your
+5. Read [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md) and note which parts of it your
    DNS-based approach in step 3 already satisfies vs still needs.

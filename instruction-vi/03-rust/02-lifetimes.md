@@ -32,7 +32,7 @@ không đi chung được với nhau. Một struct không thể vừa giữ mộ
 giữ một borrow vào chính buffer đó như hai sibling field — borrow đó sẽ
 cần tham chiếu tới một field của cùng struct nó đang sống bên trong, điều
 mà mô hình ownership của Rust cấm nếu không có một lớp indirection
-(`Pin`, xem `03-rust/06-pin.md`, hoặc đơn giản là lưu một offset/
+(`Pin`, xem [`03-rust/06-pin.md`](06-pin.md), hoặc đơn giản là lưu một offset/
 `Range<usize>` thay vì một `&[u8]`, đây là cách phần lớn zero-copy parser
 trong production làm).
 
@@ -53,7 +53,7 @@ async fn handle(buf: &[u8]) { /* ... */ } // fine to call and .await inline
 
 Cách sửa gần như luôn là làm cho task được spawn sở hữu dữ liệu của nó
 (`Vec<u8>`, `Bytes`, hoặc `Arc<T>`) thay vì borrow nó — xem
-`03-rust/04-sync.md` về `Arc`, và `05-http-stack/01-parser.md` về
+[`03-rust/04-sync.md`](04-sync.md) về `Arc`, và [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) về
 `bytes::Bytes` (một owned buffer clone rẻ, cách sửa chuẩn cho đúng vấn đề
 này trong hệ sinh thái hyper).
 
@@ -65,7 +65,7 @@ middleware trait có method `handle` nhận `&Request` với một lifetime đư
 chọn theo từng lần gọi. Bạn không cần viết những thứ này thường xuyên,
 nhưng hãy nhận ra cú pháp này khi một lỗi compiler nhắc tới
 "higher-ranked lifetime error" trong lúc xây một hệ thống plugin/middleware
-(`09-architecture/02-plugin.md`).
+([`09-architecture/02-plugin.md`](../09-architecture/02-plugin.md)).
 
 ## Practice
 1. Lấy `RequestView<'a>` từ bài tập của 01-ownership.md và làm cho
@@ -74,10 +74,10 @@ nhưng hãy nhận ra cú pháp này khi một lỗi compiler nhắc tới
 2. Tái cấu trúc một hàm borrow một buffer thành một hàm sở hữu
    `bytes::Bytes` thay vào đó, và giải thích trong một comment khi nào
    mỗi lựa chọn là đúng đắn cho một type request/response di chuyển qua
-   `labs/02-http-server`.
+   [`labs/02-http-server`](../../labs/02-http-server).
 3. Tái tạo lỗi "does not live long enough" từ một borrow đi qua
    `tokio::spawn`, rồi sửa nó theo ba cách khác nhau: clone thành một
    owned type, bọc trong `Arc`, và tái cấu trúc để tránh spawn hoàn toàn.
 4. Viết một struct cố tình không compile được vì nó cố giữ một buffer và
    một slice `&[u8]` của chính nó như hai sibling field; đọc lỗi và liên
-   hệ nó với `03-rust/06-pin.md`.
+   hệ nó với [`03-rust/06-pin.md`](06-pin.md).

@@ -2,7 +2,7 @@
 
 Running your own verified code inside the kernel, without a module and
 without a reboot. The foundation for XDP packet filtering
-(`16-kernel/10-xdp.md`) and for most modern kernel-level observability.
+([`16-kernel/10-xdp.md`](10-xdp.md)) and for most modern kernel-level observability.
 
 ## What to learn
 
@@ -52,7 +52,7 @@ The types that matter here: `HASH` (general key/value, e.g. per-IP
 counters), `ARRAY` (index-keyed, fast), `PERCPU_HASH`/`PERCPU_ARRAY` (one
 instance per CPU, no atomics needed — the right choice for counters),
 `LPM_TRIE` (longest-prefix match, which is exactly CIDR matching for
-`07-security/08-ip-filtering.md`), and `RINGBUF` (efficient
+[`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)), and `RINGBUF` (efficient
 kernel-to-userspace event streaming).
 
 ```
@@ -68,7 +68,7 @@ from the kernel side.
 
 ### Attach points relevant to a proxy
 - **XDP** — earliest possible, in the NIC driver before an `sk_buff` exists.
-  Fastest, most restricted. See `16-kernel/10-xdp.md`.
+  Fastest, most restricted. See [`16-kernel/10-xdp.md`](10-xdp.md).
 - **TC (traffic control)** — after `sk_buff` allocation; slower than XDP but
   sees both ingress and egress and can modify packets more freely.
 - **Socket filters / `SO_ATTACH_BPF`** — per-socket, useful for steering.
@@ -76,12 +76,12 @@ from the kernel side.
   attach to kernel functions or static tracepoints to measure what the
   kernel is doing under your proxy. This is what `bpftrace` compiles to,
   and it is the most immediately practical eBPF for
-  `08-observability/04-profiling.md`.
+  [`08-observability/04-profiling.md`](../08-observability/04-profiling.md).
 
 ### The Rust story
 Two real options. **Aya** is pure Rust for both the kernel-side program and
 the user-space loader, with no libbpf/clang dependency — the more pleasant
-choice, and what `labs/17-ebpf` targets. **libbpf-rs** binds the C libbpf
+choice, and what [`labs/17-ebpf`](../../labs/17-ebpf) targets. **libbpf-rs** binds the C libbpf
 library and inherits its maturity and CO-RE support.
 
 **CO-RE** (Compile Once, Run Everywhere) is the portability mechanism worth
@@ -98,14 +98,14 @@ retrofitted.
 
 ### When it is worth it
 eBPF filtering pays off when you need to drop traffic *before* it costs
-anything (`07-security/09-ddos.md`), or observe the kernel without
+anything ([`07-security/09-ddos.md`](../07-security/09-ddos.md)), or observe the kernel without
 instrumenting your application. It is not a substitute for application
 logic: it cannot parse HTTP meaningfully, cannot make decisions requiring
 user-space state, and every rule is limited by the verifier. Use it as the
 cheap first filter, with the proxy handling everything that survives.
 
 ## Practice
-1. Write a minimal Aya program in `labs/17-ebpf` that counts received
+1. Write a minimal Aya program in [`labs/17-ebpf`](../../labs/17-ebpf) that counts received
    packets in a `PERCPU_ARRAY` and a user-space loader that prints the
    summed total once a second.
 2. Deliberately trigger a verifier rejection: read a packet byte without a
@@ -115,9 +115,9 @@ cheap first filter, with the proxy handling everything that survives.
    under load; measure the contention cost.
 4. Build an `LPM_TRIE` map of blocked CIDRs, populate it from user space,
    and look up source addresses against it from the kernel side — the same
-   matching `07-security/08-ip-filtering.md` does in the proxy.
+   matching [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md) does in the proxy.
 5. Stream events to user space with a `RINGBUF` and compare its throughput
    against a per-event map lookup.
 6. Use `bpftrace` (no code) to histogram the latency of `tcp_sendmsg` while
    your proxy serves load, and reconcile it with the metrics from
-   `08-observability/02-metrics.md`.
+   [`08-observability/02-metrics.md`](../08-observability/02-metrics.md).

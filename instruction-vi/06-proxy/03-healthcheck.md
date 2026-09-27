@@ -35,7 +35,7 @@ vặt vãnh:
 - **TCP connect** chứng minh kernel đã chấp nhận một kết nối. Nó *không*
   chứng minh có ứng dụng nào đứng sau socket đó — một process kẹt trong
   vòng lặp vô hạn, hoặc một process mà accept backlog chỉ được kernel một
-  mình rút ra, vẫn vượt qua (`16-kernel/03-tcp-stack.md`).
+  mình rút ra, vẫn vượt qua ([`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md)).
 - **HTTP GET `/healthz` trả 200** chứng minh vòng lặp HTTP server còn sống
   và đang lập lịch công việc. Nó không chứng minh upstream có thể phục vụ
   request *thật* nếu `/healthz` là một handler tĩnh không đụng vào gì cả.
@@ -78,7 +78,7 @@ dependency theo-từng-upstream. Nếu các upstream fail độc lập (một de
 tồi trên một host, một ổ đĩa đầy), panic mode gửi traffic tới các host
 thực sự đã chết. Deep check nên kiểm tra các dependency mà upstream sở
 hữu riêng; các dependency dùng chung thuộc về một alert
-(`08-observability/06-alerting.md`), không thuộc về một phán quyết health
+([`08-observability/06-alerting.md`](../08-observability/06-alerting.md)), không thuộc về một phán quyết health
 theo-từng-host.
 
 ### Passive detection, damping, và slow start
@@ -87,7 +87,7 @@ upstream tồi nhanh hơn bất kỳ probe interval nào, các ngưỡng giữ c
 sự cố thoáng qua không rút cạn một host, và một ramp giữ cho một host vừa
 hồi phục không bị stampede ngay lúc nó quay lại.
 
-Cả ba nằm trong `06-proxy/04-outlier-detection.md`. Sự phân chia: file này
+Cả ba nằm trong [`06-proxy/04-outlier-detection.md`](04-outlier-detection.md). Sự phân chia: file này
 là "chúng ta đã chủ động đi hỏi"; file kia là "chúng ta nhận ra từ traffic
 đang gửi sẵn, và chúng ta giảm nhẹ phản ứng của mình."
 
@@ -100,13 +100,13 @@ và mỗi probe trong số đó rơi vào cùng một thời điểm nếu mọi
 
 Jitter interval theo từng upstream (một offset ngẫu nhiên ở tick đầu tiên
 là đủ) để các probe dàn trải ra trong cửa sổ thay vì dồn dập cùng nhịp —
-cùng vấn đề đồng bộ hóa như retry storm trong `05-retry.md`, với cùng cách
+cùng vấn đề đồng bộ hóa như retry storm trong [`05-retry.md`](05-retry.md), với cùng cách
 sửa.
 
 ## Practice
 Xây theo thứ tự.
 
-1. Trong `labs/05-reverse-proxy`, thêm một vòng lặp active TCP-connect
+1. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), thêm một vòng lặp active TCP-connect
    probe cho mỗi upstream với `tokio::time::interval`, giới hạn bởi
    `tokio::time::timeout` và dùng `MissedTickBehavior::Delay`. **Xong khi**
    một upstream giả bạn `kill -STOP` (không kill — dừng lại, để socket vẫn
@@ -124,7 +124,7 @@ Xây theo thứ tự.
 5. Đo chi phí probe. **Xong khi** bạn có thể nói ra số request mỗi giây
    các probe của bạn tạo ra ở quy mô hạm đội của bạn, và đó là một con số
    bạn sẵn sàng trả.
-6. Đi qua `06-proxy/04-outlier-detection.md` để học passive detection,
+6. Đi qua [`06-proxy/04-outlier-detection.md`](04-outlier-detection.md) để học passive detection,
    flap damping, và slow start. **Xong khi** một upstream fail các request
    thật bị loại bỏ trước khi probe tiếp theo bắn, và một upstream đã hồi
    phục ramp trở lại thay vì bị stampede.

@@ -19,7 +19,7 @@ trait LoadBalancer {
 fn route_generic<T: LoadBalancer>(lb: &T, key: &str) -> usize { lb.pick(key) } // monomorphized per T
 fn route_dyn(lb: &dyn LoadBalancer, key: &str) -> usize { lb.pick(key) }       // one vtable call
 ```
-Gotcha: một plugin system (`09-architecture/02-plugin.md`) hoặc một chiến
+Gotcha: một plugin system ([`09-architecture/02-plugin.md`](../09-architecture/02-plugin.md)) hoặc một chiến
 lược load-balancing được chọn từ config lúc khởi động gần như luôn cần
 `Box<dyn Trait>` — concrete type không được biết cho tới runtime, nên
 generics không thể diễn đạt được lựa chọn đó.
@@ -39,7 +39,7 @@ Gotcha: một async fn giữ một giá trị không phải `Send` (một `Rc`, 
 `MutexGuard` từ `std::sync::Mutex` được giữ qua một `.await`) qua một
 điểm suspension sẽ sinh ra một future không phải `Send`, và lỗi chỉ hiện
 ra tại call site của `tokio::spawn` — thường ở xa nguyên nhân thực sự.
-Liên hệ điều này với desugaring của `03-rust/05-async.md`: các field của
+Liên hệ điều này với desugaring của [`03-rust/05-async.md`](05-async.md): các field của
 future được sinh ra chính xác là những gì còn sống qua mỗi `.await`, nên
 chỉ một giá trị không phải `Send` bất kỳ đâu trong tập đó cũng làm "nhiễm
 độc" toàn bộ future.
@@ -90,7 +90,7 @@ compile time, không phải một sở thích về style.
 2. Chủ động viết một async fn giữ một `Rc<RefCell<_>>` qua một `.await`,
    thử `tokio::spawn` nó, và đọc lỗi compiler đủ kỹ để gọi tên chính xác
    bound nào đã fail.
-3. Trong `labs/06-load-balancer`, định nghĩa một trait `LoadBalancer` và
+3. Trong [`labs/06-load-balancer`](../../labs/06-load-balancer), định nghĩa một trait `LoadBalancer` và
    implement nó cho các chiến lược round-robin, least-conn, và
    consistent-hash; chọn chiến lược cụ thể tại runtime từ một chuỗi config
    qua `Box<dyn LoadBalancer>`.

@@ -1,8 +1,8 @@
 # Leader Election
 
 Chọn đúng một node để giữ một vai trò — bài toán con nằm dưới Raft
-(`18-distributed/01-raft.md`), và thường giải được rẻ hơn nhiều khi tách
-riêng. Optional/advanced so với `proxy/` một instance.
+([`18-distributed/01-raft.md`](01-raft.md)), và thường giải được rẻ hơn nhiều khi tách
+riêng. Optional/advanced so với [`proxy/`](../../proxy) một instance.
 
 ## What to learn
 
@@ -38,7 +38,7 @@ etcd, Consul, và ZooKeeper expose chính xác cái này; `leader-election` củ
 Kubernetes (object `Lease`) chính là pattern này và là cách hầu hết service
 Go/Rust trong môi trường k8s chọn một leader. Redis `SET NX PX` là phiên
 bản nhà nghèo. Bạn đang mượn consensus đã đúng sẵn của store
-(`18-distributed/01-raft.md`) thay vì tự suy dẫn lại nó.
+([`18-distributed/01-raft.md`](01-raft.md)) thay vì tự suy dẫn lại nó.
 
 Gotcha: TTL của lease là một trade-off thật. Quá dài và công việc của một
 leader chết bị đứng suốt cả TTL trước khi failover; quá ngắn và một
@@ -52,7 +52,7 @@ write của một leader cũ) thay vì tin vào timing.
 ### Khi bạn không cần election chút nào
 Thường thiết kế sạch hơn là không cần leader nào: làm job định kỳ
 idempotent và để mọi instance chạy nó (trùng lặp vô hại), hoặc shard công
-việc bằng consistent hashing (`13-algorithms/consistent-hash.md`) để mỗi
+việc bằng consistent hashing ([`13-algorithms/consistent-hash.md`](../13-algorithms/consistent-hash.md)) để mỗi
 key có một owner tự nhiên mà không cần một leader toàn cục, hoặc đẩy yêu
 cầu single-writer xuống một store tự nó serialize write. Chọn một leader
 thêm một failure mode (chính việc election); tránh nhu cầu cần một leader
@@ -71,5 +71,5 @@ loại bỏ nó. Ưu tiên cách đó khi công việc cho phép.
    và để store reject epoch cũ; chỉ ra nó trung hòa overlap ở bước 3.
 5. Với một job fleet thật (poll config, cleanup cache), quyết định nên
    chọn một leader hay làm nó idempotent/sharded
-   (`13-algorithms/consistent-hash.md`) thay vào đó, và giải thích cái nào
-   đơn giản hơn cho nhu cầu thật của `proxy`.
+   ([`13-algorithms/consistent-hash.md`](../13-algorithms/consistent-hash.md)) thay vào đó, và giải thích cái nào
+   đơn giản hơn cho nhu cầu thật của [`proxy`](../../proxy).

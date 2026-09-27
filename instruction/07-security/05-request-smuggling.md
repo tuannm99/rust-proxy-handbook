@@ -10,11 +10,11 @@ crafts a request that one parser reads as "one request" and the other
 reads as "one request plus the start of a second, smuggled request" that
 gets processed against the next unlucky client's connection (on a reused
 keep-alive/pooled connection to the upstream). This is precisely the class
-of ambiguity `05-http-stack/01-parser.md` and `labs/01-http-parser` force you
+of ambiguity [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) and [`labs/01-http-parser`](../../labs/01-http-parser) force you
 to confront by hand.
 
 The precondition worth noticing: this attack exists *because* the proxy
-pools and reuses upstream connections (`06-proxy/01-upstream.md`). The
+pools and reuses upstream connections ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)). The
 smuggled bytes sit at the front of a connection's buffer waiting for
 whoever uses it next. A proxy that opened a fresh connection per request
 and closed it after would be immune — and far slower, which is why nobody
@@ -24,7 +24,7 @@ does that, and why this attack class persists.
 Worth stating plainly, because the mitigations look like pedantry until
 you see the payoff:
 - **Bypassing front-end security entirely.** The proxy enforces auth
-  (`01-auth.md`), IP filtering, and WAF rules on requests it can *see*. A
+  ([`01-auth.md`](01-auth.md)), IP filtering, and WAF rules on requests it can *see*. A
   smuggled request is never seen by the proxy as a request — it's body
   bytes — so it arrives at the upstream having skipped every check. An
   attacker reaches `/admin` through a proxy explicitly configured to block
@@ -33,7 +33,7 @@ you see the payoff:
   so that the *next* real request on that connection gets appended into it
   as body content — and echoed back in a response the attacker can read.
   Session cookies and auth headers included.
-- **Cache poisoning.** Combined with a cache (`05-http-stack/07-cache.md`),
+- **Cache poisoning.** Combined with a cache ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)),
   a desynced response gets stored against the wrong key and served to
   everyone.
 
@@ -78,7 +78,7 @@ while a more carefully crafted prefix gets the attacker something useful.
 
 ### Downgrade smuggling (H2.CL / H2.TE)
 The modern variant, and the one most relevant to a proxy that terminates
-HTTP/2 and speaks HTTP/1.1 upstream (`01-network/11-http2.md`). HTTP/2 frames
+HTTP/2 and speaks HTTP/1.1 upstream ([`01-network/11-http2.md`](../01-network/11-http2.md)). HTTP/2 frames
 carry their own explicit lengths, so there is no ambiguity *in* HTTP/2 —
 but `content-length` still exists as an ordinary header, and an attacker
 can send an HTTP/2 request whose declared `content-length` disagrees with
@@ -137,7 +137,7 @@ even when your framing validation is perfect.
 ### Detecting it
 You cannot rely on noticing the damage, since the victim is a different
 client than the attacker. Signals worth wiring up
-(`08-observability/01-logging.md`):
+([`08-observability/01-logging.md`](../08-observability/01-logging.md)):
 - **Upstream parse errors on pooled connections.** A 400 from the upstream
   on a request your proxy considered well-formed is the smoking gun for a
   desynced connection.
@@ -155,7 +155,7 @@ returning it to the pool — whatever is left in its buffer is the payload.
 ## Practice
 Build these in order.
 
-1. In `labs/01-http-parser`, add a test with both `Content-Length` and
+1. In [`labs/01-http-parser`](../../labs/01-http-parser), add a test with both `Content-Length` and
    `Transfer-Encoding: chunked`. **Done when** the parser returns an error
    rather than picking one.
 2. Add tests for the obfuscation variants: trailing whitespace after
@@ -163,12 +163,12 @@ Build these in order.
    with a trailing space, a bare `\n` line ending, and whitespace before
    the colon. **Done when** every one is rejected, and you can articulate
    for each what an upstream might otherwise have done with it.
-3. Build the CL.TE payload above and send it through `proxy` to a toy
+3. Build the CL.TE payload above and send it through [`proxy`](../../proxy) to a toy
    upstream that uses a *different* parser (a Python or Node one-liner is
    ideal — different parser, different bugs). **Done when** you observe an
    actual desync: the toy upstream sees a mangled second request. You need
    to have seen it work before trusting that your fix stops it.
-4. Add a framing-validation stage in `proxy` before the upstream call, and
+4. Add a framing-validation stage in [`proxy`](../../proxy) before the upstream call, and
    regenerate framing headers on forward. **Done when** step 3's payload
    is rejected with 400, a security event is logged, and the request your
    proxy emits upstream carries framing headers it computed itself.
@@ -179,7 +179,7 @@ Build these in order.
    connection that produced a framing error is closed rather than returned
    to the pool — verify with `ss -tan` that it does not reappear as an
    idle pooled connection.
-7. (Stretch) If `proxy` terminates HTTP/2 (`labs/08-http2`), construct a
+7. (Stretch) If [`proxy`](../../proxy) terminates HTTP/2 ([`labs/08-http2`](../../labs/08-http2)), construct a
    downgrade payload where the HTTP/2 `content-length` disagrees with the
    DATA frames. **Done when** it is rejected at the h2 layer rather than
    translated into a malformed HTTP/1.1 request.

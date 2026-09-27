@@ -4,10 +4,10 @@ Zero-downtime binary upgrades on a single host, with no Kubernetes/systemd-manag
 
 ## What to learn
 ### Why this is a different problem than graceful shutdown
-`09-architecture/04-graceful-shutdown.md` covers stopping *one* process cleanly. A rolling restart needs a **new** process (new binary, new config) to take over the listening port before the old one goes away — with zero gap where a client's connection attempt gets refused. On a single host with no orchestrator to spin up a second instance behind a load balancer, the proxy itself has to make this handoff safe.
+[`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md) covers stopping *one* process cleanly. A rolling restart needs a **new** process (new binary, new config) to take over the listening port before the old one goes away — with zero gap where a client's connection attempt gets refused. On a single host with no orchestrator to spin up a second instance behind a load balancer, the proxy itself has to make this handoff safe.
 
 ### SO_REUSEPORT: dual-accept during the overlap window
-`SO_REUSEPORT` lets multiple processes bind the *same* address:port simultaneously; the kernel load-balances new connections across all of them. Start the new process with `SO_REUSEPORT` set, let it bind alongside the still-running old process, confirm the new one is healthy, then send the old one `SIGTERM` (triggering its normal drain from `04-graceful-shutdown.md`). For the brief overlap, both processes accept new connections — no window where the port is unbound.
+`SO_REUSEPORT` lets multiple processes bind the *same* address:port simultaneously; the kernel load-balances new connections across all of them. Start the new process with `SO_REUSEPORT` set, let it bind alongside the still-running old process, confirm the new one is healthy, then send the old one `SIGTERM` (triggering its normal drain from [`04-graceful-shutdown.md`](04-graceful-shutdown.md)). For the brief overlap, both processes accept new connections — no window where the port is unbound.
 
 ```rust
 use socket2::{Domain, Socket, Type};
@@ -34,7 +34,7 @@ keep calling `accept()` and serving what's already queued for a moment
 after it stops being the preferred target, rather than closing the
 listener the instant it decides to drain. This is the same
 "stop-accepting is not free" lesson as the pre-stop delay in
-`09-architecture/04-graceful-shutdown.md`, one layer down.
+[`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md), one layer down.
 
 ### Socket handoff via `exec` (the nginx pattern)
 The alternative nginx uses for `SIGUSR2`-triggered binary upgrades: the old master process keeps its listening file descriptor open, spawns the new binary and passes that fd down to it (inherited across `exec`, or handed over a Unix domain socket via `SCM_RIGHTS`), and the new process starts accepting on the *same* socket — not a second one. There is no overlap window and no reliance on `SO_REUSEPORT` at all; only one process ever owns the fd at a time, but it changes hands without ever closing it.
@@ -61,28 +61,28 @@ connection rates a slow-starting process (TLS certs to load, config to
 validate, caches to build) overflows the backlog and connections are
 refused anyway. Measure your startup-to-accepting time and compare it
 against your connection rate times your backlog depth
-(`16-kernel/03-tcp-stack.md`) before trusting it.
+([`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md)) before trusting it.
 
 ### What must hold true regardless of technique
-The new process must pass its own readiness check (config parsed, upstreams reachable — tie to `06-proxy/03-healthcheck.md`) *before* the old one is signaled to drain, or a bad new binary/config takes the whole proxy down instead of just failing to deploy. Long-lived connections (WebSocket, `05-http-stack/09-websocket.md`) held by the old process need the same drain deadline as `04-graceful-shutdown.md` — a rolling restart doesn't make that problem go away, it just adds "and don't refuse new connections while draining."
+The new process must pass its own readiness check (config parsed, upstreams reachable — tie to [`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)) *before* the old one is signaled to drain, or a bad new binary/config takes the whole proxy down instead of just failing to deploy. Long-lived connections (WebSocket, [`05-http-stack/09-websocket.md`](../05-http-stack/09-websocket.md)) held by the old process need the same drain deadline as [`04-graceful-shutdown.md`](04-graceful-shutdown.md) — a rolling restart doesn't make that problem go away, it just adds "and don't refuse new connections while draining."
 
 ### The restart loses state, and the state mattered
 Zero *dropped connections* is not the same as zero impact, because
 everything the old process accumulated in memory is gone. Each of these is
 covered elsewhere; together they are why a "successful" zero-downtime
 restart can still show up as a spike on every dashboard:
-- **The response cache is empty** (`05-http-stack/07-cache.md`). Every entry
+- **The response cache is empty** ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)). Every entry
   is a miss, all at once — a self-inflicted cache stampede against the
   origin at exactly the moment you'd like things to be calm. Request
   coalescing is what keeps this survivable.
-- **Rate limiter buckets reset** (`07-security/07-ratelimit.md`). Every
+- **Rate limiter buckets reset** ([`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md)). Every
   client silently receives a fresh budget; a client you were actively
   throttling is unthrottled. An attacker who can trigger restarts gets a
   limit reset on demand.
-- **Circuit breakers reset** (`06-proxy/05-retry.md`). The new process
+- **Circuit breakers reset** ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)). The new process
   doesn't know an upstream is broken and will send traffic into it to
   find out, re-learning at the cost of real requests.
-- **Connection pools are cold** (`06-proxy/01-upstream.md`). The first
+- **Connection pools are cold** ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)). The first
   requests pay handshake latency, including TLS, so p99 spikes for tens of
   seconds after the handoff.
 - **Health state is unknown.** Until the first probe cycle completes, the
@@ -108,7 +108,7 @@ the handover.
 ## Practice
 Build these in order.
 
-1. Implement the `SO_REUSEPORT` bind helper in `proxy` and run two
+1. Implement the `SO_REUSEPORT` bind helper in [`proxy`](../../proxy) and run two
    instances on one port. **Done when** per-instance logging shows the
    kernel distributing new connections across both.
 2. Add a readiness check the new process must pass — config parsed, certs
@@ -116,7 +116,7 @@ Build these in order.
    connections opened. **Done when** a process with a broken config or
    unreachable upstreams never reports ready.
 3. Write the restart script: start new, wait for readiness, `SIGTERM` the
-   old (reusing the drain from `09-architecture/04-graceful-shutdown.md`),
+   old (reusing the drain from [`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)),
    confirm it exits after draining. **Done when** a bad new binary leaves
    the old one serving, untouched.
 4. Make the draining process keep accepting its already-queued connections
@@ -125,7 +125,7 @@ Build these in order.
    this step first and count them, because they're invisible unless you
    look for them.
 5. Load-test through a restart measuring connection-level errors
-   separately (`12-testing/01-load-testing.md`). **Done when** connection
+   separately ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)). **Done when** connection
    refusals, resets, and non-2xx are all zero across the handover.
 6. Measure the state-loss cost. **Done when** you have a chart of origin
    request rate (cache misses), p99 latency (cold pools), and upstream

@@ -23,14 +23,14 @@ Gotcha: đừng bọc cả `Vec` trong một `Mutex` nếu bạn chỉ cần l�
 flag — `Mutex<Vec<Upstream>>` serialize việc chọn upstream của *mọi*
 request đằng sau một lock duy nhất. Dùng atomic cho từng upstream, và chỉ
 dùng `arc-swap`/`RwLock` cho việc thay đổi membership của pool (xem
-`07-service-discovery.md`).
+[`07-service-discovery.md`](07-service-discovery.md)).
 
 `Ordering::Relaxed` là lựa chọn đúng cho `healthy` và `active_conns` cụ
 thể vì không flag nào trong hai flag đó "publish" dữ liệu khác — reader chỉ
 cần đúng giá trị của nó, không cần đảm bảo gì về những gì đã được ghi
 trước đó. Ngay khi một flag "canh gác" cho các field khác ("healthy nghĩa
 là `last_probe_result` hợp lệ"), `Relaxed` là sai và bạn cần
-`Release`/`Acquire`; xem `03-rust/04-sync.md`.
+`Release`/`Acquire`; xem [`03-rust/04-sync.md`](../03-rust/04-sync.md).
 
 ### Giữ `active_conns` chính xác dưới cancellation
 Counter này chỉ hữu ích nếu nó cân bằng chính xác, và phiên bản ngây thơ
@@ -44,9 +44,9 @@ upstream.active_conns.fetch_sub(1, Ordering::Relaxed);  // <-- ...dòng này kh�
 
 Trong một proxy async, một client ngắt kết nối giữa chừng sẽ drop task, và
 một future bị drop đơn giản là dừng lại ở `.await` cuối cùng — phép trừ
-sau đó không bao giờ thực thi (`03-rust/05-async.md`: drop *chính là*
+sau đó không bao giờ thực thi ([`03-rust/05-async.md`](../03-rust/05-async.md): drop *chính là*
 cancel). Mỗi request bị cancel sẽ làm phồng counter lên vĩnh viễn.
-Least-connection balancing (`02-load-balancer.md`) sau đó sẽ route *tránh
+Least-connection balancing ([`02-load-balancer.md`](02-load-balancer.md)) sau đó sẽ route *tránh
 xa* một upstream hoàn toàn khỏe mạnh mãi mãi, và lỗi này im lặng: không
 error, không log, chỉ có traffic bị lệch dần trông như một bug thuật toán.
 
@@ -62,14 +62,14 @@ impl Drop for ConnGuard {
 }
 ```
 Gotcha: đây cùng loại bug với một entry của object pool không được trả lại
-(`14-memory/03-object-pool.md`) — bất kỳ cặp "tăng, làm việc, giảm" thủ
+([`14-memory/03-object-pool.md`](../14-memory/03-object-pool.md)) — bất kỳ cặp "tăng, làm việc, giảm" thủ
 công nào trong code async cũng là một leak đang chờ lần cancellation đầu
 tiên.
 
 ### Connection reuse tới upstream
 Mở một kết nối TCP (+ TLS) mới cho mỗi request được proxy là đắt: một RTT
 cho TCP handshake, thêm một hoặc hai RTT nữa cho TLS
-(`01-network/13-tls.md`), phải trả trước khi một byte request nào được
+([`01-network/13-tls.md`](../01-network/13-tls.md)), phải trả trước khi một byte request nào được
 chuyển đi. Giữ một connection pool nhỏ cho mỗi upstream và tái sử dụng các
 kết nối idle (`hyper-util`'s `client-legacy` pool làm điều này cho bạn,
 nhưng bạn nên biết vì sao nó tồn tại).
@@ -79,7 +79,7 @@ HTTP/1.1 mang đúng một request tại một thời điểm, nên N request đ
 tới một upstream cần N kết nối. Một kết nối HTTP/2 mang nhiều stream đồng
 thời, nên cùng N request đó có thể chỉ cần một kết nối — bị giới hạn bởi
 `SETTINGS_MAX_CONCURRENT_STREAMS` mà upstream công bố
-(`01-network/11-http2.md`), quá ngưỡng đó các stream mới sẽ xếp hàng sau
+([`01-network/11-http2.md`](../01-network/11-http2.md)), quá ngưỡng đó các stream mới sẽ xếp hàng sau
 các stream đã xong thay vì mở kết nối thứ hai, trừ khi bạn cho phép rõ
 ràng.
 
@@ -94,7 +94,7 @@ thầm throttle bạn xuống dưới capacity thật.
 Sizing theo hướng ngược lại cũng sai không kém: một pool không giới hạn để
 một traffic spike mở hàng nghìn socket tới một upstream, và mỗi socket đó
 tốn một fd ở phía bạn và một socket buffer của kernel ở cả hai phía
-(`16-kernel/03-tcp-stack.md`). Lúc đó chính accept backlog của upstream,
+([`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md)). Lúc đó chính accept backlog của upstream,
 chứ không phải pool của bạn, mới là thứ fail.
 
 Gotcha: idle timeout phải *ngắn hơn* keep-alive timeout của chính upstream,
@@ -117,11 +117,11 @@ upstream. Chú ý chữ "gần như chắc chắn" đang làm gì ở đó: upst
 thực tế có thể đã đọc request, hành động theo nó, rồi chết trước khi
 response, khi đó retry sẽ nhân đôi một side effect. Trình duyệt và hầu hết
 HTTP client chấp nhận rủi ro này cho các kết nối tái sử dụng; một proxy
-thanh toán thì không nên. Hãy quyết định có chủ đích, và xem `05-retry.md`
+thanh toán thì không nên. Hãy quyết định có chủ đích, và xem [`05-retry.md`](05-retry.md)
 để biết quy tắc idempotency chung mà đây là một ngoại lệ của nó.
 
 Gotcha: đường retry-một-lần-trên-kết-nối-mới này không được tiêu tốn retry
-budget từ `05-retry.md` — đây là retry vì connection-liveness, không phải
+budget từ [`05-retry.md`](05-retry.md) — đây là retry vì connection-liveness, không phải
 retry vì failure, và tính nó vào budget nghĩa là một upstream reap
 keep-alive quá tích cực sẽ làm cạn budget của bạn ngay trong vận hành bình
 thường.
@@ -137,7 +137,7 @@ là nguồn gốc phổ biến của cả request bị treo lẫn lỗi giả:
 - **Total request timeout** — giới hạn trên cho toàn bộ giao dịch. Cần
   thiết vì một upstream độc hại hoặc hỏng có thể nhỏ giọt một byte ngay
   dưới read timeout mãi mãi, giữ request sống vô thời hạn (bản đối xứng
-  phía upstream của tấn công Slowloris trong `07-security/09-ddos.md`).
+  phía upstream của tấn công Slowloris trong [`07-security/09-ddos.md`](../07-security/09-ddos.md)).
 
 Gotcha: total request timeout phải tính đến response dạng streaming. Một
 total timeout 30s âm thầm phá vỡ một lượt tải file lớn hợp lệ hoặc một
@@ -162,7 +162,7 @@ vẫn gửi tới cái vừa fail lâu nhất. Cả hai đều hợp lý; xoay t
 Xây theo thứ tự — tiêu chí hoàn thành của mỗi bước là thứ làm bước tiếp
 theo có ý nghĩa.
 
-1. Trong `labs/05-reverse-proxy`, định nghĩa `Upstream`/`UpstreamPool` như
+1. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), định nghĩa `Upstream`/`UpstreamPool` như
    trên với 2-3 địa chỉ tĩnh hardcode. **Xong khi** một request được
    forward tới một trong số chúng và response tới client không đổi.
 2. Thêm `active_conns` với một `ConnGuard` kiểu RAII. **Xong khi** một test

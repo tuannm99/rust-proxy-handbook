@@ -2,14 +2,14 @@
 
 Auth nằm ở đâu trong pipeline của proxy, và proxy làm gì với một identity
 một khi đã có nó. Hai cơ chế có file riêng của mình:
-`07-security/02-jwt.md` (bearer token) và `07-security/03-mtls.md` (client
+[`07-security/02-jwt.md`](02-jwt.md) (bearer token) và [`07-security/03-mtls.md`](03-mtls.md) (client
 certificate). Chúng thường được kết hợp — mTLS xác thực *service* đang gọi,
 JWT xác thực *user* nằm trên đó.
 
 ## What to learn
 ### Auth nên nằm ở đâu trong pipeline
 Auth nên chạy càng sớm càng tốt trong pipeline component (xem
-`09-architecture/01-components.md`: ngay sau khi routing xác định route nào
+[`09-architecture/01-components.md`](../09-architecture/01-components.md): ngay sau khi routing xác định route nào
 áp dụng auth policy nào, trước bất kỳ upstream call hay xử lý tốn kém nào
 như WAF body inspection). Từ chối request chưa xác thực/không hợp lệ trước
 khi chúng tiêu tốn capacity của upstream.
@@ -71,12 +71,12 @@ for name in IDENTITY_HEADERS {          // X-User-Id, X-Auth-*, v.v.
 req.headers_mut().insert("x-user-id", claims.sub.parse()?);
 ```
 Gotcha: đây là cùng một lỗi trust-boundary như `X-Forwarded-For` trong
-`07-security/08-ip-filtering.md`. Bất kỳ header nào hạ tầng của bạn coi là
+[`07-security/08-ip-filtering.md`](08-ip-filtering.md). Bất kỳ header nào hạ tầng của bạn coi là
 tin cậy đều phải bị loại bỏ ở edge, mỗi lần, trên mọi path — kể cả error
 path và bất kỳ route nào bỏ qua auth.
 
 Gotcha: việc loại bỏ phải xảy ra tại một điểm duy nhất, sớm, cùng chỗ với
-việc loại bỏ hop-by-hop header (`05-http-stack/02-hop-by-hop-headers.md`),
+việc loại bỏ hop-by-hop header ([`05-http-stack/02-hop-by-hop-headers.md`](../05-http-stack/02-hop-by-hop-headers.md)),
 không phải bên trong module auth. Một route cấu hình `Public` bỏ qua hoàn
 toàn module auth — và nếu việc loại bỏ nằm ở đó, route này chuyển tiếp
 thẳng identity header giả mạo.
@@ -118,8 +118,8 @@ Làm lần lượt theo thứ tự sau.
 3. Xác minh việc loại bỏ trên các path bỏ qua auth. **Xong khi** một route
    cấu hình `Public` vẫn loại bỏ identity header giả mạo, và path 404 cũng
    vậy.
-4. Implement các cơ chế: `07-security/02-jwt.md` cho bearer token,
-   `07-security/03-mtls.md` cho client cert. **Xong khi** một route cấu
+4. Implement các cơ chế: [`07-security/02-jwt.md`](02-jwt.md) cho bearer token,
+   [`07-security/03-mtls.md`](03-mtls.md) cho client cert. **Xong khi** một route cấu
    hình `Both` yêu cầu cả cert hợp lệ *lẫn* token hợp lệ.
 5. Thêm constant-time comparison vào bất kỳ path nào dùng static-secret.
    **Xong khi** một bài test timing qua nhiều mẫu không thể phân biệt một

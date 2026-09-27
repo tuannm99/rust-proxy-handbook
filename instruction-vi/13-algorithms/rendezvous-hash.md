@@ -1,7 +1,7 @@
 # Rendezvous Hashing (HRW)
 
 Highest Random Weight: một lựa chọn thay thế cho consistent hashing
-(`13-algorithms/consistent-hash.md`) không cần ring, không cần virtual
+([`13-algorithms/consistent-hash.md`](consistent-hash.md)) không cần ring, không cần virtual
 node, và không cần shared mutable state.
 
 ## What to learn
@@ -58,17 +58,17 @@ Trọng số được đưa vào qua một phép biến đổi log: tính điể
 `weight / -ln(h)` với `h` là hash được chuẩn hóa về (0,1). Upstream có
 điểm biến đổi cao nhất thắng, và xác suất được chọn tỷ lệ với weight trong
 khi vẫn giữ tính chất disruption tối thiểu. Việc này khó làm đúng hơn hẳn
-so với smooth WRR (`13-algorithms/smooth-wrr.md`) — chỉ dùng nó khi bạn
+so với smooth WRR ([`13-algorithms/smooth-wrr.md`](smooth-wrr.md)) — chỉ dùng nó khi bạn
 cần cả trọng số *lẫn* affinity cùng lúc.
 
 ### Chi phí thực tế
 Selection tốn O(N) hash mỗi request, so với O(log N) cho ring lookup và
-O(1) cho Maglev (`13-algorithms/maglev.md`). Ở vài chục upstream, N hash
+O(1) cho Maglev ([`13-algorithms/maglev.md`](maglev.md)). Ở vài chục upstream, N hash
 của một chuỗi ngắn chỉ tốn vài chục nanosecond và sự đơn giản thắng thế.
 Ở hàng nghìn upstream đây là lựa chọn sai — đó là địa hạt của Maglev.
 
 ## Practice
-1. Implement HRW trong `labs/06-load-balancer` đằng sau cùng một trait với
+1. Implement HRW trong [`labs/06-load-balancer`](../../labs/06-load-balancer) đằng sau cùng một trait với
    round-robin và consistent-hash của bạn, để cả ba có thể hoán đổi cho
    nhau.
 2. Hash 100 nghìn key tổng hợp trên 10 upstream và báo cáo phân phối theo

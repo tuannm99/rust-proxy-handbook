@@ -5,12 +5,12 @@ gRPC là HTTP/2 với một quy ước framing riêng trên nền đó — proxy
 
 ## What to learn
 ### Framing message của gRPC bên trong frame DATA của HTTP/2
-Mỗi message gRPC là một byte cờ compression, một tiền tố độ dài 4-byte big-endian, rồi từng đó byte payload protobuf — tất cả được mang bên trong các frame `DATA` HTTP/2 bình thường (xem `01-network/11-http2.md`). Một proxy forward gRPC không cần hiểu protobuf hay thậm chí cả framing này; nó chỉ cần forward frame `DATA` trung thực, đúng từng byte, mà không làm bất cứ gì một code path hướng-HTTP/1.1 có thể phản xạ làm (ví dụ buffer toàn bộ body để tính `Content-Length` — body gRPC được prefix-độ-dài theo từng message, không phải một lần cho cả stream, và thường không giới hạn/streaming).
+Mỗi message gRPC là một byte cờ compression, một tiền tố độ dài 4-byte big-endian, rồi từng đó byte payload protobuf — tất cả được mang bên trong các frame `DATA` HTTP/2 bình thường (xem [`01-network/11-http2.md`](../01-network/11-http2.md)). Một proxy forward gRPC không cần hiểu protobuf hay thậm chí cả framing này; nó chỉ cần forward frame `DATA` trung thực, đúng từng byte, mà không làm bất cứ gì một code path hướng-HTTP/1.1 có thể phản xạ làm (ví dụ buffer toàn bộ body để tính `Content-Length` — body gRPC được prefix-độ-dài theo từng message, không phải một lần cho cả stream, và thường không giới hạn/streaming).
 
 Gotcha: gRPC có compression riêng theo từng message (byte cờ đó), được
 negotiate qua `grpc-encoding`/`grpc-accept-encoding`. Nó *không phải*
 `Content-Encoding` của HTTP, và một proxy áp compression response của
-riêng nó (`05-http-stack/06-compression.md`) lên một body gRPC sẽ làm
+riêng nó ([`05-http-stack/06-compression.md`](06-compression.md)) lên một body gRPC sẽ làm
 hỏng nó — client sẽ cố parse một luồng gzip như các message
 prefix-độ-dài. Loại trừ tường minh content type `application/grpc` khỏi
 response compression.
@@ -34,7 +34,7 @@ một body sẽ không bao giờ tới sẽ bị treo hoặc làm hỏng nó. X�
 minh trường hợp zero-DATA.
 
 ### Response lỗi của chính bạn cũng phải mang hình dạng gRPC
-Khi chính proxy fail một request — không có upstream khỏe mạnh, circuit mở (`06-proxy/05-retry.md`), bị rate limit (`07-security/07-ratelimit.md`) — phản xạ là trả về HTTP 503 hoặc 429 kèm một body ngắn. Với một client gRPC, đó là một response dị dạng: nó đang tìm `grpc-status` trong trailer, và một lỗi HTTP thuần biểu hiện như một lỗi transport khó hiểu thay vì status code sạch mà ứng dụng biết cách xử lý.
+Khi chính proxy fail một request — không có upstream khỏe mạnh, circuit mở ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)), bị rate limit ([`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md)) — phản xạ là trả về HTTP 503 hoặc 429 kèm một body ngắn. Với một client gRPC, đó là một response dị dạng: nó đang tìm `grpc-status` trong trailer, và một lỗi HTTP thuần biểu hiện như một lỗi transport khó hiểu thay vì status code sạch mà ứng dụng biết cách xử lý.
 
 Phát ra một response trailers-only thay vào đó, với `:status: 200` và một
 `grpc-status` phù hợp — `14` (UNAVAILABLE) cho không-có-upstream hoặc
@@ -52,38 +52,38 @@ gRPC có bốn hình dạng cuộc gọi: unary, client-streaming, server-stream
 
 Gotcha: điều tương tự áp dụng cho mọi timeout bạn thừa hưởng từ mô hình
 request/response, y hệt như với WebSocket
-(`05-http-stack/09-websocket.md`). Một RPC server-streaming phát một cập
+([`05-http-stack/09-websocket.md`](09-websocket.md)). Một RPC server-streaming phát một cập
 nhật mỗi vài phút là khỏe mạnh; một tổng-request-timeout giết nó theo
 lịch. Tệ hơn, client gRPC gửi deadline riêng của chúng trong header
 `grpc-timeout` — proxy nên *tôn trọng* nó (và rút ngắn theo thời gian đã
 tiêu) thay vì áp một cái không liên quan, để deadline mà ứng dụng đặt ra
 là cái được áp dụng.
 
-Gotcha: buffer body để kiểm tra WAF (`07-security/06-waf.md`) hay replay
-retry (`06-proxy/05-retry.md`) về cơ bản không tương thích với RPC
+Gotcha: buffer body để kiểm tra WAF ([`07-security/06-waf.md`](../07-security/06-waf.md)) hay replay
+retry ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)) về cơ bản không tương thích với RPC
 streaming. Quyết định theo từng content-type, không phải toàn cục, nếu
 không khách hàng bidi-streaming đầu tiên của bạn sẽ tự phát hiện ra điều
 đó cho bạn.
 
 ### Load balancing gRPC không phải cùng bài toán với load balancing HTTP/1.1
-Một client gRPC thường mở một connection HTTP/2 sống lâu và đa hợp nhiều RPC độc lập trên đó (xem phần multiplexing của `01-network/11-http2.md`). Một load balancer chọn một upstream *theo từng connection* (như một balancer L4/TCP thuần, hay một implementation `06-proxy/02-load-balancer.md` ngây thơ viết theo tư duy một-request-mỗi-connection của HTTP/1.1) gửi mọi RPC trên connection đó tới cùng một upstream mãi mãi, đánh bại hoàn toàn load balancing một khi client đã kết nối. Load balancing gRPC đúng đắn phải nhận biết từng stream HTTP/2 riêng và chọn một upstream theo từng RPC, không phải theo từng connection.
+Một client gRPC thường mở một connection HTTP/2 sống lâu và đa hợp nhiều RPC độc lập trên đó (xem phần multiplexing của [`01-network/11-http2.md`](../01-network/11-http2.md)). Một load balancer chọn một upstream *theo từng connection* (như một balancer L4/TCP thuần, hay một implementation [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md) ngây thơ viết theo tư duy một-request-mỗi-connection của HTTP/1.1) gửi mọi RPC trên connection đó tới cùng một upstream mãi mãi, đánh bại hoàn toàn load balancing một khi client đã kết nối. Load balancing gRPC đúng đắn phải nhận biết từng stream HTTP/2 riêng và chọn một upstream theo từng RPC, không phải theo từng connection.
 
 Gotcha: điều này tương tác xấu với các sự kiện scaling. Connection sống
 lâu bị gắn vào một tập con upstream nghĩa là upstream mới được thêm bởi
-autoscaling (`06-proxy/07-service-discovery.md`) không nhận được gì —
-giới hạn tuổi thọ connection từ `05-http-stack/04-keepalive.md` là thứ
+autoscaling ([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)) không nhận được gì —
+giới hạn tuổi thọ connection từ [`05-http-stack/04-keepalive.md`](04-keepalive.md) là thứ
 cuối cùng rebalance, và với gRPC tương đương là định kỳ gửi `GOAWAY` để
 client reconnect và phân phối lại.
 
 ### Health checking upstream gRPC
-gRPC định nghĩa protocol health checking riêng (`grpc.health.v1.Health`) với các method `Check` và `Watch` — một upstream nói gRPC có thể không serve một `/healthz` HTTP nào cả, nên probe từ `06-proxy/03-healthcheck.md` cần một biến thể nhận biết gRPC. `Watch` là cái tốt hơn trong hai cho một proxy: nó stream các thay đổi trạng thái thay vì đòi một khoảng poll, nên việc phát hiện là tức thì và chi phí probe từ `healthcheck.md` phần lớn biến mất.
+gRPC định nghĩa protocol health checking riêng (`grpc.health.v1.Health`) với các method `Check` và `Watch` — một upstream nói gRPC có thể không serve một `/healthz` HTTP nào cả, nên probe từ [`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md) cần một biến thể nhận biết gRPC. `Watch` là cái tốt hơn trong hai cho một proxy: nó stream các thay đổi trạng thái thay vì đòi một khoảng poll, nên việc phát hiện là tức thì và chi phí probe từ `healthcheck.md` phần lớn biến mất.
 
 ### Observability cần thêm chiều gRPC
 Một góc nhìn chỉ-HTTP về traffic gRPC gây hiểu lầm theo một cách cụ thể: gần như mọi response đều là HTTP 200, kể cả mọi thất bại. Một dashboard xây trên HTTP status code cho thấy một service hoàn toàn khỏe mạnh trong khi mọi RPC trả về `grpc-status: 13` (INTERNAL).
 
 Ghi `grpc-status` như một chiều metric riêng, và lấy tên method từ path
 (`/package.Service/Method`) làm nhãn route thay vì coi mỗi cái là một URL
-duy nhất (`08-observability/02-metrics.md`).
+duy nhất ([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)).
 
 ## Practice
 Làm theo thứ tự này.
@@ -91,7 +91,7 @@ Làm theo thứ tự này.
 1. Dựng một upstream gRPC thật với `tonic`, bao gồm một method trả về
    status không-OK và một method server-streaming. **Xong khi** một
    client `grpcurl` nói chuyện trực tiếp với nó và thấy cả hai hành vi.
-2. Trong `labs/05-reverse-proxy`, proxy nó end-to-end. **Xong khi** một
+2. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), proxy nó end-to-end. **Xong khi** một
    cuộc gọi unary thành công qua proxy và `grpc-status` không-OK tới
    được client như một status đúng đắn — không phải lỗi transport và
    không phải một thành công giả.

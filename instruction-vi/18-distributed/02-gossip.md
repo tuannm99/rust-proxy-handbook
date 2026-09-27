@@ -2,7 +2,7 @@
 
 Lan truyền state kiểu epidemic — cách một fleet lớn biết về membership và
 health mà không cần một coordinator trung tâm. Optional/advanced so với
-`proxy/`; liên quan nếu bạn chạy nhiều instance proxy cần biết về nhau.
+[`proxy/`](../../proxy); liên quan nếu bạn chạy nhiều instance proxy cần biết về nhau.
 
 ## What to learn
 
@@ -10,7 +10,7 @@ health mà không cần một coordinator trung tâm. Optional/advanced so với
 Trong một gossip protocol, mỗi node định kỳ chọn vài peer ngẫu nhiên và
 trao đổi state; thông tin lan như một dịch bệnh, đến toàn fleet trong
 `O(log N)` round. Điểm mấu chốt là nó cung cấp *eventual* consistency,
-không phải sự đồng thuận mạnh của Raft (`18-distributed/01-raft.md`) — các
+không phải sự đồng thuận mạnh của Raft ([`18-distributed/01-raft.md`](01-raft.md)) — các
 node có thể bất đồng trong chốc lát, và đó là sự đánh đổi có chủ đích để
 lấy scale và khả năng chịu partition. Consensus dành cho state không bao
 giờ được lệch; gossip dành cho state mà "mọi người converge trong vài giây"
@@ -21,7 +21,7 @@ Use case kinh điển là cluster membership và failure detection — node nào
 tồn tại và node nào còn sống. Đây là thứ Consul, Cassandra, và Serf dùng
 (tất cả xây trên SWIM hoặc một biến thể). Với một fleet proxy, lợi ích là
 nhận biết health phân tán: thay vì mỗi proxy tự poll từng backend
-(`06-proxy/03-healthcheck.md`), các node gossip các quan sát health, nên
+([`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)), các node gossip các quan sát health, nên
 fleet converge về "backend X đã down" với tổng traffic probe ít hơn nhiều.
 
 ### SWIM: bộ phát hiện fail đáng biết
@@ -76,12 +76,12 @@ polling tập trung — mà với một fleet proxy nhỏ, thường là không.
    tiếp thuần túy tạo ra một verdict "chết" sai; rồi thêm probing gián
    tiếp kiểu SWIM và chỉ ra nó triệt tiêu false positive đó.
 3. So sánh tổng traffic probe cho health fleet theo hai cách: mọi proxy
-   poll mọi backend (`06-proxy/03-healthcheck.md`) so với các quan sát
+   poll mọi backend ([`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)) so với các quan sát
    health được gossip, khi số fleet và backend tăng.
 4. Suy luận về convergence so với consistency: dựng một thời điểm hai
    proxy bất đồng về health của một backend và quyết định sự bất đồng
    tạm thời đó có chấp nhận được cho traffic *của bạn* không (thường được
    với load balancing, không được với billing).
 5. Chỉ nếu bạn chạy một fleet đa instance: nối một library SWIM vào
-   `proxy` cho membership của instance và quan sát một instance bị kill
+   [`proxy`](../../proxy) cho membership của instance và quan sát một instance bị kill
    được phát hiện và loại bỏ — không tự implement protocol.

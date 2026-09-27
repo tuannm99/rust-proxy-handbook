@@ -30,14 +30,14 @@ là lời khuyên tốt trong Rust cụ thể — nó không phải map chaining
 mà một số ngôn ngữ khác dùng mặc định.
 
 ### Hash flooding: một không gian key do attacker chọn
-Một `HashMap<IpAddr, TokenBucket>` (`13-algorithms/token-bucket.md`) hay
+Một `HashMap<IpAddr, TokenBucket>` ([`13-algorithms/token-bucket.md`](token-bucket.md)) hay
 bất kỳ map nào có key đến từ dữ liệu client kiểm soát (header, query
 param) có phân phối key được chọn bởi bất kỳ ai gửi request. Với một hàm
 hash **không có key** (FxHash, một FNV thô, bất cứ thứ gì không có seed
 ngẫu nhiên theo từng process), một attacker biết thuật toán hash có thể
 chọn input khiến tất cả va chạm, làm suy giảm mọi thao tác về phía độ dài
 chuỗi va chạm — O(n) cho mỗi lookup thay vì O(1), biến một hash map thành
-chính một vector từ chối dịch vụ (`07-security/09-ddos.md`).
+chính một vector từ chối dịch vụ ([`07-security/09-ddos.md`](../07-security/09-ddos.md)).
 
 Hasher mặc định của Rust (SipHash, có key với một seed ngẫu nhiên sinh ra
 mỗi process khi khởi động) được thiết kế riêng để chống DoS kiểu này: nếu
@@ -59,11 +59,11 @@ khi có liên quan tới key do client kiểm soát.
    mà tất cả đều map vào cùng một bucket, và đo việc lookup của map
    chaining suy giảm về phía O(n). Xác nhận `HashMap` mặc định của Rust
    với cùng các input được chế tạo đó không suy giảm theo cách tương tự.
-3. Trong `labs/11-rate-limit`, benchmark map bucket theo từng IP với hasher
+3. Trong [`labs/11-rate-limit`](../../labs/11-rate-limit), benchmark map bucket theo từng IP với hasher
    mặc định của `HashMap` so với `ahash`/`FxHash`; rồi lặp lại nỗ lực
    flooding ở bước 2 nhắm cụ thể vào phiên bản hasher nhanh hơn để xem nó
    có còn kháng được hay không.
-4. Kiểm toán các map trong `proxy/` (hoặc thiết kế chúng, nếu chưa viết)
+4. Kiểm toán các map trong [`proxy/`](../../proxy) (hoặc thiết kế chúng, nếu chưa viết)
    và phân loại mỗi cái theo việc key của nó được tin cậy (config nội bộ)
    hay không tin cậy (bắt nguồn từ client) — quyết định hasher cho mỗi cái
    dựa trên đó, không chỉ dựa trên tốc độ benchmark.

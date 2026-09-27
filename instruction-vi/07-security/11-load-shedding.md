@@ -11,7 +11,7 @@ Xếp hàng cảm giác tử tế hơn và lại là cái thất bại.
 
 Hàng đợi lớn dần, nên latency lớn dần theo. Đến lúc một request trong hàng
 tới lượt, client đã timeout rồi và — tệ hơn — đã retry
-(`06-proxy/05-retry.md`), thứ vừa thêm *nhiều hơn* load. Giờ bạn đang tốn
+([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)), thứ vừa thêm *nhiều hơn* load. Giờ bạn đang tốn
 capacity còn lại để tính ra câu trả lời cho những request chẳng ai còn
 nghe nữa, làm giảm capacity hiệu dụng, làm hàng đợi dài thêm. Vòng lặp đó
 tự nuôi sống nó: throughput của công việc *hữu ích* sụp về gần 0 trong khi
@@ -24,8 +24,8 @@ nhân đã hết.
 
 ### Shed sớm, shed rẻ
 Một request bị reject nên tốn càng ít càng tốt — đó là toàn bộ điểm mấu
-chốt (sự bất cân xứng chi phí của `07-security/09-ddos.md`). Vậy shedding
-nên nằm sớm trong pipeline (`09-architecture/01-components.md`): trước
+chốt (sự bất cân xứng chi phí của [`07-security/09-ddos.md`](09-ddos.md)). Vậy shedding
+nên nằm sớm trong pipeline ([`09-architecture/01-components.md`](../09-architecture/01-components.md)): trước
 auth, trước WAF inspect body, trước lời gọi upstream.
 
 ```rust
@@ -41,7 +41,7 @@ if inflight.load(Ordering::Relaxed) > shed_threshold {
 Gotcha: một 503 tốn một lượt tra database, một dòng log có cấu trúc đầy
 đủ với context request, và một trang lỗi được render cho attacker một tỷ
 lệ chi phí *tốt hơn* so với được serve. Giữ đường shed không allocate ở
-những chỗ có thể, và sample logging (`08-observability/01-logging.md`)
+những chỗ có thể, và sample logging ([`08-observability/01-logging.md`](../08-observability/01-logging.md))
 thay vì ghi một dòng cho mỗi lần reject.
 
 Gotcha: đảm bảo logic retry của chính bạn không retry các response bị
@@ -65,14 +65,14 @@ timer bắt đầu lúc dequeue không thấy được gì trong đó.
 ### Shed đúng request
 Khi đã chấp nhận là phải drop cái gì đó, chọn cái nào là một quyết định
 thiết kế:
-- **Theo priority.** Health check (`06-proxy/03-healthcheck.md`) và các
+- **Theo priority.** Health check ([`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)) và các
   đường quan trọng sống sót; traffic bulk hoặc batch bị drop trước. Điều
   này cần một priority tồn tại trên request, nghĩa là phải classify nó ở
   edge — theo route, theo tier client, theo một header rõ ràng từ caller
   đáng tin.
 - **Theo chi phí.** Các route đắt đỏ shed sớm hơn, để một endpoint tốn
   kém không thể tiêu hết capacity của mọi thứ khác (phần endpoint đắt đỏ
-  của `07-security/09-ddos.md`). Giới hạn concurrency theo route là dạng
+  của [`07-security/09-ddos.md`](09-ddos.md)). Giới hạn concurrency theo route là dạng
   đơn giản nhất của điều này.
 - **Ngẫu nhiên.** Mặc định, và ổn khi bạn không có tín hiệu nào tốt hơn —
   nhưng nghĩa là traffic quan trọng nhất của bạn bị drop cùng tỷ lệ với
@@ -97,7 +97,7 @@ sát capacity thật mà không ai phải tune nó.
 
 Gotcha: adaptive limiting cần một tín hiệu latency ổn định để hoạt động,
 nên nó xử sự tệ khi latency vốn bimodal một cách tự nhiên (cache hit ở 1ms,
-miss ở 200ms — `05-http-stack/07-cache.md`). Áp nó theo route, hoặc theo
+miss ở 200ms — [`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)). Áp nó theo route, hoặc theo
 nhóm công việc có chi phí tương tự, thay vì toàn cục.
 
 ### Nói sự thật với client
@@ -106,17 +106,17 @@ thử lại sau N giây" thay vì "cái này đã fail." Một client biết đi
 back off thay vì retry ngay.
 
 Gotcha: phân biệt 503 bị shed với 503 do upstream fail trong metrics của
-bạn (`08-observability/02-metrics.md`). Chúng có nguyên nhân và cách sửa
+bạn ([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)). Chúng có nguyên nhân và cách sửa
 hoàn toàn khác nhau, và một counter `status="503"` duy nhất che mất cái
 nào đang xảy ra. Sự phân biệt này cũng quan trọng cho SLI của bạn — một
 503 bạn phát ra vì bạn bị overload là lỗi của bạn, và thuộc về error budget
-(`08-observability/06-alerting.md`).
+([`08-observability/06-alerting.md`](../08-observability/06-alerting.md)).
 
 ## Practice
 Làm theo thứ tự này.
 
 1. Thêm một counter concurrency và một shed threshold tĩnh ở đầu pipeline
-   của `proxy`, trả 503 với `Retry-After`. **Xong khi** load vượt
+   của [`proxy`](../../proxy), trả 503 với `Retry-After`. **Xong khi** load vượt
    threshold bị reject ngay thay vì xếp hàng.
 2. Chứng minh thất bại của việc xếp hàng trước, để có baseline cho cách
    sửa. **Xong khi** bạn có thể chỉ ra, với một hàng đợi không giới hạn,

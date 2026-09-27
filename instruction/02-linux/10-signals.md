@@ -7,11 +7,11 @@ HUP, TERM, QUIT.
 ### The three signals a proxy actually cares about
 - `SIGHUP` — conventionally means "reload configuration without restarting."
   No default handler forces this meaning; it's a convention nginx and most
-  daemons follow. Ties directly to `09-architecture/03-config.md`.
+  daemons follow. Ties directly to [`09-architecture/03-config.md`](../09-architecture/03-config.md).
 - `SIGTERM` — "shut down gracefully": stop accepting new connections, finish
   in-flight requests, then exit. This is what orchestrators (systemd,
   Kubernetes) send before escalating to `SIGKILL`. Ties directly to
-  `09-architecture/04-graceful-shutdown.md`.
+  [`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md).
 - `SIGINT`/`SIGQUIT` — `SIGINT` is Ctrl-C, typically treated the same as
   `SIGTERM` in dev; `SIGQUIT` traditionally triggers a core dump and is
   rarely handled specially in a proxy.
@@ -56,6 +56,6 @@ default.
 ## Practice
 1. Write a tiny binary that registers `tokio::signal` handlers for SIGHUP and SIGTERM and just prints which one fired.
 2. Send `kill -HUP <pid>` and `kill -TERM <pid>` manually and confirm both are caught without killing the process.
-3. Implement SIGHUP-triggered config reload in `proxy` per `09-architecture/03-config.md` — verify existing connections are unaffected by a reload.
-4. Implement SIGTERM-triggered graceful shutdown per `09-architecture/04-graceful-shutdown.md`: stop the listener, let in-flight requests finish, then exit.
+3. Implement SIGHUP-triggered config reload in [`proxy`](../../proxy) per [`09-architecture/03-config.md`](../09-architecture/03-config.md) — verify existing connections are unaffected by a reload.
+4. Implement SIGTERM-triggered graceful shutdown per [`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md): stop the listener, let in-flight requests finish, then exit.
 5. Simulate the Kubernetes grace-period scenario: hold a slow request open, send SIGTERM, and confirm your shutdown either finishes in time or is cleanly killed rather than corrupting state.

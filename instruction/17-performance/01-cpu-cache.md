@@ -1,7 +1,7 @@
 # CPU Cache
 
 Why data layout, not instruction count, usually decides hot-path latency.
-Read this **after** `08-observability/04-profiling.md` has pointed a
+Read this **after** [`08-observability/04-profiling.md`](../08-observability/04-profiling.md) has pointed a
 flamegraph at a specific hot path — not before.
 
 ## What to learn
@@ -19,7 +19,7 @@ be fast because it streams sequentially and every line is prefetched.
 - **Spatial** — data used together should sit together, so one line fetch
   brings several useful values. Iterating a `Vec<Struct>` has it; chasing a
   linked list of `Box`ed nodes does not, which is a core reason
-  `13-algorithms/lru.md` and `15-parser/03-ast.md` push arenas (`Vec` +
+  [`13-algorithms/lru.md`](../13-algorithms/lru.md) and [`15-parser/03-ast.md`](../15-parser/03-ast.md) push arenas (`Vec` +
   indices) over `Box`ed pointer structures.
 - **Temporal** — data used now will be used again soon, so keep it hot.
 
@@ -31,7 +31,7 @@ struct Backend { weight: u32, conns: u32, addr: SocketAddr }
 ```
 
 For a load balancer scanning weights across thousands of backends
-(`06-proxy/02-load-balancer.md`), the struct-of-arrays layout can be several
+([`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md)), the struct-of-arrays layout can be several
 times faster purely from not fetching the fields it does not read.
 
 ### Prefetching rewards predictable access
@@ -60,22 +60,22 @@ and after is guessing — and the guess is often backwards.
 Gotcha: never do this work speculatively. A layout change that shaves cache
 misses off code that runs 0.1% of the time is invisible in production and
 adds complexity forever. The trigger is a flamegraph
-(`08-observability/04-profiling.md`) showing a specific hot loop, under real
-load (`12-testing/01-load-testing.md`) — see also `17-performance/02-false-sharing.md`
+([`08-observability/04-profiling.md`](../08-observability/04-profiling.md)) showing a specific hot loop, under real
+load ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)) — see also [`17-performance/02-false-sharing.md`](02-false-sharing.md)
 for the concurrent version of this problem.
 
 ## Practice
 1. Benchmark array-of-structs vs struct-of-arrays for scanning one field
-   across 100k backends (the `06-proxy/02-load-balancer.md` weight scan);
+   across 100k backends (the [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md) weight scan);
    record `perf stat cache-misses` for both, not just wall time.
 2. Build a linked list of `Box`ed nodes and an arena (`Vec` + index) of the
    same data, traverse both, and compare cache-miss counts to see the
    prefetcher effect.
-3. Take a hot struct from your `proxy` request path and split it hot/cold;
+3. Take a hot struct from your [`proxy`](../../proxy) request path and split it hot/cold;
    measure whether the request-path benchmark moves at all — and be
    honest if it does not.
 4. Use `perf record` to attribute cache misses to specific lines in a
-   `proxy` hot path under load, rather than guessing which access is
+   [`proxy`](../../proxy) hot path under load, rather than guessing which access is
    costly.
 5. Read `L1-dcache-load-misses` before and after one layout change and
    write down whether the change was worth its complexity — practice

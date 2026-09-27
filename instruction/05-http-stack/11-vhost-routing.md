@@ -1,10 +1,10 @@
 # Virtual Host / Multi-Tenant Routing
 
-Routing to different backends by *which site* a request is for, not just its path — the thing `03-router.md` assumes has already been decided.
+Routing to different backends by *which site* a request is for, not just its path — the thing [`03-router.md`](03-router.md) assumes has already been decided.
 
 ## What to learn
 ### Host-header routing (post-TLS, HTTP layer)
-`03-router.md` covers matching path and method within one backend's route table. A proxy fronting multiple sites/tenants first has to pick *which* route table to use at all, based on the `Host` header (HTTP/1.1) or the `:authority` pseudo-header (HTTP/2, see `01-network/11-http2.md`) — both carry the same information, just framed differently. This lookup happens after TLS termination, since the header is inside the encrypted request.
+[`03-router.md`](03-router.md) covers matching path and method within one backend's route table. A proxy fronting multiple sites/tenants first has to pick *which* route table to use at all, based on the `Host` header (HTTP/1.1) or the `:authority` pseudo-header (HTTP/2, see [`01-network/11-http2.md`](../01-network/11-http2.md)) — both carry the same information, just framed differently. This lookup happens after TLS termination, since the header is inside the encrypted request.
 
 ```rust
 use std::collections::HashMap;
@@ -24,7 +24,7 @@ fn route_by_host<'a>(
 ```
 Gotcha: default to rejecting (404, or a dedicated catch-all vhost) any `Host` that doesn't match a known entry. Silently falling through to some "default" backend is exactly how Host-header injection and cache-poisoning bugs happen — an attacker sends an unexpected `Host` and gets routed somewhere unintended, or a cache keyed loosely on Host serves the wrong tenant's response to someone else.
 
-Gotcha: normalize before lookup, the same way `03-router.md` normalizes
+Gotcha: normalize before lookup, the same way [`03-router.md`](03-router.md) normalizes
 paths. Hostnames are case-insensitive (`EXAMPLE.com` must match
 `example.com`), a trailing dot is legal and means the same thing
 (`example.com.`), and IDN/punycode forms (`xn--...`) must map to one
@@ -52,7 +52,7 @@ If your proxy terminates TLS and routes on `Host`, validate that the two
 match and reject when they don't. If a legitimate client genuinely needs
 them to differ, that should be an explicit configuration, not an accident.
 
-Gotcha: this is the same check `03-router.md` describes for
+Gotcha: this is the same check [`03-router.md`](03-router.md) describes for
 `Host`/`:authority`/SNI consistency. Do it once, in one place, at the
 point where the connection's TLS metadata is still available alongside the
 request — not in two components that can disagree about which is
@@ -66,7 +66,7 @@ forward *including* the bytes you consumed — the backend needs the
 complete ClientHello. Buffer and replay it rather than consuming it, and
 bound both the buffer and the time you'll wait for a complete ClientHello,
 or a client that connects and sends 3 bytes forever is a
-connection-exhaustion vector (`07-security/09-ddos.md`).
+connection-exhaustion vector ([`07-security/09-ddos.md`](../07-security/09-ddos.md)).
 
 Gotcha: SNI is optional. A client connecting by IP, an old client, or a
 deliberate probe may send none at all — decide whether that's a default
@@ -84,7 +84,7 @@ three practical concerns follow:
 - **The callback is on the handshake hot path.** Loading and parsing a
   cert from disk there adds latency to every new connection; keep parsed
   certs in memory, keyed by hostname, and reload on config change
-  (`09-architecture/03-config.md`) rather than per-handshake.
+  ([`09-architecture/03-config.md`](../09-architecture/03-config.md)) rather than per-handshake.
 - **Wildcards and exact matches must have defined precedence.** With both
   `example.com` and `*.example.com` configured, an exact match should win;
   wildcards match exactly one label (`*.example.com` covers
@@ -92,37 +92,37 @@ three practical concerns follow:
 - **Expiry is per-tenant and silent.** One tenant's expired cert fails
   only that tenant's handshakes, so overall traffic looks fine. Export
   time-to-expiry as a per-certificate metric
-  (`08-observability/06-alerting.md`); this is the mTLS gotcha from
-  `07-security/01-auth.md` multiplied by tenant count.
+  ([`08-observability/06-alerting.md`](../08-observability/06-alerting.md)); this is the mTLS gotcha from
+  [`07-security/01-auth.md`](../07-security/01-auth.md) multiplied by tenant count.
 
 ### Wildcard/multi-domain certs interact with both
-A wildcard cert (`*.example.com`) or a SAN cert covering many hostnames lets one TLS-terminating instance answer for many vhosts under one handshake — simplifying Host-header routing (one cert, many `Host` values) but making SNI routing moot for those hostnames (they're all the same backend by definition). See `01-network/13-tls.md` for the handshake mechanics this depends on.
+A wildcard cert (`*.example.com`) or a SAN cert covering many hostnames lets one TLS-terminating instance answer for many vhosts under one handshake — simplifying Host-header routing (one cert, many `Host` values) but making SNI routing moot for those hostnames (they're all the same backend by definition). See [`01-network/13-tls.md`](../01-network/13-tls.md) for the handshake mechanics this depends on.
 
 ### Isolation between tenants, not just routing
 Routing separates tenants' *traffic*; it does nothing to separate their
 *resource consumption*. One tenant's traffic spike consumes the shared
-connection budget (`07-security/09-ddos.md`), the shared upstream pool
-concurrency, the shared cache capacity (`05-http-stack/07-cache.md`), and the
+connection budget ([`07-security/09-ddos.md`](../07-security/09-ddos.md)), the shared upstream pool
+concurrency, the shared cache capacity ([`05-http-stack/07-cache.md`](07-cache.md)), and the
 worker threads — so every other tenant degrades. That's the noisy-neighbor
 problem, and in a multi-tenant proxy it's the default behavior unless you
 design against it.
 
 The controls are per-tenant versions of things you already have: rate
-limits keyed by tenant (`07-security/07-ratelimit.md`), a concurrency cap per
+limits keyed by tenant ([`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md)), a concurrency cap per
 vhost so one tenant can't hold every upstream connection, and cache
 accounting per tenant so one tenant's large objects don't evict another's
 working set.
 
 Gotcha: make the tenant identity part of every cross-cutting key, and do
 it early. Retrofitting a tenant dimension into cache keys, metric labels
-(`08-observability/02-metrics.md`), and rate-limit keys after the fact is a
+([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)), and rate-limit keys after the fact is a
 large, error-prone change — and the failure mode of getting it wrong is
 serving one tenant's cached response to another.
 
 ## Practice
 Build these in order.
 
-1. In `proxy`, add a vhost map keyed by normalized `Host` (lowercased,
+1. In [`proxy`](../../proxy), add a vhost map keyed by normalized `Host` (lowercased,
    trailing dot stripped, port removed with IPv6 handled), loaded from
    config. **Done when** `EXAMPLE.com.`, `example.com:443`, and
    `example.com` all resolve to the same tenant.
@@ -139,7 +139,7 @@ Build these in order.
    makes no filesystem access per handshake.
 5. Export per-certificate time-to-expiry as a metric. **Done when** a cert
    expiring in 7 days is visible without anyone having to check manually.
-6. Add a config-reload test for the vhost map (`labs/13-hot-reload`).
+6. Add a config-reload test for the vhost map ([`labs/13-hot-reload`](../../labs/13-hot-reload)).
    **Done when** swapping the map under concurrent load changes routing
    for new requests without affecting any in-flight one.
 7. Add per-tenant concurrency caps and rate limits, with tenant as a label

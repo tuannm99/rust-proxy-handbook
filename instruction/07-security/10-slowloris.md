@@ -1,14 +1,14 @@
 # Slow-Client Attacks
 
 The cheapest denial of service available: hold connections open by being
-slow, not by being loud. `07-security/09-ddos.md` covers the volumetric and
+slow, not by being loud. [`07-security/09-ddos.md`](09-ddos.md) covers the volumetric and
 connection-flood side; this file covers the family of attacks that spend
 almost no attacker bandwidth at all.
 
 ## What to learn
 ### Why slowness is an attack
 Every open connection costs the proxy a file descriptor, kernel socket
-buffers, and per-connection state (`07-security/09-ddos.md`'s resource
+buffers, and per-connection state ([`07-security/09-ddos.md`](09-ddos.md)'s resource
 ceiling arithmetic). An attacker who opens connections and keeps them
 *technically alive* — sending just enough to avoid any timeout — consumes
 those resources at essentially zero cost to themselves. A few thousand
@@ -28,7 +28,7 @@ connections, indefinitely.
   large `Content-Length`; the body then arrives one byte per interval. A
   header-phase deadline doesn't apply anymore — the headers were fine.
   This also pins any body buffering you do for WAF inspection
-  (`07-security/06-waf.md`) or retry replay (`06-proxy/05-retry.md`) for the
+  ([`07-security/06-waf.md`](06-waf.md)) or retry replay ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)) for the
   entire slow upload.
 - **Slow read.** The attacker sends a perfectly normal request for a large
   response, then reads the response at one byte per interval — pinning
@@ -75,14 +75,14 @@ the client isn't reading.
 
 ### Where these limits live
 This is a connection-lifecycle concern, not a request-handling one, so it
-belongs in the connection manager (`09-architecture/01-components.md`) — it
+belongs in the connection manager ([`09-architecture/01-components.md`](../09-architecture/01-components.md)) — it
 must apply before and independently of anything that assumes a complete
-request exists. `05-http-stack/01-parser.md` and `labs/01-http-parser` are
+request exists. [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) and [`labs/01-http-parser`](../../labs/01-http-parser) are
 where a request actually gets fed a byte at a time, and where the header
 phase's floor has to be enforced.
 
 Gotcha: exempt upgraded and streaming connections
-(`05-http-stack/09-websocket.md`, `05-http-stack/10-grpc.md`) from the
+([`05-http-stack/09-websocket.md`](../05-http-stack/09-websocket.md), [`05-http-stack/10-grpc.md`](../05-http-stack/10-grpc.md)) from the
 request-shaped deadlines but *not* from liveness checking — an idle
 WebSocket is legitimate, an unresponsive one is not, which is what
 ping/pong deadlines are for.
@@ -92,14 +92,14 @@ Multiplexing changes the shape but not the principle. An attacker can open
 many streams on one connection and leave them incomplete, or manipulate
 flow-control windows to make the server hold data it cannot send. HTTP/2's
 `SETTINGS_MAX_CONCURRENT_STREAMS` bounds the first; per-connection memory
-accounting bounds the second. See `01-network/11-http2.md`, which also covers
+accounting bounds the second. See [`01-network/11-http2.md`](../01-network/11-http2.md), which also covers
 Rapid Reset — the inverse attack, where streams are opened and cancelled
 as fast as possible.
 
 ## Practice
 Build these in order.
 
-1. Write the three attackers as test clients against `proxy`: slow
+1. Write the three attackers as test clients against [`proxy`](../../proxy): slow
    headers, slow body, slow read. **Done when** all three can hold a
    connection open for minutes against your current configuration — you
    need the working attack before the defense means anything.
@@ -117,7 +117,7 @@ Build these in order.
    *not* disconnected — if it is, your floor is set from datacenter
    assumptions.
 6. Run all three attacks concurrently with a normal load test
-   (`12-testing/01-load-testing.md`). **Done when** legitimate p99 latency is
+   ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)). **Done when** legitimate p99 latency is
    unchanged and connection count stays bounded.
 7. Confirm exemptions. **Done when** an idle WebSocket survives
    indefinitely while an unresponsive one (no pong) is closed.

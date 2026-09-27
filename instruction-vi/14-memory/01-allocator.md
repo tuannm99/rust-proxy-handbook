@@ -1,6 +1,6 @@
 # General-Purpose Allocators
 
-`14-memory/06-fragmentation.md` nói về việc gì xảy ra theo thời gian. File
+[`14-memory/06-fragmentation.md`](06-fragmentation.md) nói về việc gì xảy ra theo thời gian. File
 này nói về thứ thực sự đứng sau `malloc`/global allocator của Rust, và vì
 sao đổi nó là một trong những thay đổi đơn lẻ có đòn bẩy cao nhất cho một
 proxy multi-threaded.
@@ -13,7 +13,7 @@ yêu cầu; nó làm tròn mỗi request lên một trong các size class cố �
 (ví dụ 8, 16, 32, 48, 64, 96, 128, ... byte) và phục vụ từ một free list
 của class đó. Cách này giới hạn fragmentation thành "lãng phí bên trong
 một size class" thay vì external fragmentation tùy tiện, đổi lại là một ít
-lãng phí nội bộ — xem `06-fragmentation.md` để biết failure mode cụ thể mà
+lãng phí nội bộ — xem [`06-fragmentation.md`](06-fragmentation.md) để biết failure mode cụ thể mà
 cách này đánh đổi.
 
 ### Thread-local arena: tránh một lock toàn cục
@@ -48,7 +48,7 @@ call site.
 ### Vì sao default của glibc thường là lựa chọn sai cho một proxy
 `ptmalloc` của glibc là một allocator tổng quát hợp lý nhưng khá bảo thủ
 trong việc trả bộ nhớ lại cho OS, và nhân số arena per-thread lên dưới áp
-lực tranh chấp (`06-fragmentation.md` nói về khía cạnh `MALLOC_ARENA_MAX`).
+lực tranh chấp ([`06-fragmentation.md`](06-fragmentation.md) nói về khía cạnh `MALLOC_ARENA_MAX`).
 mimalloc và jemalloc đều được thiết kế đúng cho loại workload mà một proxy
 có — nhiều allocation nhỏ, ngắn hạn, trên nhiều thread — và luôn benchmark
 tốt hơn trên loại tải này; đây là một quyết định đáng để đưa ra một cách
@@ -59,19 +59,19 @@ Một microbenchmark alloc/free đơn luồng trong một vòng lặp gần như
 nói lên được điều gì về allocator nào thắng dưới tải thực tế của một
 proxy: nhiều thread, alloc/free ở tốc độ khác nhau, object đôi khi được
 free trên một thread khác với thread đã cấp phát nó. Benchmark với traffic
-đồng thời thật của `12-testing/01-load-testing.md`, không phải một vòng
+đồng thời thật của [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md), không phải một vòng
 lặp đơn luồng tổng hợp, trước khi chọn.
 
 ## Practice
-1. Đổi global allocator của `proxy` (hoặc một crate trong `labs/`) sang
+1. Đổi global allocator của [`proxy`](../../proxy) (hoặc một crate trong [`labs/`](../../labs)) sang
    `mimalloc` qua `#[global_allocator]` và xác nhận binary vẫn build và
    test vẫn pass.
 2. Benchmark một hot path nặng về allocation (ví dụ parse header trên mỗi
-   request trong `labs/01-http-parser`) dưới tải đồng thời với system
+   request trong [`labs/01-http-parser`](../../labs/01-http-parser)) dưới tải đồng thời với system
    allocator, rồi mimalloc, rồi jemalloc; so sánh throughput và tail
    latency, không chỉ thời gian allocation trung bình.
 3. Cố tình tái tạo pattern free chéo giữa các thread (cấp phát trên một
    tokio worker, gửi value qua channel, free trên worker khác) và kiểm tra
    xem docs của allocator bạn chọn có nói đây là một slow path hay không.
-4. Chạy lại thí nghiệm RSS-theo-thời-gian của `14-memory/06-fragmentation.md`
+4. Chạy lại thí nghiệm RSS-theo-thời-gian của [`14-memory/06-fragmentation.md`](06-fragmentation.md)
    với allocator bạn chọn và so sánh mức plateau với system allocator.

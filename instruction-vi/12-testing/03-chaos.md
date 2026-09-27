@@ -8,7 +8,7 @@ vào trong khi nó đang chịu tải, thay vì chỉ test happy path. Ba loại
 giới hạn không?), mất gói/connection bị reset (phía client-facing có
 xuống cấp một cách nhẹ nhàng không?), và thất bại toàn bộ của upstream
 (proxy có thực sự failover không?). Những cái này ánh xạ trực tiếp tới các
-failure mode mà `06-proxy/03-healthcheck.md` và `06-proxy/05-retry.md`
+failure mode mà [`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md) và [`06-proxy/05-retry.md`](../06-proxy/05-retry.md)
 được thiết kế để xử lý — đây là nơi bạn tìm ra liệu code đó có thực sự
 hoạt động không.
 
@@ -17,8 +17,8 @@ hoạt động không.
 một TCP proxy có thể lập trình: bạn có thể tiêm latency, giới hạn băng
 thông, và reset connection trên một connection đang sống qua HTTP API của
 nó, và bật/tắt chúng giữa lúc test. Đây là cách dễ nhất để test circuit
-breaker của `06-proxy/05-retry.md` mà không cần đụng tới công cụ ở mức
-kernel — trỏ config upstream của `labs/05-reverse-proxy` vào một instance
+breaker của [`06-proxy/05-retry.md`](../06-proxy/05-retry.md) mà không cần đụng tới công cụ ở mức
+kernel — trỏ config upstream của [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) vào một instance
 toxiproxy thay vì upstream thật.
 
 ### tc netem
@@ -38,7 +38,7 @@ upstream A, 95%+ request trong 2 giây được phục vụ bởi upstream B"), 
 chỉ "chạy chaos và xem chuyện gì xảy ra."
 
 ## Practice
-1. Đặt `labs/05-reverse-proxy` trước hai upstream được route qua
+1. Đặt [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) trước hai upstream được route qua
    `toxiproxy`; tiêm 500ms latency vào một cái và xác nhận load
    balancer/health check của bạn nhận ra và chuyển traffic (hoặc ít nhất
    p99 phản ánh điều đó nếu bạn chưa xây adaptive routing).
@@ -49,8 +49,8 @@ chỉ "chạy chaos và xem chuyện gì xảy ra."
    test; so sánh tỉ lệ lỗi/latency với lần chỉ dùng toxiproxy.
 4. Kill và khởi động lại một process upstream lặp đi lặp lại trong một
    load test kéo dài ("flapping") và xác nhận hysteresis của
-   `06-proxy/03-healthcheck.md` ngăn proxy đảo quyết định rotation của nó
+   [`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md) ngăn proxy đảo quyết định rotation của nó
    mỗi giây.
-5. Gửi `SIGTERM` cho `proxy` giữa lúc chaos test và xác nhận graceful
-   shutdown (`09-architecture/04-graceful-shutdown.md`) vẫn drain đúng các
+5. Gửi `SIGTERM` cho [`proxy`](../../proxy) giữa lúc chaos test và xác nhận graceful
+   shutdown ([`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md)) vẫn drain đúng các
    request đang xử lý dở ngay cả khi các upstream đang không healthy.

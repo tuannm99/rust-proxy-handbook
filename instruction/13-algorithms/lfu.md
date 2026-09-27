@@ -1,6 +1,6 @@
 # LFU (Least Frequently Used)
 
-`13-algorithms/lru.md` covers recency-based eviction and its blind spot
+[`13-algorithms/lru.md`](lru.md) covers recency-based eviction and its blind spot
 against scans. This file covers the frequency-based alternative and why
 it isn't a straightforward drop-in fix.
 
@@ -53,24 +53,24 @@ cache.
 Between the bucket-list complexity and the aging tuning problem, plain LFU
 is rarely used as-is in production caches. Two directions fix it
 differently:
-- **ARC** (`13-algorithms/arc.md`) tracks both recency and frequency and
+- **ARC** ([`13-algorithms/arc.md`](arc.md)) tracks both recency and frequency and
   adapts the balance between them automatically, without a manual decay
   knob.
-- **TinyLFU** (`13-algorithms/tinylfu.md`) keeps the frequency *idea* but
+- **TinyLFU** ([`13-algorithms/tinylfu.md`](tinylfu.md)) keeps the frequency *idea* but
   replaces the exact counter with a probabilistic count-min sketch
-  (`13-algorithms/count-min-sketch.md`) that has built-in periodic aging,
+  ([`13-algorithms/count-min-sketch.md`](count-min-sketch.md)) that has built-in periodic aging,
   and uses it only as an *admission* filter in front of a much simpler
   main structure (typically LRU-based) rather than as the eviction policy
   for the whole cache.
 
-Gotcha: don't reach for hand-rolled LFU in `proxy/` — it's here so you can
+Gotcha: don't reach for hand-rolled LFU in [`proxy/`](../../proxy) — it's here so you can
 recognize the tradeoff by name and understand what ARC and TinyLFU are
 actually improving on. Production systems (`moka`, Caffeine) use
 TinyLFU-derived designs, not plain LFU, for exactly the staleness reason
 above.
 
 ## Practice
-1. In `labs/10-cache`, implement the O(1) LFU structure (frequency-bucket
+1. In [`labs/10-cache`](../../labs/10-cache), implement the O(1) LFU structure (frequency-bucket
    list of key lists) behind the same eviction trait you used for LRU.
 2. Reproduce the staleness bug on purpose: make one key extremely popular,
    stop touching it, then flood the cache with a different, shifting
@@ -80,6 +80,6 @@ above.
 3. Add periodic count halving (aging) and rerun the same trace; confirm
    the stale key eventually becomes evictable and hit rate recovers.
 4. Compare implementation complexity and eviction correctness against
-   your `13-algorithms/lru.md` arena-backed LRU on the same benchmark
+   your [`13-algorithms/lru.md`](lru.md) arena-backed LRU on the same benchmark
    harness, and write down, concretely, which workload shape (steady hot
    set vs. shifting popularity vs. one-shot scan) favors which policy.

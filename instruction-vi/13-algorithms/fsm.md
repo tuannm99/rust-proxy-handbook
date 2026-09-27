@@ -1,6 +1,6 @@
 # FSM (Finite State Machine) như một Design Pattern
 
-`13-algorithms/dfa.md` nói về lý thuyết automaton accept/reject. File này
+[`13-algorithms/dfa.md`](dfa.md) nói về lý thuyết automaton accept/reject. File này
 nói về finite state machine như một thứ bạn cố tình dùng đến khi *viết*
 Rust — protocol parser và vòng đời kết nối là state machine dù bạn có mô
 hình hóa chúng như vậy hay không, và việc mô hình hóa chúng một cách tường
@@ -15,8 +15,8 @@ mỗi transition) hay **máy Moore** (hành động ở mỗi state) gắn hành
 chính các transition — đây chính xác là bản chất của một kết nối HTTP/1.1:
 `Idle -> ReadingRequestLine -> ReadingHeaders -> ReadingBody -> Idle`
 (keep-alive) hoặc `-> Closed`, với công việc thật xảy ra ở mỗi cạnh, chứ
-không chỉ một câu trả lời có/không ở cuối. Xem `05-http-stack/01-parser.md`
-và `05-http-stack/04-keepalive.md` để có các state cụ thể; file này nói về
+không chỉ một câu trả lời có/không ở cuối. Xem [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md)
+và [`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md) để có các state cụ thể; file này nói về
 cách mã hóa bản thân cái máy đó.
 
 ### Enum + match: trường hợp phổ biến
@@ -60,7 +60,7 @@ impl HeadersRead {
 ```
 `Idle` đơn giản là không có method `read_body` — gọi nó sai thứ tự thì
 không compile được, thay vì panic hoặc âm thầm sai lệch trong production.
-Xem `03-rust/01-ownership.md` để hiểu vì sao việc consume `self` (chứ
+Xem [`03-rust/01-ownership.md`](../03-rust/01-ownership.md) để hiểu vì sao việc consume `self` (chứ
 không phải `&self`) mới là thứ khiến pattern này thực sự ép buộc các
 transition một chiều.
 
@@ -75,12 +75,12 @@ phải hoặc sẽ là một vấn đề bảo mật (ví dụ gửi response tr
 request đã được đọc đầy đủ).
 
 ## Practice
-1. Mô hình hóa các state parse-request của `labs/01-http-parser` thành
+1. Mô hình hóa các state parse-request của [`labs/01-http-parser`](../../labs/01-http-parser) thành
    một enum tường minh *trước khi* viết logic parsing; dùng tính đầy đủ
    của `match` để xác nhận mọi state đều có transition được định nghĩa
    cho mọi lớp byte nó có thể thấy.
 2. Viết lại vòng đời kết nối keep-alive từ
-   `05-http-stack/04-keepalive.md` (idle → reading → responding →
+   [`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md) (idle → reading → responding →
    idle/closed) thành một chuỗi typestate; thử gọi một method sai thứ tự
    và xác nhận nó không compile được.
 3. Chọn một transition mà parser dựa trên enum của bạn xử lý bằng

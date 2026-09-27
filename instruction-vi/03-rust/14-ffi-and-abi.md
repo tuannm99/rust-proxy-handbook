@@ -16,7 +16,7 @@ FFI — thiếu nó, hai phía có thể âm thầm bất đồng về việc m�
 struct SockAddrLike { family: u16, port: u16, addr: u32 } // layout now matches C's expectations
 ```
 Đây chính xác là lý do vì sao các lời gọi `libc` (`epoll_ctl`,
-`setsockopt`) trong `03-rust/03-unsafe.md` hoạt động được: mọi struct
+`setsockopt`) trong [`03-rust/03-unsafe.md`](03-unsafe.md) hoạt động được: mọi struct
 `libc` đưa cho bạn đều là `#[repr(C)]`.
 
 ### Gọi vào C: `extern "C"` và crate `libc`
@@ -35,7 +35,7 @@ Gotcha: mọi lời gọi FFI đều là `unsafe`, vì compiler không thể ki�
 hợp đồng của hàm ngoại lai — nó có mong đợi một chuỗi kết thúc bằng null
 không? nó có lấy ownership của một con trỏ bạn truyền vào không? nó có
 thread-safe để gọi từ bất kỳ thread nào không? Kỷ luật comment
-`// SAFETY:` từ `03-rust/03-unsafe.md` càng quan trọng hơn ở đây, không
+`// SAFETY:` từ [`03-rust/03-unsafe.md`](03-unsafe.md) càng quan trọng hơn ở đây, không
 kém đi, vì invariant nằm trong tài liệu của người khác, không có borrow
 checker nào để đối chiếu chéo.
 
@@ -61,9 +61,9 @@ impl Drop for CBuf {
 ### Sinh binding: `bindgen` và `cbindgen`
 `bindgen` sinh các khai báo `extern "C"` của Rust từ một header C (Rust
 gọi vào C); `cbindgen` sinh một header C từ code Rust `#[repr(C)]`/
-`extern "C"` (C gọi vào Rust — liên quan nếu `proxy` từng để lộ một bề
+`extern "C"` (C gọi vào Rust — liên quan nếu [`proxy`](../../proxy) từng để lộ một bề
 mặt plugin C-ABI thay vì một bề mặt `dyn Trait` thuần Rust,
-`09-architecture/02-plugin.md`). Cả hai tồn tại vì việc tự tay duy trì
+[`09-architecture/02-plugin.md`](../09-architecture/02-plugin.md)). Cả hai tồn tại vì việc tự tay duy trì
 binding đồng bộ với một header hay API đang thay đổi chính xác là công
 việc tẻ nhạt, dễ lỗi mà một công cụ nên đảm nhận.
 
@@ -71,7 +71,7 @@ việc tẻ nhạt, dễ lỗi mà một công cụ nên đảm nhận.
 Rust không có một ABI ổn định xuyên các phiên bản compiler — một `dylib`
 được build với một phiên bản rustc không được đảm bảo load được bởi một
 binary được build với phiên bản khác. Đây là lý do cụ thể vì sao hệ thống
-plugin trong-process của `09-architecture/02-plugin.md` compile các
+plugin trong-process của [`09-architecture/02-plugin.md`](../09-architecture/02-plugin.md) compile các
 plugin vào cùng một binary dưới dạng các object `dyn Trait` (hoặc để lộ
 một ranh giới C-ABI `#[repr(C)]` nếu việc load động thực sự cần thiết)
 thay vì `dlopen` một `.so` Rust bất kỳ — cách sau chỉ hoạt động đáng tin
@@ -89,9 +89,9 @@ một yêu cầu vận hành mong manh.
    C (một hàm "C" giả lập cũng được) và xác nhận double-free/use-after-free
    được ngăn chặn bởi cấu trúc.
 4. Đọc source của crate `libc` cho một binding syscall bạn đã dùng bằng
-   tay (`epoll_ctl`, từ bài tập `02-linux/07-epoll.md`) và xác định các
+   tay (`epoll_ctl`, từ bài tập [`02-linux/07-epoll.md`](../02-linux/07-epoll.md)) và xác định các
    định nghĩa struct `#[repr(C)]` của nó.
-5. Giải thích, có trích dẫn `09-architecture/02-plugin.md`, vì sao một hệ
+5. Giải thích, có trích dẫn [`09-architecture/02-plugin.md`](../09-architecture/02-plugin.md), vì sao một hệ
    sinh thái ổn định ABI như C khiến plugin kiểu `dlopen` khả thi trong
    khi việc Rust thiếu ABI ổn định đẩy bạn về hướng compile plugin vào
    cùng một binary thay vào đó.

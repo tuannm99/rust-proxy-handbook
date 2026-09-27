@@ -23,15 +23,15 @@ và short-circuit ngay khi gặp match `Block` đầu tiên.
 Gotcha: rule được load từ config là input gần-attacker cho *compiler* regex
 của bạn, không chỉ cho matcher. Thực thi một giới hạn kích thước sau khi
 compile và từ chối một rule set xấu ngay tại thời điểm load, giữ nguyên
-rule set trước đó đang chạy (`09-architecture/03-config.md`) — một WAF làm
+rule set trước đó đang chạy ([`09-architecture/03-config.md`](../09-architecture/03-config.md)) — một WAF làm
 sập proxy vì một lỗi gõ trong file rule là một outage tự gây ra. Xem
-`13-algorithms/regex-engine.md` cho khía cạnh ReDoS của việc này, đây là lý
+[`13-algorithms/regex-engine.md`](../13-algorithms/regex-engine.md) cho khía cạnh ReDoS của việc này, đây là lý
 do crate `regex` của Rust (linear-time, không backtracking) là engine đúng
 ở đây còn `fancy-regex` thì không.
 
 ### Phát hiện dựa trên signature
 Match trực tiếp các pattern tấn công đã biết (ví dụ `' OR '1'='1` cho
-SQLi, `<script>` cho XSS, `../../` cho path traversal) — chính xác và
+SQLi, `<script>` cho XSS, [`../../`](../../..) cho path traversal) — chính xác và
 nhanh, nhưng chỉ bắt được các tấn công khớp với một signature đã biết; dễ
 dàng bị bypass bởi kẻ tấn công thay đổi encoding/case/whitespace, nên
 signature cần normalization (URL-decode, lowercase, gộp whitespace) được
@@ -46,16 +46,16 @@ thực tế hoạt động, và đó là một khoảng trống cấu trúc vĩn
 phải một bug bạn sửa một lần là xong.
 
 Đây là một topic đủ lớn để có file riêng của nó, và nó được chia sẻ với
-routing (`05-http-stack/03-router.md`) và framing
-(`07-security/05-request-smuggling.md`): xem
-`07-security/04-normalization.md`. Không có gì trong file này hoạt động
+routing ([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)) và framing
+([`07-security/05-request-smuggling.md`](05-request-smuggling.md)): xem
+[`07-security/04-normalization.md`](04-normalization.md). Không có gì trong file này hoạt động
 nếu cái đó sai.
 
 ### Body inspection: chi phí và giới hạn cứng
 Kiểm tra một body nghĩa là phải có toàn bộ body, nghĩa là phải buffer nó —
 nên WAF inspection và streaming loại trừ lẫn nhau, và buffer bị giới hạn
 bởi lượng memory bạn sẵn sàng chi cho mỗi request đồng thời. Đây là ràng
-buộc giống hệt với retry buffering (`06-proxy/05-retry.md`), và cả hai nên
+buộc giống hệt với retry buffering ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)), và cả hai nên
 dùng chung một giới hạn thay vì mỗi bên giữ bản sao riêng của mình.
 
 Quyết định không thể tránh khỏi là chuyện gì xảy ra với một body lớn hơn
@@ -91,14 +91,14 @@ bị tắt vĩnh viễn.
 Threat model mà mọi người mang tới WAF là "kẻ tấn công lọt qua". Outage mà
 nó thực sự gây ra là "WAF chặn traffic hợp lệ" — một rule quá rộng khớp với
 dữ liệu bình thường của khách hàng (một cái tên có dấu nháy đơn, một đoạn
-code trong ticket support, một blob base64 tình cờ chứa `../`) âm thầm phá
+code trong ticket support, một blob base64 tình cờ chứa [`../`](../..)) âm thầm phá
 vỡ một tính năng, và vì việc block xảy ra ở edge, application log không
 cho thấy gì cả.
 
 Biện pháp giảm thiểu chuẩn là chạy mọi rule set mới ở **chế độ chỉ phát
 hiện** trước: score và log, không bao giờ block. So sánh những gì *lẽ ra*
 đã bị block với traffic thật trong vài ngày, tune, rồi mới enforce. Đây là
-một quy trình canary (`09-architecture/06-canary-deploy.md`) áp dụng cho
+một quy trình canary ([`09-architecture/06-canary-deploy.md`](../09-architecture/06-canary-deploy.md)) áp dụng cho
 security rule, và bỏ qua nó là cách một bản cập nhật rule thường ngày biến
 thành một sự cố.
 
@@ -110,23 +110,23 @@ enforcement thực sự sẽ làm gì.
 ### Hiệu năng: prefilter trước khi match
 Chạy một rule set hàng trăm regex trên mọi request là linear theo số
 lượng rule, và nó nằm trên hot path của mọi request bạn phục vụ. Hai cách
-sửa mang tính cấu trúc, cả hai đều nằm trong `13-algorithms/`:
+sửa mang tính cấu trúc, cả hai đều nằm trong [`13-algorithms/`](../13-algorithms):
 - Trích ra các chuỗi con literal bắt buộc và quét chúng trước bằng một
-  multi-pattern matcher (`13-algorithms/aho-corasick.md`). Phần lớn traffic
+  multi-pattern matcher ([`13-algorithms/aho-corasick.md`](../13-algorithms/aho-corasick.md)). Phần lớn traffic
   vô hại không chứa cái nào trong số đó và không bao giờ chạm tới regex.
 - Compile các pattern còn sống sót vào một `RegexSet` duy nhất
-  (`13-algorithms/regex-engine.md`) để P pattern chỉ tốn một lượt quét,
+  ([`13-algorithms/regex-engine.md`](../13-algorithms/regex-engine.md)) để P pattern chỉ tốn một lượt quét,
   không phải P lượt.
 
 Gotcha: đo tầng WAF tách riêng khỏi tổng latency của request
-(`08-observability/02-metrics.md`). Nếu gộp vào một con số tổng, một WAF
+([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)). Nếu gộp vào một con số tổng, một WAF
 thêm 8ms ở p50 và 200ms ở p99 trên body lớn trông giống như chậm chung
 chung thay vì một tầng có thể tune riêng.
 
 ### Tự xây so với dùng một cái thật
 Viết một rule engine đồ chơi ở đây có giá trị để hiểu cách request
 inspection khớp vào pipeline của một proxy (xem
-`09-architecture/01-components.md`) và chi phí hiệu năng của nó. Với bất
+[`09-architecture/01-components.md`](../09-architecture/01-components.md)) và chi phí hiệu năng của nó. Với bất
 cứ thứ gì hướng ra internet, ưu tiên nhúng một engine được maintain —
 Coraza (Go, tương thích OWASP CRS, có câu chuyện FFI Rust) hoặc shell ra
 ModSecurity — thay vì tin tưởng một signature set tự viết tay để bao phủ
@@ -135,10 +135,10 @@ traffic tấn công thực tế.
 ## Practice
 Làm lần lượt theo thứ tự sau.
 
-1. Trong `labs/12-waf`, implement `Rule`/`RuleTarget` với 5-10 signature
+1. Trong [`labs/12-waf`](../../labs/12-waf), implement `Rule`/`RuleTarget` với 5-10 signature
    viết cứng (SQLi, XSS, path traversal). **Xong khi** một payload rõ ràng
    trong query string bị block và traffic bình thường đi qua.
-2. Làm qua các bài tập của `07-security/04-normalization.md` với rule
+2. Làm qua các bài tập của [`07-security/04-normalization.md`](04-normalization.md) với rule
    engine này. **Xong khi** các cách bypass mixed-case, double-encoded, và
    tham số trùng lặp đều bị bắt, và router cùng WAF đọc chung một dạng
    canonical.

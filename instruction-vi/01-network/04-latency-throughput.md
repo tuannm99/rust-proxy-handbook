@@ -1,6 +1,6 @@
 # Latency, Bandwidth, Throughput, RTT
 
-Một phần của chuỗi fundamentals từ-con-số-0 — xem `01-network/01-fundamentals.md`
+Một phần của chuỗi fundamentals từ-con-số-0 — xem [`01-network/01-fundamentals.md`](01-fundamentals.md)
 để có index đầy đủ. Bốn con số bị dùng lẫn lộn với nhau trong giao tiếp
 thường ngày và không nên như vậy — nhầm lẫn chúng dẫn tới việc tối ưu sai
 thứ.
@@ -11,7 +11,7 @@ thứ.
 **Latency** là thời gian một mẩu dữ liệu mất để đi từ A tới B. Nó chủ yếu
 bị chi phối bởi khoảng cách vật lý (ánh sáng trong sợi quang di chuyển ở
 tốc độ khoảng 200.000 km/s, không phải 300.000, do chiết suất của thủy
-tinh) và số hop (mục routing của `02-addressing.md`) — không phải bởi độ
+tinh) và số hop (mục routing của [`02-addressing.md`](02-addressing.md)) — không phải bởi độ
 "nhanh" của kết nối bạn theo nghĩa thông thường. Một đường truyền xuyên
 lục địa có độ trễ hàng chục mili-giây bất kể bạn đổ bao nhiêu bandwidth
 vào nó, vì đó là một giới hạn của tốc độ ánh sáng, không phải vấn đề
@@ -36,10 +36,10 @@ throughput kém nếu thứ khác mới là nút thắt cổ chai.
 **RTT (round-trip time)** là thời gian để một message đi ra và phản hồi
 của nó quay về — xấp xỉ `2 × latency` cộng thời gian xử lý ở đầu bên kia.
 Đây là con số quan trọng cho câu hỏi "chuyện này tốn bao nhiêu round
-trip": mỗi handshake (`03-byte-streams.md`) — của TCP, rồi của TLS chồng
+trip": mỗi handshake ([`03-byte-streams.md`](03-byte-streams.md)) — của TCP, rồi của TLS chồng
 lên trên — là thêm một RTT chờ đợi thuần túy trước khi byte request thật
 đầu tiên di chuyển. Đó chính là toàn bộ luận điểm cho việc tái sử dụng kết
-nối trong `06-proxy/01-upstream.md`: trả giá một handshake bị giới hạn bởi
+nối trong [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md): trả giá một handshake bị giới hạn bởi
 RTT một lần và tái sử dụng kết nối tốt hơn trả giá đó ở mỗi request.
 
 ### Vì sao một đường truyền bandwidth cao vẫn có thể cảm giác chậm
@@ -50,14 +50,14 @@ về là khoảng cách vật lý thật sự). Với một cuộc trao đổi r
 nhỏ — phần lớn traffic HTTP — bản thân việc truyền dữ liệu nhanh đến mức
 RTT, chứ không phải bandwidth, chi phối tổng thời gian: bạn đang chờ round
 trip, không phải chờ byte. Đây chính xác là lý do multiplexing của HTTP/2
-(`01-network/11-http2.md`) và 0-RTT/session resumption trong TLS
-(`01-network/13-tls.md`) tồn tại — chúng tấn công vào *số lượng* round
+([`01-network/11-http2.md`](11-http2.md)) và 0-RTT/session resumption trong TLS
+([`01-network/13-tls.md`](13-tls.md)) tồn tại — chúng tấn công vào *số lượng* round
 trip, không phải throughput.
 
 ### Bandwidth-delay product: bao nhiêu có thể "đang bay"
 **Bandwidth-delay product** (bandwidth × RTT) là số byte có thể đang trên
 đường truyền cùng lúc, chưa được ack — congestion window của TCP
-(`01-network/08-tcp.md`) phải lớn lên tới xấp xỉ kích thước này trước khi
+([`01-network/08-tcp.md`](08-tcp.md)) phải lớn lên tới xấp xỉ kích thước này trước khi
 một kết nối duy nhất có thể dùng hết bandwidth của đường truyền. Trên một
 đường truyền bandwidth cao, latency cao ("long fat network" — một đường
 truyền vệ tinh, hay một tuyến cáp quang xuyên lục địa), tích số này lớn,

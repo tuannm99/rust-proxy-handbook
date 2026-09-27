@@ -1,6 +1,6 @@
 # JWT Validation
 
-Verifying a bearer token at the proxy edge. `07-security/01-auth.md` covers
+Verifying a bearer token at the proxy edge. [`07-security/01-auth.md`](01-auth.md) covers
 where this sits in the pipeline and what the proxy does with the identity
 afterward; this file covers getting the validation itself right.
 
@@ -74,7 +74,7 @@ per N seconds regardless of how many unknown kids arrive) and serve a 401
 in the meantime.
 
 **Fetch failure.** If JWKS is unreachable, fail static on the cached key
-set (`06-proxy/07-service-discovery.md` — same principle): keep validating
+set ([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md) — same principle): keep validating
 with the last known good keys rather than rejecting all traffic. A
 rotation you missed will produce 401s for genuinely new tokens; an empty
 key cache produces 401s for *everything*.
@@ -92,7 +92,7 @@ on `exp` extends the life of an expired token by that much — which is
 fine at 60 seconds and not fine at an hour.
 
 Gotcha: the leeway hides clock drift rather than fixing it. Monitor actual
-skew (`08-observability/02-metrics.md`); a server drifting past your leeway
+skew ([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)); a server drifting past your leeway
 fails every token at once, and you want the alert before that.
 
 ### Revocation: the thing JWT can't do
@@ -112,7 +112,7 @@ means a 24-hour compromise window.
 ## Practice
 Build these in order.
 
-1. In `proxy`, add JWT validation with `jsonwebtoken`: pinned algorithm,
+1. In [`proxy`](../../proxy), add JWT validation with `jsonwebtoken`: pinned algorithm,
    signature + `exp`/`aud`, 401 otherwise. **Done when** a valid token
    passes and a token with a tampered payload fails.
 2. Mount the algorithm-confusion attack against your own endpoint: take
@@ -120,7 +120,7 @@ Build these in order.
    send it. **Done when** it is rejected — and, to prove the test is real,
    temporarily configure the validator to accept the token's own `alg` and
    watch the forged token succeed.
-3. Feed `kid` values containing `../` and a `jku` pointing at a URL you
+3. Feed `kid` values containing [`../`](../..) and a `jku` pointing at a URL you
    control. **Done when** neither is honored — the `kid` resolves only
    against your fixed key set and no outbound fetch is made for `jku`.
 4. Add JWKS fetching with `kid` lookup, a refetch rate limit, and

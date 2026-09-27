@@ -2,7 +2,7 @@
 
 Handshake, SNI, ALPN, mTLS, session resumption. Nếu "asymmetric
 encryption," "certificate chain," hay "digital signature" chưa phải các
-thuật ngữ chính xác với bạn, đọc `01-network/06-crypto-basics.md` trước —
+thuật ngữ chính xác với bạn, đọc [`01-network/06-crypto-basics.md`](06-crypto-basics.md) trước —
 file này giả định bạn đã biết chúng.
 
 ## What to learn
@@ -28,7 +28,7 @@ giả định nó là riêng tư.
 Được negotiate bên trong cùng handshake đó, ALPN là cách client và server
 đồng ý dùng HTTP/1.1 hay HTTP/2 (`h2`) trước khi bất kỳ byte HTTP nào
 được trao đổi — đây là thứ cho phép auto server của `hyper-util` trong
-`labs/02-http-server` chọn đúng protocol mà không cần một port riêng cho
+[`labs/02-http-server`](../../labs/02-http-server) chọn đúng protocol mà không cần một port riêng cho
 mỗi version.
 
 ```rust
@@ -43,7 +43,7 @@ config.alpn_protocols = vec![b"h2".to_vec(), b"http/1.1".to_vec()];
 Server cũng yêu cầu và xác minh một certificate của client, xác thực
 client ở tầng transport thay vì (hoặc thêm vào) một token ở tầng ứng
 dụng. Phổ biến ở tầng proxy cho tin cậy service-to-service bên trong một
-mạng riêng — gắn với `07-security/01-auth.md` để biết cái này kết hợp thế
+mạng riêng — gắn với [`07-security/01-auth.md`](../07-security/01-auth.md) để biết cái này kết hợp thế
 nào với auth dựa trên JWT cho request của end-user.
 
 ### Session resumption
@@ -52,28 +52,28 @@ handshake đầy đủ trên một kết nối mới, cắt bớt một round tr
 proxy, điều này quan trọng nhất dưới connection churn cao — hỗ trợ
 resumption (và việc xoay key của nó) ảnh hưởng trực tiếp tới tail latency
 cho các client kết nối lại thường xuyên. Gotcha: resumption kiểu 0-RTT
-tái tạo lại rủi ro replay tương tự 0-RTT của QUIC (`12-http3.md`) — áp
+tái tạo lại rủi ro replay tương tự 0-RTT của QUIC ([`12-http3.md`](12-http3.md)) — áp
 dụng cùng sự thận trọng "chỉ cho request idempotent".
 
 ### Quản lý certificate
 Một proxy production cần certificate được phát hành, gia hạn (thường qua
 ACME/Let's Encrypt), và reload *mà không* làm rớt các kết nối hiện có
-hoặc yêu cầu restart — đây là lý do `proxy` coi việc reload cert là một
-mối quan tâm của config-reload, xem `09-architecture/03-config.md`.
+hoặc yêu cầu restart — đây là lý do [`proxy`](../../proxy) coi việc reload cert là một
+mối quan tâm của config-reload, xem [`09-architecture/03-config.md`](../09-architecture/03-config.md).
 
 ## Practice
 
 1. Dùng `openssl s_client -connect host:443 -servername example.com` và
    đọc output handshake để xác định cipher suite và TLS version đã được
    negotiate.
-2. Làm `labs/07-tls` trước: chấm dứt TLS bằng `tokio-rustls` trên một
+2. Làm [`labs/07-tls`](../../labs/07-tls) trước: chấm dứt TLS bằng `tokio-rustls` trên một
    listener trần, phục vụ một self-signed cert để test cục bộ. Một khi nó
-   chạy được ở đó, port cùng setup đó sang `proxy`.
+   chạy được ở đó, port cùng setup đó sang [`proxy`](../../proxy).
 3. Cấu hình ALPN sao cho cả `curl --http2` lẫn `curl --http1.1` đều hoạt
    động trên cùng một port, và xác nhận qua `curl -v` protocol nào đã
    được negotiate.
 4. Thêm mTLS: yêu cầu và xác minh một client certificate, và từ chối các
    kết nối không trình ra cái nào hoặc trình ra một cái không đáng tin.
 5. Mô phỏng một lần xoay cert (đổi file cert, kích hoạt reload theo
-   `09-architecture/03-config.md`) và xác nhận các kết nối hiện có không
+   [`09-architecture/03-config.md`](../09-architecture/03-config.md)) và xác nhận các kết nối hiện có không
    bị rớt giữa chừng request.

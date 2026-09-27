@@ -1,7 +1,7 @@
 # Page Cache
 
 Cache của kernel cho dữ liệu file trong RAM. Thứ khiến việc serve static
-file (`05-http-stack/05-static.md`) nhanh, và thứ khiến việc đo bộ nhớ của
+file ([`05-http-stack/05-static.md`](../05-http-stack/05-static.md)) nhanh, và thứ khiến việc đo bộ nhớ của
 proxy bạn trở nên khó hiểu.
 
 ## What to learn
@@ -33,11 +33,11 @@ hợp với một đợt dirty page dồn dập, nó không phải lúc nào cũ
 hạn, đây là điều đầu tiên cần kiểm tra.
 
 ### Zero-copy phụ thuộc hoàn toàn vào nó
-`sendfile()` và `splice()` (xem `02-linux/11-zerocopy.md`) chuyển dữ liệu
+`sendfile()` và `splice()` (xem [`02-linux/11-zerocopy.md`](../02-linux/11-zerocopy.md)) chuyển dữ liệu
 từ page cache tới một socket mà không copy qua user space. Điều đó chỉ
 nhanh khi cache *hit* — khi miss, syscall block trên disk I/O, và trong
 một async runtime, việc đó block toàn bộ worker thread (vấn đề
-cooperative-scheduling ở `03-rust/05-async.md`), làm đình trệ mọi kết nối
+cooperative-scheduling ở [`03-rust/05-async.md`](../03-rust/05-async.md)), làm đình trệ mọi kết nối
 khác trên đó.
 
 Đây là cái bẫy của "cứ dùng sendfile cho static file": nó tuyệt vời cho
@@ -60,7 +60,7 @@ Với một proxy, `WILLNEED` trên một file sắp stream có thể biến lat
 chunk đầu tiên từ một lần seek disk thành một cú cache hit. `DONTNEED` sau
 khi stream một file one-shot rất lớn ngăn nó đẩy văng working set thực sự
 nóng của bạn — phiên bản page cache của chính vấn đề scan-pollution ở
-`13-algorithms/lru.md`.
+[`13-algorithms/lru.md`](../13-algorithms/lru.md).
 
 ### Eviction là CLOCK, và dirty page thì khác
 Trang sạch bị loại bỏ khi thu hồi, gần như miễn phí. Trang bẩn (đã ghi
@@ -69,14 +69,14 @@ chúng có thể block. Writeback được điều khiển bởi `vm.dirty_ratio
 `vm.dirty_background_ratio`; vượt qua tỷ lệ cứng khiến *người ghi* phải
 block đồng bộ cho tới khi writeback bắt kịp.
 
-Một proxy ghi access log ra disk (`08-observability/01-logging.md`) là
+Một proxy ghi access log ra disk ([`08-observability/01-logging.md`](../08-observability/01-logging.md)) là
 một nguồn sinh dirty page. Dưới việc log nặng trên storage chậm, một lần
 ghi log có thể block một thread đang xử lý request — chính xác là lý do
 file đó khuyến nghị `tracing_appender::non_blocking`.
 
 Chính sách thu hồi là một biến thể LRU xấp xỉ: hai list (active và
 inactive) với reference bit, thuộc họ thuật toán CLOCK được mô tả ở
-`13-algorithms/lru.md`. Cùng lý do: việc "phẫu thuật" list per-access của
+[`13-algorithms/lru.md`](../13-algorithms/lru.md). Cùng lý do: việc "phẫu thuật" list per-access của
 LRU thật sự là không kham nổi ở quy mô page cache.
 
 ### Đo lường
@@ -92,8 +92,8 @@ lớn hơn bộ nhớ.
 1. Đọc một file lớn hai lần, đo thời gian cả hai. Drop cache, lặp lại, và
    xác nhận timing của lần đọc đầu tiên quay trở lại.
 2. Dùng `vmtouch` (hoặc `mincore` trực tiếp) để xem trang nào của một file
-   đang resident sau khi `labs/04-static-server` đã serve nó một lần.
-3. Benchmark `labs/04-static-server` với một working set vừa trong RAM,
+   đang resident sau khi [`labs/04-static-server`](../../labs/04-static-server) đã serve nó một lần.
+3. Benchmark [`labs/04-static-server`](../../labs/04-static-server) với một working set vừa trong RAM,
    rồi một working set lớn hơn nhiều lần. So sánh p99 latency và giải
    thích khoảng cách đó dựa trên những gì bạn biết về cache hit và
    blocking.

@@ -2,7 +2,7 @@
 
 Recovering an individual failed request. The layer above — deciding an
 upstream should stop receiving requests at all — is
-`06-proxy/06-circuit-breaker.md`.
+[`06-proxy/06-circuit-breaker.md`](06-circuit-breaker.md).
 
 ## What to learn
 ### Idempotency: the rule that comes before any retry logic
@@ -18,7 +18,7 @@ different claims. `DELETE /orders/42` is idempotent by spec, but if the
 upstream emits a webhook or decrements inventory on each call, retrying it
 has a visible side effect anyway. Method-based retry policy is a
 reasonable default, not a proof — make it overridable per route
-(`05-http-stack/03-router.md`) so a team that knows their endpoint is unsafe
+([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)) so a team that knows their endpoint is unsafe
 can turn it off.
 
 ### The proxy-specific constraint: you may not be able to retry at all
@@ -113,7 +113,7 @@ wasted — whatever broke it is unlikely to be fixed microseconds later.
 Retry against a *different* upstream from the pool, and exclude the failed
 one from the candidate set for that request.
 
-Gotcha: this conflicts with consistent hashing (`02-load-balancer.md`) when
+Gotcha: this conflicts with consistent hashing ([`02-load-balancer.md`](02-load-balancer.md)) when
 affinity is load-bearing — an upstream-side cache or a stateful session
 means the "different" upstream is a cold miss or an outright error. When
 affinity matters, prefer failing over to the ring's *next* node
@@ -129,7 +129,7 @@ cool-down period and fails fast instead.
 The one thing to get right from the retry side: **retries must respect the
 circuit**, skipping hosts whose circuit is open rather than treating
 "circuit open" as another failure to retry past. See
-`06-proxy/06-circuit-breaker.md`.
+[`06-proxy/06-circuit-breaker.md`](06-circuit-breaker.md).
 
 ### Hedged requests: the tail-latency variant
 Retries fire on failure. **Hedging** fires on *slowness*: if a request
@@ -144,14 +144,14 @@ Gotcha: hedging inherits every constraint above *and* adds one — the
 duplicate is in flight simultaneously, so a non-idempotent hedge is
 strictly worse than a non-idempotent retry (both copies may succeed).
 Hedge only idempotent requests, hedge at a threshold derived from measured
-latency (`08-observability/02-metrics.md`), and count hedges against the
+latency ([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)), and count hedges against the
 retry budget — otherwise a latency regression across the whole fleet turns
 into every request being sent twice, precisely when capacity is short.
 
 ## Practice
 Build these in order.
 
-1. In `labs/05-reverse-proxy`, add a retry wrapper that only retries
+1. In [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), add a retry wrapper that only retries
    GET/HEAD, uses the backoff function above capped at 3 attempts, and
    sends each retry to a *different* upstream. **Done when** killing one
    upstream mid-load-test produces zero client-visible errors, and logs
@@ -171,7 +171,7 @@ Build these in order.
    forcing 100% upstream failure causes retries to stop within one window
    (rather than tripling load), and traffic to a second, healthy pool
    still retries normally.
-6. Work through `06-proxy/06-circuit-breaker.md`'s exercises, then make
+6. Work through [`06-proxy/06-circuit-breaker.md`](06-circuit-breaker.md)'s exercises, then make
    retries circuit-aware. **Done when** a retry skips a host with an open
    circuit rather than spending an attempt on it.
 7. (Stretch) Add hedging on GET at the measured p95. **Done when** p99

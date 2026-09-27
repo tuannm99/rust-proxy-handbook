@@ -44,7 +44,7 @@ monomorphized với chi phí bằng không — nhưng mỗi hàm trả về `imp
 signature giống hệt nhau vẫn trả về type *riêng* của chính nó.
 `Box<dyn Fn(...)>` xóa type đi, đây là thứ bạn cần để lưu các closure
 không đồng nhất trong một collection (một `Vec` các route handler — xem
-`05-http-stack/03-router.md`).
+[`05-http-stack/03-router.md`](../05-http-stack/03-router.md)).
 
 ```rust
 fn make_key_extractor(header: &'static str) -> impl Fn(&Request) -> Option<&str> {
@@ -63,7 +63,7 @@ một bước nữa.
 
 ## Practice
 1. Viết lại một vòng `for` viết tay có theo dõi index thủ công trong
-   `labs/01-http-parser` (ví dụ quét tìm `\r\n`) bằng các iterator adapter
+   [`labs/01-http-parser`](../../labs/01-http-parser) (ví dụ quét tìm `\r\n`) bằng các iterator adapter
    (`.position()`, `.windows()`, `.split()`), và so sánh độ dễ đọc với
    phiên bản vòng lặp.
 2. Viết một closure capture một `Arc<Mutex<Stats>>` đã clone và mutate nó
@@ -72,7 +72,7 @@ một bước nữa.
 3. Implement `Iterator` bằng tay cho một type tùy chỉnh (ví dụ một struct
    duyệt qua các chunk của một buffer `Bytes`) và drive nó bằng một vòng
    `for` thông thường để xác nhận việc nối dây `IntoIterator` hoạt động.
-4. Trong `labs/03-router`, lưu các route handler dưới dạng
+4. Trong [`labs/03-router`](../../labs/03-router), lưu các route handler dưới dạng
    `Box<dyn Fn(&Request) -> Response + Send + Sync>` trong một `Vec`, và
    giải thích vì sao `impl Fn` không thể dùng cho kiểu của field đó thay
    vào đó.

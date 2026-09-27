@@ -2,7 +2,7 @@
 
 Epidemic-style state propagation — how a large fleet learns membership and
 health without any central coordinator. Optional/advanced relative to
-`proxy/`; relevant if you run many proxy instances that need to know about
+[`proxy/`](../../proxy); relevant if you run many proxy instances that need to know about
 each other.
 
 ## What to learn
@@ -11,7 +11,7 @@ each other.
 In a gossip protocol each node periodically picks a few random peers and
 exchanges state; information spreads like an infection, reaching the whole
 fleet in `O(log N)` rounds. Crucially it provides *eventual* consistency,
-not the strong agreement of Raft (`18-distributed/01-raft.md`) — nodes may
+not the strong agreement of Raft ([`18-distributed/01-raft.md`](01-raft.md)) — nodes may
 briefly disagree, and that is the deliberate trade for scale and
 partition-tolerance. Consensus is for state that must never diverge;
 gossip is for state where "everyone converges within a few seconds" is
@@ -22,7 +22,7 @@ The canonical use is cluster membership and failure detection — which nodes
 exist and which are alive. This is what Consul, Cassandra, and Serf use
 (all built on SWIM or a variant). For a proxy fleet the payoff is
 decentralized health awareness: instead of every proxy independently
-polling every backend (`06-proxy/03-healthcheck.md`), nodes gossip health
+polling every backend ([`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)), nodes gossip health
 observations, so the fleet converges on "backend X is down" with far less
 total probe traffic.
 
@@ -79,12 +79,12 @@ does not.
    produces a false "dead" verdict; then add SWIM-style indirect probing
    and show it suppresses the false positive.
 3. Compare total probe traffic for fleet health two ways: every proxy
-   polling every backend (`06-proxy/03-healthcheck.md`) vs gossiped health
+   polling every backend ([`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)) vs gossiped health
    observations, as fleet and backend counts grow.
 4. Reason about convergence vs consistency: construct a moment where two
    proxies disagree on a backend's health and decide whether that
    transient disagreement is acceptable for *your* traffic (it usually is
    for load-balancing, not for billing).
-5. Only if you run a multi-instance fleet: wire a SWIM library into `proxy`
+5. Only if you run a multi-instance fleet: wire a SWIM library into [`proxy`](../../proxy)
    for instance membership and observe a killed instance being detected and
    removed — do not implement the protocol yourself.

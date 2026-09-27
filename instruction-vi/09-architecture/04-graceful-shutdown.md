@@ -7,7 +7,7 @@ một khoảng thời gian ân hạn trước `SIGKILL` (thứ không thể bắ
 là một dừng cứng tức thì). Nếu proxy không bắt `SIGTERM` và hành động theo
 nó, nó hoặc chết ngay lập tức giữa chừng request (kết nối bị rớt) hoặc bị
 kill cứng sau khi hết thời gian ân hạn, cùng một kết quả. Xem
-`02-linux/10-signals.md`.
+[`02-linux/10-signals.md`](../02-linux/10-signals.md).
 
 Gotcha: là PID 1 trong một container, các disposition tín hiệu mặc định
 không áp dụng — kernel không kill PID 1 với các tín hiệu nó chưa xử lý
@@ -75,7 +75,7 @@ SIGTERM ──► [ keep serving, ~5-15s ]  ──► stop accepting ──► d
 ```
 
 Gotcha: điều này tương tác với service discovery của chính bạn
-(`06-proxy/07-service-discovery.md`). Nếu proxy tự đăng ký, hủy đăng ký
+([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)). Nếu proxy tự đăng ký, hủy đăng ký
 chủ động như bước drain đầu tiên rút ngắn cửa sổ đó rất nhiều — nhưng nó
 không bao giờ loại bỏ hoàn toàn, vì các thành phần khác vẫn cache
 membership cũ. Giữ khoảng chờ ngay cả khi bạn hủy đăng ký chủ động.
@@ -94,18 +94,18 @@ nên một client với các request in-flight biết chính xác cái nào đã
 chấp nhận và cái nào nó phải retry ở nơi khác. Dạng graceful là hai frame
 `GOAWAY` — một với stream ID tối đa để công bố ý định (để các stream
 in-flight hoàn thành trong khi client ngừng mở stream mới), rồi một cái
-cuối với ID đã-xử-lý-cuối-cùng thật (`01-network/11-http2.md`).
+cuối với ID đã-xử-lý-cuối-cùng thật ([`01-network/11-http2.md`](../01-network/11-http2.md)).
 
 Gotcha: một kết nối keep-alive đang idle là cùng race như xung đột
-close/request của `05-http-stack/04-keepalive.md`, giờ xảy ra trên cả
+close/request của [`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md), giờ xảy ra trên cả
 bảng kết nối của bạn cùng lúc. Công bố (`Connection: close` / `GOAWAY`)
 trước khi đóng là thứ biến "client thấy một reset" thành "client mở một
 kết nối mới ở nơi khác."
 
 ### Kết nối sống lâu cần một chính sách khác
 "Để các request in-flight hoàn thành" giả định các request có hoàn thành.
-Một WebSocket (`05-http-stack/09-websocket.md`), một lệnh gọi gRPC
-server-streaming (`05-http-stack/10-grpc.md`), hoặc một stream SSE có thể
+Một WebSocket ([`05-http-stack/09-websocket.md`](../05-http-stack/09-websocket.md)), một lệnh gọi gRPC
+server-streaming ([`05-http-stack/10-grpc.md`](../05-http-stack/10-grpc.md)), hoặc một stream SSE có thể
 cách hoàn thành hàng phút hoặc hàng giờ, và chờ chúng nghĩa là không bao
 giờ shutdown.
 
@@ -122,7 +122,7 @@ Luôn giới hạn drain bằng một timeout (`tokio::time::timeout`). Một k�
 upstream bị kẹt duy nhất (TCP treo, client kiểu slowloris) không được
 chặn shutdown mãi mãi — sau deadline, hủy các task còn lại và thoát dù
 sao, log những request nào bị cưỡng chế hủy để nó hiển thị trong
-`08-observability/01-logging.md`, không im lặng.
+[`08-observability/01-logging.md`](../08-observability/01-logging.md), không im lặng.
 
 Gotcha: tổng của pre-stop delay cộng drain deadline của bạn phải **ít
 hơn** grace period của orchestrator (`terminationGracePeriodSeconds`, mặc
@@ -135,7 +135,7 @@ số ở hai repository khác nhau và chúng *sẽ* lệch nhau.
 Shutdown không chỉ là kết nối. Bất cứ thứ gì được buffer nhân danh hiệu
 năng là dữ liệu chưa flush lúc thoát:
 - **Buffer log và trace** — writer non-blocking của `tracing_appender` và
-  OTLP batch exporter (`08-observability/03-tracing.md`) đều giữ bản ghi
+  OTLP batch exporter ([`08-observability/03-tracing.md`](../08-observability/03-tracing.md)) đều giữ bản ghi
   trong bộ nhớ. Mất đúng các bản ghi từ cửa sổ shutdown là mất bằng chứng
   cho bất cứ điều gì đã gây ra shutdown.
 - **Metrics** — một lần scrape cuối sẽ không xảy ra, nên bất kỳ chuyển
@@ -143,7 +143,7 @@ năng là dữ liệu chưa flush lúc thoát:
   biết, được chấp nhận với metrics kiểu pull; biết nó tồn tại trước khi
   kết luận một lần deploy gây ra một cú rớt về không.
 - **Kết nối upstream** — đóng các kết nối idle trong pool tường minh
-  (`06-proxy/01-upstream.md`) thay vì để process thoát làm rớt chúng, để
+  ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)) thay vì để process thoát làm rớt chúng, để
   upstream thấy các lần đóng sạch thay vì reset.
 
 Gotcha: thứ tự flush quan trọng — flush telemetry *cuối cùng*, sau khi
@@ -152,7 +152,7 @@ drain hoàn thành, để các event của chính shutdown được bao gồm.
 ## Practice
 Xây theo thứ tự.
 
-1. Đăng ký handler `SIGTERM` và `SIGINT` trong `proxy`, với một tín hiệu
+1. Đăng ký handler `SIGTERM` và `SIGINT` trong [`proxy`](../../proxy), với một tín hiệu
    thứ hai ép thoát ngay lập tức. **Xong khi** `docker stop` kích hoạt
    dòng log drain — xác minh trong khi chạy như PID 1, vì đó là chỗ cái
    bẫy default-disposition sống.
@@ -164,7 +164,7 @@ Xây theo thứ tự.
    **Xong khi** một upstream cố ý treo không ngăn cản việc thoát, và các
    request bị hủy được nêu tên trong log.
 4. Load test trong khi gửi `SIGTERM` giữa test
-   (`12-testing/01-load-testing.md`). **Xong khi** các request in-flight
+   ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)). **Xong khi** các request in-flight
    thấy zero connection reset. Vẫn kỳ vọng thấy lỗi từ các request *mới
    đến* ở giai đoạn này — đó là bước 5.
 5. Thêm pre-stop delay và chạy lại bước 4 đứng sau một load balancer (hoặc
@@ -183,6 +183,6 @@ Xây theo thứ tự.
    các request hoàn thành trong lúc shutdown vẫn tới được backend của
    chúng, và các kết nối upstream trong pool được đóng sạch thay vì bị
    reset.
-9. Nếu bạn đã xây service discovery (`06-proxy/07-service-discovery.md`),
+9. Nếu bạn đã xây service discovery ([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)),
    hủy đăng ký như bước drain đầu tiên. **Xong khi** metrics cho thấy tỷ
    lệ request vào giảm về không *trước khi* listener đóng.

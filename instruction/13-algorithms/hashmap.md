@@ -31,14 +31,14 @@ advice in Rust specifically — it isn't the naive chaining map some other
 languages default to.
 
 ### Hash flooding: an attacker-chosen key space
-A `HashMap<IpAddr, TokenBucket>` (`13-algorithms/token-bucket.md`) or any
+A `HashMap<IpAddr, TokenBucket>` ([`13-algorithms/token-bucket.md`](token-bucket.md)) or any
 map keyed by client-controlled data (headers, query params) has its key
 distribution chosen by whoever sends requests. Against a **non-keyed**
 hash function (FxHash, a raw FNV, anything without a per-process random
 seed), an attacker who knows the hash algorithm can choose inputs that
 all collide, degrading every operation toward the collision-chain
 length — O(n) per lookup instead of O(1), turning a hash map into a
-denial-of-service vector on its own (`07-security/09-ddos.md`).
+denial-of-service vector on its own ([`07-security/09-ddos.md`](../07-security/09-ddos.md)).
 
 Rust's default hasher (SipHash, keyed with a random seed generated per
 process at startup) is specifically DoS-resistant against this: without
@@ -59,11 +59,11 @@ a free win once client-controlled keys are involved.
    set of inputs that all map to the same bucket, and measure a chaining
    map's lookup degrade toward O(n). Confirm Rust's default `HashMap`
    with the same crafted inputs does not degrade the same way.
-3. In `labs/11-rate-limit`, benchmark the per-IP bucket map with the
+3. In [`labs/11-rate-limit`](../../labs/11-rate-limit), benchmark the per-IP bucket map with the
    default `HashMap` hasher versus `ahash`/`FxHash`; then repeat step 2's
    flooding attempt against the faster-hasher version specifically to see
    whether it's still resistant.
-4. Audit `proxy/`'s maps (or design them, if not yet written) and
+4. Audit [`proxy/`](../../proxy)'s maps (or design them, if not yet written) and
    classify each by whether its keys are trusted (internal config) or
    untrusted (client-derived) — decide the hasher for each based on that,
    not on benchmark speed alone.

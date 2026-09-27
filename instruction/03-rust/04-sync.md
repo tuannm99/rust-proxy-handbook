@@ -66,7 +66,7 @@ Tokio's `mpsc`/`broadcast`/`watch` channels let you replace a shared
 `Mutex<State>` with a single task owning the state and everyone else sending
 it messages — no lock contention, no deadlock risk from lock ordering. Use
 `tokio::sync::watch` in particular for "latest value, many readers" data
-like a live-reloaded config (`09-architecture/03-config.md`); use shared
+like a live-reloaded config ([`09-architecture/03-config.md`](../09-architecture/03-config.md)); use shared
 `RwLock`/`Arc` when the data is large and cloning it per update would be
 wasteful (e.g. a big routing table).
 
@@ -84,9 +84,12 @@ the first two escape hatches to reach for.
    `tokio::sync::Mutex` and again by restructuring to drop the guard first.
 3. Replace a counter protected by `Mutex<u64>` with `AtomicU64` and confirm
    with a quick benchmark that it's faster under contention.
-4. In `labs/05-reverse-proxy`, decide whether your upstream pool
+4. In [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), decide whether your upstream pool
    is `Arc<RwLock<Vec<Upstream>>>` or owned by one task and accessed via a
    `tokio::sync::watch` channel — implement one, and write a sentence on why
    you didn't pick the other.
 5. Deliberately construct a two-lock deadlock (task A locks X then Y, task B
-   locks Y then X) and then fix it by establishing a consistent lock order.
+   locks Y then X) and then fix it by establishing a consistent lock order —
+   for the formal theory behind why this works (and the classical
+   producer-consumer/readers-writers problems `Mutex`/`RwLock`/channels are
+   solving), see [`22-theory/01-deadlock.md`](../22-theory/01-deadlock.md) and [`22-theory/02-sync-classics.md`](../22-theory/02-sync-classics.md).

@@ -1,14 +1,14 @@
 # Slab Allocator
 
 Fixed-size-class allocation: the allocator-level answer to fragmentation.
-`13-algorithms/slab.md` covers the Rust data structure you write; this file
+[`13-algorithms/slab.md`](../13-algorithms/slab.md) covers the Rust data structure you write; this file
 covers the allocation strategy underneath it.
 
 ## What to learn
 
 ### The idea
 A general-purpose allocator must serve any size, which is what makes it
-vulnerable to fragmentation (`14-memory/06-fragmentation.md`). A slab
+vulnerable to fragmentation ([`14-memory/06-fragmentation.md`](06-fragmentation.md)). A slab
 allocator gives up generality: it serves exactly one object size, from
 pre-carved regions ("slabs") divided into equal slots.
 
@@ -19,7 +19,7 @@ That restriction buys three things at once:
   no coalescing, no splitting.
 - **Cache locality.** Objects of the same type are contiguous, so iterating
   active connections touches consecutive cache lines (the CPU-cache side of
-  this is covered in `17-performance/01-cpu-cache.md`).
+  this is covered in [`17-performance/01-cpu-cache.md`](../17-performance/01-cpu-cache.md)).
 
 This originated in the Solaris kernel and is how Linux allocates its own
 fixed-size objects (`task_struct`, inodes, socket buffers) — the same
@@ -32,7 +32,7 @@ partial, empty — and allocation prefers a *partial* slab, so partly-used
 slabs fill up rather than every slab staying half-empty. Empty slabs are
 the only ones that can be returned to the OS.
 
-As in `13-algorithms/slab.md`, the free list threads through the free slots
+As in [`13-algorithms/slab.md`](../13-algorithms/slab.md), the free list threads through the free slots
 themselves, so it costs no extra memory.
 
 Gotcha: allocate from partial slabs first, and free-list order matters more
@@ -61,12 +61,12 @@ and it appears as steadily growing memory rather than as a crash.
 ### Where this actually belongs in a proxy
 You almost certainly should not write a global slab allocator. jemalloc and
 mimalloc already implement size-class allocation with per-CPU caches, and
-swapping the global allocator (`02-linux/09-memory.md`) gets you most of the
+swapping the global allocator ([`02-linux/09-memory.md`](../02-linux/09-memory.md)) gets you most of the
 benefit for one line of code.
 
 What is worth hand-rolling is a **typed pool** for the few objects
 allocated once per connection or once per request — connection state and
-I/O buffers (dedicated buffer pooling is planned in `14-memory/00-README.md`).
+I/O buffers (dedicated buffer pooling is planned in [`14-memory/00-README.md`](00-README.md)).
 Those are known-size, high-churn, and long-lived enough that pooling them
 removes the allocator from the hot path entirely, which is a different and
 larger win than making allocation cheaper.
@@ -83,7 +83,7 @@ An unbounded pool converts a traffic spike into a permanent memory
 high-water mark. Cap the pool size and let allocations past the cap fall
 through to the global allocator (degrade in performance, not in
 correctness), and export the pool's size and hit rate as metrics
-(`08-observability/02-metrics.md`) so the cap is tuned from data.
+([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)) so the cap is tuned from data.
 
 ## Practice
 1. Implement a single-size-class slab allocator: carve a page into slots,
@@ -99,6 +99,6 @@ correctness), and export the pool's size and hit rate as metrics
 5. Reproduce the cross-thread imbalance: allocate on one thread and free on
    another in a loop, and watch total memory grow. Then add a flush or
    remote-free path and confirm it stabilizes.
-6. Build a bounded, typed buffer pool for `proxy`'s per-connection read
+6. Build a bounded, typed buffer pool for [`proxy`](../../proxy)'s per-connection read
    buffers with reset-on-release, and export size/hit-rate metrics. Compare
    allocation counts under load with and without it.

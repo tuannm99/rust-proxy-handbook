@@ -25,7 +25,7 @@ Compiler biến thân của một `async fn` thành một struct vô danh implem
 variant giữ đúng những local variable còn cần thiết sau điểm đó. Đây là lý
 do vì sao kích thước của future được cố định tại compile time và vì sao
 các local được giữ qua `.await` phải thỏa mọi bound mà future cần (thường
-là `Send`, nếu bạn định `tokio::spawn` nó) — xem `03-rust/02-lifetimes.md`
+là `Send`, nếu bạn định `tokio::spawn` nó) — xem [`03-rust/02-lifetimes.md`](02-lifetimes.md)
 để biết điều gì bị vỡ khi một borrow là một trong các local-được-giữ-qua-
 await đó.
 
@@ -71,7 +71,7 @@ tokio::select! {
 Gotcha: một future bị drop không có nghĩa là thao tác ở mức OS bên dưới
 (ví dụ một syscall write đang bay) bị hoàn tác — cancellation là hợp tác
 (cooperative) ở mức Rust, không phải ở mức kernel. Xem
-`06-proxy/05-retry.md` để biết điều này nghĩa là gì với tính an toàn của
+[`06-proxy/05-retry.md`](../06-proxy/05-retry.md) để biết điều này nghĩa là gì với tính an toàn của
 retry (idempotency).
 
 ## Practice
@@ -93,5 +93,5 @@ retry (idempotency).
 5. Trong cùng scratch executor đó, implement một `Waker` (qua
    `std::task::Wake` hoặc `RawWakerVTable`) và một executor với một
    run-queue duy nhất chỉ poll một task khi waker của nó được gọi — đây là
-   cơ chế mà cả `04-runtime/02-waker.md` lẫn reactor của tokio đều xây
+   cơ chế mà cả [`04-runtime/02-waker.md`](../04-runtime/02-waker.md) lẫn reactor của tokio đều xây
    dựng trên đó.

@@ -9,11 +9,11 @@ Listener -> ConnMgr -> Codec -> Router -> Modules
 - **ConnMgr (connection manager)**: theo dõi các kết nối đang sống, áp
   đặt giới hạn/timeout theo từng kết nối, điều khiển graceful shutdown
   (ngừng nhận kết nối mới, để các kết nối hiện có drain — xem
-  `09-architecture/04-graceful-shutdown.md`).
+  [`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)).
 - **Codec**: biến byte thành các giá trị `Request`/`Response` có kiểu và
   ngược lại (parsing HTTP/1.1, framing HTTP/2) — đây là chỗ hyper nằm nếu
   bạn dùng nó, hoặc parser của riêng bạn nếu bạn đã làm
-  `labs/01-http-parser`.
+  [`labs/01-http-parser`](../../labs/01-http-parser).
 - **Router**: khớp một request với một đích — một upstream pool cụ thể,
   hoặc một handler cục bộ (health endpoint, metrics endpoint). Logic quyết
   định thuần túy, không I/O.
@@ -23,23 +23,23 @@ Listener -> ConnMgr -> Codec -> Router -> Modules
   sớm).
 
 ### Thứ tự module là một quyết định bảo mật, không phải sở thích
-Rải rác khắp `07-security/` và `05-http-stack/` là các ràng buộc về thứ tự
+Rải rác khắp [`07-security/`](../07-security) và [`05-http-stack/`](../05-http-stack) là các ràng buộc về thứ tự
 mà mỗi cái trông có vẻ cục bộ và cùng nhau định nghĩa pipeline. Gom lại:
 
 | Vị trí | Stage | Vì sao ở đây |
 | --- | --- | --- |
-| 1 | Giới hạn kết nối/accept | Reject rẻ nhất có thể, trước bất kỳ parsing nào (`07-security/09-ddos.md`) |
-| 2 | Lọc IP trên peer thật | Trước bất cứ thứ gì đắt; dùng địa chỉ socket, không phải header (`07-security/08-ip-filtering.md`) |
-| 3 | TLS termination | Reject client-cert nên xảy ra lúc handshake, không phải sau đó (`07-security/01-auth.md`) |
-| 4 | Codec / parse | Kiểm tra framing và reject smuggling (`07-security/05-request-smuggling.md`) |
-| 5 | **Strip header hop-by-hop và identity** | Phải xảy ra trước khi bất cứ thứ gì đọc chúng (`05-http-stack/04-keepalive.md`, `07-security/01-auth.md`) |
-| 6 | Chuẩn hóa path | Trước routing, nếu không routing quyết định trên một path khác với cái upstream thấy (`05-http-stack/03-router.md`) |
+| 1 | Giới hạn kết nối/accept | Reject rẻ nhất có thể, trước bất kỳ parsing nào ([`07-security/09-ddos.md`](../07-security/09-ddos.md)) |
+| 2 | Lọc IP trên peer thật | Trước bất cứ thứ gì đắt; dùng địa chỉ socket, không phải header ([`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)) |
+| 3 | TLS termination | Reject client-cert nên xảy ra lúc handshake, không phải sau đó ([`07-security/01-auth.md`](../07-security/01-auth.md)) |
+| 4 | Codec / parse | Kiểm tra framing và reject smuggling ([`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md)) |
+| 5 | **Strip header hop-by-hop và identity** | Phải xảy ra trước khi bất cứ thứ gì đọc chúng ([`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md), [`07-security/01-auth.md`](../07-security/01-auth.md)) |
+| 6 | Chuẩn hóa path | Trước routing, nếu không routing quyết định trên một path khác với cái upstream thấy ([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)) |
 | 7 | Routing | Cần để biết chính sách *nào* áp dụng cho phần còn lại |
-| 8 | Rate limiting theo route | Reject rẻ trước công việc đắt (`07-security/07-ratelimit.md`) |
+| 8 | Rate limiting theo route | Reject rẻ trước công việc đắt ([`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md)) |
 | 9 | Auth | Trước khi kiểm tra body và trước bất kỳ chi phí upstream nào |
-| 10 | WAF / kiểm tra body | Kiểm tra đắt nhất, chạy cuối và chỉ cho traffic đã xác thực, không bị rate-limit (`07-security/06-waf.md`) |
-| 11 | Tra cứu cache | Trước lệnh gọi upstream, sau auth (nếu không bạn phục vụ response của người này cho người khác — `05-http-stack/07-cache.md`) |
-| 12 | Lệnh gọi upstream | Load balancing, retry, circuit breaking (`06-proxy/`) |
+| 10 | WAF / kiểm tra body | Kiểm tra đắt nhất, chạy cuối và chỉ cho traffic đã xác thực, không bị rate-limit ([`07-security/06-waf.md`](../07-security/06-waf.md)) |
+| 11 | Tra cứu cache | Trước lệnh gọi upstream, sau auth (nếu không bạn phục vụ response của người này cho người khác — [`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)) |
+| 12 | Lệnh gọi upstream | Load balancing, retry, circuit breaking ([`06-proxy/`](../06-proxy)) |
 
 Logging và metrics bọc quanh toàn bộ, vì chúng phải quan sát các request bị
 reject ở mọi stage phía trên.
@@ -73,7 +73,7 @@ Gotcha: `Service::poll_ready` là cơ chế backpressure của tower và nó
 thường xuyên bị bỏ qua. Một service trả `Poll::Pending` từ `poll_ready`
 đang nói "tôi đã đầy capacity, đừng gửi request cho tôi vội" — đó là cách
 một giới hạn concurrency lan truyền *ngược lại* qua stack thay vì xếp hàng
-nội bộ (lập luận shed-vs-queue của `07-security/09-ddos.md`). Một module
+nội bộ (lập luận shed-vs-queue của [`07-security/09-ddos.md`](../07-security/09-ddos.md)). Một module
 luôn trả `Ready` và tự buffer nội bộ đã âm thầm biến backpressure thành bộ
 nhớ không giới hạn.
 
@@ -122,9 +122,9 @@ thành một crash toàn process, thay đổi hoàn toàn phép tính này. Bi�
 Một hàm handler khổng lồ duy nhất hoạt động cho một đồ chơi nhưng trở nên
 không test được và không đọc được một khi bạn có 5+ mối quan tâm cắt
 ngang. Chia thành Listener/ConnMgr/Codec/Router/Modules nghĩa là mỗi mảnh
-ánh xạ tới một phần handbook (`01-network`, `04-runtime`, `05-http-stack`,
-`06-proxy`, `07-security`) và có thể được xây/test độc lập trước khi ghép
-lại trong `proxy`.
+ánh xạ tới một phần handbook ([`01-network`](../01-network), [`04-runtime`](../04-runtime), [`05-http-stack`](../05-http-stack),
+[`06-proxy`](../06-proxy), [`07-security`](../07-security)) và có thể được xây/test độc lập trước khi ghép
+lại trong [`proxy`](../../proxy).
 
 ### Luồng dữ liệu qua pipeline
 Vào: `TcpStream` → (giải mã TLS) → Codec decode → `Request` chảy qua stack
@@ -138,20 +138,20 @@ chạy theo thứ tự ngược với công việc phía-request của nó, thư
 điều bạn muốn (module logging ngoài cùng thấy status cuối cùng) và thỉnh
 thoảng không phải (compression phải chạy *bên trong* caching, để cache lưu
 một biểu diễn mà nó có thể re-serve cho một client khác thay vì một cái đã
-nén không thể — `05-http-stack/06-compression.md`,
-`05-http-stack/07-cache.md`). Ghi rõ thứ tự đường đi response; đừng giả
+nén không thể — [`05-http-stack/06-compression.md`](../05-http-stack/06-compression.md),
+[`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)). Ghi rõ thứ tự đường đi response; đừng giả
 định nó tự nhiên đúng.
 
 Gotcha: một response dạng streaming nghĩa là response "đi qua" các module
 trước khi body được tạo ra. Một module muốn kiểm tra hoặc biến đổi body
-đang chọn buffer nó (thảo luận về giới hạn trong `07-security/06-waf.md`)
+đang chọn buffer nó (thảo luận về giới hạn trong [`07-security/06-waf.md`](../07-security/06-waf.md))
 — và một module chỉ muốn status code không được vô tình ép buffer bằng
 cách await toàn bộ body.
 
 ## Practice
 Xây theo thứ tự.
 
-1. Phác thảo pipeline cho `proxy` — module, thứ tự, và lý do — dựa trên
+1. Phác thảo pipeline cho [`proxy`](../../proxy) — module, thứ tự, và lý do — dựa trên
    bảng ở trên. **Xong khi** bạn có thể biện minh cho mỗi vị trí bằng một
    failure cụ thể nó ngăn chặn, không phải từ quy ước.
 2. Cài đặt Router và một module (rate limiting) như các cài đặt
@@ -169,7 +169,7 @@ Xây theo thứ tự.
    tạo ra một 500 rõ ràng với một giải thích được log thay vì một panic.
 6. Cài đặt backpressure dựa trên `poll_ready` trong một module giới hạn
    concurrency. **Xong khi** quá tải khiến stack shed
-   (`07-security/09-ddos.md`) thay vì buffer — đo bộ nhớ dưới quá tải kéo
+   ([`07-security/09-ddos.md`](../07-security/09-ddos.md)) thay vì buffer — đo bộ nhớ dưới quá tải kéo
    dài để chứng minh không có gì đang xếp hàng vô hình.
 7. Thêm việc chặn panic ở biên pipeline. **Xong khi** một module panic
    trên một request trả 500 cho request đó và các request pipelined
@@ -179,5 +179,5 @@ Xây theo thứ tự.
    minh một entry đã cache có thể phục vụ cho các client với
    `Accept-Encoding` khác nhau.
 9. Thêm graceful shutdown ở lớp ConnMgr
-   (`09-architecture/04-graceful-shutdown.md`). **Xong khi** các request
+   ([`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)). **Xong khi** các request
    in-flight hoàn thành trước khi thoát.

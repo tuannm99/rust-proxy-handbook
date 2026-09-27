@@ -1,7 +1,7 @@
 # Outlier Detection
 
 Quyết định một upstream tồi từ traffic bạn đã đang gửi cho nó, thay vì từ
-một probe chuyên dụng. `06-proxy/03-healthcheck.md` bao quát active
+một probe chuyên dụng. [`06-proxy/03-healthcheck.md`](03-healthcheck.md) bao quát active
 probing; file này bao quát nửa passive và phần damping giữ cho cả hai
 không gây hại nhiều hơn chính bản thân failure.
 
@@ -26,10 +26,10 @@ tính 4xx vào ngưỡng failure cho phép một client với một URL scheme h
 đánh dấu toàn bộ hạm đội của bạn unhealthy. Chỉ tính connection error,
 timeout, và 5xx — và hãy có chủ đích với 503, thứ thường có nghĩa là
 "upstream này đang chủ động shed load"
-(`07-security/11-load-shedding.md`) chứ không phải "hỏng".
+([`07-security/11-load-shedding.md`](../07-security/11-load-shedding.md)) chứ không phải "hỏng".
 
 Gotcha: đây là cùng câu hỏi phân loại failure như điều kiện trip của
-`06-proxy/06-circuit-breaker.md`, và cả hai nên đồng thuận. Một upstream
+[`06-proxy/06-circuit-breaker.md`](06-circuit-breaker.md), và cả hai nên đồng thuận. Một upstream
 có circuit mở nhưng vẫn được passive health checking coi là healthy sẽ
 tạo ra các quyết định routing mâu thuẫn.
 
@@ -60,7 +60,7 @@ Passive detection ở quy mô lớn có thể loại bỏ nhanh hơn bạn đị
 dependency dùng chung trục trặc thoáng qua, mọi upstream fail vài request
 cùng lúc, và các ngưỡng trip trên toàn bộ pool đồng thời. Đó cùng hình
 dạng correlated-failure như một deep health check
-(`06-proxy/03-healthcheck.md`), đến từ một con đường khác.
+([`06-proxy/03-healthcheck.md`](03-healthcheck.md)), đến từ một con đường khác.
 
 Câu trả lời của Envoy là `max_ejection_percent` — không bao giờ eject
 nhiều hơn một phần cấu hình của pool, bất kể tín hiệu nói gì. Dưới phần
@@ -70,7 +70,7 @@ nằm ở các host.
 ### Slow start: cuộc stampede hồi phục
 Một upstream vừa trở lại healthy có 0 kết nối active, điều làm nó trở
 thành ứng viên hấp dẫn nhất cho least-connection balancing
-(`06-proxy/02-load-balancer.md`) và cho bất kỳ consistent-hash ring nào
+([`06-proxy/02-load-balancer.md`](02-load-balancer.md)) và cho bất kỳ consistent-hash ring nào
 vừa thêm lại nó. Nó nhận một đợt bùng nổ traffic không cân xứng trong vài
 giây đầu sau khi hồi phục — vào một process với cache nguội, connection
 pool rỗng, và một JIT/page cache chưa được làm nóng — và thường xuyên sập
@@ -84,7 +84,7 @@ healthy, tăng dần weight hiệu dụng của nó từ gần-0 lên weight c�
 này.
 
 Gotcha: cùng ramp đó áp dụng cho một upstream *mới được thêm* từ service
-discovery (`06-proxy/07-service-discovery.md`), không chỉ một cái vừa hồi
+discovery ([`06-proxy/07-service-discovery.md`](07-service-discovery.md)), không chỉ một cái vừa hồi
 phục — một instance vừa scale-out cũng nguội theo đúng cách y hệt, và
 routing least-connection thấy nó hấp dẫn không kém.
 
@@ -104,7 +104,7 @@ ngay bây giờ.
 ## Practice
 Xây theo thứ tự.
 
-1. Trong `labs/05-reverse-proxy`, thêm passive health checking trên các
+1. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), thêm passive health checking trên các
    lỗi request thật, chỉ đếm connection error, timeout, và 5xx. **Xong
    khi** một load test nhắm vào một upstream đã bị kill đánh dấu nó down
    trong dưới một active probe interval, và một test gửi 1000 request tới
@@ -127,6 +127,6 @@ Xây theo thứ tự.
 6. Xác minh flap đã biến mất. **Xong khi** flap hồi phục từ bước 2 biến
    mất dưới một load test đẩy upstream gần giới hạn capacity của nó.
 7. Áp dụng ramp cho các upstream mới được phát hiện nữa
-   (`06-proxy/07-service-discovery.md`). **Xong khi** thêm một instance
+   ([`06-proxy/07-service-discovery.md`](07-service-discovery.md)). **Xong khi** thêm một instance
    giữa lúc load test cho nó một ramp thay vì một phần đầy đủ ngay lập
    tức.

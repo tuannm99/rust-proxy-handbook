@@ -54,7 +54,7 @@ expose service registry của họ *như là* DNS — một `A` record trả v�
 IP, hoặc thay đổi theo thời gian khi pod/instance đến và đi. Một proxy
 re-resolve định kỳ và hoán đổi tập upstream của nó một cách atomic có được
 service discovery động cơ bản gần như miễn phí; xem
-`06-proxy/07-service-discovery.md` để biết việc hoán đổi đó cần diễn ra
+[`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md) để biết việc hoán đổi đó cần diễn ra
 thế nào mà không làm rớt request đang xử lý dở.
 
 ## Practice
@@ -64,11 +64,11 @@ thế nào mà không làm rớt request đang xử lý dở.
    của một recursive resolver).
 2. Viết một chương trình Rust độc lập nhỏ dùng `hickory-resolver` (async)
    resolve một hostname thành nhiều record `A` và in ra TTL của chúng.
-3. Trong `labs/05-reverse-proxy`, resolve hostname upstream thay vì
+3. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), resolve hostname upstream thay vì
    hardcode IP, và re-resolve theo một timer tôn trọng TTL của record.
 4. Mô phỏng một thay đổi IP backend: trỏ một hostname tới IP A, khởi động
    proxy của bạn, rồi đổi DNS sang IP B. Đo xem proxy của bạn mất bao lâu
    để nhận ra, và có request nào thất bại trong lúc chuyển đổi không.
-5. Đọc `06-proxy/07-service-discovery.md` và ghi chú phần nào trong đó
+5. Đọc [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md) và ghi chú phần nào trong đó
    cách tiếp cận dựa trên DNS ở bước 3 của bạn đã thỏa mãn, phần nào vẫn
    còn cần.

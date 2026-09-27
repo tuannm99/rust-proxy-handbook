@@ -1,9 +1,9 @@
 # Containers: Namespaces and cgroups
 
-Part of the from-scratch fundamentals series — see `02-linux/01-fundamentals.md`
+Part of the from-scratch fundamentals series — see [`02-linux/01-fundamentals.md`](01-fundamentals.md)
 for the full index. Kubernetes, pods, and containers get referenced
-constantly from `09-architecture/` onward and in several `07-security/`
-and `08-observability/` gotchas — this file is where "what actually *is*
+constantly from [`09-architecture/`](../09-architecture) onward and in several [`07-security/`](../07-security)
+and [`08-observability/`](../08-observability) gotchas — this file is where "what actually *is*
 a container" gets answered, since nothing else in the handbook stops to
 define it.
 
@@ -31,7 +31,7 @@ each isolating one category of global system state:
   — this is *why* two containers can each bind port 8080 without
   conflicting: they're in different network namespaces, so from the
   kernel's point of view those are two unrelated "port 8080"s
-  (`01-network/02-addressing.md`'s ports are namespace-local, not truly
+  ([`01-network/02-addressing.md`](../01-network/02-addressing.md)'s ports are namespace-local, not truly
   global, once namespaces are involved).
 - **Mount namespace** — a container sees its own filesystem root,
   layered from an image, distinct from the host's actual filesystem.
@@ -47,10 +47,10 @@ Namespaces limit *visibility*; **cgroups** (control groups) limit
 *consumption* — CPU time, memory, I/O bandwidth — for a group of
 processes, enforced by the kernel regardless of what those processes
 think they're allowed to do. This is the direct mechanism behind
-`02-linux/09-memory.md`'s cgroup-memory-limit gotcha and every
+[`02-linux/09-memory.md`](09-memory.md)'s cgroup-memory-limit gotcha and every
 "OOM-killed in Kubernetes" incident: a container's memory limit is a
 cgroup limit, enforced against **RSS** (resident, physically-backed
-memory — the actual consequence of `04-memory-basics.md`'s
+memory — the actual consequence of [`04-memory-basics.md`](04-memory-basics.md)'s
 virtual-vs-physical distinction), not against however much virtual
 memory your process merely *reserved*.
 
@@ -63,7 +63,7 @@ A process that's allocated (reserved) far more virtual memory than its
 cgroup limit is completely fine — right up until it actually *writes* to
 enough of those pages that RSS crosses the limit, at which point the
 kernel's OOM killer ends the process abruptly, often with no warning your
-own code can catch. This is precisely the scenario `02-linux/09-memory.md`
+own code can catch. This is precisely the scenario [`02-linux/09-memory.md`](09-memory.md)
 warns about for a proxy that pre-allocates large buffer pools.
 
 ### A pod is a shared set of namespaces
@@ -73,7 +73,7 @@ deployment — one or more containers that *share* a network namespace
 (and therefore an IP address and port space) while keeping separate mount
 namespaces (separate filesystems) and separate cgroup limits. This is
 precisely the mechanism a **sidecar proxy**
-(`01-network/05-proxy-taxonomy.md`) relies on: the sidecar and the
+([`01-network/05-proxy-taxonomy.md`](../01-network/05-proxy-taxonomy.md)) relies on: the sidecar and the
 application container are different processes, isolated from each other
 in most ways, but share one network namespace, so the sidecar can
 transparently intercept the application's traffic on `localhost` without
@@ -82,14 +82,14 @@ any special networking trick.
 ### Why this matters for a proxy
 A proxy running inside a container inherits every one of these limits
 whether or not its own code is aware of them: its fd limit
-(`03-kernel-and-syscalls.md`) may be capped tighter by the container
+([`03-kernel-and-syscalls.md`](03-kernel-and-syscalls.md)) may be capped tighter by the container
 runtime than the host default, its visible CPU count may not match the
 host's physical core count (cgroup CPU limits can present as fractional
 cores — `nproc` inside a container can lie about what's actually
 available, which matters directly for sizing a tokio worker-thread pool),
 and its memory behavior is governed by RSS-against-cgroup-limit as
 described above, not by whatever `ulimit` or the process's own accounting
-believes. None of `09-architecture/`'s deployment content (rolling
+believes. None of [`09-architecture/`](../09-architecture)'s deployment content (rolling
 restarts, graceful shutdown timing against `terminationGracePeriodSeconds`)
 makes full sense without this namespace/cgroup picture underneath it.
 

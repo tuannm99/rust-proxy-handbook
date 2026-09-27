@@ -1,10 +1,10 @@
 # quinn
 
-QUIC/HTTP-3 implementation, relevant once `01-network/12-http3.md` is in
+QUIC/HTTP-3 implementation, relevant once [`01-network/12-http3.md`](../../01-network/12-http3.md) is in
 scope.
 
-Not written yet. Read this project after `proxy/` works, not before — see
-`19-reading-source/00-README.md` for why, and for the per-project template.
+Not written yet. Read this project after [`proxy/`](../../../proxy) works, not before — see
+[`19-reading-source/00-README.md`](../00-README.md) for why, and for the per-project template.
 
 Planned files:
 

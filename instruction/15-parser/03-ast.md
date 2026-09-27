@@ -1,7 +1,7 @@
 # AST
 
 The tree a parser produces, and the question of whether you need one at
-all. Follows `15-parser/02-parser.md`.
+all. Follows [`15-parser/02-parser.md`](02-parser.md).
 
 ## What to learn
 
@@ -30,7 +30,7 @@ The central decision. Two valid answers:
 
 - **Parse directly into the target struct.** The parser's actions build
   your `Config`/`Request` as it goes; there is no intermediate tree. This
-  is what `05-http-stack/01-parser.md` does — a parsed HTTP request *is* the
+  is what [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) does — a parsed HTTP request *is* the
   useful structure, and interposing an AST would be pure overhead. Choose
   this when the parsed form is the form you use.
 - **Build an AST first, then process it.** Choose this when the same parsed
@@ -38,7 +38,7 @@ The central decision. Two valid answers:
   then resolve references, then lower to a runtime form. A config that
   supports `include` directives, variable interpolation, or defaults
   inherited from a parent block is far cleaner as a tree you walk (see
-  `15-parser/04-visitor.md`) than as something assembled in one pass.
+  [`15-parser/04-visitor.md`](04-visitor.md)) than as something assembled in one pass.
 
 The failure mode is building an AST reflexively because tutorials do. If
 there is exactly one consumer and one pass, the AST is a layer of
@@ -46,8 +46,8 @@ indirection that buys nothing.
 
 ### Arena trees: the Rust-idiomatic shape
 A tree of `Box`ed nodes with parent pointers fights the borrow checker
-(`03-rust/01-ownership.md`) and fragments the heap. The idiomatic answer,
-identical to the trick in `13-algorithms/lru.md`, is to store all nodes in
+([`03-rust/01-ownership.md`](../03-rust/01-ownership.md)) and fragments the heap. The idiomatic answer,
+identical to the trick in [`13-algorithms/lru.md`](../13-algorithms/lru.md), is to store all nodes in
 one `Vec` and link them by `usize` index:
 
 ```rust
@@ -63,12 +63,12 @@ compiler will not catch — bound their lifetime to the arena's.
 ### Spans: keep the source location on every node
 Attach the byte range each node came from. Semantic errors found *after*
 parsing ("upstream `web` referenced here was never defined") can then point
-at the exact line, just like the lexer's errors (`15-parser/01-lexer.md`). A
+at the exact line, just like the lexer's errors ([`15-parser/01-lexer.md`](01-lexer.md)). A
 tree without spans forces every later error to say only "somewhere in your
 config."
 
 ## Practice
-1. For the config grammar from `15-parser/02-parser.md`, decide explicitly
+1. For the config grammar from [`15-parser/02-parser.md`](02-parser.md), decide explicitly
    whether to parse straight into your `Config` struct or via an AST —
    write down the reason. If the format has no includes or interpolation,
    the honest answer is usually "no AST."
@@ -80,6 +80,6 @@ config."
 4. Attach a source span to every node and produce one post-parse semantic
    error ("duplicate `listen` directive") that points at the offending
    line.
-5. Contrast this with `05-http-stack/01-parser.md`: articulate why an HTTP
+5. Contrast this with [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md): articulate why an HTTP
    request is parsed directly into a struct with no AST, and what would
    have to change about the problem for a tree to be worth it.
