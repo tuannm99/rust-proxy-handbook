@@ -28,8 +28,21 @@ bài tập đánh số, độ khó tăng dần, xây dựng dần các kỹ năn
 Mỗi topic trong handbook có mục `## Practice` trỏ tới một crate cụ thể
 trong [`labs/`](../../labs) hoặc [`proxy/`](../../proxy).
 
+## Files
+
+- [`01-learning-roadmap.md`](01-learning-roadmap.md) — các phase, những gì bạn nên *làm được* sau mỗi phase, và bản đồ đọc/code theo từng lab
+- [`02-prerequisites.md`](02-prerequisites.md) — phase 0: phần tự kiểm tra, và lộ trình từ số 0 về Rust/networking/OS tới sẵn sàng cho lab 00
+- [`03-study-loop.md`](03-study-loop.md) — vòng lặp mỗi lab (đọc, build, chứng minh, được review, so với production), một timeline thực tế, contribute open source nằm ở đâu
+
+Bắt đầu bằng phần tự kiểm tra của [`02-prerequisites.md`](02-prerequisites.md) nếu bạn không chắc
+mình đã sẵn sàng; đằng nào cũng đọc [`03-study-loop.md`](03-study-loop.md) một lần trước lab
+đầu tiên.
+
 ## Cách dùng handbook này
 
+0. Làm phần tự kiểm tra trong [`02-prerequisites.md`](02-prerequisites.md) trước. Nếu lộ ra lỗ
+   hổng về Rust cơ bản, lấp chúng trước mọi thứ bên dưới — handbook này
+   không dạy syntax Rust.
 1. Đi qua các thư mục gần đúng theo thứ tự số — [`06-proxy`](../06-proxy) giả định bạn đã
    qua [`04-runtime`](../04-runtime) và [`05-http-stack`](../05-http-stack), chứ không chỉ "có chút kinh nghiệm
    Rust".
@@ -38,8 +51,8 @@ trong [`labs/`](../../labs) hoặc [`proxy/`](../../proxy).
    rồi mới bắt đầu code — các crate trong [`labs/`](../../labs) và [`proxy/`](../../proxy) mới là nơi
    khái niệm thực sự đọng lại.
 3. Dùng [`21-reading-list/`](../21-reading-list) như tài liệu đọc thêm song song, không phải điều
-   kiện tiên quyết — không có gì trong `01`-`09` yêu cầu bạn phải đọc sách
-   trước.
+   kiện tiên quyết — ngoài phần Rust cơ bản trong [`02-prerequisites.md`](02-prerequisites.md),
+   không có gì trong `01`-`09` yêu cầu bạn phải đọc sách trước.
 4. Coi [`12-testing/`](../12-testing) là bài tập chạy *sau khi* dự án đã chạy được, không
    phải trước — bạn cần một proxy đang chạy để load-test hoặc fuzz nó.
 

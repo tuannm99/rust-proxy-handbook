@@ -10,6 +10,7 @@ phase trước đó có thực sự hoạt động hay không.
 - [`02-fuzzing.md`](02-fuzzing.md) — fuzz parser và bất kỳ input nào lộ ra phía kẻ tấn công
 - [`03-chaos.md`](03-chaos.md) — tiêm lỗi upstream, latency, và xuống cấp một phần
 - [`04-ci-tooling.md`](04-ci-tooling.md) — clippy, miri, sanitizer, và cái gì nên chặn merge
+- [`05-debugging.md`](05-debugging.md) — `tracing`, `curl -v`/`nc`/`ss`/`tcpdump`, `strace`, `tokio-console`, debugger, flamegraph, heap profiler — bộ công cụ thu thập bằng chứng. Khác với bốn file còn lại, hữu ích ngay từ [`labs/00-tcp-server`](../../labs/00-tcp-server), không chỉ khi [`proxy/`](../../proxy) đã tồn tại
 
 ## Đi tới đâu
 

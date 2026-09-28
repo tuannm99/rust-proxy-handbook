@@ -1,7 +1,8 @@
 # hyper
 
-Thư viện HTTP mà [`labs/02-http-server`](../../../labs/02-http-server) trở đi được xây trên đó. Chưa được
-viết.
+Thư viện HTTP mà [`labs/02-http-server`](../../../labs/02-http-server) trở đi được xây trên đó. Theo
+[`reading-guide.md`](reading-guide.md) để có lộ trình đi qua source HTTP/1; các file notes
+liệt kê bên dưới là để bạn tự viết trong lúc theo guide.
 
 Ngoại lệ đọc sớm còn lại: đọc codec `h1` ngay sau khi hoàn thành parser
 của riêng bạn ([`05-http-stack/01-parser.md`](../../05-http-stack/01-parser.md), Practice bước 8) và diff cách

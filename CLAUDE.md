@@ -44,7 +44,7 @@ nginx/Envoy/HAProxy. It has two halves:
 Numbered top-level directories form the learning path, in order:
 
 ```
-instruction/00-introduction/   overview + roadmap
+instruction/00-introduction/   overview, roadmap, prerequisites (phase 0), study loop + timeline
 instruction/01-network/        fundamentals (model, addressing, byte streams, latency, proxy taxonomy, crypto basics), DNS, HTTP/1/2/3, sockets, TCP, TLS, PROXY protocol
 instruction/02-linux/          fundamentals (processes/threads, kernel & syscalls, memory basics, blocking I/O & signals, containers), epoll, io_uring, memory, signals, zero-copy
 instruction/03-rust/           ownership, lifetimes, unsafe, sync, async, pin, traits/generics, errors, iterators, smart pointers, concurrency patterns, macros, API design, FFI, memory layout, testing, Cargo, async traits
@@ -54,7 +54,7 @@ instruction/06-proxy/           upstream pool, load balancer, health check, outl
 instruction/07-security/        auth, JWT, mTLS, input normalization, rate limiting, WAF, request smuggling, IP filtering, DDoS, slowloris, load shedding
 instruction/08-observability/   logging, metrics, profiling, distributed tracing, SLOs, alerting
 instruction/09-architecture/    components, config reload, plugin system, graceful shutdown, canary/blue-green, rolling restart
-instruction/12-testing/         load testing, fuzzing, chaos engineering, CI/static tooling
+instruction/12-testing/         load testing, fuzzing, chaos engineering, CI/static tooling, debugging toolkit
 instruction/13-algorithms/      data structures/algorithms underpinning routing, WAF, rate limiting, cache, load balancing, DDoS mitigation
 instruction/14-memory/          allocator, arena, slab allocator, object/buffer pools, fragmentation
 instruction/15-parser/          general lexer/parser/AST/visitor theory underneath HTTP and config parsing
@@ -67,7 +67,7 @@ instruction/21-reading-list/    books, RFCs, open-source references
 instruction/22-theory/          classical CS theory (deadlock, scheduling, queueing, congestion math, crypto math, Amdahl, CAP/FLP) behind the practical dirs
 ```
 
-Each topic is one file, named after its concept (e.g. [`instruction/06-proxy/02-load-balancer.md`](instruction/06-proxy/02-load-balancer.md)); when a subtopic grows past roughly 1,500 words or is cross-referenced from several places, split it into its own file and leave a short pointer behind rather than letting one file carry two concepts. Every numbered directory carries a `00-README.md` index listing its files with one-line descriptions and a suggested reading order; where that order is meaningful, the directory's other files carry a matching `NN-` prefix (`01-`, `02-`, ...) so the reading order is visible in a plain directory listing, not just in the README's prose. A few directories deliberately skip the content-file numbering: [`13-algorithms/`](instruction/13-algorithms) is a cross-referenced-as-needed reference set with no single reading order (its own README says so), and [`19-reading-source/`](instruction/19-reading-source)'s per-project subfolders and [`20-reference/`](instruction/20-reference) currently hold only their `00-README.md` with no content files yet. [`22-theory/`](instruction/22-theory) is the same shape as [`13-algorithms/`](instruction/13-algorithms) — a reference set with no single reading order — but for classical CS theory (deadlock, classical synchronization problems, page replacement, CPU scheduling, congestion-control math, queueing theory, crypto math) that [`01-network/`](instruction/01-network), [`02-linux/`](instruction/02-linux), and [`03-rust/`](instruction/03-rust) teach only at the practical level their dual-track "How to read this directory" sections describe; it exists for readers who want the academic grounding, is never a prerequisite for finishing [`proxy/`](proxy), and its files are pulled in by cross-reference from the practical files rather than read start to finish. There is deliberately no `instruction/10-projects/` — that content now lives directly in each `labs/NN-*` crate's own README (Goal + Practice) and in [`proxy/README.md`](proxy/README.md) for the final build. The directory number encodes prerequisite order for `00`-`12` — earlier numbers are foundational to later ones (e.g. [`instruction/02-linux/07-epoll.md`](instruction/02-linux/07-epoll.md) and [`instruction/03-rust/05-async.md`](instruction/03-rust/05-async.md) underpin [`instruction/04-runtime/01-tokio.md`](instruction/04-runtime/01-tokio.md), which underpins the actual proxy work in [`instruction/06-proxy/`](instruction/06-proxy)).
+Each topic is one file, named after its concept (e.g. [`instruction/06-proxy/02-load-balancer.md`](instruction/06-proxy/02-load-balancer.md)); when a subtopic grows past roughly 1,500 words or is cross-referenced from several places, split it into its own file and leave a short pointer behind rather than letting one file carry two concepts. Every numbered directory carries a `00-README.md` index listing its files with one-line descriptions and a suggested reading order; where that order is meaningful, the directory's other files carry a matching `NN-` prefix (`01-`, `02-`, ...) so the reading order is visible in a plain directory listing, not just in the README's prose. A few directories deliberately skip the content-file numbering: [`13-algorithms/`](instruction/13-algorithms) is a cross-referenced-as-needed reference set with no single reading order (its own README says so), [`19-reading-source/`](instruction/19-reading-source) holds per-project subfolders (three of which — tokio, hyper, pingora — have a `reading-guide.md`) plus a `contributing-upstream.md`, and [`20-reference/`](instruction/20-reference) currently holds only its `00-README.md`. [`22-theory/`](instruction/22-theory) is the same shape as [`13-algorithms/`](instruction/13-algorithms) — a reference set with no single reading order — but for classical CS theory (deadlock, classical synchronization problems, page replacement, CPU scheduling, congestion-control math, queueing theory, crypto math) that [`01-network/`](instruction/01-network), [`02-linux/`](instruction/02-linux), and [`03-rust/`](instruction/03-rust) teach only at the practical level their dual-track "How to read this directory" sections describe; it exists for readers who want the academic grounding, is never a prerequisite for finishing [`proxy/`](proxy), and its files are pulled in by cross-reference from the practical files rather than read start to finish. There is deliberately no `instruction/10-projects/` — that content now lives directly in each `labs/NN-*` crate's own README (Goal + Practice) and in [`proxy/README.md`](proxy/README.md) for the final build. The directory number encodes prerequisite order for `00`-`12` — earlier numbers are foundational to later ones (e.g. [`instruction/02-linux/07-epoll.md`](instruction/02-linux/07-epoll.md) and [`instruction/03-rust/05-async.md`](instruction/03-rust/05-async.md) underpin [`instruction/04-runtime/01-tokio.md`](instruction/04-runtime/01-tokio.md), which underpins the actual proxy work in [`instruction/06-proxy/`](instruction/06-proxy)).
 
 `13`-`21` are a deep-dive/foundations layer, not a strict continuation of the `00`-`12` sequence — they're referenced *from* earlier directories rather than only read after them (e.g. [`06-proxy/02-load-balancer.md`](instruction/06-proxy/02-load-balancer.md) cross-references [`13-algorithms/`](instruction/13-algorithms) for Maglev/rendezvous hashing). When new content would duplicate an existing topic file's scope (e.g. a load-testing tool, an architecture pattern), add it to the existing directory ([`12-testing/`](instruction/12-testing), [`09-architecture/`](instruction/09-architecture)) instead of creating a new top-level number.
 
@@ -165,8 +165,8 @@ particular reach for raw `libc`/manual parsing precisely to expose what
 tokio/hyper otherwise do for you) — none of them are the finished product,
 and none should be mistaken for one. Each crate has its own README pointing
 back at the relevant handbook file(s) and stating its own "done" criteria
-(Goal + Practice); there is no separate `instruction/10-projects/` layer on
-top of them anymore.
+(Goal + Done when checklist, see Content conventions below); there is no
+separate `instruction/10-projects/` layer on top of them anymore.
 
 ## Content conventions
 
@@ -192,7 +192,7 @@ concept is code-representable, and at least one production gotcha.
 ```
 
 Files with more than 6 exercises should use the ordered-ladder form that
-most of `05-http-stack/` through `09-architecture/` already use: open the
+most of [`05-http-stack/`](instruction/05-http-stack) through [`09-architecture/`](instruction/09-architecture) already use: open the
 section with "Build these in order.", and end each item with a
 **Done when** clause stating an observable pass condition (a measurement,
 a test outcome, a behavior under load). Past 9 items, split the topic
@@ -202,10 +202,23 @@ rather than growing the ladder.
 (book/RFC/project name + one line on why it's relevant), no `## What to
 learn`/`## Practice` sections — keep that format if extending it.
 
-Each `labs/NN-*` crate's own README carries its `## Goal` (a concrete "done"
-definition) and Handbook-references list directly — there is no separate
-`instruction/10-projects/project-0N.md` layer restating it; don't recreate
-one. [`proxy/README.md`](proxy/README.md) plays the same role for the final build.
+Each `labs/NN-*` crate's own README carries, in this order: `## Goal` (a
+few sentences on what the lab builds), `## Done when` (a `- [ ]` checklist
+of observable pass conditions — a `curl`/`nc` result, a measurement, a
+test outcome, behavior under load — ending with the review step from
+[`instruction/00-introduction/03-study-loop.md`](instruction/00-introduction/03-study-loop.md)), `## Handbook references`, an
+optional `## After you finish` pointing at the matching
+`19-reading-source/*/reading-guide.md` stops, and `## Run`. Checklist items
+state *what* must be observably true, never *how* to implement it — they
+are a spec, not a solution. There is no separate
+`instruction/10-projects/project-0N.md` layer restating any of this; don't
+recreate one. [`proxy/README.md`](proxy/README.md) plays the same role for the final build.
+
+[`instruction/19-reading-source/`](instruction/19-reading-source)'s `reading-guide.md` files give a route
+through a project's source as questions only. Never add answers to them,
+and never write the per-project notes files (`architecture.md`,
+`request-flow.md`, ...) — those are the learner's own output, and a
+pre-written set would defeat the directory's purpose.
 
 When extending any file, keep the `# Title` and any existing intro, follow
 the section structure above, and cross-reference other handbook files by
@@ -213,9 +226,9 @@ path rather than duplicating their content. Write every cross-reference as
 a relative markdown link with the path as inline code, so it is clickable
 in any renderer:
 `` [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md) ``.
-The label is the path as seen from `instruction/` (or `instruction-vi/`);
+The label is the path as seen from [`instruction/`](instruction) (or [`instruction-vi/`](instruction-vi));
 the target is relative to the file doing the linking. Links from a
-Vietnamese file point into `instruction-vi/`, never across to the English
+Vietnamese file point into [`instruction-vi/`](instruction-vi), never across to the English
 tree. Only link to files that exist — a reference to something not yet
 written stays plain inline code until it does.
 

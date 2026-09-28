@@ -10,6 +10,7 @@ you whether the previous nine phases actually work.
 - [`02-fuzzing.md`](02-fuzzing.md) — fuzzing the parser and any attacker-facing input
 - [`03-chaos.md`](03-chaos.md) — injecting upstream failures, latency, and partial degradation
 - [`04-ci-tooling.md`](04-ci-tooling.md) — clippy, miri, sanitizers, and what to gate merges on
+- [`05-debugging.md`](05-debugging.md) — `tracing`, `curl -v`/`nc`/`ss`/`tcpdump`, `strace`, `tokio-console`, debuggers, flamegraphs, heap profilers — the evidence-gathering toolkit. Unlike the other four, useful from [`labs/00-tcp-server`](../../labs/00-tcp-server) onward, not only once [`proxy/`](../../proxy) exists
 
 ## Where it goes
 

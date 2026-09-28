@@ -1,6 +1,9 @@
 # tokio
 
-Async runtime bên dưới mọi thứ trong workspace này. Chưa được viết.
+Async runtime bên dưới mọi thứ trong workspace này. Theo
+[`reading-guide.md`](reading-guide.md) để có lộ trình đi qua source, kèm việc mỗi điểm dừng
+nên đọc sau lab nào; các file notes liệt kê bên dưới là để bạn tự viết
+trong lúc theo guide.
 
 Một trong hai ngoại lệ đọc sớm so với mặc định "đọc sau [`proxy/`](../../../proxy)" của thư
 mục này: đọc reactor của `tokio::runtime::io` ngay sau bài tập raw-epoll

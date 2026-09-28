@@ -5,11 +5,19 @@ viết bằng C đã đặt nền móng cho các khái niệm mà handbook này 
 subfolder là một dự án; đọc source của nó với một lăng kính cụ thể thay vì
 lướt qua ngẫu nhiên.
 
-## Trạng thái: chỉ có index — cố tình để dành sau [`proxy/`](../../proxy)
+## Trạng thái: đã có reading guide; notes cố tình để bạn tự viết
 
-Tám subfolder dự án hiện chỉ có stub, không có nội dung, và không có gì
-liên kết tới chúng. Đây không phải một mục backlog cần dọn sớm — chính
-việc sắp xếp thứ tự mới là điểm mấu chốt.
+[`tokio/`](tokio), [`hyper/`](hyper), và [`pingora/`](pingora) mỗi thư mục có một `reading-guide.md`:
+một lộ trình đi qua source kèm các câu hỏi cần trả lời, nhưng không có câu
+trả lời. Các file notes theo từng dự án trong template bên dưới vẫn chưa
+được viết, có chủ đích — đó là thứ *bạn* viết khi theo một guide, và một
+bộ notes viết sẵn cho bạn sẽ không dạy được gì. Năm subfolder còn lại vẫn
+là stub; chúng ít ưu tiên hơn với lộ trình của handbook này.
+
+[`contributing-upstream.md`](contributing-upstream.md) nói về bước sau khi đọc: biến những gì đã
+học thành đóng góp cho các dự án này.
+
+Việc sắp xếp thứ tự bên dưới vẫn là điểm mấu chốt.
 
 Đọc connection pool của [`pingora`](pingora) trước khi bạn tự viết một cái gần như
 chẳng dạy bạn được gì: bạn không có thiết kế nào của riêng mình để so

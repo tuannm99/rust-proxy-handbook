@@ -27,8 +27,20 @@ see the root [`README.md`](../../README.md). [`proxy/`](../../proxy) is the actu
 [`proxy/`](../../proxy) needs. Each handbook topic's `## Practice` section points at a
 specific [`labs/`](../../labs) or [`proxy/`](../../proxy) crate to implement.
 
+## Files
+
+- [`01-learning-roadmap.md`](01-learning-roadmap.md) — the phases, what you should be able to *do* after each, and the lab-by-lab read/code map
+- [`02-prerequisites.md`](02-prerequisites.md) — phase 0: a self-check, and the path from zero Rust/networking/OS to ready-for-lab-00
+- [`03-study-loop.md`](03-study-loop.md) — the per-lab loop (read, build, prove, get reviewed, compare with production), a realistic timeline, where open-source contribution fits
+
+Start with [`02-prerequisites.md`](02-prerequisites.md)'s self-check if you're unsure you're
+ready; read [`03-study-loop.md`](03-study-loop.md) once before your first lab either way.
+
 ## How to use this handbook
 
+0. Take the self-check in [`02-prerequisites.md`](02-prerequisites.md) first. If it turns up gaps
+   in Rust basics, fill them before anything below — this handbook doesn't
+   teach Rust syntax.
 1. Work through directories roughly in numeric order — [`06-proxy`](../06-proxy) assumes
    [`04-runtime`](../04-runtime) and [`05-http-stack`](../05-http-stack), not just "some Rust experience".
 2. For each topic file, read `## What to learn`, then do the linked exercise
@@ -36,7 +48,8 @@ specific [`labs/`](../../labs) or [`proxy/`](../../proxy) crate to implement.
    before writing any code — the [`labs/`](../../labs) and [`proxy/`](../../proxy) crates are where the
    concepts actually stick.
 3. Use [`21-reading-list/`](../21-reading-list) as background reading in parallel, not a
-   prerequisite — nothing in `01`-`09` requires having read a book first.
+   prerequisite — beyond the Rust basics in [`02-prerequisites.md`](02-prerequisites.md), nothing in
+   `01`-`09` requires having read a book first.
 4. Treat [`12-testing/`](../12-testing) as an exercise to run *after* a project is working,
    not before — you need a running proxy to load-test or fuzz.
 

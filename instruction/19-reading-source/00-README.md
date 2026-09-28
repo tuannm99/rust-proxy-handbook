@@ -5,11 +5,19 @@ C-based proxies that established the concepts this handbook teaches. Each
 subfolder is one project; read its source with a specific lens rather than
 browsing aimlessly.
 
-## Status: index only — deliberately deferred until after [`proxy/`](../../proxy)
+## Status: reading guides written; the notes are deliberately yours
 
-The eight project subfolders hold stubs, not content, and nothing links to
-them. This one is not a backlog item to clear early — the sequencing is the
-point.
+[`tokio/`](tokio), [`hyper/`](hyper), and [`pingora/`](pingora) each have a `reading-guide.md`: a route
+through the source with questions to answer, but no answers. The per-project
+notes files in the template below are still unwritten, on purpose — they
+are what *you* write while following a guide, and a set written for you
+would teach nothing. The other five subfolders hold stubs; they're lower
+priority for this handbook's path.
+
+[`contributing-upstream.md`](contributing-upstream.md) covers the step after reading: turning what
+you've learned into contributions to these projects.
+
+The sequencing below is still the point.
 
 Reading [`pingora`](pingora)'s upstream pool before you have written one teaches you
 almost nothing: you have no design of your own to compare it against, so

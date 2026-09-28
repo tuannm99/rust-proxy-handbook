@@ -2,7 +2,14 @@
 
 The phases below map 1:1 to the numbered directories. Each phase lists what
 you should be able to *do*, not just recite, before moving to the next one.
+How to work each phase — and how long it realistically takes — is in
+[`03-study-loop.md`](03-study-loop.md).
 
+0. **Prerequisites** ([`02-prerequisites.md`](02-prerequisites.md)) — pass its self-check: write
+   and explain basic Rust (structs, enums, `Result`, traits, closures,
+   borrow errors), and describe what happens between `curl` and a response
+   at the DNS/TCP/HTTP level. Skip this phase only if the self-check is
+   already all yes.
 1. **Networking** ([`01-network/`](../01-network)) — read a TCP or TLS packet capture in
    Wireshark and explain what's happening; explain why HTTP/2 needs one TCP
    connection where HTTP/1.1 needed six. If terms like "port," "packet,"
@@ -64,7 +71,7 @@ without opening 18 files.
 | [`labs/17-ebpf`](../../labs/17-ebpf) | [`16-kernel/09-ebpf.md`](../16-kernel/09-ebpf.md), [`16-kernel/10-xdp.md`](../16-kernel/10-xdp.md), [`07-security/09-ddos.md`](../07-security/09-ddos.md), [`07-security/10-slowloris.md`](../07-security/10-slowloris.md) | XDP/eBPF packet filtering |
 | [`proxy/`](../../proxy) | [`01-network/13-tls.md`](../01-network/13-tls.md), [`01-network/14-proxy-protocol.md`](../01-network/14-proxy-protocol.md), `07-security/*.md`, `08-observability/*.md`, `09-architecture/*.md` (see [`proxy/README.md`](../../proxy/README.md)) | the final L7 proxy, combining every lab above |
 
-Every numbered directory also has a `00-README.md` index listing its files
+Every numbered directory also has a [`00-README.md`](00-README.md) index listing its files
 with one-line descriptions and a suggested reading order — start there
 when you enter a phase, rather than guessing from filenames.
 
@@ -128,7 +135,7 @@ row only depends on rows above it:
 
 [`15-parser/`](../15-parser), [`16-kernel/`](../16-kernel), [`17-performance/`](../17-performance), and [`18-distributed/`](../18-distributed) each
 state their own internal order and reading trigger in their own
-`00-README.md` — read those four `00-README.md`s for the same kind of ordering
+[`00-README.md`](00-README.md) — read those four [`00-README.md`](00-README.md)s for the same kind of ordering
 once you get there; it isn't repeated here to avoid the two copies
 drifting apart.
 

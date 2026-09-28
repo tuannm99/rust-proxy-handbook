@@ -1,6 +1,8 @@
 # hyper
 
-The HTTP library [`labs/02-http-server`](../../../labs/02-http-server) onward is built on. Not written yet.
+The HTTP library [`labs/02-http-server`](../../../labs/02-http-server) onward is built on. Follow
+[`reading-guide.md`](reading-guide.md) for a route through the HTTP/1 source; the notes files
+listed below are yours to write while following it.
 
 The other early-reading exception: read the `h1` codec right after
 finishing your own parser ([`05-http-stack/01-parser.md`](../../05-http-stack/01-parser.md), Practice step 8) and

@@ -1,6 +1,9 @@
 # tokio
 
-The async runtime underneath everything in this workspace. Not written yet.
+The async runtime underneath everything in this workspace. Follow
+[`reading-guide.md`](reading-guide.md) for a route through the source, keyed to which lab each
+stop should come after; the notes files listed below are yours to write
+while following it.
 
 One of the two early-reading exceptions to this folder's "read after
 [`proxy/`](../../../proxy)" default: read `tokio::runtime::io`'s reactor right after the
