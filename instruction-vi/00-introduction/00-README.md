@@ -23,7 +23,7 @@ số giả định bạn đã nắm các thư mục trước đó.
 ngoài chuỗi phụ thuộc này — xem [`CLAUDE.md`](../../CLAUDE.md).)
 
 Một Cargo workspace đi kèm nằm ở gốc repo ([`labs/`](../../labs), [`proxy/`](../../proxy)) — xem
-[`00-README.md`](00-README.md) ở gốc. [`proxy/`](../../proxy) mới là deliverable thật sự; [`labs/`](../../labs) là 18
+[`README.md`](../../README.md) ở gốc. [`proxy/`](../../proxy) mới là deliverable thật sự; [`labs/`](../../labs) là 18
 bài tập đánh số, độ khó tăng dần, xây dựng dần các kỹ năng mà [`proxy/`](../../proxy) cần.
 Mỗi topic trong handbook có mục `## Practice` trỏ tới một crate cụ thể
 trong [`labs/`](../../labs) hoặc [`proxy/`](../../proxy).

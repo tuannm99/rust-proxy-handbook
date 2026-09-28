@@ -22,7 +22,7 @@ as a dependency chain: each numbered directory assumes the ones before it.
 outside this dependency chain — see [`CLAUDE.md`](../../CLAUDE.md).)
 
 A companion Cargo workspace lives at the repo root ([`labs/`](../../labs), [`proxy/`](../../proxy)) —
-see the root [`00-README.md`](00-README.md). [`proxy/`](../../proxy) is the actual deliverable; [`labs/`](../../labs) are
+see the root [`README.md`](../../README.md). [`proxy/`](../../proxy) is the actual deliverable; [`labs/`](../../labs) are
 18 numbered, progressively harder exercises that build up the skills
 [`proxy/`](../../proxy) needs. Each handbook topic's `## Practice` section points at a
 specific [`labs/`](../../labs) or [`proxy/`](../../proxy) crate to implement.

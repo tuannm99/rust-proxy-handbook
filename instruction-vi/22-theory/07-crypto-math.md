@@ -18,9 +18,11 @@ lặp lại N round, mỗi round trộn thêm key material vào block
 ```
 Gotcha: *mode* của block cipher quan trọng như chính cipher — encrypt mỗi
 block độc lập (mode ECB) lộ pattern (các block plaintext giống nhau ra
-block ciphertext giống nhau), đó là lý do TLS dùng các mode như GCM nối
-các block với nhau và thêm cả authentication (AEAD — authenticated
-encryption with associated data).
+block ciphertext giống nhau), đó là lý do TLS dùng các mode như GCM —
+encrypt một counter theo từng block (CTR mode) dưới một nonce duy nhất nên
+các block plaintext giống nhau không bao giờ ra ciphertext giống nhau — và
+thêm cả authentication (AEAD — authenticated encryption with associated
+data).
 
 ### Diffie-Hellman: shared secret qua một kênh công khai, từ một bài toán khó
 Hai bên mỗi bên chọn một số ngẫu nhiên private, trao đổi một giá trị công
@@ -51,11 +53,11 @@ về tính toán, dù nhân `p * q` để ra `n` là tầm thường. Sinh key c
 `m = c^d mod n` — trapdoor là việc tính `d` từ `e` cần biết `φ(n)`, cần
 biết `p` và `q`, cần phân tích `n`.
 
-Gotcha: RSA được dùng ít hơn nhiều so với hầu hết người nghĩ bên trong một
-kết nối TLS 1.3 thật — TLS hiện đại ưu tiên ECDHE cho key exchange
-(forward secrecy: lộ một key dài hạn sau này không lộ session key trong
-quá khứ, thứ RSA key exchange đơn thuần không cung cấp) và chỉ dành RSA
-chủ yếu cho chữ ký certificate, không phải bulk key exchange.
+Gotcha: TLS 1.3 đã loại bỏ hoàn toàn RSA key exchange — mọi bắt tay TLS
+1.3 đều dùng (EC)DHE, vì nó cho forward secrecy (lộ một key dài hạn sau
+này không lộ session key trong quá khứ, thứ static RSA key exchange của
+TLS 1.2 không cung cấp). RSA chỉ còn tồn tại trong TLS 1.3 như một giải
+thuật *chữ ký* certificate, không bao giờ dùng để suy ra session key.
 
 ### Hashing: một chiều, và vì sao đó là cả điểm mấu chốt
 Một hàm hash cryptographic phải gần như không thể đảo (cho `H(x)`, tìm

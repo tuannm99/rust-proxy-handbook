@@ -54,9 +54,10 @@ tốt hơn.
 số task đang sống và thời lượng poll theo thời gian thực, và làm cho bug
 gọi-blocking-trong-code-async (failure mode trung tâm của [`01-tokio.md`](01-tokio.md))
 hiện rõ trực tiếp thay vì phải suy đoán từ triệu chứng.
-`tokio::runtime::Handle::metrics()` (một tập con stable, nhiều hơn dưới
-`tokio_unstable`) cho quyền truy cập lập trình vào số lần ăn cắp của
-worker, độ sâu queue, và busy time — cùng dữ liệu mà
+`tokio::runtime::Handle::metrics()` cho quyền truy cập lập trình vào số
+worker, số task còn sống, và độ sâu global queue trên tokio stable; steal
+count theo từng worker, độ sâu local queue, và histogram poll-time cần
+build với `RUSTFLAGS="--cfg tokio_unstable"` — cùng dữ liệu mà
 [`08-observability/02-metrics.md`](../08-observability/02-metrics.md) muốn export dưới dạng Prometheus gauge
 cho một proxy đang chạy.
 
@@ -80,8 +81,9 @@ gần chế độ của Gustafson hơn là của Amdahl — xem [`22-theory/08-a
 3. Cài `tokio-console`, gắn `console-subscriber` vào một crate lab, và cố
    tình gọi một hàm blocking bên trong một handler async — tìm nó trong
    console qua thời lượng poll của nó.
-4. In số lần ăn cắp của worker từ `tokio::runtime::Handle::metrics()` cho
-   [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) dưới tải, và nối một đợt tăng đột biến trong
-   số lần ăn cắp với việc phân phối kết nối không đều giữa các worker.
+4. Build với `RUSTFLAGS="--cfg tokio_unstable"` và in steal count của
+   worker từ `tokio::runtime::Handle::metrics()` cho
+   [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) dưới tải, và nối một đợt tăng đột biến steal
+   count với việc phân phối kết nối không đều giữa các worker.
 5. Giải thích bằng lời của bạn vì sao đặt `worker_threads` vượt xa số
    core sẽ làm [`proxy`](../../proxy) chậm hơn, không nhanh hơn, dưới tải bền vững.

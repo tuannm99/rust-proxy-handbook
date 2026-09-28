@@ -128,7 +128,7 @@ từ ngày đầu.
 
 Gotcha: ghi đồng bộ vào một file log là một syscall blocking trên request
 path. Khi ổ đĩa chậm — hoặc chính log volume đã lấp đầy page cache bằng
-các trang dirty (`16-kernel/09-page-cache.md`) — write đó chặn một tokio
+các trang dirty ([`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md)) — write đó chặn một tokio
 worker thread và làm khựng mọi connection multiplex trên nó.
 `tracing_appender::non_blocking` chuyển việc ghi sang một thread riêng
 đứng sau một queue có giới hạn; queue đó là một ring buffer

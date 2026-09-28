@@ -17,10 +17,12 @@ của workspace đã chốt.
 members = ["labs/*", "proxy"]
 resolver = "2"
 ```
-Gotcha: `resolver = "2"` (mặc định cho workspace mới từ Rust 2021) quan
-trọng đặc biệt cho feature unification bên dưới — resolver v1 có hành vi
-khác, bất ngờ hơn khi một dev-dependency và một dependency thường của cùng
-một crate cần feature khác nhau.
+Gotcha: một *package* ở edition 2021 ngầm định `resolver = "2"` (edition
+2024 ngầm định `"3"`), nhưng một workspace *virtual* như gốc repo này
+không có edition riêng và âm thầm rơi về resolver 1 nếu bạn không set rõ
+— đó là lý do dòng ở trên tồn tại. Nó quan trọng cho feature unification
+bên dưới: resolver v1 hợp nhất feature qua dev-dependency, build-dependency,
+và dependency theo target theo những cách bất ngờ hơn.
 
 ### `[workspace.dependencies]`: một version, khai báo một lần
 Khai báo version của một dependency một lần dưới `[workspace.dependencies]`
@@ -89,10 +91,12 @@ tls = ["dep:tokio-rustls"]
 #[cfg(feature = "tls")]
 mod tls_listener;
 ```
-Gotcha: một feature kéo theo một dependency (`tls` cần `tokio-rustls`)
-nên dùng syntax `"tls" = ["dep:tokio-rustls"]` như trên thay vì làm
-dependency đó không-optional trong `[dependencies]` — không thì mọi
-consumer phải trả giá compile `tokio-rustls` dù feature tắt.
+Gotcha: bản thân dependency phải khai báo
+`tokio-rustls = { version = "...", optional = true }` — `dep:` chỉ hoạt
+động với dependency optional. Thiếu `optional = true` thì mọi consumer
+phải compile `tokio-rustls` dù feature tắt; còn thiếu tiền tố `dep:` thì
+Cargo tự tạo thêm một feature public ngầm tên `tokio-rustls`, làm lộ tên
+dependency ra feature API của crate bạn.
 
 ## Practice
 1. Thêm `[workspace.dependencies]` cho `tokio` và `bytes` ở gốc workspace

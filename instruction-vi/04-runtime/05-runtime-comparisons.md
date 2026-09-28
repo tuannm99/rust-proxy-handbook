@@ -21,7 +21,7 @@ core nó bắt đầu. Cấu trúc dữ liệu có thể là `Rc<RefCell<_>>` th
 memory của shard đó — không atomic, không cache-line nảy qua lại giữa
 các core. Cái giá chuyển sang chỗ khác: mất cân bằng tải giữa các shard
 phải được giải quyết ở tầng kiến trúc (`SO_REUSEPORT` cộng với việc phân
-phối kết nối của kernel, [`16-kernel/05-rss.md`](../16-kernel/05-rss.md)/`06-rps.md`) thay vì để
+phối kết nối của kernel, [`16-kernel/05-rss.md`](../16-kernel/05-rss.md)/[`16-kernel/06-rps.md`](../16-kernel/06-rps.md)) thay vì để
 một scheduler tự động ăn cắp việc.
 
 ```rust
@@ -75,7 +75,7 @@ công cụ đúng.
 3. Giải thích, bằng lời của bạn, vì sao `SO_REUSEPORT`
    ([`01-network/07-socket.md`](../01-network/07-socket.md)) là nền tảng cho một thiết kế thread-per-core
    theo cách nó không phải với mô hình work-stealing của tokio.
-4. Đọc [`16-kernel/05-rss.md`](../16-kernel/05-rss.md) và `06-rps.md`, và nối việc điều hướng packet
+4. Đọc [`16-kernel/05-rss.md`](../16-kernel/05-rss.md) và [`16-kernel/06-rps.md`](../16-kernel/06-rps.md), và nối việc điều hướng packet
    ở mức NIC với vì sao một proxy thread-per-core quan tâm packet của một
    kết nối rơi vào core nào, trong khi một proxy work-stealing thì hầu
    như không.

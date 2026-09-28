@@ -43,8 +43,8 @@ file bên dưới đều giả định bạn đã nắm nhóm này):
 
 Nhóm fundamentals trước nếu bạn cần — mọi thứ khác giả định bạn đã đọc nó.
 [`07-epoll.md`](07-epoll.md) là nền tảng cho [`04-runtime/01-tokio.md`](../04-runtime/01-tokio.md); [`10-signals.md`](10-signals.md)
-là nền tảng cho [`09-architecture/03-config.md`](../09-architecture/03-config.md) và `04-graceful-shutdown.md`;
+là nền tảng cho [`09-architecture/03-config.md`](../09-architecture/03-config.md) và [`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md);
 [`11-zerocopy.md`](11-zerocopy.md) là nền tảng cho [`05-http-stack/05-static.md`](../05-http-stack/05-static.md). Để biết
 chuyện gì xảy ra *bên trong* kernel dưới các lời gọi này, xem [`16-kernel/`](../16-kernel)
-— đặc biệt là `01-epoll-internals.md`, `02-io_uring-internals.md`, và
-`08-page-cache.md`.
+— đặc biệt là [`16-kernel/01-epoll-internals.md`](../16-kernel/01-epoll-internals.md), [`16-kernel/02-io_uring-internals.md`](../16-kernel/02-io_uring-internals.md), và
+[`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md).

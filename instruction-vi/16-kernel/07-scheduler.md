@@ -18,6 +18,19 @@ bằng", không phải "sẵn sàng trước, chạy trước" — không task n
 bảo chạy trong một khoảng thời gian cụ thể, chỉ đảm bảo thời gian CPU được
 phân phối tỷ lệ theo trọng số theo thời gian.
 
+### Từ Linux 6.6: EEVDF đã thay CFS
+Kernel 6.6 (cuối 2023) thay quy tắc chọn-`vruntime`-thấp-nhất của CFS bằng
+EEVDF (Earliest Eligible Virtual Deadline First). Nó giữ nguyên cách tính
+virtual runtime — nên mô hình "fair share theo trọng số" ở trên vẫn đúng
+— nhưng chọn trong số các task *eligible* (những task chưa vượt phần công
+bằng của mình) theo virtual deadline sớm nhất, với deadline phụ thuộc
+time slice task yêu cầu. Hệ quả thực tế cho một proxy: các task nhạy
+latency chạy ngắn rồi sleep được lập lịch sớm hơn và dễ đoán hơn so với
+các heuristic của CFS, và các knob tuning cũ
+`sched_latency_ns`/`sched_min_granularity_ns` không còn mang nghĩa như
+các hướng dẫn tuning cũ nói. Check `uname -r` trước khi áp dụng bất kỳ
+lời khuyên tuning scheduler nào từ thời CFS.
+
 ### `nice`/priority điều khiển trọng số, không phải một đảm bảo cứng
 Giá trị `nice` ánh xạ tới trọng số quyết định `vruntime` của một task tăng
 nhanh thế nào (một task priority cao hơn có `vruntime` tăng chậm hơn trên

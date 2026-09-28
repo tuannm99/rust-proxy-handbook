@@ -11,7 +11,7 @@ A `[workspace]` section with `members = ["labs/*", "proxy"]` (this repo's actual
 members = ["labs/*", "proxy"]
 resolver = "2"
 ```
-Gotcha: `resolver = "2"` (the default for new workspaces since Rust 2021) matters specifically for feature unification below — the v1 resolver had different, more surprising behavior when a dev-dependency and a normal dependency of the same crate needed different features.
+Gotcha: a *package* on edition 2021 implies `resolver = "2"` (edition 2024 implies `"3"`), but a *virtual* workspace like this repo's root has no edition of its own and silently falls back to resolver 1 unless you set it explicitly — which is why the line above exists. It matters for feature unification below: the v1 resolver unified features across dev-dependencies, build-dependencies, and target-specific dependencies in more surprising ways.
 
 ### `[workspace.dependencies]`: one version, declared once
 Listing a dependency's version once under `[workspace.dependencies]` and having each member crate reference it with `dep.workspace = true` keeps every crate on the same version without repeating — and inevitably letting drift into — the version string across 18 different `Cargo.toml` files.
@@ -54,7 +54,7 @@ tls = ["dep:tokio-rustls"]
 #[cfg(feature = "tls")]
 mod tls_listener;
 ```
-Gotcha: a feature that implies a dependency (`tls` requiring `tokio-rustls`) should use the `"tls" = ["dep:tokio-rustls"]` syntax shown above rather than making that dependency non-optional in `[dependencies]` — otherwise every consumer pays for compiling `tokio-rustls` even with the feature off.
+Gotcha: the dependency itself must be declared `tokio-rustls = { version = "...", optional = true }` — `dep:` only works on optional dependencies. Without `optional = true`, every consumer compiles `tokio-rustls` even with the feature off; and without the `dep:` prefix, Cargo also creates an implicit public feature named `tokio-rustls` that leaks the dependency's name into your crate's feature API.
 
 ## Practice
 1. Add `[workspace.dependencies]` for `tokio` and `bytes` at this repo's workspace root, and migrate two `labs/*` crates to `dep.workspace = true` instead of repeating the version.

@@ -20,6 +20,9 @@ algorithms (FCFS, SJF, round-robin, MLFQ) and the metrics used to judge
 them that CFS is a distant, more sophisticated relative of, see
 [`22-theory/04-cpu-scheduling.md`](../22-theory/04-cpu-scheduling.md).
 
+### Since Linux 6.6: EEVDF replaced CFS
+Kernel 6.6 (late 2023) replaced CFS's pick-lowest-`vruntime` rule with EEVDF (Earliest Eligible Virtual Deadline First). It keeps the same virtual-runtime accounting — so the "fair share by weight" model above still holds — but picks among *eligible* tasks (those not ahead of their fair share) by earliest virtual deadline, where a task's deadline depends on its requested time slice. The practical effect for a proxy: latency-sensitive tasks that run briefly and sleep get scheduled sooner and more predictably than under CFS's heuristics, and the old `sched_latency_ns`/`sched_min_granularity_ns` tuning knobs no longer mean what older tuning guides say. Check `uname -r` before applying any CFS-era scheduler tuning advice.
+
 ### `nice`/priority controls weight, not a hard guarantee
 `nice` values map to weights that scale how fast a task's `vruntime`
 accrues (a higher-priority task's `vruntime` grows more slowly per unit

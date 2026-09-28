@@ -43,8 +43,12 @@ nhau; một process dùng hết quantum của nó (hành xử như job dài) b�
 xuống một hàng đợi priority thấp hơn, quantum dài hơn, còn một process
 yield sớm (hành xử như job ngắn I/O-bound) giữ priority cao. Cái này xấp
 xỉ lợi ích của SJF chỉ dùng hành vi *quan sát được* thay vì cần biết
-trước — nguyên lý thiết kế thật đằng sau hầu hết scheduler OS đa dụng, kể
-cả một người thân đơn giản hóa của CFS của Linux.
+trước — nguyên lý thiết kế đằng sau nhiều scheduler OS đa dụng (Windows,
+BSD/Solaris đời cũ). Linux đi đường khác: CFS (fair share theo virtual
+runtime) và, từ kernel 6.6, EEVDF (earliest eligible virtual deadline
+first) — cả hai ưu ái task ngắn, I/O-bound qua cơ chế accounting chứ không
+qua hàng đợi priority tường minh, nên *mục tiêu* giống MLFQ dù cơ chế thì
+không.
 
 ### Nơi cái này nối với bài toán scheduling của chính proxy
 Scheduler work-stealing của một tokio runtime ([`04-runtime/01-tokio.md`](../04-runtime/01-tokio.md))

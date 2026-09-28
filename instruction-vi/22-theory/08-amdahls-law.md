@@ -65,10 +65,10 @@ rate-limiter toàn cục ([`07-security/07-ratelimit.md`](../07-security/07-rate
 shard counter, không phải bằng một lock nhanh hơn), một config snapshot
 sau một `Mutex` thay vì `ArcSwap`/`watch` ([`09-architecture/03-config.md`](../09-architecture/03-config.md)),
 và contention trên TLS session-cache dùng chung. Mỗi cái là một phần tuần
-tự nhỏ riêng lẻ, nhưng Amdahl's Law cộng dồn: một phần tuần tự 2% riêng
-lẻ đã chặn speedup ở 50x, nhưng vài phần tuần tự 2% độc lập không đơn
-giản cộng lại — đo hiệu ứng kết hợp thật thay vì giả định mỗi cái không
-đáng kể khi đứng riêng.
+tự nhỏ riêng lẻ, nhưng các phần tuần tự cộng dồn: một phần tuần tự 2%
+riêng lẻ đã chặn speedup ở 50x, còn ba phần 2% độc lập cho `(1-p) = 6%`
+và chặn nó quanh 17x — tệ hơn nhiều so với bất kỳ cái nào khi đứng riêng.
+Đo hiệu ứng kết hợp thay vì bỏ qua từng cái vì "không đáng kể".
 
 ## Practice
 1. Profile [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) với `worker_threads` tăng dần (1, 2,

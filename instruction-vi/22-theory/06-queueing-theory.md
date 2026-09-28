@@ -36,7 +36,9 @@ nhàng, mà như một tiệm cận đứng.
 ### Vì sao "chúng ta mới 80% CPU, còn headroom" là sai nguy hiểm
 Thay `ρ = 0.8` so với `ρ = 0.95` vào công thức M/M/1: waiting time không
 tăng theo tỷ lệ tương đương với utilization tăng — nó tăng bùng nổ, vì
-mẫu số của công thức là `(1-ρ)`, và `1-0.95` nhỏ hơn `1-0.8` năm lần. Đây
+mẫu số của công thức là `(1-ρ)`, và `1-0.95 = 0.05` nhỏ hơn `1-0.8 = 0.2`
+bốn lần trong khi tử số cũng tăng — `Wq` đi từ `4/μ` lên `19/μ`, gần gấp 5
+lần thời gian chờ chỉ với chưa tới 20% load thêm. Đây
 là căn cứ chặt chẽ cho toàn bộ tiền đề của
 [`07-security/11-load-shedding.md`](../07-security/11-load-shedding.md) (xếp hàng gần saturation là một cái bẫy
 latency) và vì sao capacity planning nhắm utilization thấp hơn hẳn 100% —

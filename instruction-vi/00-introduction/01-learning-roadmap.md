@@ -72,7 +72,7 @@ Các đường dẫn ở trên là tương đối so với `instruction/` (hay
 Nếu README của một crate lệch khỏi bảng này, README của crate đó là đúng —
 cập nhật bảng này theo nó, không phải ngược lại.
 
-Mỗi thư mục đánh số cũng có một [`00-README.md`](00-README.md) liệt kê các file kèm mô tả
+Mỗi thư mục đánh số cũng có một `00-README.md` liệt kê các file kèm mô tả
 một dòng và thứ tự đọc gợi ý — bắt đầu từ đó khi bước vào một phase, thay
 vì đoán mò từ tên file.
 
@@ -128,8 +128,8 @@ tự nội bộ hợp lý — mỗi dòng chỉ phụ thuộc vào các dòng ph
 | 32 | [`14-memory/06-fragmentation.md`](../14-memory/06-fragmentation.md) | `allocator.md`, `arena.md`, `object-pool.md` |
 
 [`15-parser/`](../15-parser), [`16-kernel/`](../16-kernel), [`17-performance/`](../17-performance), và [`18-distributed/`](../18-distributed) mỗi
-thư mục đều tự nêu thứ tự nội bộ và thời điểm nên đọc trong [`00-README.md`](00-README.md)
-của chính nó — đọc bốn file [`00-README.md`](00-README.md) đó để có cùng kiểu sắp xếp khi
+thư mục đều tự nêu thứ tự nội bộ và thời điểm nên đọc trong `00-README.md`
+của chính nó — đọc bốn file `00-README.md` đó để có cùng kiểu sắp xếp khi
 bạn tới đó; không lặp lại ở đây để tránh hai bản lệch nhau.
 
 ## What to learn

@@ -66,6 +66,7 @@ chậm.
    async trong `tcp-server` và quan sát các kết nối khác bị nghẽn; sửa
    nó bằng `tokio::time::sleep` rồi lại bằng `spawn_blocking`, và so
    sánh.
-4. Đọc metrics worker của tokio (`tokio::runtime::Handle::metrics()`,
-   cần `tokio_unstable` hoặc tập con stable khả dụng) và in số lần ăn cắp
-   dưới tải đồng thời.
+4. Đọc metrics worker của tokio (`tokio::runtime::Handle::metrics()`;
+   riêng steal count cần `RUSTFLAGS="--cfg tokio_unstable"`, tập con
+   stable chỉ có số worker, số task còn sống, và độ sâu global queue) và in
+   steal count dưới tải đồng thời.
