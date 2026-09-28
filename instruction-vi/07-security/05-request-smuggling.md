@@ -33,7 +33,7 @@ thức cho tới khi bạn thấy được cái giá phải trả:
   được tạo sao cho request thật *tiếp theo* trên kết nối đó bị gắn vào nó
   như body content — và bị echo lại trong một response mà kẻ tấn công có
   thể đọc. Bao gồm cả session cookie và auth header.
-- **Đầu độc cache.** Kết hợp với một cache ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)),
+- **Đầu độc cache.** Kết hợp với một cache ([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)),
   một response bị desync lưu vào sai key và phục vụ cho mọi người.
 
 Một kẻ tấn công, không cần credential, và thiệt hại tỷ lệ với lượng traffic
@@ -77,7 +77,7 @@ tiếp theo trên kết nối pooled đó bị dán `G` vào đầu, trở thàn
 
 ### Downgrade smuggling (H2.CL / H2.TE)
 Biến thể hiện đại, và là loại liên quan nhất tới một proxy terminate
-HTTP/2 rồi nói HTTP/1.1 lên upstream ([`01-network/11-http2.md`](../01-network/11-http2.md)). Frame
+HTTP/2 rồi nói HTTP/1.1 lên upstream ([`01-network/12-http2.md`](../01-network/12-http2.md)). Frame
 HTTP/2 mang độ dài tường minh của riêng chúng, nên không có sự mơ hồ nào
 *bên trong* HTTP/2 — nhưng `content-length` vẫn tồn tại như một header
 bình thường, và kẻ tấn công có thể gửi một request HTTP/2 với
@@ -110,7 +110,10 @@ trọng ngay cả khi việc validate framing của bạn hoàn hảo.
 ### Mitigations
 1. **Từ chối sự mơ hồ ngay lập tức**: nếu một request có cả
    `Content-Length` lẫn `Transfer-Encoding`, từ chối nó với 400 — đừng cố
-   đoán cái nào "thắng" (RFC 9112 nói phải từ chối chính trường hợp này).
+   đoán cái nào "thắng". RFC 9112 §6.1 cho server chọn hoặc từ chối, hoặc
+   xử lý chỉ theo `Transfer-Encoding` (và dù cách nào cũng phải đóng
+   connection sau đó). Từ chối là lựa chọn chặt hơn và là cái nên chọn
+   ([`01-network/11-http1-wire-format.md`](../01-network/11-http1-wire-format.md) có thứ tự luật đầy đủ).
 2. **Normalize trước khi chuyển tiếp**: loại bỏ/từ chối các framing header
    trùng lặp hoặc sai định dạng thay vì chuyển tiếp nguyên vẹn. Từ chối
    thay vì "dọn dẹp": một header bạn normalize thành hợp lệ là một header

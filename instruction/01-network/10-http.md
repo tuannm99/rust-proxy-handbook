@@ -47,7 +47,8 @@ When `Content-Length` isn't known upfront, `Transfer-Encoding: chunked`
 frames the body as a series of `<hex-size>\r\n<data>\r\n` chunks ending in a
 zero-size chunk. A message must not specify both `Content-Length` and
 `Transfer-Encoding: chunked` — RFC 9112 says a recipient must reject or
-normalize that ambiguity. This is exactly the ambiguity request-smuggling
+normalize that ambiguity (the exact grammar and rule order are in
+[`01-network/11-http1-wire-format.md`](11-http1-wire-format.md)). This is exactly the ambiguity request-smuggling
 attacks exploit when a front-end and back-end parser disagree on which
 header wins — see [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md).
 

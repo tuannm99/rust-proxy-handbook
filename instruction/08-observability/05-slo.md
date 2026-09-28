@@ -66,7 +66,7 @@ matter:
   DNS, the internet.
 - **You cannot exceed your dependencies.** A proxy fronting a 99.9%
   upstream cannot offer 99.99% end-to-end, unless it can serve without
-  that upstream ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)'s `stale-if-error` is exactly
+  that upstream ([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)'s `stale-if-error` is exactly
   this kind of decoupling).
 - **The window matters as much as the number.** 99.9% over 30 days is 43
   minutes; over 7 days it's 10 minutes, and a single bad deploy can spend

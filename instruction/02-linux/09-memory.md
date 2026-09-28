@@ -30,7 +30,7 @@ both `read()` and `mmap()`. This is why `sendfile()` (see
 [`02-linux/11-zerocopy.md`](11-zerocopy.md)) is fast for repeatedly-served static assets — the
 data is often already resident, and the kernel copies page-cache-to-socket
 without round-tripping through your process's userspace buffers at all. This
-directly informs how [`05-http-stack/05-static.md`](../05-http-stack/05-static.md) should serve files: let the
+directly informs how [`05-http-stack/06-static.md`](../05-http-stack/06-static.md) should serve files: let the
 kernel's cache do the caching rather than re-implementing an LRU in
 userspace for cold data that's already hot in the page cache.
 

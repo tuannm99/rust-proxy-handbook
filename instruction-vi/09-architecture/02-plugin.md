@@ -96,6 +96,39 @@ instance (pooling allocator của wasmtime) nhanh hơn nhiều nhưng nghĩa là
 state có thể rò rỉ giữa các request trừ khi bạn reset nó — cùng kỷ luật
 như [`14-memory/03-object-pool.md`](../14-memory/03-object-pool.md), với một hệ quả bảo mật nếu bạn làm sai.
 
+### Biến panic của một plugin native thành 500
+Một plugin được biên dịch sẵn mà panic sẽ unwind task nào đang poll nó.
+Trên đường xử lý request, đó là task connection của hyper, nên connection
+biến mất không có response ([`05-http-stack/02-hyper.md`](../05-http-stack/02-hyper.md)). Để trả `500`
+thay vào đó, hãy đặt một panic boundary quanh chuỗi plugin. Có hai cách
+dựng nó:
+
+- **`catch_unwind` trên future.** `futures::FutureExt::catch_unwind` (crate
+  `futures-util`) bọc một future sao cho một panic trong bất kỳ lần poll nào
+  trở thành `Err(payload)` thay vì tiếp tục unwind. Nó đòi future phải
+  `UnwindSafe`, mà async block capture reference thường không thỏa, nên nó
+  được bọc trong `std::panic::AssertUnwindSafe`. Lớp bọc đó là một *lời hứa*,
+  không phải một phép kiểm tra. Nó nói rằng không có thứ gì bị đoạn code
+  panic để lại ở trạng thái cập nhật dở dang sẽ bị nhìn thấy sau đó. Lời
+  hứa đúng nếu state của plugin là theo từng request hoặc bất biến. Nó sai
+  nếu một plugin panic giữa lúc đang sửa một map dùng chung: request kế
+  tiếp thấy state bị rách, hoặc một `std::sync::Mutex` bị poisoned
+  ([`03-rust/08-error-handling.md`](../03-rust/08-error-handling.md)).
+- **Một task riêng.** `tokio::spawn` chuỗi plugin và await `JoinHandle`.
+  Panic đến dưới dạng một `JoinError` có `is_panic()` là true. Mức cách ly
+  như nhau, nhưng tốn một lần spawn mỗi request và đòi mọi thứ chuỗi đó
+  đụng tới phải là `'static` và `Send`.
+
+Cách nào thì thông điệp panic vẫn đi qua panic hook (mặc định là stderr).
+Hãy log tên plugin cùng với `500`, nếu không bằng chứng duy nhất là một
+dòng không gắn với request nào.
+
+Gotcha: cả hai cơ chế chỉ hoạt động nếu panic được unwind. Một Cargo
+profile có `panic = "abort"`, mà một số project đặt cho bản release để thu
+nhỏ binary, biến mọi panic của plugin thành việc process thoát, và không
+`catch_unwind` nào thay đổi được điều đó. Kiểm tra rằng profile chạy test
+trùng với profile bạn phát hành.
+
 ### Luồng dữ liệu và điều khiển qua biên plugin
 Dù bạn chọn cơ chế nào, hãy quyết định tường minh: một plugin có thể thấy
 toàn bộ body request/response, hay chỉ header? Nó có thể short-circuit
@@ -112,7 +145,7 @@ Hai điều nữa gây hại về sau nếu để ngầm định:
   mutation bạn thực sự định cho phép.
 - **Truy cập body ép buffer.** Cấp quyền truy cập body âm thầm tắt
   streaming cho mọi route dùng plugin đó
-  ([`05-http-stack/10-grpc.md`](../05-http-stack/10-grpc.md), [`05-http-stack/09-websocket.md`](../05-http-stack/09-websocket.md)), với mọi
+  ([`05-http-stack/11-grpc.md`](../05-http-stack/11-grpc.md), [`05-http-stack/10-websocket.md`](../05-http-stack/10-websocket.md)), với mọi
   hệ quả về giới hạn kích thước của [`07-security/06-waf.md`](../07-security/06-waf.md). Làm nó
   opt-in theo từng plugin và hiển thị trong config, không phải một khả
   năng mọi thứ đều có.

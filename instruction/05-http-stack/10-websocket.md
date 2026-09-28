@@ -24,7 +24,7 @@ response as a normal HTTP response — nothing more. Never read security
 into it.
 
 Gotcha: `Connection` and `Upgrade` are hop-by-hop headers
-([`05-http-stack/04-keepalive.md`](04-keepalive.md)). A proxy must not blindly forward them —
+([`05-http-stack/05-keepalive.md`](05-keepalive.md)). A proxy must not blindly forward them —
 it terminates one upgrade and initiates another, regenerating both headers
 for the upstream leg. A proxy that strips hop-by-hop headers correctly and
 *then* forgets to re-add them for upgrade requests breaks WebSockets

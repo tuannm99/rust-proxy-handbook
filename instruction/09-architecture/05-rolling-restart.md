@@ -64,14 +64,14 @@ against your connection rate times your backlog depth
 ([`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md)) before trusting it.
 
 ### What must hold true regardless of technique
-The new process must pass its own readiness check (config parsed, upstreams reachable — tie to [`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)) *before* the old one is signaled to drain, or a bad new binary/config takes the whole proxy down instead of just failing to deploy. Long-lived connections (WebSocket, [`05-http-stack/09-websocket.md`](../05-http-stack/09-websocket.md)) held by the old process need the same drain deadline as [`04-graceful-shutdown.md`](04-graceful-shutdown.md) — a rolling restart doesn't make that problem go away, it just adds "and don't refuse new connections while draining."
+The new process must pass its own readiness check (config parsed, upstreams reachable — tie to [`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)) *before* the old one is signaled to drain, or a bad new binary/config takes the whole proxy down instead of just failing to deploy. Long-lived connections (WebSocket, [`05-http-stack/10-websocket.md`](../05-http-stack/10-websocket.md)) held by the old process need the same drain deadline as [`04-graceful-shutdown.md`](04-graceful-shutdown.md) — a rolling restart doesn't make that problem go away, it just adds "and don't refuse new connections while draining."
 
 ### The restart loses state, and the state mattered
 Zero *dropped connections* is not the same as zero impact, because
 everything the old process accumulated in memory is gone. Each of these is
 covered elsewhere; together they are why a "successful" zero-downtime
 restart can still show up as a spike on every dashboard:
-- **The response cache is empty** ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)). Every entry
+- **The response cache is empty** ([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)). Every entry
   is a miss, all at once — a self-inflicted cache stampede against the
   origin at exactly the moment you'd like things to be calm. Request
   coalescing is what keeps this survivable.

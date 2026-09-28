@@ -17,6 +17,7 @@ Prometheus metrics on a `/metrics` endpoint.
 ## Handbook references
 - [`instruction/08-observability/02-metrics.md`](../../instruction/08-observability/02-metrics.md)
 - [`instruction/08-observability/05-slo.md`](../../instruction/08-observability/05-slo.md) — what these metrics are ultimately for
+- [`instruction/12-testing/06-lab-environment.md`](../../instruction/12-testing/06-lab-environment.md) — running Prometheus and `promtool` locally
 
 ## Run
 

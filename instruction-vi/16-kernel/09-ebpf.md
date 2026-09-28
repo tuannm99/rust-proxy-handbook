@@ -98,6 +98,65 @@ privilege sau khi bind port của nó sẽ không thể load chương trình eBP
 một helper có privilege riêng. Ràng buộc về thứ tự này phải được thiết kế
 sẵn, không phải chắp vá sau.
 
+### Dựng một project Aya
+Một project Aya không phải một crate. Nó là ba crate, vì chương trình kernel
+được biên dịch cho một target khác (`bpfel-unknown-none`, không có `std`,
+không có allocator) so với loader chạy như một process bình thường:
+
+| Crate | Target | Chứa |
+|---|---|---|
+| `<name>-ebpf` | `bpfel-unknown-none` | chương trình XDP (`#[xdp]` từ `aya-ebpf`) và định nghĩa các map |
+| `<name>-common` | cả hai | các kiểu `#[repr(C)]` dùng chung cho hai phía, như key và value của map |
+| `<name>` | máy của bạn | loader: load chương trình đã biên dịch, attach nó vào một interface, đọc ghi map, in output của `aya-log` |
+
+Toolchain, cài một lần:
+- `rustup toolchain install nightly --component rust-src`. Crate eBPF tự
+  build `core` cho target BPF, việc này cần nightly và source của standard
+  library.
+- `cargo install bpf-linker`, linker biến output LLVM của Rust thành BPF
+  bytecode. Trên Linux x86_64 nó cài được ngay.
+- `cargo install cargo-generate`, rồi
+  `cargo generate https://github.com/aya-rs/aya-template`. Chọn loại chương
+  trình `xdp`. Bạn nhận được ba crate đã nối sẵn với nhau, kèm một build
+  script biên dịch crate eBPF mỗi khi bạn build loader.
+
+Template là một Cargo workspace riêng, và một workspace không thể nằm bên
+trong workspace khác. Với [`labs/17-ebpf`](../../labs/17-ebpf): bỏ `"labs/17-ebpf"` khỏi danh
+sách `members` trong `Cargo.toml` ở gốc, thêm `exclude = ["labs/17-ebpf"]`
+vào bảng `[workspace]` của nó, và generate project vào thư mục đó thay cho
+stub. Build và chạy nó từ bên trong `labs/17-ebpf`.
+
+Load chương trình cần root (`CAP_BPF` + `CAP_NET_ADMIN`), nên lệnh chạy
+của template đi qua `sudo`:
+`RUST_LOG=info cargo run --config 'target."cfg(all())".runner="sudo -E"' -- --iface veth0`.
+
+**Một mạng test riêng.** Đừng attach một chương trình drop đang thử nghiệm
+vào interface thật của bạn. Một network namespace nối bằng một cặp `veth`
+cho bạn một "host" thứ hai với IP riêng:
+
+```sh
+sudo ip netns add attacker
+sudo ip link add veth0 type veth peer name veth1
+sudo ip link set veth1 netns attacker
+sudo ip addr add 10.10.0.1/24 dev veth0 && sudo ip link set veth0 up
+sudo ip netns exec attacker ip addr add 10.10.0.2/24 dev veth1
+sudo ip netns exec attacker ip link set veth1 up
+sudo ip netns exec attacker ping -c1 10.10.0.1     # phải thành công trước khi có XDP
+```
+
+Attach chương trình vào `veth0`. Traffic từ `10.10.0.2` (bất cứ thứ gì chạy
+dưới `ip netns exec attacker`, như `curl http://10.10.0.1:8080/`) là thứ nó
+nhìn thấy. Chạy proxy của bạn bind vào `10.10.0.1`. `sudo ip netns del
+attacker` dọn sạch tất cả.
+
+Kiểm tra attach mode không cần `bpftool`: `ip -details link show veth0` in
+ra `xdp` cho native mode và `xdpgeneric` cho chế độ dự phòng
+([`16-kernel/10-xdp.md`](10-xdp.md)). `veth` hỗ trợ native XDP. Gotcha cho WSL2: các gói
+`linux-tools`/`bpftool` của distro được build cho kernel của distro, không
+phải của Microsoft, và từ chối chạy. Nếu bạn muốn `bpftool`, hãy build nó
+từ `github.com/libbpf/bpftool`. Bản thân kernel WSL2 có sẵn hỗ trợ BPF, BTF
+và veth, nên Aya chạy được ở đó.
+
 ### Khi nào nó đáng làm
 Filtering bằng eBPF đáng làm khi bạn cần drop traffic *trước khi* nó tốn
 bất cứ chi phí nào ([`07-security/09-ddos.md`](../07-security/09-ddos.md)), hoặc quan sát kernel mà

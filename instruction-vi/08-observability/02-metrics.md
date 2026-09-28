@@ -94,7 +94,7 @@ trong một dashboard RED chung chung:
   retry, cạn ngân sách retry, các lần chuyển trạng thái circuit.
 - **Số lượng upstream healthy** dưới dạng gauge
   ([`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)).
-- **Tỉ lệ cache hit** ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)), giải thích các thay
+- **Tỉ lệ cache hit** ([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)), giải thích các thay
   đổi tải upstream không liên quan gì tới traffic của client.
 - **Độ sâu queue / số lượng bị shed** ([`07-security/09-ddos.md`](../07-security/09-ddos.md)), tín
   hiệu sớm nhất của tình trạng quá tải.

@@ -3,7 +3,7 @@
 Hai component parse cùng một chuỗi byte theo hai cách khác nhau, và kẻ tấn
 công sống trong khoảng cách đó. Đây là điểm yếu cấu trúc đứng sau các cách
 bypass WAF ([`07-security/06-waf.md`](06-waf.md)), bypass access-control dựa trên path
-([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)), và — ở dạng thuần túy nhất của nó — request
+([`05-http-stack/04-router.md`](../05-http-stack/04-router.md)), và — ở dạng thuần túy nhất của nó — request
 smuggling ([`07-security/05-request-smuggling.md`](05-request-smuggling.md)). Normalization là biện
 pháp phòng thủ, và nó là một ranh giới bảo mật chứ không phải một chi tiết
 tiền xử lý.
@@ -99,7 +99,7 @@ hệt, chỉ ở một tầng sâu hơn.
 ### Path là vấn đề normalization của riêng nó
 Dot segment, separator đã encode, dấu gạch chéo trùng lặp, dấu gạch chéo ở
 cuối, và filesystem không phân biệt hoa thường đều khiến path bạn dùng để
-route khác với path mà upstream resolve. [`05-http-stack/03-router.md`](../05-http-stack/03-router.md) nói
+route khác với path mà upstream resolve. [`05-http-stack/04-router.md`](../05-http-stack/04-router.md) nói
 về các biến thể và quy tắc canonical-form; đó chính là kỷ luật tương tự áp
 dụng cho input duy nhất mà một proxy luôn luôn phải parse.
 

@@ -20,7 +20,7 @@ I/O (unlike sockets) has no readiness notion at all under epoll — io_uring
 is the first Linux API to give you real async file I/O. For an L7 proxy
 that's mostly socket-to-socket, the win is smaller than for a
 storage-heavy workload; io_uring pays off most when you're also serving
-static files ([`05-http-stack/05-static.md`](../05-http-stack/05-static.md)) or doing heavy disk-backed caching.
+static files ([`05-http-stack/06-static.md`](../05-http-stack/06-static.md)) or doing heavy disk-backed caching.
 
 ### Rust crate landscape
 - `io-uring`: thin, unsafe-ish bindings close to the raw ring layout — you

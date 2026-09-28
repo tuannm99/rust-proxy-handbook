@@ -77,7 +77,7 @@ arena/slab trong [`14-memory/`](../14-memory) và công việc cache-layout tron
 Rust của công việc hạ tầng load/fuzz/chaos trong [`12-testing/`](../12-testing);
 [`17-cargo-workspace.md`](17-cargo-workspace.md) giải thích chính hình dạng `Cargo.toml` của repo
 này và là nền cho bước codegen `build.rs` của
-[`05-http-stack/10-grpc.md`](../05-http-stack/10-grpc.md); [`18-async-traits.md`](18-async-traits.md) là gotcha cụ thể đằng sau
+[`05-http-stack/11-grpc.md`](../05-http-stack/11-grpc.md); [`18-async-traits.md`](18-async-traits.md) là gotcha cụ thể đằng sau
 trait middleware của [`09-architecture/02-plugin.md`](../09-architecture/02-plugin.md) và trait strategy của
 [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md) ngay khi một trong hai cần vừa async vừa
 `dyn`-dispatch.

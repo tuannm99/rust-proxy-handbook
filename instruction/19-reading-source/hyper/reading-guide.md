@@ -17,7 +17,7 @@ the named type.
 | Read | After | Why then |
 | --- | --- | --- |
 | Stop 1-3: parsing and framing | [`labs/01-http-parser`](../../../labs/01-http-parser), [`05-http-stack/01-parser.md`](../../05-http-stack/01-parser.md) Practice step 8 | Every difference from your parser is a case you missed or chose differently |
-| Stop 4: the connection state machine | [`labs/02-http-server`](../../../labs/02-http-server), [`05-http-stack/04-keepalive.md`](../../05-http-stack/04-keepalive.md) | You've debugged keep-alive yourself |
+| Stop 4: the connection state machine | [`labs/02-http-server`](../../../labs/02-http-server), [`05-http-stack/05-keepalive.md`](../../05-http-stack/05-keepalive.md) | You've debugged keep-alive yourself |
 | Stop 5: the dispatcher | [`03-rust/18-async-traits.md`](../../03-rust/18-async-traits.md), [`labs/02-http-server`](../../../labs/02-http-server) | You've implemented a `Service` |
 
 ## The route
@@ -52,11 +52,11 @@ the buffering.
 ### Stop 5: the dispatcher: `proto/h1/dispatch.rs`
 This is where your `Service` gets called.
 - How does the dispatcher interleave reading the next request, polling your service's future, and writing the response?
-- Where is backpressure applied when the client reads the response body slowly ([`01-network/11-http2.md`](../../01-network/11-http2.md) covers the HTTP/2 version of this problem)?
+- Where is backpressure applied when the client reads the response body slowly ([`01-network/12-http2.md`](../../01-network/12-http2.md) covers the HTTP/2 version of this problem)?
 
 ## What to write in your notes
 `interesting-code.md` should list, for each stop, one decision hyper made
 differently from your [`labs/01-http-parser`](../../../labs/01-http-parser) and which one you now think is
 right. `what-to-learn.md` should map what you found back to
-[`05-http-stack/01-parser.md`](../../05-http-stack/01-parser.md), [`05-http-stack/04-keepalive.md`](../../05-http-stack/04-keepalive.md), and
+[`05-http-stack/01-parser.md`](../../05-http-stack/01-parser.md), [`05-http-stack/05-keepalive.md`](../../05-http-stack/05-keepalive.md), and
 [`07-security/05-request-smuggling.md`](../../07-security/05-request-smuggling.md).

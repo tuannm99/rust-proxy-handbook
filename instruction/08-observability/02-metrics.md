@@ -78,7 +78,7 @@ a generic RED dashboard:
 - **Retry and circuit-breaker state** ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)) — retry rate,
   budget exhaustion, circuit transitions.
 - **Healthy upstream count** as a gauge ([`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)).
-- **Cache hit ratio** ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)), which explains upstream
+- **Cache hit ratio** ([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)), which explains upstream
   load changes that have nothing to do with client traffic.
 - **Queue depth / shed count** ([`07-security/09-ddos.md`](../07-security/09-ddos.md)), the earliest
   signal of overload.

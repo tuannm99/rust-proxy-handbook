@@ -1,6 +1,6 @@
 # LRU và Cache Eviction
 
-[`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md) nói về ngữ nghĩa cache HTTP (freshness, `Vary`,
+[`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md) nói về ngữ nghĩa cache HTTP (freshness, `Vary`,
 invalidation). File này nói về chính sách eviction bên dưới: vứt bỏ cái gì
 khi cache đầy.
 

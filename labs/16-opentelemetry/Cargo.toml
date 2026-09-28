@@ -5,6 +5,16 @@ edition.workspace = true
 publish.workspace = true
 
 [dependencies]
-tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+tokio = { version = "1", features = ["rt-multi-thread", "net", "io-util", "macros", "time"] }
+hyper = { version = "1", features = ["server", "client", "http1"] }
+hyper-util = { version = "0.1", features = ["tokio", "server-auto", "client-legacy"] }
+http-body-util = "0.1"
+bytes = "1"
 tracing = "0.1"
-opentelemetry = "0.26"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+# these five must move together: tracing-opentelemetry 0.34 pairs with OTel 0.33
+opentelemetry = "0.33"
+opentelemetry_sdk = "0.33"
+opentelemetry-otlp = "0.33"
+opentelemetry-http = "0.33"
+tracing-opentelemetry = "0.34"

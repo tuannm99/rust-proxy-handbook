@@ -24,7 +24,7 @@ response này như một HTTP response bình thường — chỉ vậy thôi. Đ
 giờ đọc yếu tố bảo mật vào nó.
 
 Gotcha: `Connection` và `Upgrade` là header hop-by-hop
-([`05-http-stack/04-keepalive.md`](04-keepalive.md)). Một proxy không được forward chúng mù
+([`05-http-stack/05-keepalive.md`](05-keepalive.md)). Một proxy không được forward chúng mù
 quáng — nó kết thúc một lần upgrade và khởi tạo một lần khác, sinh lại cả
 hai header cho leg upstream. Một proxy strip header hop-by-hop đúng đắn
 rồi *sau đó* quên thêm lại chúng cho request upgrade làm hỏng WebSocket

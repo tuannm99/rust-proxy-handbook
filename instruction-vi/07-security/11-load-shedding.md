@@ -97,7 +97,7 @@ sát capacity thật mà không ai phải tune nó.
 
 Gotcha: adaptive limiting cần một tín hiệu latency ổn định để hoạt động,
 nên nó xử sự tệ khi latency vốn bimodal một cách tự nhiên (cache hit ở 1ms,
-miss ở 200ms — [`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)). Áp nó theo route, hoặc theo
+miss ở 200ms — [`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)). Áp nó theo route, hoặc theo
 nhóm công việc có chi phí tương tự, thay vì toàn cục.
 
 ### Nói sự thật với client

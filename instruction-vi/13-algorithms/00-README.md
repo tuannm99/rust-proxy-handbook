@@ -32,7 +32,7 @@ dụng ở đâu thay vào đó:
 - [`tinylfu.md`](tinylfu.md) — admission thay vì eviction, tần suất bằng count-min-sketch, doorkeeper, cửa sổ LRU của W-TinyLFU
 - [`dfa.md`](dfa.md) — matching theo bảng, subset construction, minimization
 - [`fsm.md`](fsm.md) — máy Mealy/Moore, enum+match so với typestate pattern
-- [`trie.md`](trie.md) — tra cứu prefix theo segment, được [`05-http-stack/03-router.md`](../05-http-stack/03-router.md) dùng
+- [`trie.md`](trie.md) — tra cứu prefix theo segment, được [`05-http-stack/04-router.md`](../05-http-stack/04-router.md) dùng
 - [`radix-tree.md`](radix-tree.md) — trie nén, cách tách longest-common-prefix, thứ mà router production thật dùng
 - [`ring-buffer.md`](ring-buffer.md) — circular buffer kích thước cố định, logging SPSC lock-free, được [`08-observability/01-logging.md`](../08-observability/01-logging.md) dùng
 - [`heap.md`](heap.md) — binary heap dựa trên mảng, decrease-key qua lazy deletion hoặc indexed heap

@@ -19,13 +19,13 @@ constraints that each look local and together define the pipeline. Collected:
 | 2 | IP filtering on the real peer | Before anything expensive; uses the socket address, not headers ([`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)) |
 | 3 | TLS termination | Client-cert rejection should happen at handshake, not after ([`07-security/01-auth.md`](../07-security/01-auth.md)) |
 | 4 | Codec / parse | Framing validation and smuggling rejection ([`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md)) |
-| 5 | **Strip hop-by-hop and identity headers** | Must happen before anything reads them ([`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md), [`07-security/01-auth.md`](../07-security/01-auth.md)) |
-| 6 | Path normalization | Before routing, or routing decides on a different path than the upstream sees ([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)) |
+| 5 | **Strip hop-by-hop and identity headers** | Must happen before anything reads them ([`05-http-stack/05-keepalive.md`](../05-http-stack/05-keepalive.md), [`07-security/01-auth.md`](../07-security/01-auth.md)) |
+| 6 | Path normalization | Before routing, or routing decides on a different path than the upstream sees ([`05-http-stack/04-router.md`](../05-http-stack/04-router.md)) |
 | 7 | Routing | Needed to know *which* policy applies to the rest |
 | 8 | Per-route rate limiting | Cheap rejection before expensive work ([`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md)) |
 | 9 | Auth | Before body inspection and before any upstream cost |
 | 10 | WAF / body inspection | Most expensive check, runs last and only for authenticated, non-rate-limited traffic ([`07-security/06-waf.md`](../07-security/06-waf.md)) |
-| 11 | Cache lookup | Before the upstream call, after auth (or you serve one user's response to another — [`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)) |
+| 11 | Cache lookup | Before the upstream call, after auth (or you serve one user's response to another — [`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)) |
 | 12 | Upstream call | Load balancing, retries, circuit breaking ([`06-proxy/`](../06-proxy)) |
 
 Logging and metrics wrap the whole thing, since they must observe requests
@@ -110,8 +110,8 @@ opposite order from its request-side work, which is usually what you want
 (logging outermost sees the final status) and occasionally not
 (compression must run *inside* caching, so the cache stores one
 representation rather than a compressed one it can't re-serve to a
-different client — [`05-http-stack/06-compression.md`](../05-http-stack/06-compression.md),
-[`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)). Write the response path's order down
+different client — [`05-http-stack/07-compression.md`](../05-http-stack/07-compression.md),
+[`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)). Write the response path's order down
 explicitly; don't assume it falls out correctly.
 
 Gotcha: a streaming response means the response "passes through" modules

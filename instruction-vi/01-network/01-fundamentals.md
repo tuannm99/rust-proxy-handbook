@@ -46,7 +46,7 @@ lại từng phần riêng lẻ thay vì đọc lại cả một bức tường 
   không gian đó, và file này trả lời thẳng "cái nào, và vì sao".
 - **[`06-crypto-basics.md`](06-crypto-basics.md)** — mã hóa symmetric vs asymmetric, hashing,
   HMAC, digital signature, certificate/PKI. Không phải cryptography như
-  một ngành học — chỉ đủ để handshake trong [`13-tls.md`](13-tls.md) và chữ ký trong
+  một ngành học — chỉ đủ để handshake trong [`14-tls.md`](14-tls.md) và chữ ký trong
   [`07-security/02-jwt.md`](../07-security/02-jwt.md) không còn là phép màu.
 
 Đọc chúng theo thứ tự đó một lần; sau đó, coi mỗi file là một điểm tra cứu

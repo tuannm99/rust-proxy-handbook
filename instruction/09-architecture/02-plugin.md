@@ -75,6 +75,38 @@ but means state can leak between requests unless you reset it — the same
 discipline as [`14-memory/03-object-pool.md`](../14-memory/03-object-pool.md), with a security consequence if
 you get it wrong.
 
+### Turning a native plugin's panic into a 500
+A compiled-in plugin that panics unwinds whatever task is polling it. On
+the request path that is the hyper connection task, so the connection
+disappears with no response ([`05-http-stack/02-hyper.md`](../05-http-stack/02-hyper.md)). To answer
+`500` instead, put a panic boundary around the plugin chain. There are two
+ways to build one:
+
+- **`catch_unwind` on the future.** `futures::FutureExt::catch_unwind`
+  (crate `futures-util`) wraps a future so that a panic during any poll
+  becomes an `Err(payload)` instead of unwinding further. It requires the
+  future to be `UnwindSafe`, which async blocks capturing references
+  usually aren't, so it's wrapped in `std::panic::AssertUnwindSafe`. That
+  wrapper is a *promise*, not a check. It says nothing the panicking code
+  left half-updated will be observed afterwards. The promise holds if
+  plugin state is per-request or immutable. It breaks if a plugin panics
+  while mutating a shared map: the next request sees the torn state, or a
+  poisoned `std::sync::Mutex` ([`03-rust/08-error-handling.md`](../03-rust/08-error-handling.md)).
+- **A separate task.** `tokio::spawn` the chain and await the
+  `JoinHandle`. A panic arrives as a `JoinError` whose `is_panic()` is
+  true. The isolation is the same, but it costs a spawn per request and
+  requires everything the chain touches to be `'static` and `Send`.
+
+Either way the panic message still goes through the panic hook (stderr by
+default). Log the plugin's name along with the `500`, or the only evidence
+is a line with no request attached.
+
+Gotcha: both mechanisms only work if panics unwind. A Cargo profile with
+`panic = "abort"`, which some projects set for release builds to shrink
+binaries, turns every plugin panic into a process exit, and no amount of
+`catch_unwind` changes that. Check the profile the tests run under
+matches the one you ship.
+
 ### Data and control flow across a plugin boundary
 Whatever mechanism you pick, decide explicitly: can a plugin see the full request/response body, or just headers? Can it short-circuit (return a response without calling upstream)? Can it fail open (pass through) or must it fail closed (reject) on plugin error? These are security-relevant decisions (see [`07-security/06-waf.md`](../07-security/06-waf.md)), not just architecture ones.
 
@@ -86,7 +118,7 @@ Two more that bite later if left implicit:
   mutations you actually intend to allow.
 - **Body access forces buffering.** Granting body access silently
   disables streaming for every route that uses that plugin
-  ([`05-http-stack/10-grpc.md`](../05-http-stack/10-grpc.md), [`05-http-stack/09-websocket.md`](../05-http-stack/09-websocket.md)), with all of
+  ([`05-http-stack/11-grpc.md`](../05-http-stack/11-grpc.md), [`05-http-stack/10-websocket.md`](../05-http-stack/10-websocket.md)), with all of
   [`07-security/06-waf.md`](../07-security/06-waf.md)'s size-limit consequences. Make it opt-in per
   plugin and visible in config, not a capability everything gets.
 

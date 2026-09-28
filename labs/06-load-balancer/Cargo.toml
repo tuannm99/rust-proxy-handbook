@@ -6,3 +6,6 @@ publish.workspace = true
 
 [dependencies]
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+
+[dev-dependencies]
+criterion = "0.8"

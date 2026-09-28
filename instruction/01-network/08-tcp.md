@@ -63,7 +63,7 @@ TCP keepalive (`SO_KEEPALIVE` + `TCP_KEEPIDLE`/`TCP_KEEPINTVL`/
 `TCP_KEEPCNT`) periodically probes an idle connection to detect a dead peer
 that never sent a `FIN` (e.g. the machine crashed, or a NAT/firewall
 silently dropped the mapping). This is distinct from *application-level*
-HTTP keep-alive ([`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md)) — TCP keepalive detects a
+HTTP keep-alive ([`05-http-stack/05-keepalive.md`](../05-http-stack/05-keepalive.md)) — TCP keepalive detects a
 dead peer, HTTP keep-alive decides whether to reuse a connection for
 another request.
 

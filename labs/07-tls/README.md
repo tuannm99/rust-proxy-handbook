@@ -16,8 +16,10 @@ picking HTTP/1.1 vs HTTP/2 per client and SNI picking the certificate.
 
 ## Handbook references
 - [`instruction/01-network/06-crypto-basics.md`](../../instruction/01-network/06-crypto-basics.md) — certificates and chains, if the vocabulary isn't solid yet
-- [`instruction/01-network/13-tls.md`](../../instruction/01-network/13-tls.md) — handshake, SNI, ALPN, session resumption
+- [`instruction/01-network/14-tls.md`](../../instruction/01-network/14-tls.md) — handshake, SNI, ALPN, session resumption
 - [`instruction/07-security/10-slowloris.md`](../../instruction/07-security/10-slowloris.md) — why the handshake needs its own deadline
+- [`instruction/05-http-stack/02-hyper.md`](../../instruction/05-http-stack/02-hyper.md) — handing the TLS stream to hyper
+- [`instruction/05-http-stack/12-vhost-routing.md`](../../instruction/05-http-stack/12-vhost-routing.md) — choosing certificates by SNI at scale
 
 ## Run
 

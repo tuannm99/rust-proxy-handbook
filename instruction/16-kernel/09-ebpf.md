@@ -96,6 +96,65 @@ load at startup while still privileged, or split loading into a separate
 privileged helper. This ordering constraint has to be designed in, not
 retrofitted.
 
+### Setting up an Aya project
+An Aya project is not one crate. It is three, because the kernel program
+is compiled for a different target (`bpfel-unknown-none`, no `std`, no
+allocator) from the loader that runs as a normal process:
+
+| Crate | Target | Holds |
+|---|---|---|
+| `<name>-ebpf` | `bpfel-unknown-none` | the XDP program (`#[xdp]` from `aya-ebpf`) and the map definitions |
+| `<name>-common` | both | `#[repr(C)]` types shared by both sides, such as map keys and values |
+| `<name>` | your host | the loader: loads the compiled program, attaches it to an interface, reads and writes maps, prints `aya-log` output |
+
+Toolchain, once:
+- `rustup toolchain install nightly --component rust-src`. The eBPF crate
+  builds `core` itself for the BPF target, which needs nightly and the
+  standard library source.
+- `cargo install bpf-linker`, the linker that turns Rust's LLVM output into
+  BPF bytecode. On x86_64 Linux it installs as is.
+- `cargo install cargo-generate`, then
+  `cargo generate https://github.com/aya-rs/aya-template`. Choose the `xdp`
+  program type. You get the three crates wired together, with a build
+  script that compiles the eBPF crate whenever you build the loader.
+
+The template is its own Cargo workspace, and a workspace can't sit inside
+another one. For [`labs/17-ebpf`](../../labs/17-ebpf): remove `"labs/17-ebpf"` from the
+`members` list in the root `Cargo.toml`, add `exclude = ["labs/17-ebpf"]`
+to its `[workspace]` table, and generate the project into that directory
+in place of the stub. Build and run it from inside `labs/17-ebpf`.
+
+Loading needs root (`CAP_BPF` + `CAP_NET_ADMIN`), so the template's run
+command goes through `sudo`:
+`RUST_LOG=info cargo run --config 'target."cfg(all())".runner="sudo -E"' -- --iface veth0`.
+
+**A private test network.** Don't attach an experimental drop program to
+your real interface. A network namespace joined by a `veth` pair gives you
+a second "host" with its own IP:
+
+```sh
+sudo ip netns add attacker
+sudo ip link add veth0 type veth peer name veth1
+sudo ip link set veth1 netns attacker
+sudo ip addr add 10.10.0.1/24 dev veth0 && sudo ip link set veth0 up
+sudo ip netns exec attacker ip addr add 10.10.0.2/24 dev veth1
+sudo ip netns exec attacker ip link set veth1 up
+sudo ip netns exec attacker ping -c1 10.10.0.1     # must succeed before XDP
+```
+
+Attach the program to `veth0`. Traffic from `10.10.0.2` (anything run
+under `ip netns exec attacker`, such as `curl http://10.10.0.1:8080/`) is
+what it sees. Run your proxy bound to `10.10.0.1`. `sudo ip netns del
+attacker` removes it all.
+
+Checking the attach mode doesn't need `bpftool`:
+`ip -details link show veth0` prints `xdp` for native mode and
+`xdpgeneric` for the fallback ([`16-kernel/10-xdp.md`](10-xdp.md)). `veth` supports
+native XDP. Gotcha for WSL2: distro `linux-tools`/`bpftool` packages are
+built for the distro's kernel, not Microsoft's, and refuse to run. If you
+want `bpftool`, build it from `github.com/libbpf/bpftool`. The WSL2 kernel
+itself ships with BPF, BTF and veth support, so Aya works there.
+
 ### When it is worth it
 eBPF filtering pays off when you need to drop traffic *before* it costs
 anything ([`07-security/09-ddos.md`](../07-security/09-ddos.md)), or observe the kernel without

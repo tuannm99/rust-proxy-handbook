@@ -40,6 +40,29 @@ thay file để lại bạn serve nội dung của fd cũ mãi mãi.
 ### Range request
 Client (browser resume một download, video player tua) gửi `Range: bytes=1000-1999`. Một server tuân thủ trả về `206 Partial Content` kèm `Content-Range`, hoặc `416 Range Not Satisfiable` nếu range không hợp lệ — và phải xử lý request multi-range (`bytes=0-99,200-299`) hoặc từ chối tường minh qua `Accept-Ranges: none`.
 
+Cú pháp chính xác (RFC 9110 §14), với một file 1000 byte. Vị trí đếm từ 0
+và **cả hai đầu đều bao gồm**:
+
+| `Range:` của request | Ý nghĩa | Response |
+|---|---|---|
+| `bytes=0-99` | 100 byte đầu tiên | `206`, `Content-Range: bytes 0-99/1000`, `Content-Length: 100` |
+| `bytes=900-` | từ 900 tới hết | `206`, `Content-Range: bytes 900-999/1000` |
+| `bytes=-100` | 100 byte *cuối cùng* (suffix) | `206`, `Content-Range: bytes 900-999/1000` |
+| `bytes=0-5000` | điểm cuối vượt EOF: kẹp lại về 999 | `206`, `Content-Range: bytes 0-999/1000` |
+| `bytes=1000-` hoặc `bytes=-0` | bắt đầu tại hoặc sau điểm cuối, hoặc xin 0 byte | `416`, `Content-Range: bytes */1000` |
+| `bytes=500-100`, `bytes=abc`, `items=0-5` | hoàn toàn không phải byte range hợp lệ | **bỏ qua header**: `200` với toàn bộ file |
+
+Có ba luật đằng sau bảng đó. Một range *không thỏa mãn được* (cú pháp
+đúng, nhưng không có gì trong file) nhận `416`, và `416` mang
+`Content-Range: bytes */<size>` để client biết kích thước thật. Một header
+`Range` *sai cú pháp*, hoặc có đơn vị lạ, không phải lỗi: server bỏ qua nó
+và phục vụ toàn bộ representation với `200`. Và `Range` chỉ áp dụng cho
+`GET`. Với method khác nó bị bỏ qua. Một `206` mang cùng `Content-Type` như
+response đầy đủ, và server quảng bá việc hỗ trợ bằng `Accept-Ranges: bytes`.
+File rỗng là trường hợp biên: `Content-Range` không có cách nào gọi tên một
+range bên trong 0 byte, nên hãy trả lời range request tới nó bằng `200` và
+body rỗng (bỏ qua `Range` luôn được phép).
+
 Gotcha: multi-range là một vector khuếch đại. Một request liệt kê hàng
 trăm range nhỏ chồng lấn buộc server phải dựng một response
 `multipart/byteranges` lớn — output nhiều hơn hẳn input, cộng thêm CPU để
@@ -87,7 +110,7 @@ chắc là resolve tương đối với một thư mục root đã mở, dùng `
 kernel enforce việc containment một cách atomic thay vì bạn tự kiểm tra
 một chuỗi.
 
-Gotcha: cùng thảo luận về normalization như [`05-http-stack/03-router.md`](03-router.md)
+Gotcha: cùng thảo luận về normalization như [`05-http-stack/04-router.md`](04-router.md)
 áp dụng ở đây, và nếu router đã normalize path rồi, static handler không
 được decode nó *lần nữa* — decode hai lần đưa traversal quay lại từ
 `%252e%252e%252f`. Decode đúng một lần, ở một chỗ có ghi rõ.

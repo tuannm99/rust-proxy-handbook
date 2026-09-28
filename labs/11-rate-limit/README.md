@@ -20,6 +20,8 @@ bucket, returning a proper `429` with `Retry-After` when exceeded.
 - [`instruction/07-security/11-load-shedding.md`](../../instruction/07-security/11-load-shedding.md) — what to do once limits aren't enough
 - [`instruction/13-algorithms/token-bucket.md`](../../instruction/13-algorithms/token-bucket.md), [`instruction/13-algorithms/sliding-window.md`](../../instruction/13-algorithms/sliding-window.md), [`instruction/13-algorithms/leaky-bucket.md`](../../instruction/13-algorithms/leaky-bucket.md)
 - [`instruction/03-rust/16-testing-idioms.md`](../../instruction/03-rust/16-testing-idioms.md) — injecting a fake clock so rate tests aren't flaky
+- [`instruction/05-http-stack/02-hyper.md`](../../instruction/05-http-stack/02-hyper.md) — serving the `429` from a hyper service
+- [`instruction/12-testing/06-lab-environment.md`](../../instruction/12-testing/06-lab-environment.md) — installing and running the tools the checks above use
 
 ## Run
 

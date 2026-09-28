@@ -3,7 +3,7 @@
 ## What to learn
 
 ### Persistent connection
-Trong HTTP/1.0, mỗi request mặc định mở một connection TCP mới — tốn kém vì TCP handshake ([`01-network/08-tcp.md`](../01-network/08-tcp.md)) và, với HTTPS, còn thêm một TLS handshake đầy đủ nữa ([`01-network/13-tls.md`](../01-network/13-tls.md)). HTTP/1.1 làm connection persistent theo mặc định: sau một response, cùng connection đó ở lại mở cho request tiếp theo trừ khi một trong hai bên gửi `Connection: close`.
+Trong HTTP/1.0, mỗi request mặc định mở một connection TCP mới — tốn kém vì TCP handshake ([`01-network/08-tcp.md`](../01-network/08-tcp.md)) và, với HTTPS, còn thêm một TLS handshake đầy đủ nữa ([`01-network/14-tls.md`](../01-network/14-tls.md)). HTTP/1.1 làm connection persistent theo mặc định: sau một response, cùng connection đó ở lại mở cho request tiếp theo trừ khi một trong hai bên gửi `Connection: close`.
 
 ### Header hop-by-hop: những gì một proxy phải strip
 Trạng thái keep-alive là theo connection, và một tập header mô tả nó cũng
@@ -14,12 +14,12 @@ chúng; forward `Transfer-Encoding` đặc biệt là một trong những cách 
 để tự tạo ra lỗ hổng request-smuggling
 ([`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md)).
 
-Xem [`05-http-stack/02-hop-by-hop-headers.md`](02-hop-by-hop-headers.md) — bao gồm cả phần `Connection`
+Xem [`05-http-stack/03-hop-by-hop-headers.md`](03-hop-by-hop-headers.md) — bao gồm cả phần `Connection`
 nêu tên *thêm* các header để strip, và vì sao việc strip phải xảy ra trước
 khi các header đáng tin của chính bạn được áp vào.
 
 ### Pipelining (và vì sao nó gần như đã chết)
-Pipelining nghĩa là gửi nhiều request trên một connection mà không chờ từng response — được spec cho phép nhưng response vẫn phải quay về đúng thứ tự (head-of-line blocking), và một intermediary hành xử sai trên đường đi có thể làm hỏng cả luồng. Gần như không còn client HTTP/1.1 production nào pipeline nữa; các stream đa hợp của HTTP/2 ([`01-network/11-http2.md`](../01-network/11-http2.md)) giải quyết đúng cùng bài toán đó thay thế.
+Pipelining nghĩa là gửi nhiều request trên một connection mà không chờ từng response — được spec cho phép nhưng response vẫn phải quay về đúng thứ tự (head-of-line blocking), và một intermediary hành xử sai trên đường đi có thể làm hỏng cả luồng. Gần như không còn client HTTP/1.1 production nào pipeline nữa; các stream đa hợp của HTTP/2 ([`01-network/12-http2.md`](../01-network/12-http2.md)) giải quyết đúng cùng bài toán đó thay thế.
 
 Gotcha: "không client nào pipeline" không phải lý do để phía *server* của
 bạn xử lý sai nó. Nếu byte của một request thứ hai đến trong khi bạn vẫn
@@ -63,8 +63,8 @@ upstream, nếu không proxy sẽ phát ra một connection mà upstream đã â
 
 Gotcha: idle timeout phía client không được áp lên các connection cố tình
 sống lâu và im lặng theo thiết kế — một WebSocket rảnh
-([`05-http-stack/09-websocket.md`](09-websocket.md)), một cuộc gọi gRPC server-streaming
-([`05-http-stack/10-grpc.md`](10-grpc.md)), một stream SSE. Áp một timeout "không request
+([`05-http-stack/10-websocket.md`](10-websocket.md)), một cuộc gọi gRPC server-streaming
+([`05-http-stack/11-grpc.md`](11-grpc.md)), một stream SSE. Áp một timeout "không request
 mới trong 60 giây" lên chúng giết các connection đang hoạt động theo một
 cái đồng hồ, và các báo cáo bug kết quả ("nó ngắt kết nối mỗi phút") là
 một thể loại quen thuộc. Timeout phải theo từng *chế độ* connection, không
@@ -106,7 +106,7 @@ trên response *cuối cùng* bạn định phục vụ, để client biết đ�
 dụng connection thay vì phát hiện bằng cách thất bại. HTTP/2 giải quyết
 đúng đắn hơn bằng `GOAWAY`, nêu tên stream ID cuối cùng server sẽ xử lý,
 cho phép client retry an toàn bất cứ gì trên nó
-([`01-network/11-http2.md`](../01-network/11-http2.md)); đây cũng là cơ chế mà graceful shutdown phụ
+([`01-network/12-http2.md`](../01-network/12-http2.md)); đây cũng là cơ chế mà graceful shutdown phụ
 thuộc vào ([`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md)).
 
 Gotcha: client vẫn có thể đua, và một số không tuân theo
@@ -123,7 +123,7 @@ Làm theo thứ tự này.
    logging rằng hai request tuần tự từ một client tái sử dụng một
    connection TCP. **Xong khi** bạn thấy một handshake cho hai request, và
    `Connection: close` tạo ra một `FIN` sau response.
-2. Làm các bài tập của [`05-http-stack/02-hop-by-hop-headers.md`](02-hop-by-hop-headers.md). **Xong
+2. Làm các bài tập của [`05-http-stack/03-hop-by-hop-headers.md`](03-hop-by-hop-headers.md). **Xong
    khi** header hop-by-hop bị strip trong một stage sớm và header framing
    được sinh lại từ body bạn thực sự gửi.
 3. Thêm timeout theo từng chế độ: một idle timeout cho connection

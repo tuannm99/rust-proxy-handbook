@@ -16,7 +16,7 @@ chính các transition — đây chính xác là bản chất của một kết 
 `Idle -> ReadingRequestLine -> ReadingHeaders -> ReadingBody -> Idle`
 (keep-alive) hoặc `-> Closed`, với công việc thật xảy ra ở mỗi cạnh, chứ
 không chỉ một câu trả lời có/không ở cuối. Xem [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md)
-và [`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md) để có các state cụ thể; file này nói về
+và [`05-http-stack/05-keepalive.md`](../05-http-stack/05-keepalive.md) để có các state cụ thể; file này nói về
 cách mã hóa bản thân cái máy đó.
 
 ### Enum + match: trường hợp phổ biến
@@ -80,7 +80,7 @@ request đã được đọc đầy đủ).
    của `match` để xác nhận mọi state đều có transition được định nghĩa
    cho mọi lớp byte nó có thể thấy.
 2. Viết lại vòng đời kết nối keep-alive từ
-   [`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md) (idle → reading → responding →
+   [`05-http-stack/05-keepalive.md`](../05-http-stack/05-keepalive.md) (idle → reading → responding →
    idle/closed) thành một chuỗi typestate; thử gọi một method sai thứ tự
    và xác nhận nó không compile được.
 3. Chọn một transition mà parser dựa trên enum của bạn xử lý bằng

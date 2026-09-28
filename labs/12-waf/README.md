@@ -18,6 +18,7 @@ headers and body for known-bad signatures, without a regex-per-rule scan.
 - [`instruction/07-security/06-waf.md`](../../instruction/07-security/06-waf.md)
 - [`instruction/07-security/04-normalization.md`](../../instruction/07-security/04-normalization.md) — the parser-differential problem every bypass exploits
 - [`instruction/13-algorithms/aho-corasick.md`](../../instruction/13-algorithms/aho-corasick.md)
+- [`instruction/05-http-stack/02-hyper.md`](../../instruction/05-http-stack/02-hyper.md) — body frames: what a streamed body looks like to your code
 
 ## Run
 

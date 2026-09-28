@@ -44,7 +44,7 @@ monomorphized với chi phí bằng không — nhưng mỗi hàm trả về `imp
 signature giống hệt nhau vẫn trả về type *riêng* của chính nó.
 `Box<dyn Fn(...)>` xóa type đi, đây là thứ bạn cần để lưu các closure
 không đồng nhất trong một collection (một `Vec` các route handler — xem
-[`05-http-stack/03-router.md`](../05-http-stack/03-router.md)).
+[`05-http-stack/04-router.md`](../05-http-stack/04-router.md)).
 
 ```rust
 fn make_key_extractor(header: &'static str) -> impl Fn(&Request) -> Option<&str> {

@@ -16,7 +16,7 @@ Bốn cái nữa đáng để tâm:
 - **`immutable`**: cái này sẽ không bao giờ thay đổi trong suốt vòng đời
   tươi mới của nó, nên đừng cả revalidate khi người dùng chủ động reload.
   Đi cùng với tên file asset content-hashed
-  ([`05-http-stack/05-static.md`](05-static.md)).
+  ([`05-http-stack/06-static.md`](06-static.md)).
 - **`stale-while-revalidate=N`**: serve ngay bản stale và làm mới ở nền
   trong tối đa N giây. Đây là directive có đòn bẩy cao nhất cho một proxy
   cache — nó tách hoàn toàn latency người dùng thấy khỏi latency của
@@ -31,7 +31,7 @@ downstream dùng nó để tính độ tươi còn lại; bỏ nó khiến mọi
 bạn coi response stale của bạn là hoàn toàn mới.
 
 ### Freshness so với validation
-Một response đã cache hoặc *tươi* (trong `max-age`) và có thể serve nguyên trạng, hoặc *stale* và phải được revalidate với origin (một conditional request dùng `ETag`/`Last-Modified`, xem [`05-http-stack/05-static.md`](05-static.md)) trước khi tái sử dụng. Serve dữ liệu stale mà không revalidate là một bug về đúng đắn, không phải một tối ưu.
+Một response đã cache hoặc *tươi* (trong `max-age`) và có thể serve nguyên trạng, hoặc *stale* và phải được revalidate với origin (một conditional request dùng `ETag`/`Last-Modified`, xem [`05-http-stack/06-static.md`](06-static.md)) trước khi tái sử dụng. Serve dữ liệu stale mà không revalidate là một bug về đúng đắn, không phải một tối ưu.
 
 Gotcha: chuyện gì xảy ra khi origin không gửi *bất kỳ* thông tin freshness
 nào? RFC 9111 cho phép **heuristic freshness** — thường là 10% thời gian
@@ -40,6 +40,51 @@ response mà origin chưa bao giờ nói là cacheable. Điều đó tuân thủ
 nhưng vẫn là một bất ngờ với người viết upstream. Với một proxy cache, mặc
 định "không có freshness tường minh nghĩa là đừng cache" là chính sách an
 toàn hơn; biến heuristic caching thành opt-in theo từng route.
+
+### Tính freshness và age chính xác
+RFC 9111 §4.2 biến câu hỏi "entry này còn fresh không?" thành phép tính.
+Ghi lại hai mốc thời gian khi fetch: `request_time` (lúc bạn gửi request
+lên upstream) và `response_time` (lúc response tới nơi).
+
+**Freshness lifetime** là cái đầu tiên áp dụng được trong danh sách sau,
+với một shared cache như proxy:
+1. `s-maxage=N` → N giây.
+2. `max-age=N` → N giây.
+3. `Expires` trừ `Date` (cả hai là HTTP date, trong response).
+4. Nếu không có gì thì không có, trừ khi bạn đã bật heuristic freshness
+   (ở trên).
+
+**Current age** tính cả thời gian response đã nằm trong các cache phía
+trên bạn và thời gian trên đường truyền:
+
+```text
+apparent_age          = max(0, response_time - Date)
+corrected_age_value   = Age (header, mặc định 0) + (response_time - request_time)
+corrected_initial_age = max(apparent_age, corrected_age_value)
+current_age           = corrected_initial_age + (now - response_time)
+```
+
+Entry còn **fresh** khi `freshness_lifetime > current_age`. Khi phục vụ nó,
+gửi `Age: current_age` tính bằng giây nguyên. Một entry có `max-age=60` mà
+đến nơi đã mang `Age: 50` thì chỉ còn fresh thêm 10 giây, và bỏ qua `Age`
+đi vào là cách nội dung stale bị phục vụ như fresh dọc theo một chuỗi cache.
+
+**Khớp Vary** (§4.1): một response đã lưu chỉ trả lời được một request mới
+nếu, với mọi header có tên trong `Vary` của response đã lưu, giá trị trong
+request mới bằng giá trị trong request đã *sinh ra* response đó. Vì vậy
+một entry phải nhớ các giá trị header gốc đó của request. Đó là lý do key
+là "method + URI" cộng một phép khớp phụ trên các header được vary, không
+chỉ riêng URI. `Vary: *` không bao giờ khớp, nên response đó thực tế không
+cache được.
+
+**Revalidation** (§4.3): với một entry stale, gửi request lên upstream kèm
+`If-None-Match: <ETag đã lưu>` (hoặc `If-Modified-Since: <Last-Modified đã
+lưu>` nếu không có ETag). Một `304 Not Modified` nghĩa là "bản của bạn vẫn
+dùng được". Cập nhật các header đã lưu từ header của `304`, đặt lại
+`request_time`/`response_time` của entry để age tính lại từ đầu, và phục vụ
+*body đã lưu* cho client như một `200` bình thường. Một `200` nghĩa là
+resource đã thay đổi: thay entry. Một `5xx` nghĩa là chỉ phục vụ bản stale
+nếu `stale-if-error` cho phép, nếu không thì chuyển lỗi đi tiếp.
 
 ### Cái gì thậm chí đủ điều kiện để cache
 Trước tất cả những điều trên: method phải là `GET` hoặc `HEAD` (không bao giờ cache một response `POST` chỉ dựa trên URL), và status code phải là một trong những cái spec cho phép cache theo mặc định — 200, 203, 204, 206, 300, 301, 404, 405, 410, 414, 501. Cache 404 và 301 là hợp pháp và có giá trị; cache một 500 thì không.
@@ -93,7 +138,7 @@ Cách hệ thống để tìm chúng là thay đổi từng input một và diff
 ### Cache stampede
 Khi một entry phổ biến hết hạn, mọi request đồng thời cho nó miss cùng lúc và tất cả đi tới origin — cache gây thiệt hại tối đa đúng lúc nó ngừng giúp ích. Request coalescing (single-flight) cộng `stale-while-revalidate` loại bỏ hoàn toàn vấn đề này, và một cold start sau một lần restart là cùng vấn đề đó cho mọi key cùng một lúc.
 
-Xem [`05-http-stack/08-cache-stampede.md`](08-cache-stampede.md).
+Xem [`05-http-stack/09-cache-stampede.md`](09-cache-stampede.md).
 
 ### Invalidation
 Hết hạn theo thời gian (`max-age`) là trường hợp dễ. Invalidation tường minh (origin đẩy một lần purge, hoặc một lần ghi làm invalidate một lần đọc liên quan) là trường hợp khó mà mọi cache thật cuối cùng đều cần — lên kế hoạch cho một cơ chế purge-theo-key hoặc purge-theo-prefix ngay từ đầu thay vì gắn thêm sau.
@@ -130,7 +175,7 @@ Làm theo thứ tự này.
 4. Thêm freshness (`max-age`/`s-maxage`), header `Age`, và revalidation
    qua conditional request. **Xong khi** một entry stale kích hoạt đúng
    một conditional request và một `304` làm mới nó mà không truyền body.
-5. Làm các bài tập của [`05-http-stack/08-cache-stampede.md`](08-cache-stampede.md). **Xong khi**
+5. Làm các bài tập của [`05-http-stack/09-cache-stampede.md`](09-cache-stampede.md). **Xong khi**
    500 request đồng thời cho một key vừa hết hạn tạo ra đúng một lần chạm
    origin, và `stale-while-revalidate` nghĩa là không cái nào phải chờ.
 6. Thêm `stale-if-error`. **Xong khi** đưa origin hoàn toàn offline vẫn

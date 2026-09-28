@@ -1,7 +1,7 @@
 # Distributed Cache
 
 Trải một cache qua nhiều node khi một cache single-node
-([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md), [`13-algorithms/lru.md`](../13-algorithms/lru.md)) không còn đủ. Topic
+([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md), [`13-algorithms/lru.md`](../13-algorithms/lru.md)) không còn đủ. Topic
 [`18-distributed/`](.) duy nhất kết nối trực tiếp nhất với một proxy — nhưng
 vẫn vượt ngoài deliverable single-instance của [`proxy/`](../../proxy).
 
@@ -62,7 +62,7 @@ nó tiết kiệm được.
 ### Thundering herd trên toàn fleet
 Khi một object phổ biến hết hạn, mọi proxy nhận request cho nó có thể hit
 origin đồng thời — một stampede toàn fleet còn tệ hơn nhiều phiên bản
-single-node (request coalescing của [`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)). Cách
+single-node (request coalescing của [`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)). Cách
 sửa distributed là chỉ node *sở hữu* fetch từ origin và các node khác
 coalesce vào nó, cộng với request-coalescing/single-flight trên owner đó.
 Việc đặt chỗ (consistent hashing) chính là thứ làm cho "chỉ owner fetch"

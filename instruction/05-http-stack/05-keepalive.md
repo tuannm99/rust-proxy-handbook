@@ -3,7 +3,7 @@
 ## What to learn
 
 ### Persistent connections
-In HTTP/1.0, every request opened a new TCP connection by default — expensive given the TCP handshake ([`01-network/08-tcp.md`](../01-network/08-tcp.md)) and, for HTTPS, a full TLS handshake too ([`01-network/13-tls.md`](../01-network/13-tls.md)). HTTP/1.1 makes connections persistent by default: after a response, the same connection stays open for the next request unless either side sends `Connection: close`.
+In HTTP/1.0, every request opened a new TCP connection by default — expensive given the TCP handshake ([`01-network/08-tcp.md`](../01-network/08-tcp.md)) and, for HTTPS, a full TLS handshake too ([`01-network/14-tls.md`](../01-network/14-tls.md)). HTTP/1.1 makes connections persistent by default: after a response, the same connection stays open for the next request unless either side sends `Connection: close`.
 
 ### Hop-by-hop headers: what a proxy must strip
 Keep-alive state is per connection, and so is a whole set of headers that
@@ -14,12 +14,12 @@ forwarding `Transfer-Encoding` in particular is one of the standard ways
 to manufacture a request-smuggling vulnerability
 ([`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md)).
 
-See [`05-http-stack/02-hop-by-hop-headers.md`](02-hop-by-hop-headers.md) — including the part where
+See [`05-http-stack/03-hop-by-hop-headers.md`](03-hop-by-hop-headers.md) — including the part where
 `Connection` names *additional* headers to strip, and why the strip has to
 happen before your own trusted headers are applied.
 
 ### Pipelining (and why it's effectively dead)
-Pipelining means sending multiple requests on a connection without waiting for each response — allowed by the spec but responses must still come back strictly in order (head-of-line blocking), and a single misbehaving intermediary in the path can corrupt the stream. Essentially no production HTTP/1.1 client pipelines anymore; HTTP/2's multiplexed streams ([`01-network/11-http2.md`](../01-network/11-http2.md)) solve the same problem correctly instead.
+Pipelining means sending multiple requests on a connection without waiting for each response — allowed by the spec but responses must still come back strictly in order (head-of-line blocking), and a single misbehaving intermediary in the path can corrupt the stream. Essentially no production HTTP/1.1 client pipelines anymore; HTTP/2's multiplexed streams ([`01-network/12-http2.md`](../01-network/12-http2.md)) solve the same problem correctly instead.
 
 Gotcha: "no client pipelines" is not a reason for your *server* side to
 mishandle it. If bytes for a second request arrive while you're still
@@ -57,8 +57,8 @@ Two independent timeouts matter: how long the proxy keeps a client connection op
 
 Gotcha: the client-side idle timeout must not apply to connections that
 are legitimately long-lived and quiet by design — an idle WebSocket
-([`05-http-stack/09-websocket.md`](09-websocket.md)), a server-streaming gRPC call
-([`05-http-stack/10-grpc.md`](10-grpc.md)), an SSE stream. Applying a 60-second
+([`05-http-stack/10-websocket.md`](10-websocket.md)), a server-streaming gRPC call
+([`05-http-stack/11-grpc.md`](11-grpc.md)), an SSE stream. Applying a 60-second
 "no new request" timeout to those kills working connections on a timer,
 and the resulting bug reports ("it disconnects every minute") are a
 well-worn genre. Timeouts must be per connection *mode*, not global.
@@ -101,7 +101,7 @@ The mitigation on the response path is to announce it in advance — send
 client knows not to reuse the connection rather than finding out by
 failure. HTTP/2 solves it properly with `GOAWAY`, which names the last
 stream ID the server will process, letting the client retry anything above
-it safely ([`01-network/11-http2.md`](../01-network/11-http2.md)); this is also the mechanism graceful
+it safely ([`01-network/12-http2.md`](../01-network/12-http2.md)); this is also the mechanism graceful
 shutdown depends on ([`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md)).
 
 Gotcha: clients still race, and some don't honor `Connection: close`
@@ -117,7 +117,7 @@ Build these in order.
    that two sequential requests from one client reuse one TCP connection.
    **Done when** you see one handshake for two requests, and
    `Connection: close` produces a `FIN` after the response.
-2. Work through [`05-http-stack/02-hop-by-hop-headers.md`](02-hop-by-hop-headers.md)'s exercises. **Done
+2. Work through [`05-http-stack/03-hop-by-hop-headers.md`](03-hop-by-hop-headers.md)'s exercises. **Done
    when** hop-by-hop headers are stripped in one early stage and framing
    headers are regenerated from the body you actually send.
 3. Add per-mode timeouts: an idle timeout for normal keep-alive

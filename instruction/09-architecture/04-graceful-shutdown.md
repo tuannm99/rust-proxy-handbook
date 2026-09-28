@@ -80,18 +80,18 @@ which ones were accepted and which it must retry elsewhere. The graceful
 form is two `GOAWAY` frames — one with the maximum stream ID to announce
 intent (letting in-flight streams finish while the client stops opening
 new ones), then a final one with the real last-processed ID
-([`01-network/11-http2.md`](../01-network/11-http2.md)).
+([`01-network/12-http2.md`](../01-network/12-http2.md)).
 
 Gotcha: an idle keep-alive connection is the same race as
-[`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md)'s close/request collision, now happening
+[`05-http-stack/05-keepalive.md`](../05-http-stack/05-keepalive.md)'s close/request collision, now happening
 across your whole connection table at once. Announcing (`Connection:
 close` / `GOAWAY`) before closing is what turns "client sees a reset" into
 "client opens a new connection elsewhere."
 
 ### Long-lived connections need a different policy
 "Let in-flight requests finish" assumes requests finish. A WebSocket
-([`05-http-stack/09-websocket.md`](../05-http-stack/09-websocket.md)), a server-streaming gRPC call
-([`05-http-stack/10-grpc.md`](../05-http-stack/10-grpc.md)), or an SSE stream may be minutes or hours from
+([`05-http-stack/10-websocket.md`](../05-http-stack/10-websocket.md)), a server-streaming gRPC call
+([`05-http-stack/11-grpc.md`](../05-http-stack/11-grpc.md)), or an SSE stream may be minutes or hours from
 completing, and waiting for them means never shutting down.
 
 They need an explicit policy, decided per connection type: send a

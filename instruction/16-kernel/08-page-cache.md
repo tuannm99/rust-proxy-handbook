@@ -1,7 +1,7 @@
 # Page Cache
 
 The kernel's cache of file data in RAM. What makes static file serving
-([`05-http-stack/05-static.md`](../05-http-stack/05-static.md)) fast, and what makes your proxy's memory
+([`05-http-stack/06-static.md`](../05-http-stack/06-static.md)) fast, and what makes your proxy's memory
 accounting confusing.
 
 ## What to learn

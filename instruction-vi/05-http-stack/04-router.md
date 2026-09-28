@@ -75,13 +75,13 @@ sự match. Đây là yêu cầu của spec và là thứ khiến sự khác bi�
 
 ### Routing trên nhiều hơn chỉ path
 Một proxy route trên toàn bộ request, không chỉ path: `Host` (xem
-[`05-http-stack/11-vhost-routing.md`](11-vhost-routing.md)), header tùy ý (canary routing theo
+[`05-http-stack/12-vhost-routing.md`](12-vhost-routing.md)), header tùy ý (canary routing theo
 `X-Version`, [`09-architecture/06-canary-deploy.md`](../09-architecture/06-canary-deploy.md)), đôi khi weight cho
 traffic splitting.
 
 Gotcha: `Host` không phải một thứ duy nhất. Trong HTTP/1.1 nó là header
 `Host`; trong HTTP/2 và HTTP/3 nó là pseudo-header `:authority`; và dưới
-TLS còn có tên SNI từ handshake ([`01-network/13-tls.md`](../01-network/13-tls.md)), thứ mà client
+TLS còn có tên SNI từ handshake ([`01-network/14-tls.md`](../01-network/14-tls.md)), thứ mà client
 chọn *trước khi* gửi bất kỳ cái nào trong số đó. Chúng đều có thể bất
 đồng — một attacker connect với SNI `public.example.com` rồi gửi
 `Host: admin.internal`. Quyết định cái nào là authoritative cho routing,

@@ -82,7 +82,7 @@ where a request actually gets fed a byte at a time, and where the header
 phase's floor has to be enforced.
 
 Gotcha: exempt upgraded and streaming connections
-([`05-http-stack/09-websocket.md`](../05-http-stack/09-websocket.md), [`05-http-stack/10-grpc.md`](../05-http-stack/10-grpc.md)) from the
+([`05-http-stack/10-websocket.md`](../05-http-stack/10-websocket.md), [`05-http-stack/11-grpc.md`](../05-http-stack/11-grpc.md)) from the
 request-shaped deadlines but *not* from liveness checking — an idle
 WebSocket is legitimate, an unresponsive one is not, which is what
 ping/pong deadlines are for.
@@ -92,7 +92,7 @@ Multiplexing changes the shape but not the principle. An attacker can open
 many streams on one connection and leave them incomplete, or manipulate
 flow-control windows to make the server hold data it cannot send. HTTP/2's
 `SETTINGS_MAX_CONCURRENT_STREAMS` bounds the first; per-connection memory
-accounting bounds the second. See [`01-network/11-http2.md`](../01-network/11-http2.md), which also covers
+accounting bounds the second. See [`01-network/12-http2.md`](../01-network/12-http2.md), which also covers
 Rapid Reset — the inverse attack, where streams are opened and cancelled
 as fast as possible.
 

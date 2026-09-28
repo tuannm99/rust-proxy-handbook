@@ -61,7 +61,7 @@ TCP keepalive (`SO_KEEPALIVE` + `TCP_KEEPIDLE`/`TCP_KEEPINTVL`/
 `TCP_KEEPCNT`) định kỳ thăm dò một kết nối rảnh để phát hiện một peer đã
 chết mà chưa bao giờ gửi `FIN` (ví dụ máy đó bị crash, hoặc một
 NAT/firewall âm thầm drop mapping). Điều này khác với HTTP keep-alive ở
-*tầng ứng dụng* ([`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md)) — TCP keepalive phát
+*tầng ứng dụng* ([`05-http-stack/05-keepalive.md`](../05-http-stack/05-keepalive.md)) — TCP keepalive phát
 hiện một peer đã chết, HTTP keep-alive quyết định có tái sử dụng một kết
 nối cho request khác hay không.
 

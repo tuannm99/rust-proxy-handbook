@@ -48,7 +48,7 @@ nhỏ trong tỷ lệ đến không tạo ra dao động latency lớn.
 ### Biến động làm nó tệ hơn: trực giác Pollaczek-Khinchine
 Service time thật không phải hàm mũ — chúng thường biến động hơn (một
 cache hit tốn 1ms, một cache miss tốn 200ms, theo ví dụ bimodal của
-[`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)). Kết quả M/G/1 (công thức Pollaczek-Khinchine)
+[`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)). Kết quả M/G/1 (công thức Pollaczek-Khinchine)
 chỉ ra waiting time tăng theo *phương sai* của service time, không chỉ
 trung bình của nó — hai hệ thống có service time trung bình giống nhau
 nhưng phương sai khác nhau có hành vi hàng đợi khác nhau, đó là lý do

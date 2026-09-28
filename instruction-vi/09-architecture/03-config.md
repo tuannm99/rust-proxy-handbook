@@ -58,9 +58,9 @@ là một no-op, không phải một outage.**
 "Đã validate" phải có nghĩa nhiều hơn "đã parse." Các kiểm tra thực sự bắt
 được sự cố thật là những cái thử các side effect:
 - **Certificate và key thực sự load và khớp nhau**
-  ([`01-network/13-tls.md`](../01-network/13-tls.md)) — một lỗi gõ đường dẫn hay một cặp không khớp
+  ([`01-network/14-tls.md`](../01-network/14-tls.md)) — một lỗi gõ đường dẫn hay một cặp không khớp
   là một outage toàn phần cho vhost đó.
-- **Route không xung đột** ([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)) — hai rule
+- **Route không xung đột** ([`05-http-stack/04-router.md`](../05-http-stack/04-router.md)) — hai rule
   không bao giờ phân biệt được nghĩa là một endpoint âm thầm biến mất.
 - **Upstream pool được tham chiếu tồn tại** — một route trỏ tới một tên
   pool chưa được định nghĩa nên fail validation, không phải 502 lúc

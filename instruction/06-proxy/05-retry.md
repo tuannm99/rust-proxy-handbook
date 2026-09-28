@@ -18,7 +18,7 @@ different claims. `DELETE /orders/42` is idempotent by spec, but if the
 upstream emits a webhook or decrements inventory on each call, retrying it
 has a visible side effect anyway. Method-based retry policy is a
 reasonable default, not a proof — make it overridable per route
-([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)) so a team that knows their endpoint is unsafe
+([`05-http-stack/04-router.md`](../05-http-stack/04-router.md)) so a team that knows their endpoint is unsafe
 can turn it off.
 
 ### The proxy-specific constraint: you may not be able to retry at all

@@ -46,16 +46,18 @@ thực tế hoạt động, và đó là một khoảng trống cấu trúc vĩn
 phải một bug bạn sửa một lần là xong.
 
 Đây là một topic đủ lớn để có file riêng của nó, và nó được chia sẻ với
-routing ([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)) và framing
+routing ([`05-http-stack/04-router.md`](../05-http-stack/04-router.md)) và framing
 ([`07-security/05-request-smuggling.md`](05-request-smuggling.md)): xem
 [`07-security/04-normalization.md`](04-normalization.md). Không có gì trong file này hoạt động
 nếu cái đó sai.
 
 ### Body inspection: chi phí và giới hạn cứng
-Kiểm tra một body nghĩa là phải có toàn bộ body, nghĩa là phải buffer nó —
-nên WAF inspection và streaming loại trừ lẫn nhau, và buffer bị giới hạn
-bởi lượng memory bạn sẵn sàng chi cho mỗi request đồng thời. Đây là ràng
-buộc giống hệt với retry buffering ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)), và cả hai nên
+Các rule cần toàn bộ body cùng lúc (một regex với ngữ cảnh không giới
+hạn, parse JSON để kiểm tra một field) đồng nghĩa với việc phải buffer nó,
+và buffer bị giới hạn bởi lượng memory bạn sẵn sàng chi cho mỗi request
+đồng thời. Signature dạng literal thì không cần vậy. Chúng có thể được
+match trên một stream (phần tiếp theo), giữ memory phẳng. Với việc kiểm
+tra có buffer, đây là ràng buộc giống hệt với retry buffering ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)), và cả hai nên
 dùng chung một giới hạn thay vì mỗi bên giữ bản sao riêng của mình.
 
 Quyết định không thể tránh khỏi là chuyện gì xảy ra với một body lớn hơn
@@ -68,6 +70,43 @@ Không cái nào là "đúng" — nhưng fail-open là một bypass *im lặng* 
 fail-closed là một lỗi hiện rõ, nên mặc định đóng và tạo các route riêng,
 đã xác thực cho upload lớn. Nếu bạn fail open, hãy cảnh báo về nó; một sự
 gia tăng đột ngột các body quá khổ tự nó là một dấu hiệu tấn công.
+
+### Match signature literal trên một body dạng stream
+Body đến dưới dạng các chunk, và một signature có thể nằm vắt qua hai chunk
+(`...UNION SE` | `LECT...`). Match từng chunk riêng lẻ sẽ bỏ sót nó, và
+attacker có thể cố tình sắp đặt chỗ cắt đó. Có hai cách xử lý mà không cần
+buffer toàn bộ body:
+
+- **Mang state của automaton qua các chunk.** State hiện tại của một
+  automaton Aho-Corasick *chính là* "prefix dài nhất của một pattern bất kỳ
+  mà tôi vừa thấy" ([`13-algorithms/aho-corasick.md`](../13-algorithms/aho-corasick.md)). Đưa chunk 1 vào
+  từng byte, giữ lại state cuối, và bắt đầu chunk 2 từ state đó thay vì từ
+  start state, thì một signature bị cắt đôi vẫn được tìm thấy y như body
+  liền mạch. Trong crate `aho-corasick`, `AhoCorasick::find` ở mức cao luôn
+  bắt đầu lại từ đầu. Trait mức thấp `aho_corasick::automaton::Automaton`,
+  được implement bởi `aho_corasick::dfa::DFA` và các kiểu `nfa`, cung cấp
+  `start_state`, `next_state`, `is_match` và `match_pattern`, đủ mọi thứ cần
+  thiết để mang một `StateID` từ chunk này sang chunk kế. Memory cho mỗi
+  request: một state ID.
+- **Cửa sổ chồng lấn.** Giữ lại `max_pattern_len - 1` byte cuối của mỗi
+  chunk (`AhoCorasick::max_pattern_len()`) và quét chúng nối với chunk kế
+  tiếp. Cách này đơn giản hơn, nhưng bạn phải loại bỏ các match bị tìm thấy
+  hai lần trong vùng chồng lấn.
+
+Quyết định mà điều này buộc bạn đưa ra là **khi nào chuyển tiếp một chunk
+lên upstream**. Nếu bạn chuyển chunk 1 ngay khi quét xong và match hoàn tất
+ở chunk 2, thì một phần của cuộc tấn công đã tới upstream. Bạn có thể giữ
+lại `max_pattern_len - 1` byte cuối của mỗi chunk cho tới khi chunk kế đến
+(độ trễ có giới hạn, memory có giới hạn), đảm bảo không bao giờ có thứ gì
+khớp bị chuyển tiếp. Hoặc bạn chấp nhận chuyển tiếp một phần, và khi có
+match thì hủy request lên upstream và bỏ connection upstream đó (framing
+của nó giờ không còn xác định, xem [`07-security/05-request-smuggling.md`](05-request-smuggling.md)),
+rồi trả `403` cho client.
+
+Gotcha: normalization gặp cùng vấn đề ranh giới chunk. Một percent-escape
+bị cắt thành `%2` | `7` chỉ decode ra `'` nếu decoder cũng mang state qua
+các chunk. Hãy đặt một decoder dạng stream trước matcher dạng stream.
+Đừng decode từng chunk riêng lẻ.
 
 ### Anomaly scoring
 Thay vì block cứng cho mỗi rule, mỗi rule match cộng thêm điểm; request chỉ

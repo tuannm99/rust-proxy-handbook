@@ -20,7 +20,7 @@ file I/O (không như socket) hoàn toàn không có khái niệm readiness dư�
 epoll — io_uring là API đầu tiên của Linux cho bạn async file I/O thật
 sự. Với một proxy L7 chủ yếu là socket-tới-socket, phần thắng nhỏ hơn so
 với một workload nặng về storage; io_uring đáng giá nhất khi bạn cũng
-phục vụ static file ([`05-http-stack/05-static.md`](../05-http-stack/05-static.md)) hoặc làm caching nặng
+phục vụ static file ([`05-http-stack/06-static.md`](../05-http-stack/06-static.md)) hoặc làm caching nặng
 dựa trên disk.
 
 ### Bối cảnh crate Rust

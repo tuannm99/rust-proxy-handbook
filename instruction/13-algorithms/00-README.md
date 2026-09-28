@@ -32,7 +32,7 @@ where they apply instead:
 - [`tinylfu.md`](tinylfu.md) — admission over eviction, count-min-sketch frequency, doorkeeper, W-TinyLFU's LRU window
 - [`dfa.md`](dfa.md) — table-driven matching, subset construction, minimization
 - [`fsm.md`](fsm.md) — Mealy/Moore machines, enum+match vs the typestate pattern
-- [`trie.md`](trie.md) — segment-based prefix lookup, used by [`05-http-stack/03-router.md`](../05-http-stack/03-router.md)
+- [`trie.md`](trie.md) — segment-based prefix lookup, used by [`05-http-stack/04-router.md`](../05-http-stack/04-router.md)
 - [`radix-tree.md`](radix-tree.md) — compressed trie, the longest-common-prefix split, what production routers use
 - [`ring-buffer.md`](ring-buffer.md) — fixed-size circular buffer, SPSC lock-free logging, used by [`08-observability/01-logging.md`](../08-observability/01-logging.md)
 - [`heap.md`](heap.md) — array-backed binary heap, decrease-key via lazy deletion or an indexed heap

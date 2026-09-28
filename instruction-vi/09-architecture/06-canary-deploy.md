@@ -50,7 +50,7 @@ lượng người dùng tối thiểu.
 Gotcha: một client nảy giữa các phiên bản tệ hơn vẻ ngoài của nó khi các
 phiên bản khác nhau về hành vi — một trình duyệt load `index.html` từ
 canary và bundle JS đã hash của nó từ stable nhận một 404 (tài sản bất
-biến của [`05-http-stack/05-static.md`](../05-http-stack/05-static.md)), và người dùng thấy một trang hỏng
+biến của [`05-http-stack/06-static.md`](../05-http-stack/06-static.md)), và người dùng thấy một trang hỏng
 thay vì một lỗi sạch sẽ.
 
 ### Trigger rollback tự động
@@ -94,7 +94,7 @@ nhỏ; chờ khối lượng có ý nghĩa trước khi tin vào các so sánh t
   ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)), và thundering herd chỉ xuất hiện gần
   capacity — thứ mà một canary 1% còn lâu mới chạm tới.
 - **Bug phụ thuộc thời gian.** Một batch job hàng ngày, hết hạn
-  certificate ([`01-network/13-tls.md`](../01-network/13-tls.md)), một phép tính ranh giới tháng.
+  certificate ([`01-network/14-tls.md`](../01-network/14-tls.md)), một phép tính ranh giới tháng.
 - **Bất cứ thứ gì downstream.** Nếu canary chia sẻ upstream và một
   database với stable, nó không thể tiết lộ một vấn đề trong dependency
   dùng chung — và có thể *gây ra* một vấn đề gây hại cho cả traffic

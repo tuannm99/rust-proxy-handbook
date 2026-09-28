@@ -1,6 +1,6 @@
 # LRU and Cache Eviction
 
-[`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md) covers HTTP caching semantics (freshness, `Vary`,
+[`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md) covers HTTP caching semantics (freshness, `Vary`,
 invalidation). This file covers the eviction policy underneath: what to
 throw away when the cache is full.
 

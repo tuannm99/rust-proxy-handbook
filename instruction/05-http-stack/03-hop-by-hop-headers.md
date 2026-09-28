@@ -57,7 +57,7 @@ own framing and what it told the upstream to expect. That is exactly the
 desync in [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md), self-inflicted.
 
 The same applies when you change the body: compressing a response while
-streaming ([`05-http-stack/06-compression.md`](06-compression.md)) invalidates the inbound
+streaming ([`05-http-stack/07-compression.md`](07-compression.md)) invalidates the inbound
 `Content-Length`, and forwarding it anyway produces the same class of bug
 from the opposite direction.
 
@@ -70,7 +70,7 @@ then deliberately re-adds them for the upstream leg.
 Gotcha: this is the most common way a working proxy loses WebSocket
 support during a refactor — someone adds correct hop-by-hop stripping and
 the upgrade path silently stops working, because nothing re-adds the
-headers. [`05-http-stack/09-websocket.md`](09-websocket.md) covers the upgrade flow; the header
+headers. [`05-http-stack/10-websocket.md`](10-websocket.md) covers the upgrade flow; the header
 handling is a special case of this file.
 
 ### End-to-end headers you should still not blindly forward

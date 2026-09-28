@@ -1,7 +1,7 @@
 # Distributed Cache
 
 Spreading a cache across nodes once a single-node cache
-([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md), [`13-algorithms/lru.md`](../13-algorithms/lru.md)) is not enough. The one
+([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md), [`13-algorithms/lru.md`](../13-algorithms/lru.md)) is not enough. The one
 [`18-distributed/`](.) topic that connects most directly to a proxy — but still
 beyond the single-instance [`proxy/`](../../proxy) deliverable.
 
@@ -59,7 +59,7 @@ would cost more than it saves.
 ### Thundering herd across the fleet
 When a popular object expires, every proxy that gets a request for it can
 hit the origin simultaneously — a fleet-wide stampede far worse than the
-single-node version ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)'s request coalescing). The
+single-node version ([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)'s request coalescing). The
 distributed fix is that only the *owning* node fetches from origin and the
 others coalesce onto it, plus request-coalescing/single-flight on that
 owner. Placement (consistent hashing) is what makes "only the owner

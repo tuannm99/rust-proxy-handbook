@@ -61,4 +61,4 @@ Mỗi subfolder dự án được dự kiến sẽ chứa:
 - [`tokio/`](tokio) — async runtime bên dưới mọi thứ trong workspace này
 - [`mio/`](mio) — lớp trừu tượng epoll/kqueue bên dưới tokio
 - [`quinn/`](quinn) — implementation QUIC/HTTP-3, liên quan khi
-  [`01-network/12-http3.md`](../01-network/12-http3.md) nằm trong phạm vi
+  [`01-network/13-http3.md`](../01-network/13-http3.md) nằm trong phạm vi

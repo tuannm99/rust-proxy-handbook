@@ -62,8 +62,8 @@ mà mỗi lần poll mất nhiều thời gian. Một lần poll chạy nhiều 
 một task đang chặn executor thread ([`03-rust/05-async.md`](../03-rust/05-async.md)'s cooperative
 scheduling), làm khựng mọi connection khác trên worker đó. Thủ phạm phổ
 biến trong một proxy: một lần đọc file đồng bộ
-([`05-http-stack/05-static.md`](../05-http-stack/05-static.md)), một lần nén lớn
-([`05-http-stack/06-compression.md`](../05-http-stack/06-compression.md)), regex trên một body lớn
+([`05-http-stack/06-static.md`](../05-http-stack/06-static.md)), một lần nén lớn
+([`05-http-stack/07-compression.md`](../05-http-stack/07-compression.md)), regex trên một body lớn
 ([`07-security/06-waf.md`](../07-security/06-waf.md)), hoặc một lần ghi log đồng bộ
 ([`08-observability/01-logging.md`](01-logging.md)).
 
@@ -91,7 +91,7 @@ bpftrace -e 'tracepoint:syscalls:sys_enter_read /pid == $1/ { @start[tid] = nsec
    với profiling CPU.
 3. TLS — chi phí CPU của handshake là có thật ở connection churn cao (các
    connection ngắn ngày liên tục handshake lại); session resumption
-   ([`01-network/13-tls.md`](../01-network/13-tls.md)) quan trọng hơn việc micro-optimize parser.
+   ([`01-network/14-tls.md`](../01-network/14-tls.md)) quan trọng hơn việc micro-optimize parser.
 Gotcha: profile một build debug gần như vô nghĩa — luôn profile
 `--release`, và profile dưới tải đồng thời thực tế (xem
 [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)), không phải một request curl đơn lẻ.
@@ -159,7 +159,7 @@ Xây dựng theo thứ tự sau.
    instrumentation của bạn bắt đầu.
 8. So sánh profile TLS với profile plaintext. **Xong khi** bạn có thể định
    lượng chi phí CPU của handshake trên mỗi connection và cho thấy nó
-   giảm xuống khi session resumption được bật ([`01-network/13-tls.md`](../01-network/13-tls.md)).
+   giảm xuống khi session resumption được bật ([`01-network/14-tls.md`](../01-network/14-tls.md)).
 9. (Mở rộng) Expose `pprof-rs` trên listener nội bộ và chụp profile liên
    tục trong một chaos test ([`12-testing/03-chaos.md`](../12-testing/03-chaos.md)). **Xong khi** bạn
    có thể lấy lại profile từ đúng phút một fault được tiêm vào, sau khi

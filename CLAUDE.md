@@ -66,16 +66,16 @@ Numbered top-level directories form the learning path, in order:
 
 ```
 instruction/00-introduction/   overview, roadmap, prerequisites (phase 0), study loop + timeline
-instruction/01-network/        fundamentals (model, addressing, byte streams, latency, proxy taxonomy, crypto basics), DNS, HTTP/1/2/3, sockets, TCP, TLS, PROXY protocol
+instruction/01-network/        fundamentals (model, addressing, byte streams, latency, proxy taxonomy, crypto basics), DNS, HTTP semantics, HTTP/1.1 wire format, HTTP/2, HTTP/3, sockets, TCP, TLS (+ local CA, rustls), PROXY protocol
 instruction/02-linux/          fundamentals (processes/threads, kernel & syscalls, memory basics, blocking I/O & signals, containers), epoll, io_uring, memory, signals, zero-copy
 instruction/03-rust/           ownership, lifetimes, unsafe, sync, async, pin, traits/generics, errors, iterators, smart pointers, concurrency patterns, macros, API design, FFI, memory layout, testing, Cargo, async traits
 instruction/04-runtime/        tokio internals, waker/poll, runtime config, structured concurrency, runtime comparisons
-instruction/05-http-stack/      parser, hop-by-hop headers, router, cache (+ stampede), compression, static files, websocket, keep-alive, vhost/SNI routing, gRPC
+instruction/05-http-stack/      parser, hyper 1.x architecture, hop-by-hop headers, router, cache (+ stampede), compression, static files, websocket, keep-alive, vhost/SNI routing, gRPC
 instruction/06-proxy/           upstream pool, load balancer, health check, outlier detection, retry, circuit breaker, service discovery
 instruction/07-security/        auth, JWT, mTLS, input normalization, rate limiting, WAF, request smuggling, IP filtering, DDoS, slowloris, load shedding
 instruction/08-observability/   logging, metrics, profiling, distributed tracing, SLOs, alerting
 instruction/09-architecture/    components, config reload, plugin system, graceful shutdown, canary/blue-green, rolling restart
-instruction/12-testing/         load testing, fuzzing, chaos engineering, CI/static tooling, debugging toolkit
+instruction/12-testing/         load testing, fuzzing, chaos engineering, CI/static tooling, debugging toolkit, lab environment (tool setup)
 instruction/13-algorithms/      data structures/algorithms underpinning routing, WAF, rate limiting, cache, load balancing, DDoS mitigation
 instruction/14-memory/          allocator, arena, slab allocator, object/buffer pools, fragmentation
 instruction/15-parser/          general lexer/parser/AST/visitor theory underneath HTTP and config parsing
@@ -234,6 +234,21 @@ state *what* must be observably true, never *how* to implement it — they
 are a spec, not a solution. There is no separate
 `instruction/10-projects/project-0N.md` layer restating any of this; don't
 recreate one. [`proxy/README.md`](proxy/README.md) plays the same role for the final build.
+
+**Each lab must be self-sufficient.** The files under a lab's `## Handbook
+references` must, together, teach everything needed to meet every
+`Done when` item without web searches or mid-lab questions: the wire
+format or spec rule itself (not just "per RFC X §Y"), the mechanism of
+any library the lab builds on (for example what hyper does with a
+service `Err`), and how to install and drive every tool a check names
+([`instruction/12-testing/06-lab-environment.md`](instruction/12-testing/06-lab-environment.md) collects these). RFC section
+numbers are for checking at the source, never the only place a required
+rule appears. When adding or changing a `Done when` item, re-check it
+against the referenced files, and if a spec, mechanism or tool is
+missing, add it to the handbook in the same change. Name types, methods
+and commands and explain their behavior. Never write the lab's logic.
+A lab's `Cargo.toml` must already carry every crate its checks need, and
+`cargo check --workspace` must still pass.
 
 [`instruction/19-reading-source/`](instruction/19-reading-source)'s `reading-guide.md` files give a route
 through a project's source as questions only. Never add answers to them,

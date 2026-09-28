@@ -16,7 +16,7 @@ QUIC multiplexes independent streams the same way HTTP/2 does, but because
 loss recovery happens per-stream inside QUIC (not per-connection the way
 TCP retransmission does), a lost packet on one stream doesn't stall the
 other streams. This fixes the TCP-level HOL blocking that HTTP/2 over TCP
-still has (see [`11-http2.md`](11-http2.md)).
+still has (see [`12-http2.md`](12-http2.md)).
 
 ### Connection migration and 0-RTT
 QUIC connections are identified by a Connection ID, not a
@@ -31,7 +31,7 @@ non-idempotent requests — a proxy accepting 0-RTT data must treat it as
 QUIC doesn't layer TLS on top the way TCP+TLS does — the QUIC handshake
 *is* a TLS 1.3 handshake carried in QUIC transport parameters, so there's
 no cleartext QUIC. This means every HTTP/3 deployment needs the same
-cert/SNI/ALPN machinery as [`13-tls.md`](13-tls.md), just carried differently on the wire.
+cert/SNI/ALPN machinery as [`14-tls.md`](14-tls.md), just carried differently on the wire.
 
 ### One UDP socket, many connections
 The operational shift is bigger than "UDP instead of TCP". With TCP,
@@ -98,6 +98,50 @@ implements HTTP/3 framing on top of it. As of this writing neither `hyper`
 nor `hyper-util` speak HTTP/3 directly — it's a separate integration, which
 is why [`proxy`](../../proxy) treats HTTP/3 as a stretch goal
 rather than a baseline requirement.
+
+### quinn in practice
+What you need to get [`labs/09-http3`](../../labs/09-http3) talking, in the order you hit it:
+
+- **Certificates.** QUIC always runs TLS 1.3, so even a lab echo server
+  needs a certificate. Make a CA and a leaf exactly as in
+  [`01-network/14-tls.md`](14-tls.md)'s "A local CA for testing". Don't serve the CA
+  itself: the quinn client verifies with rustls, and rustls rejects a CA
+  certificate presented as a server certificate.
+- **Server side.** `quinn::ServerConfig::with_single_cert(chain, key)` builds a
+  config from the same `CertificateDer`/`PrivateKeyDer` values rustls uses.
+  `quinn::Endpoint::server(config, addr)` binds the one UDP socket. For ALPN
+  or other rustls settings, build a `rustls::ServerConfig` yourself, convert
+  it with `quinn::crypto::rustls::QuicServerConfig::try_from(...)`, and wrap
+  that in `quinn::ServerConfig::with_crypto(Arc::new(...))`.
+- **Client side.** `quinn::Endpoint::client("0.0.0.0:0".parse()?)` binds an
+  ephemeral UDP port. `quinn::ClientConfig::with_root_certificates(roots)`
+  takes a `rustls::RootCertStore` into which you added your `ca.pem`.
+  Install it with `set_default_client_config`. `endpoint.connect(addr,
+  "localhost")?.await` connects, and the name must be one of the leaf's
+  SANs.
+- **ALPN.** If either side sets ALPN protocols, both must share one, or the
+  handshake fails. A raw echo lab can set none on both sides. HTTP/3
+  requires the protocol `h3`, which is where the `h3` stretch goal starts.
+- **Accepting.** `endpoint.accept().await` yields an `Incoming` for each new
+  connection, and awaiting that completes the handshake into a
+  `Connection`. Spawn one task per connection, as with TCP.
+- **Streams.** `connection.open_bi().await` (client) and
+  `connection.accept_bi().await` (server) give a `(SendStream, RecvStream)`
+  pair. Each stream has its own flow-control window, which is exactly why
+  a stream you stop reading stalls only itself. `send.finish()` marks the
+  end of what you send. `recv.read_to_end(limit)` reads until the peer
+  finishes, with a cap. Streams are cheap: open one per request, not one
+  per connection.
+- **Seeing the demultiplexing.** Every connection has a `stable_id()` and a
+  `remote_address()`. With a `tracing_subscriber` installed and
+  `RUST_LOG=quinn_proto=trace`, quinn logs `new connection` events with the
+  initial connection ID. Two clients show two connection IDs arriving on
+  one socket, while `ss -uanp` shows that there is only one socket.
+
+Gotcha: `netstat` (from `net-tools`) isn't installed on many modern
+distros. The same UDP counters are in `nstat -az | grep -i udp` or
+`/proc/net/snmp`. The one that climbs when the socket buffer overflows is
+`UdpRcvbufErrors` (`RcvbufErrors` in `netstat -su` output).
 
 ## Practice
 

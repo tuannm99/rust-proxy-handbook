@@ -149,7 +149,7 @@ let n = limited.read_to_end(&mut buf)?;   // dừng ở cap, không dừng ở k
 Gotcha: cũng chặn *tỷ lệ*, không chỉ kích thước tuyệt đối. Một body phình
 ra 1000:1 là thù địch dù nó có nằm dưới cap của bạn, và tỷ lệ là một tín
 hiệu tốt hơn nhiều so với kích thước đơn thuần để phân biệt một cuộc tấn
-công với một upload lớn hợp lệ. Xem [`05-http-stack/06-compression.md`](../05-http-stack/06-compression.md) cho
+công với một upload lớn hợp lệ. Xem [`05-http-stack/07-compression.md`](../05-http-stack/07-compression.md) cho
 mặt gương phía response của vấn đề này.
 
 ### Load shedding thắng queueing

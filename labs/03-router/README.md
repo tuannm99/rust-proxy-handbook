@@ -16,9 +16,11 @@ method + path to a handler.
 - [ ] Reviewed per [`instruction/00-introduction/03-study-loop.md`](../../instruction/00-introduction/03-study-loop.md) step 5.
 
 ## Handbook references
-- [`instruction/05-http-stack/03-router.md`](../../instruction/05-http-stack/03-router.md) — matching method+path, trailing slashes, path params
+- [`instruction/05-http-stack/04-router.md`](../../instruction/05-http-stack/04-router.md) — matching method+path, trailing slashes, path params
 - [`instruction/13-algorithms/trie.md`](../../instruction/13-algorithms/trie.md), [`instruction/13-algorithms/radix-tree.md`](../../instruction/13-algorithms/radix-tree.md) — the lookup structure
 - [`instruction/03-rust/09-iterators-and-closures.md`](../../instruction/03-rust/09-iterators-and-closures.md) — storing handlers as `Box<dyn Fn ...>`
+- [`instruction/05-http-stack/02-hyper.md`](../../instruction/05-http-stack/02-hyper.md) — the service you dispatch from
+- [`instruction/12-testing/06-lab-environment.md`](../../instruction/12-testing/06-lab-environment.md) — `criterion` setup for the 10-vs-1000-routes benchmark
 
 ## Run
 

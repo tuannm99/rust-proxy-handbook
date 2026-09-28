@@ -30,7 +30,7 @@ multi-node cache hoặc CDN.
 - [`03-leader-election.md`](03-leader-election.md) — bài toán con cụ thể mà Raft (và các lựa chọn
   đơn giản hơn) giải quyết
 - [`04-distributed-cache.md`](04-distributed-cache.md) — sharding/replicate một cache qua các node,
-  khi một cache single-node ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)) không còn đủ
+  khi một cache single-node ([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)) không còn đủ
 
 Consistent hashing được bao quát trong [`13-algorithms/consistent-hash.md`](../13-algorithms/consistent-hash.md),
 và discovery cho single-service-instance trong

@@ -24,7 +24,7 @@ here closest to real proxy work). Come back only if you extend past
 - [`01-raft.md`](01-raft.md) — leader-based consensus, the mechanism behind most production coordination systems
 - [`02-gossip.md`](02-gossip.md) — epidemic-style state propagation, used by systems like Consul/Cassandra for membership
 - [`03-leader-election.md`](03-leader-election.md) — the specific sub-problem Raft (and simpler alternatives) solve
-- [`04-distributed-cache.md`](04-distributed-cache.md) — sharding/replicating a cache across nodes, once a single-node cache ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)) isn't enough
+- [`04-distributed-cache.md`](04-distributed-cache.md) — sharding/replicating a cache across nodes, once a single-node cache ([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)) isn't enough
 
 Consistent hashing is covered in [`13-algorithms/consistent-hash.md`](../13-algorithms/consistent-hash.md), and
 single-service-instance discovery in [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md) — not
