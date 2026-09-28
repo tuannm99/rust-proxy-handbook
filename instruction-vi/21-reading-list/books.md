@@ -26,7 +26,7 @@ Tài liệu tham khảo sâu hơn:
   [`proxy/README.md`](../../proxy/README.md).
 - Database Internals (Petrov) — không chuyên về proxy, nhưng các chương
   về caching và consistency khái quát hóa trực tiếp sang
-  [`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md) và [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md).
+  [`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md) và [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md).
 - Site Reliability Engineering (Google, đọc miễn phí online) — nguồn cho
   các khái niệm vận hành trong [`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md),
   [`09-architecture/06-canary-deploy.md`](../09-architecture/06-canary-deploy.md), và [`12-testing/03-chaos.md`](../12-testing/03-chaos.md).

@@ -61,10 +61,10 @@ handshake, không acknowledgment, không đảm bảo thứ tự, không tự đ
 retransmit. Nếu bạn cần những tính chất đó trên UDP, tầng ứng dụng của bạn
 phải tự xây chúng. Nghe có vẻ tệ hơn hẳn, và với một request/response
 thông thường thì đúng là vậy — nhưng đó cũng là lý do vì sao **QUIC**
-(tầng transport bên dưới HTTP/3, xem [`01-network/12-http3.md`](12-http3.md)) được xây
+(tầng transport bên dưới HTTP/3, xem [`01-network/13-http3.md`](13-http3.md)) được xây
 trên UDP thay vì TCP: reliability trong kernel, một-kích-cỡ-cho-tất-cả của
 TCP tạo ra head-of-line blocking mà HTTP/2 phải chịu ở tầng multiplexed
-stream ([`01-network/11-http2.md`](11-http2.md)), và QUIC tái hiện thực reliability
+stream ([`01-network/12-http2.md`](12-http2.md)), và QUIC tái hiện thực reliability
 *theo từng stream*, ở userspace, chính là để tránh điều đó — một thứ bạn
 không thể làm trên nền TCP vì đảm bảo về thứ tự của TCP áp dụng cho cả
 kết nối, không phải cho từng logical stream.
@@ -76,9 +76,9 @@ biệt trong thư mục này, mỗi lần là một instance khác nhau của c�
 tưởng:
 - **3-way handshake của TCP** ([`08-tcp.md`](08-tcp.md)) đồng ý về trạng thái kết nối
   và sequence number ban đầu.
-- **Handshake của TLS** ([`13-tls.md`](13-tls.md)) đồng ý về encryption key và
+- **Handshake của TLS** ([`14-tls.md`](14-tls.md)) đồng ý về encryption key và
   protocol version/cipher nào sẽ dùng.
-- **Handshake `Upgrade` của HTTP/1.1** ([`05-http-stack/09-websocket.md`](../05-http-stack/09-websocket.md))
+- **Handshake `Upgrade` của HTTP/1.1** ([`05-http-stack/10-websocket.md`](../05-http-stack/10-websocket.md))
   đồng ý dừng nói HTTP và bắt đầu nói một protocol khác trên cùng kết nối.
 
 Nhận ra "đây là một handshake" cho bạn biết nên kỳ vọng gì: một cuộc trao
@@ -114,5 +114,5 @@ nơi dùng chung, không phải trên một instance riêng lẻ.
    mà một "kết nối" UDP (thực ra chỉ là một 4-tuple cố định bạn chọn tái
    sử dụng) thì không.
 4. Đọc mục 3-way handshake trong [`01-network/08-tcp.md`](08-tcp.md) và mục handshake
-   trong [`01-network/13-tls.md`](13-tls.md) liền nhau; liệt kê mỗi cái đang đồng ý về
+   trong [`01-network/14-tls.md`](14-tls.md) liền nhau; liệt kê mỗi cái đang đồng ý về
    điều gì, dùng cách diễn giải từ file này.

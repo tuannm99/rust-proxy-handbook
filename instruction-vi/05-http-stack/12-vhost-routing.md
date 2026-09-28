@@ -1,12 +1,12 @@
 # Virtual Host / Multi-Tenant Routing
 
 Route tới backend khác nhau theo *site nào* mà một request nhắm tới,
-không chỉ path của nó — thứ mà [`03-router.md`](03-router.md) giả định đã được quyết
+không chỉ path của nó — thứ mà [`04-router.md`](04-router.md) giả định đã được quyết
 định rồi.
 
 ## What to learn
 ### Routing theo Host header (sau TLS, tầng HTTP)
-[`03-router.md`](03-router.md) bao quát việc match path và method trong bảng route của một backend. Một proxy đứng trước nhiều site/tenant trước tiên phải chọn *bảng route nào* để dùng, dựa trên header `Host` (HTTP/1.1) hoặc pseudo-header `:authority` (HTTP/2, xem [`01-network/11-http2.md`](../01-network/11-http2.md)) — cả hai mang cùng thông tin, chỉ framing khác nhau. Lookup này xảy ra sau khi TLS đã terminate, vì header nằm trong request đã mã hóa.
+[`04-router.md`](04-router.md) bao quát việc match path và method trong bảng route của một backend. Một proxy đứng trước nhiều site/tenant trước tiên phải chọn *bảng route nào* để dùng, dựa trên header `Host` (HTTP/1.1) hoặc pseudo-header `:authority` (HTTP/2, xem [`01-network/12-http2.md`](../01-network/12-http2.md)) — cả hai mang cùng thông tin, chỉ framing khác nhau. Lookup này xảy ra sau khi TLS đã terminate, vì header nằm trong request đã mã hóa.
 
 ```rust
 use std::collections::HashMap;
@@ -31,7 +31,7 @@ cache-poisoning xảy ra — một attacker gửi một `Host` bất ngờ và b
 tới nơi không định trước, hoặc một cache key lỏng lẻo theo Host serve
 response của tenant sai cho người khác.
 
-Gotcha: normalize trước khi lookup, cùng cách [`03-router.md`](03-router.md) normalize
+Gotcha: normalize trước khi lookup, cùng cách [`04-router.md`](04-router.md) normalize
 path. Hostname không phân biệt hoa thường (`EXAMPLE.com` phải khớp
 `example.com`), một dấu chấm cuối là hợp lệ và mang cùng nghĩa
 (`example.com.`), và các dạng IDN/punycode (`xn--...`) phải ánh xạ về
@@ -58,7 +58,7 @@ hai khớp nhau và reject khi chúng không khớp. Nếu một client hợp l�
 sự cần chúng khác nhau, điều đó nên là một cấu hình tường minh, không
 phải một tai nạn.
 
-Gotcha: đây là cùng kiểm tra mà [`03-router.md`](03-router.md) mô tả cho tính nhất quán
+Gotcha: đây là cùng kiểm tra mà [`04-router.md`](04-router.md) mô tả cho tính nhất quán
 `Host`/`:authority`/SNI. Làm nó một lần, ở một chỗ, tại điểm mà metadata
 TLS của connection vẫn còn sẵn cùng với request — không phải ở hai
 component có thể bất đồng về cái nào là authoritative.
@@ -101,10 +101,10 @@ mối quan tâm thực tế theo sau:
   từ [`07-security/01-auth.md`](../07-security/01-auth.md) nhân lên theo số tenant.
 
 ### Chứng chỉ wildcard/multi-domain tương tác với cả hai
-Một chứng chỉ wildcard (`*.example.com`) hay một chứng chỉ SAN bao phủ nhiều hostname cho phép một instance terminate-TLS trả lời cho nhiều vhost dưới một handshake — đơn giản hóa routing theo Host header (một chứng chỉ, nhiều giá trị `Host`) nhưng làm routing theo SNI trở nên vô nghĩa cho các hostname đó (chúng đều là cùng một backend theo định nghĩa). Xem [`01-network/13-tls.md`](../01-network/13-tls.md) cho cơ chế handshake mà điều này phụ thuộc vào.
+Một chứng chỉ wildcard (`*.example.com`) hay một chứng chỉ SAN bao phủ nhiều hostname cho phép một instance terminate-TLS trả lời cho nhiều vhost dưới một handshake — đơn giản hóa routing theo Host header (một chứng chỉ, nhiều giá trị `Host`) nhưng làm routing theo SNI trở nên vô nghĩa cho các hostname đó (chúng đều là cùng một backend theo định nghĩa). Xem [`01-network/14-tls.md`](../01-network/14-tls.md) cho cơ chế handshake mà điều này phụ thuộc vào.
 
 ### Cách ly giữa các tenant, không chỉ routing
-Routing tách *traffic* của các tenant; nó không làm gì để tách *tiêu thụ tài nguyên* của chúng. Một đợt tăng traffic của một tenant tiêu thụ ngân sách connection chung ([`07-security/09-ddos.md`](../07-security/09-ddos.md)), concurrency của upstream pool chung, dung lượng cache chung ([`05-http-stack/07-cache.md`](07-cache.md)), và worker thread — nên mọi tenant khác đều tệ đi. Đó là vấn đề noisy-neighbor, và trong một proxy multi-tenant nó là hành vi mặc định trừ khi bạn thiết kế để chống lại nó.
+Routing tách *traffic* của các tenant; nó không làm gì để tách *tiêu thụ tài nguyên* của chúng. Một đợt tăng traffic của một tenant tiêu thụ ngân sách connection chung ([`07-security/09-ddos.md`](../07-security/09-ddos.md)), concurrency của upstream pool chung, dung lượng cache chung ([`05-http-stack/08-cache.md`](08-cache.md)), và worker thread — nên mọi tenant khác đều tệ đi. Đó là vấn đề noisy-neighbor, và trong một proxy multi-tenant nó là hành vi mặc định trừ khi bạn thiết kế để chống lại nó.
 
 Các cơ chế kiểm soát là phiên bản theo-từng-tenant của những thứ bạn đã
 có: rate limit key theo tenant ([`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md)), một giới

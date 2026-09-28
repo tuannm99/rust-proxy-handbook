@@ -45,7 +45,7 @@ below assumes what these cover):
 The fundamentals group first if you need it — everything else assumes it.
 [`07-epoll.md`](07-epoll.md) underpins [`04-runtime/01-tokio.md`](../04-runtime/01-tokio.md); [`10-signals.md`](10-signals.md)
 underpins [`09-architecture/03-config.md`](../09-architecture/03-config.md) and [`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md);
-[`11-zerocopy.md`](11-zerocopy.md) underpins [`05-http-stack/05-static.md`](../05-http-stack/05-static.md). For what happens
+[`11-zerocopy.md`](11-zerocopy.md) underpins [`05-http-stack/06-static.md`](../05-http-stack/06-static.md). For what happens
 *inside* the kernel below these calls, see [`16-kernel/`](../16-kernel) — particularly
 [`16-kernel/01-epoll-internals.md`](../16-kernel/01-epoll-internals.md), [`16-kernel/02-io_uring-internals.md`](../16-kernel/02-io_uring-internals.md), and
 [`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md).

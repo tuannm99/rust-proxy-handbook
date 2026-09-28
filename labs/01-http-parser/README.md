@@ -17,7 +17,8 @@ to make a deliberate, defensible decision about each one.
 - [ ] Reviewed per [`instruction/00-introduction/03-study-loop.md`](../../instruction/00-introduction/03-study-loop.md) step 5.
 
 ## Handbook references
-- [`instruction/05-http-stack/01-parser.md`](../../instruction/05-http-stack/01-parser.md)
+- [`instruction/01-network/11-http1-wire-format.md`](../../instruction/01-network/11-http1-wire-format.md) — the grammar itself: every byte-level rule this lab checks, and which status each rejection earns
+- [`instruction/05-http-stack/01-parser.md`](../../instruction/05-http-stack/01-parser.md) — turning that grammar into an incremental parser: buffers, partial input, limits
 - [`instruction/07-security/05-request-smuggling.md`](../../instruction/07-security/05-request-smuggling.md)
 - [`instruction/03-rust/02-lifetimes.md`](../../instruction/03-rust/02-lifetimes.md), [`instruction/03-rust/10-smart-pointers-and-interior-mutability.md`](../../instruction/03-rust/10-smart-pointers-and-interior-mutability.md) — borrowing header slices from the input buffer, `Cow` for the rare rewrite
 - [`instruction/03-rust/16-testing-idioms.md`](../../instruction/03-rust/16-testing-idioms.md) — table-driven and property-based tests for the cases above

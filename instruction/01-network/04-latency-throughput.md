@@ -48,8 +48,8 @@ back is real physical distance). For a small request/response exchange —
 most HTTP traffic — the transfer itself is so quick that RTT, not
 bandwidth, dominates total time: you're waiting on round trips, not on
 bytes. This is precisely why HTTP/2's multiplexing
-([`01-network/11-http2.md`](11-http2.md)) and 0-RTT/session resumption in TLS
-([`01-network/13-tls.md`](13-tls.md)) exist — they're attacking round-trip *count*,
+([`01-network/12-http2.md`](12-http2.md)) and 0-RTT/session resumption in TLS
+([`01-network/14-tls.md`](14-tls.md)) exist — they're attacking round-trip *count*,
 not throughput.
 
 ### Bandwidth-delay product: how much can be "in flight"

@@ -1,10 +1,10 @@
 # Virtual Host / Multi-Tenant Routing
 
-Routing to different backends by *which site* a request is for, not just its path — the thing [`03-router.md`](03-router.md) assumes has already been decided.
+Routing to different backends by *which site* a request is for, not just its path — the thing [`04-router.md`](04-router.md) assumes has already been decided.
 
 ## What to learn
 ### Host-header routing (post-TLS, HTTP layer)
-[`03-router.md`](03-router.md) covers matching path and method within one backend's route table. A proxy fronting multiple sites/tenants first has to pick *which* route table to use at all, based on the `Host` header (HTTP/1.1) or the `:authority` pseudo-header (HTTP/2, see [`01-network/11-http2.md`](../01-network/11-http2.md)) — both carry the same information, just framed differently. This lookup happens after TLS termination, since the header is inside the encrypted request.
+[`04-router.md`](04-router.md) covers matching path and method within one backend's route table. A proxy fronting multiple sites/tenants first has to pick *which* route table to use at all, based on the `Host` header (HTTP/1.1) or the `:authority` pseudo-header (HTTP/2, see [`01-network/12-http2.md`](../01-network/12-http2.md)) — both carry the same information, just framed differently. This lookup happens after TLS termination, since the header is inside the encrypted request.
 
 ```rust
 use std::collections::HashMap;
@@ -24,7 +24,7 @@ fn route_by_host<'a>(
 ```
 Gotcha: default to rejecting (404, or a dedicated catch-all vhost) any `Host` that doesn't match a known entry. Silently falling through to some "default" backend is exactly how Host-header injection and cache-poisoning bugs happen — an attacker sends an unexpected `Host` and gets routed somewhere unintended, or a cache keyed loosely on Host serves the wrong tenant's response to someone else.
 
-Gotcha: normalize before lookup, the same way [`03-router.md`](03-router.md) normalizes
+Gotcha: normalize before lookup, the same way [`04-router.md`](04-router.md) normalizes
 paths. Hostnames are case-insensitive (`EXAMPLE.com` must match
 `example.com`), a trailing dot is legal and means the same thing
 (`example.com.`), and IDN/punycode forms (`xn--...`) must map to one
@@ -52,7 +52,7 @@ If your proxy terminates TLS and routes on `Host`, validate that the two
 match and reject when they don't. If a legitimate client genuinely needs
 them to differ, that should be an explicit configuration, not an accident.
 
-Gotcha: this is the same check [`03-router.md`](03-router.md) describes for
+Gotcha: this is the same check [`04-router.md`](04-router.md) describes for
 `Host`/`:authority`/SNI consistency. Do it once, in one place, at the
 point where the connection's TLS metadata is still available alongside the
 request — not in two components that can disagree about which is
@@ -96,13 +96,13 @@ three practical concerns follow:
   [`07-security/01-auth.md`](../07-security/01-auth.md) multiplied by tenant count.
 
 ### Wildcard/multi-domain certs interact with both
-A wildcard cert (`*.example.com`) or a SAN cert covering many hostnames lets one TLS-terminating instance answer for many vhosts under one handshake — simplifying Host-header routing (one cert, many `Host` values) but making SNI routing moot for those hostnames (they're all the same backend by definition). See [`01-network/13-tls.md`](../01-network/13-tls.md) for the handshake mechanics this depends on.
+A wildcard cert (`*.example.com`) or a SAN cert covering many hostnames lets one TLS-terminating instance answer for many vhosts under one handshake — simplifying Host-header routing (one cert, many `Host` values) but making SNI routing moot for those hostnames (they're all the same backend by definition). See [`01-network/14-tls.md`](../01-network/14-tls.md) for the handshake mechanics this depends on.
 
 ### Isolation between tenants, not just routing
 Routing separates tenants' *traffic*; it does nothing to separate their
 *resource consumption*. One tenant's traffic spike consumes the shared
 connection budget ([`07-security/09-ddos.md`](../07-security/09-ddos.md)), the shared upstream pool
-concurrency, the shared cache capacity ([`05-http-stack/07-cache.md`](07-cache.md)), and the
+concurrency, the shared cache capacity ([`05-http-stack/08-cache.md`](08-cache.md)), and the
 worker threads — so every other tenant degrades. That's the noisy-neighbor
 problem, and in a multi-tenant proxy it's the default behavior unless you
 design against it.

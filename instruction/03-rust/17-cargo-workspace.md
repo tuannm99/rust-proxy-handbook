@@ -32,7 +32,7 @@ Cargo features are unified across the whole *build*, not per crate: if crate A e
 Gotcha: features must be strictly additive — turning one on can never remove functionality. Cargo enforces this by construction, not as a style guideline, precisely because unification would otherwise make build outcomes depend on which other crates happen to be compiled alongside yours.
 
 ### `build.rs`: code generation before `rustc` runs
-A `build.rs` at a crate's root is compiled and run before the crate itself, and can write files into `OUT_DIR` that the crate's own code then `include!`s. The concrete case this handbook needs it for: `tonic-build`/`prost-build` compiling `.proto` files into Rust structs for gRPC support ([`05-http-stack/10-grpc.md`](../05-http-stack/10-grpc.md)) — the generated client/server code doesn't exist as source you write by hand, it's regenerated on every build from the `.proto` schema.
+A `build.rs` at a crate's root is compiled and run before the crate itself, and can write files into `OUT_DIR` that the crate's own code then `include!`s. The concrete case this handbook needs it for: `tonic-build`/`prost-build` compiling `.proto` files into Rust structs for gRPC support ([`05-http-stack/11-grpc.md`](../05-http-stack/11-grpc.md)) — the generated client/server code doesn't exist as source you write by hand, it's regenerated on every build from the `.proto` schema.
 
 ```rust
 // build.rs
@@ -60,5 +60,5 @@ Gotcha: the dependency itself must be declared `tokio-rustls = { version = "..."
 1. Add `[workspace.dependencies]` for `tokio` and `bytes` at this repo's workspace root, and migrate two `labs/*` crates to `dep.workspace = true` instead of repeating the version.
 2. Add a feature flag to one `labs/*` crate that conditionally compiles an optional module (`#[cfg(feature = "...")]`), and confirm via `cargo build --no-default-features` and `cargo build --features ...` that the module is actually excluded/included.
 3. Deliberately observe feature unification: enable a feature only in a dev-dependency of one crate, build the whole workspace, and confirm (via `cargo tree -e features` or similar) that a sibling crate using the same dependency also gets that feature turned on.
-4. Wire up `build.rs` with `tonic-build` in whichever crate handles [`05-http-stack/10-grpc.md`](../05-http-stack/10-grpc.md)'s exercise, to compile a `.proto` file, and inspect the generated code under `target/*/build/*/out/`.
+4. Wire up `build.rs` with `tonic-build` in whichever crate handles [`05-http-stack/11-grpc.md`](../05-http-stack/11-grpc.md)'s exercise, to compile a `.proto` file, and inspect the generated code under `target/*/build/*/out/`.
 5. Time a clean build before and after adding schema compilation to `build.rs`, and decide whether checking in the generated code would be worth it for this workspace's size.

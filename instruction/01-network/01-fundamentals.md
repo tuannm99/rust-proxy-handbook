@@ -47,7 +47,7 @@ text:
   answered explicitly.
 - **[`06-crypto-basics.md`](06-crypto-basics.md)** — symmetric vs asymmetric encryption,
   hashing, HMAC, digital signatures, certificates/PKI. Not cryptography
-  as a field — just enough that [`13-tls.md`](13-tls.md)'s handshake and
+  as a field — just enough that [`14-tls.md`](14-tls.md)'s handshake and
   [`07-security/02-jwt.md`](../07-security/02-jwt.md)'s signatures stop being magic.
 
 Read them in that order once; after that, treat each as a standalone

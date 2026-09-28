@@ -96,7 +96,7 @@ Process mới phải qua được kiểm tra readiness của chính nó (config 
 parse, upstream tới được — gắn với [`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)) *trước
 khi* cái cũ được tín hiệu để drain, nếu không một binary/config mới tồi sẽ
 làm sập cả proxy thay vì chỉ fail deploy. Các kết nối sống lâu (WebSocket,
-[`05-http-stack/09-websocket.md`](../05-http-stack/09-websocket.md)) được giữ bởi process cũ cần cùng drain
+[`05-http-stack/10-websocket.md`](../05-http-stack/10-websocket.md)) được giữ bởi process cũ cần cùng drain
 deadline như [`04-graceful-shutdown.md`](04-graceful-shutdown.md) — một rolling restart không làm
 vấn đề đó biến mất, nó chỉ thêm "và đừng từ chối kết nối mới trong khi
 drain."
@@ -106,7 +106,7 @@ Zero *kết nối bị rớt* không giống zero tác động, vì mọi thứ 
 tích lũy trong bộ nhớ đều biến mất. Mỗi cái dưới đây được bao quát ở nơi
 khác; cùng nhau chúng là lý do một lần restart zero-downtime "thành công"
 vẫn có thể xuất hiện như một cú tăng vọt trên mọi dashboard:
-- **Response cache rỗng** ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)). Mọi entry là một
+- **Response cache rỗng** ([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)). Mọi entry là một
   miss, tất cả cùng lúc — một cache stampede tự gây ra nhắm vào origin
   đúng lúc bạn muốn mọi thứ yên tĩnh. Request coalescing là thứ giữ điều
   này sống sót được.

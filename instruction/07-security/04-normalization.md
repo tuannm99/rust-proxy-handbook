@@ -3,7 +3,7 @@
 Two components parse the same bytes differently, and the attacker lives in
 the gap. This is the structural weakness behind WAF bypasses
 ([`07-security/06-waf.md`](06-waf.md)), path-based access-control bypasses
-([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)), and — in its purest form — request smuggling
+([`05-http-stack/04-router.md`](../05-http-stack/04-router.md)), and — in its purest form — request smuggling
 ([`07-security/05-request-smuggling.md`](05-request-smuggling.md)). Normalization is the defense, and
 it is a security boundary rather than a preprocessing detail.
 
@@ -97,7 +97,7 @@ reasoning is identical, one layer down.
 ### Paths are their own normalization problem
 Dot segments, encoded separators, duplicate slashes, trailing slashes, and
 case-insensitive filesystems all make the path you routed on differ from
-the path the upstream resolves. [`05-http-stack/03-router.md`](../05-http-stack/03-router.md) covers the
+the path the upstream resolves. [`05-http-stack/04-router.md`](../05-http-stack/04-router.md) covers the
 variants and the canonical-form rule; it is the same discipline applied to
 the one input a proxy always parses.
 

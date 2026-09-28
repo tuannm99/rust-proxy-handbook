@@ -16,7 +16,7 @@ QUIC multiplex các stream độc lập giống cách HTTP/2 làm, nhưng vì vi
 khôi phục mất gói diễn ra theo từng stream bên trong QUIC (không phải
 theo từng kết nối như cách retransmission của TCP làm), một packet bị mất
 trên một stream không khựng các stream khác. Điều này sửa HOL blocking ở
-tầng TCP mà HTTP/2 trên TCP vẫn còn (xem [`11-http2.md`](11-http2.md)).
+tầng TCP mà HTTP/2 trên TCP vẫn còn (xem [`12-http2.md`](12-http2.md)).
 
 ### Connection migration và 0-RTT
 Kết nối QUIC được định danh bởi một Connection ID, không phải một 4-tuple
@@ -32,7 +32,7 @@ safe/idempotent.
 QUIC không chồng TLS lên trên theo cách TCP+TLS làm — handshake của QUIC
 *chính là* một handshake TLS 1.3 được mang trong các tham số transport
 của QUIC, nên không có QUIC dạng cleartext. Điều này nghĩa là mọi
-deployment HTTP/3 cần cùng bộ máy cert/SNI/ALPN như [`13-tls.md`](13-tls.md), chỉ được
+deployment HTTP/3 cần cùng bộ máy cert/SNI/ALPN như [`14-tls.md`](14-tls.md), chỉ được
 mang khác đi trên đường truyền.
 
 ### Một UDP socket, nhiều kết nối
@@ -100,6 +100,50 @@ implement framing HTTP/3 trên nền đó. Tại thời điểm viết, cả `hy
 `hyper-util` đều không nói HTTP/3 trực tiếp — đó là một tích hợp riêng
 biệt, đó là lý do [`proxy`](../../proxy) coi HTTP/3 là một mục tiêu mở rộng chứ không
 phải một yêu cầu baseline.
+
+### quinn trong thực tế
+Những gì bạn cần để [`labs/09-http3`](../../labs/09-http3) nói chuyện được, theo thứ tự bạn sẽ gặp:
+
+- **Certificate.** QUIC luôn chạy TLS 1.3, nên ngay cả một echo server
+  trong lab cũng cần certificate. Tạo một CA và một leaf đúng như phần "Một
+  CA local để test" trong [`01-network/14-tls.md`](14-tls.md). Đừng phục vụ chính CA:
+  client quinn verify bằng rustls, và rustls từ chối một CA certificate được
+  đưa ra làm server certificate.
+- **Phía server.** `quinn::ServerConfig::with_single_cert(chain, key)` dựng
+  config từ cùng các giá trị `CertificateDer`/`PrivateKeyDer` mà rustls dùng.
+  `quinn::Endpoint::server(config, addr)` bind một UDP socket duy nhất. Nếu
+  cần ALPN hay cấu hình rustls khác, hãy tự dựng một `rustls::ServerConfig`,
+  chuyển nó bằng `quinn::crypto::rustls::QuicServerConfig::try_from(...)`, rồi
+  bọc trong `quinn::ServerConfig::with_crypto(Arc::new(...))`.
+- **Phía client.** `quinn::Endpoint::client("0.0.0.0:0".parse()?)` bind một
+  UDP port tạm. `quinn::ClientConfig::with_root_certificates(roots)` nhận
+  một `rustls::RootCertStore` mà bạn đã thêm `ca.pem` vào. Cài nó bằng
+  `set_default_client_config`. `endpoint.connect(addr, "localhost")?.await`
+  kết nối, và tên phải là một trong các SAN của leaf.
+- **ALPN.** Nếu một trong hai phía đặt ALPN, cả hai phải có chung một giá
+  trị, nếu không handshake thất bại. Một echo lab thô có thể không đặt gì ở
+  cả hai phía. HTTP/3 bắt buộc protocol `h3`, và đó là điểm xuất phát của
+  mục tiêu mở rộng `h3`.
+- **Accept.** `endpoint.accept().await` trả ra một `Incoming` cho mỗi
+  connection mới, và await nó sẽ hoàn tất handshake thành một `Connection`.
+  Spawn một task cho mỗi connection, giống TCP.
+- **Stream.** `connection.open_bi().await` (client) và
+  `connection.accept_bi().await` (server) cho một cặp
+  `(SendStream, RecvStream)`. Mỗi stream có flow-control window riêng, đó
+  chính là lý do một stream bạn ngừng đọc chỉ làm nghẽn riêng nó.
+  `send.finish()` đánh dấu kết thúc phần bạn gửi. `recv.read_to_end(limit)`
+  đọc tới khi peer kết thúc, có giới hạn. Stream rất rẻ: mở một stream cho
+  mỗi request, không phải một cho mỗi connection.
+- **Nhìn thấy việc demultiplex.** Mỗi connection có `stable_id()` và
+  `remote_address()`. Khi cài `tracing_subscriber` và đặt
+  `RUST_LOG=quinn_proto=trace`, quinn log sự kiện `new connection` kèm
+  connection ID ban đầu. Hai client cho thấy hai connection ID đến trên
+  cùng một socket, trong khi `ss -uanp` cho thấy chỉ có đúng một socket.
+
+Gotcha: `netstat` (từ `net-tools`) không được cài trên nhiều distro hiện
+đại. Cùng các bộ đếm UDP đó nằm ở `nstat -az | grep -i udp` hoặc
+`/proc/net/snmp`. Bộ đếm tăng lên khi socket buffer tràn là
+`UdpRcvbufErrors` (`RcvbufErrors` trong output của `netstat -su`).
 
 ## Practice
 

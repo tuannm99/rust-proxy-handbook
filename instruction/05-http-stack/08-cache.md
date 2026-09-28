@@ -15,7 +15,7 @@ Four more that earn their keep:
   critical response needs.
 - **`immutable`**: this will never change within its freshness lifetime,
   so don't even revalidate on a user-initiated reload. Pairs with
-  content-hashed asset filenames ([`05-http-stack/05-static.md`](05-static.md)).
+  content-hashed asset filenames ([`05-http-stack/06-static.md`](06-static.md)).
 - **`stale-while-revalidate=N`**: serve the stale copy immediately and
   refresh in the background for up to N seconds. This is the single
   highest-leverage directive for a proxy cache — it decouples user-facing
@@ -30,7 +30,7 @@ and clients use it to compute remaining freshness; omitting it makes every
 cache below you treat your stale response as brand new.
 
 ### Freshness vs validation
-A cached response is either *fresh* (within its `max-age`) and can be served as-is, or *stale* and must be revalidated with the origin (a conditional request using `ETag`/`Last-Modified`, see [`05-http-stack/05-static.md`](05-static.md)) before being reused. Serving stale data without revalidation is a correctness bug, not an optimization.
+A cached response is either *fresh* (within its `max-age`) and can be served as-is, or *stale* and must be revalidated with the origin (a conditional request using `ETag`/`Last-Modified`, see [`05-http-stack/06-static.md`](06-static.md)) before being reused. Serving stale data without revalidation is a correctness bug, not an optimization.
 
 Gotcha: what happens when the origin sends *no* freshness information at
 all? RFC 9111 permits **heuristic freshness** — typically 10% of the time
@@ -39,6 +39,51 @@ responses the origin never said were cacheable. That is standards-
 compliant and still a surprise to whoever wrote the upstream. For a proxy
 cache, defaulting to "no explicit freshness means don't cache" is the
 safer policy; make heuristic caching opt-in per route.
+
+### Computing freshness and age exactly
+RFC 9111 §4.2 turns "is this entry fresh?" into arithmetic. Record two
+timestamps when you fetch: `request_time` (when you sent the request
+upstream) and `response_time` (when the response arrived).
+
+**Freshness lifetime** is the first of these that applies, for a shared
+cache like a proxy:
+1. `s-maxage=N` → N seconds.
+2. `max-age=N` → N seconds.
+3. `Expires` minus `Date` (both HTTP dates, in the response).
+4. Otherwise none, unless you opted into heuristic freshness (above).
+
+**Current age** accounts for time the response already spent in caches
+upstream of you and time in transit:
+
+```text
+apparent_age          = max(0, response_time - Date)
+corrected_age_value   = Age (header, default 0) + (response_time - request_time)
+corrected_initial_age = max(apparent_age, corrected_age_value)
+current_age           = corrected_initial_age + (now - response_time)
+```
+
+The entry is **fresh** while `freshness_lifetime > current_age`. When you
+serve it, send `Age: current_age` in whole seconds. A cached entry with
+`max-age=60` that arrived carrying `Age: 50` is fresh for only 10 more
+seconds, and ignoring the incoming `Age` is how stale content gets served
+as fresh down a chain of caches.
+
+**Vary matching** (§4.1): a stored response can answer a new request only
+if, for every header named in the stored response's `Vary`, the new
+request's value equals the value in the request that *produced* the
+stored response. So an entry must remember those original request header
+values. That's why the key is "method + URI" plus a secondary match on
+the varied headers, not the URI alone. `Vary: *` never matches, which
+makes the response effectively uncacheable.
+
+**Revalidation** (§4.3): for a stale entry, send the upstream request
+with `If-None-Match: <stored ETag>` (or `If-Modified-Since: <stored
+Last-Modified>` if there's no ETag). A `304 Not Modified` means "your copy
+is still good". Update the stored headers from the `304`'s headers, reset
+the entry's `request_time`/`response_time` so its age starts over, and
+serve the *stored body* to the client as a normal `200`. A `200` means the
+resource changed: replace the entry. A `5xx` means serve stale only if
+`stale-if-error` allows it, otherwise pass the error on.
 
 ### What is even eligible to cache
 Before any of the above: the method must be `GET` or `HEAD` (never cache a
@@ -105,7 +150,7 @@ moment it stops helping. Request coalescing (single-flight) plus
 `stale-while-revalidate` removes it entirely, and a cold start after a
 restart is the same problem for every key at once.
 
-See [`05-http-stack/08-cache-stampede.md`](08-cache-stampede.md).
+See [`05-http-stack/09-cache-stampede.md`](09-cache-stampede.md).
 
 ### Invalidation
 Time-based expiry (`max-age`) is the easy case. Explicit invalidation (origin pushes a purge, or a write invalidates a related read) is the hard case every real cache eventually needs — plan for a purge-by-key or purge-by-prefix mechanism from the start rather than bolting it on later.
@@ -143,7 +188,7 @@ Build these in order.
    revalidation via conditional requests. **Done when** a stale entry
    triggers exactly one conditional request and a `304` refreshes it
    without transferring the body.
-5. Work through [`05-http-stack/08-cache-stampede.md`](08-cache-stampede.md)'s exercises. **Done
+5. Work through [`05-http-stack/09-cache-stampede.md`](09-cache-stampede.md)'s exercises. **Done
    when** 500 concurrent requests for one expired key produce exactly one
    origin hit, and `stale-while-revalidate` means none of them wait.
 6. Add `stale-if-error`. **Done when** taking the origin fully offline

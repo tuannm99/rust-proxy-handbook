@@ -72,7 +72,7 @@ nửa đều quan trọng:
 - **Bạn không thể vượt quá các dependency của mình.** Một proxy đứng trước
   một upstream 99.9% không thể cung cấp 99.99% end-to-end, trừ khi nó có
   thể phục vụ mà không cần upstream đó (`stale-if-error` của
-  [`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md) chính là kiểu tách rời này).
+  [`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md) chính là kiểu tách rời này).
 - **Window quan trọng ngang với con số.** 99.9% trong 30 ngày là 43 phút;
   trong 7 ngày là 10 phút, và một lần deploy tệ duy nhất có thể tiêu hết
   toàn bộ ngân sách ngắn hơn đó.

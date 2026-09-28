@@ -17,7 +17,7 @@ search tên type được nêu.
 | Đọc | Sau khi | Vì sao lúc đó |
 | --- | --- | --- |
 | Điểm dừng 1-3: parsing và framing | [`labs/01-http-parser`](../../../labs/01-http-parser), bước 8 Practice của [`05-http-stack/01-parser.md`](../../05-http-stack/01-parser.md) | Mỗi khác biệt so với parser của bạn là một case bạn bỏ sót hoặc chọn khác |
-| Điểm dừng 4: state machine của connection | [`labs/02-http-server`](../../../labs/02-http-server), [`05-http-stack/04-keepalive.md`](../../05-http-stack/04-keepalive.md) | Bạn đã tự debug keep-alive |
+| Điểm dừng 4: state machine của connection | [`labs/02-http-server`](../../../labs/02-http-server), [`05-http-stack/05-keepalive.md`](../../05-http-stack/05-keepalive.md) | Bạn đã tự debug keep-alive |
 | Điểm dừng 5: dispatcher | [`03-rust/18-async-traits.md`](../../03-rust/18-async-traits.md), [`labs/02-http-server`](../../../labs/02-http-server) | Bạn đã implement một `Service` |
 
 ## Lộ trình
@@ -49,11 +49,11 @@ Body decoder có một số ít kiểu (độ dài cố định, chunked, đọc
 ### Điểm dừng 5: dispatcher: `proto/h1/dispatch.rs`
 Đây là nơi `Service` của bạn được gọi.
 - Dispatcher đan xen việc đọc request kế tiếp, poll future của service, và ghi response thế nào?
-- Backpressure được áp ở đâu khi client đọc body response chậm ([`01-network/11-http2.md`](../../01-network/11-http2.md) bàn phiên bản HTTP/2 của vấn đề này)?
+- Backpressure được áp ở đâu khi client đọc body response chậm ([`01-network/12-http2.md`](../../01-network/12-http2.md) bàn phiên bản HTTP/2 của vấn đề này)?
 
 ## Viết gì vào notes
 `interesting-code.md` nên liệt kê, cho mỗi điểm dừng, một quyết định hyper
 đưa ra khác với [`labs/01-http-parser`](../../../labs/01-http-parser) của bạn và bây giờ bạn nghĩ cái nào
 đúng. `what-to-learn.md` nên ánh xạ những gì bạn tìm được về
-[`05-http-stack/01-parser.md`](../../05-http-stack/01-parser.md), [`05-http-stack/04-keepalive.md`](../../05-http-stack/04-keepalive.md), và
+[`05-http-stack/01-parser.md`](../../05-http-stack/01-parser.md), [`05-http-stack/05-keepalive.md`](../../05-http-stack/05-keepalive.md), và
 [`07-security/05-request-smuggling.md`](../../07-security/05-request-smuggling.md).

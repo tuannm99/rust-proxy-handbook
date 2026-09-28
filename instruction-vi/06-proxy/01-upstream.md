@@ -69,7 +69,7 @@ tiên.
 ### Connection reuse tới upstream
 Mở một kết nối TCP (+ TLS) mới cho mỗi request được proxy là đắt: một RTT
 cho TCP handshake, thêm một hoặc hai RTT nữa cho TLS
-([`01-network/13-tls.md`](../01-network/13-tls.md)), phải trả trước khi một byte request nào được
+([`01-network/14-tls.md`](../01-network/14-tls.md)), phải trả trước khi một byte request nào được
 chuyển đi. Giữ một connection pool nhỏ cho mỗi upstream và tái sử dụng các
 kết nối idle (`hyper-util`'s `client-legacy` pool làm điều này cho bạn,
 nhưng bạn nên biết vì sao nó tồn tại).
@@ -79,7 +79,7 @@ HTTP/1.1 mang đúng một request tại một thời điểm, nên N request đ
 tới một upstream cần N kết nối. Một kết nối HTTP/2 mang nhiều stream đồng
 thời, nên cùng N request đó có thể chỉ cần một kết nối — bị giới hạn bởi
 `SETTINGS_MAX_CONCURRENT_STREAMS` mà upstream công bố
-([`01-network/11-http2.md`](../01-network/11-http2.md)), quá ngưỡng đó các stream mới sẽ xếp hàng sau
+([`01-network/12-http2.md`](../01-network/12-http2.md)), quá ngưỡng đó các stream mới sẽ xếp hàng sau
 các stream đã xong thay vì mở kết nối thứ hai, trừ khi bạn cho phép rõ
 ràng.
 

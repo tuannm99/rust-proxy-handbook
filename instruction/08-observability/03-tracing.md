@@ -79,7 +79,7 @@ decisions it made:
   ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)) — these are frequently confused in incident
   reviews and the split settles it
 - retry count and whether a circuit was open ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md))
-- cache hit/miss/stale ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md))
+- cache hit/miss/stale ([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md))
 - whether the request was rate-limited or shed, and by which rule
 - time spent in WAF inspection ([`07-security/06-waf.md`](../07-security/06-waf.md))
 
@@ -131,6 +131,55 @@ fails like one. Three properties to verify rather than assume:
 
 ### Spans vs tracing crate `Span`s
 Confusingly, Rust's `tracing` crate calls its structured logging scopes "spans" too — and they compose well with OpenTelemetry: `tracing-opentelemetry` bridges `tracing::Span`s into OTel spans that get exported to a collector (Jaeger/Tempo/Honeycomb), so the same instrumentation you added for [`08-observability/01-logging.md`](01-logging.md) doubles as trace data.
+
+### Wiring the pipeline in Rust
+Five crates cooperate, and their versions must match each other exactly.
+`opentelemetry`, `opentelemetry_sdk` and `opentelemetry-otlp` release
+together (0.33 at the time of writing), and `tracing-opentelemetry` has
+its own number that tracks one OTel release (0.34 pairs with OTel 0.33).
+Mixing releases produces baffling "expected `Tracer`, found `Tracer`"
+errors, because two copies of the same trait exist. Check with
+`cargo tree -i opentelemetry` that only one version is present.
+
+What each piece does, in data-flow order:
+1. Your code creates `tracing` spans (`#[instrument]`, `info_span!` +
+   `.instrument(...)`), exactly as in the rest of this file.
+2. `tracing_opentelemetry::layer().with_tracer(tracer)` is a
+   `tracing_subscriber` layer that turns those spans into OTel spans. Add
+   it to `tracing_subscriber::registry()` next to your fmt layer.
+3. The tracer comes from an `opentelemetry_sdk::trace::SdkTracerProvider`,
+   built with `.with_batch_exporter(exporter)` (batches spans off the
+   request path), `.with_sampler(...)` (for example
+   `Sampler::ParentBased(Box::new(Sampler::TraceIdRatioBased(0.1)))`, which
+   is the "honor the incoming decision, else sample 10%" policy from
+   Sampling above), and `.with_resource(...)` carrying the service name
+   (`Resource::builder().with_service_name("proxy")`). Get a tracer from it
+   through the `opentelemetry::trace::TracerProvider` trait's `.tracer(...)`.
+4. The exporter is `opentelemetry_otlp::SpanExporter::builder()` with
+   `.with_http()` (OTLP over HTTP, port 4318, the crate's default feature)
+   or `.with_tonic()` (gRPC, port 4317, needs the `grpc-tonic` feature).
+5. On shutdown call `provider.shutdown()`. The batch exporter holds
+   unsent spans in memory, and a process that exits without flushing loses
+   the last few seconds of traces, which are usually the ones you wanted.
+
+**Propagation across a hop** is separate from export. Register the W3C
+format once with
+`opentelemetry::global::set_text_map_propagator(opentelemetry_sdk::propagation::TraceContextPropagator::new())`.
+On an incoming request, extract the parent context from the headers
+(`opentelemetry_http::HeaderExtractor(req.headers())` with the propagator's
+`extract`) and attach it to your request span with
+`OpenTelemetrySpanExt::set_parent`. On the outgoing upstream request,
+inject the current span's context (`span.context()`) into the upstream
+request's headers with `HeaderInjector`. That writes the `traceparent`
+header whose format is at the top of this file. Two proxy instances
+chained this way show up as one trace.
+
+**A local viewer.** Jaeger accepts OTLP directly:
+`docker run --rm -d --name jaeger -p 16686:16686 -p 4317:4317 -p 4318:4318 jaegertracing/jaeger:latest`,
+then open `http://localhost:16686`. Traces show up a few seconds after
+the requests (batching). If nothing appears, check the exporter's port
+matches its protocol (HTTP is 4318, gRPC is 4317) and that `shutdown()`
+ran.
 
 ## Practice
 Build these in order.

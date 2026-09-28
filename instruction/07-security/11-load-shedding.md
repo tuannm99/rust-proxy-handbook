@@ -102,7 +102,7 @@ The limit tracks real capacity without anyone tuning it.
 
 Gotcha: adaptive limiting needs a stable latency signal to work from, so
 it behaves badly when latency is naturally bimodal (cache hits at 1ms,
-misses at 200ms — [`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)). Apply it per route, or per
+misses at 200ms — [`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)). Apply it per route, or per
 class of work with similar cost, rather than globally.
 
 ### Telling the client the truth

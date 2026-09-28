@@ -48,7 +48,8 @@ Khi `Content-Length` không được biết trước, `Transfer-Encoding: chunke
 frame body thành một chuỗi các chunk `<hex-size>\r\n<data>\r\n` kết thúc
 bằng một chunk kích thước 0. Một message không được vừa chỉ định
 `Content-Length` vừa `Transfer-Encoding: chunked` — RFC 9112 nói rằng bên
-nhận phải từ chối hoặc chuẩn hóa sự mập mờ đó. Đây chính xác là sự mập mờ
+nhận phải từ chối hoặc chuẩn hóa sự mập mờ đó (grammar chính xác và thứ tự
+luật nằm ở [`01-network/11-http1-wire-format.md`](11-http1-wire-format.md)). Đây chính xác là sự mập mờ
 mà các tấn công request-smuggling khai thác khi một parser front-end và
 back-end bất đồng về header nào thắng — xem
 [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md).

@@ -45,6 +45,30 @@ leaves you serving the old fd's contents forever.
 ### Range requests
 Clients (browsers resuming a download, video players seeking) send `Range: bytes=1000-1999`. A compliant server responds `206 Partial Content` with `Content-Range`, or `416 Range Not Satisfiable` if the range is invalid — and must handle multi-range requests (`bytes=0-99,200-299`) or explicitly refuse them via `Accept-Ranges: none`.
 
+The exact syntax (RFC 9110 §14), for a 1000-byte file. Positions are
+zero-based and **both ends are inclusive**:
+
+| Request `Range:` | Meaning | Response |
+|---|---|---|
+| `bytes=0-99` | first 100 bytes | `206`, `Content-Range: bytes 0-99/1000`, `Content-Length: 100` |
+| `bytes=900-` | from 900 to the end | `206`, `Content-Range: bytes 900-999/1000` |
+| `bytes=-100` | the *last* 100 bytes (a suffix) | `206`, `Content-Range: bytes 900-999/1000` |
+| `bytes=0-5000` | end past EOF: clamp it to 999 | `206`, `Content-Range: bytes 0-999/1000` |
+| `bytes=1000-` or `bytes=-0` | starts at or past the end, or asks for zero bytes | `416`, `Content-Range: bytes */1000` |
+| `bytes=500-100`, `bytes=abc`, `items=0-5` | not a valid byte range at all | **ignore the header**: `200` with the full file |
+
+Three rules sit behind that table. An *unsatisfiable* range (valid
+syntax, but nothing in the file) earns `416`, and the `416` carries
+`Content-Range: bytes */<size>` so the client learns the real size. A
+*syntactically invalid* `Range` header, or an unknown unit, is not an
+error: the server ignores it and serves the whole representation with
+`200`. And `Range` only applies to `GET`. On other methods it is ignored.
+A `206` carries the same `Content-Type` as the full response, and servers
+advertise support with `Accept-Ranges: bytes`. An empty file is the edge
+case: `Content-Range` has no way to name a range inside zero bytes, so
+answer range requests for it with `200` and the empty body (ignoring
+`Range` is always allowed).
+
 Gotcha: multi-range is an amplification vector. A request listing hundreds
 of tiny overlapping ranges forces the server to build a large
 `multipart/byteranges` response — far more output than input, plus the CPU
@@ -91,7 +115,7 @@ to resolve relative to an opened root directory using `openat2` with
 `RESOLVE_BENEATH` (or `cap-std`, which wraps this pattern in Rust), so the
 kernel enforces containment atomically instead of you checking a string.
 
-Gotcha: the same normalization discussion as [`05-http-stack/03-router.md`](03-router.md)
+Gotcha: the same normalization discussion as [`05-http-stack/04-router.md`](04-router.md)
 applies here, and if the router already normalized the path, the static
 handler must not decode it *again* — a double decode reintroduces
 traversal from `%252e%252e%252f`. Decode exactly once, at a documented

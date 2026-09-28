@@ -19,7 +19,7 @@ directly.
 let sent = unsafe { libc::sendfile(sock_fd, file_fd, std::ptr::null_mut(), len) };
 ```
 This is the classic zero-copy primitive for "serve a static file" and is
-exactly what [`05-http-stack/05-static.md`](../05-http-stack/05-static.md) should reach for on the happy path.
+exactly what [`05-http-stack/06-static.md`](../05-http-stack/06-static.md) should reach for on the happy path.
 Gotcha: `sendfile` requires the source to be a *file* — you cannot
 `sendfile` socket-to-socket, which matters for a reverse proxy relaying
 upstream responses.
@@ -53,7 +53,7 @@ with `SOL_TLS`) pushes the encrypt/decrypt step itself into the kernel so
 feature (needs kernel + often specific NIC offload support) and Rust
 ecosystem support (`ktls`, ties into `rustls`) is much less mature than
 plain `rustls`. In practice: [`proxy`](../../proxy) terminating TLS
-([`01-network/13-tls.md`](../01-network/13-tls.md)) will do a userspace copy-and-encrypt on the response
+([`01-network/14-tls.md`](../01-network/14-tls.md)) will do a userspace copy-and-encrypt on the response
 path unless you deliberately reach for kTLS, and that's a normal, acceptable
 default — don't treat losing zero-copy under TLS as a bug.
 

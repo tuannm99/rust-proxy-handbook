@@ -9,12 +9,12 @@ Gotcha: mức chất lượng chi phối toàn bộ so sánh này, và các mứ
 là cái bẫy cho nội dung động. Brotli quality 11 có thể chậm hơn một bậc
 độ lớn so với quality 4-5 để đổi lấy vài phần trăm tỉ lệ tốt hơn — ổn khi
 bạn nén một lần lúc build rồi serve mãi mãi (asset content-hashed của
-[`05-http-stack/05-static.md`](05-static.md)), không bao giờ đáng khi nén một response
+[`05-http-stack/06-static.md`](06-static.md)), không bao giờ đáng khi nén một response
 theo từng request. Dùng chất lượng cao cho file tĩnh nén sẵn, thấp-tới-vừa
 cho bất cứ gì động.
 
 ### Negotiation qua Accept-Encoding
-Client liệt kê những gì nó có thể decode, tùy chọn kèm trọng số chất lượng: `Accept-Encoding: gzip, br;q=0.8`. Server (hoặc proxy) chọn một cái nó hỗ trợ, set `Content-Encoding` trên response, và phải thêm `Vary: Accept-Encoding` để bất kỳ cache nào phía trước nó (xem [`05-http-stack/07-cache.md`](07-cache.md)) không serve một response gzip cho một client chỉ yêu cầu brotli.
+Client liệt kê những gì nó có thể decode, tùy chọn kèm trọng số chất lượng: `Accept-Encoding: gzip, br;q=0.8`. Server (hoặc proxy) chọn một cái nó hỗ trợ, set `Content-Encoding` trên response, và phải thêm `Vary: Accept-Encoding` để bất kỳ cache nào phía trước nó (xem [`05-http-stack/08-cache.md`](08-cache.md)) không serve một response gzip cho một client chỉ yêu cầu brotli.
 
 Gotcha: xử lý các trường hợp biên của q-value, vì đó là chỗ negotiation
 tinh vi sai lệch. `q=0` nghĩa là *không* chấp nhận tường minh, không phải
@@ -59,7 +59,7 @@ sự bất đồng về framing mà [`07-security/05-request-smuggling.md`](../0
 Gotcha: flush là một đánh đổi latency/tỉ lệ. Một compressor không bao giờ
 flush đệm dữ liệu để có tỉ lệ tốt hơn, điều này làm đứng các response
 streaming (SSE, long-poll, các pattern gần với
-[`05-http-stack/09-websocket.md`](09-websocket.md)) — client chờ output đang nằm trong
+[`05-http-stack/10-websocket.md`](10-websocket.md)) — client chờ output đang nằm trong
 compressor. Flush ở các ranh giới có ý nghĩa cho các content type
 streaming; đừng làm vậy với download hàng loạt.
 
@@ -120,7 +120,7 @@ Làm theo thứ tự này.
    với 11 dưới tải ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)) và có thể nói rõ tỉ
    lệ đạt được so với CPU bỏ ra.
 6. Cache byte đã nén cho response cacheable
-   ([`05-http-stack/07-cache.md`](07-cache.md)). **Xong khi** request lặp lại cho cùng
+   ([`05-http-stack/08-cache.md`](08-cache.md)). **Xong khi** request lặp lại cho cùng
    resource nén zero lần.
 7. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), xử lý một response upstream đã nén sẵn.
    **Xong khi** một body upstream gzip được pass qua nguyên vẹn cho một

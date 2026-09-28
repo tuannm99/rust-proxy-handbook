@@ -11,14 +11,16 @@ small set of routes with correct headers and connection semantics.
 - [ ] `curl -v http://.../a http://.../b` shows the second request re-using the first connection (keep-alive works), and a request carrying `Connection: close` gets its response and then a closed connection.
 - [ ] `curl --http2-prior-knowledge` (cleartext HTTP/2) works against the same server — the auto builder serves both protocols.
 - [ ] A handler that returns an error produces a `500` response, not a dropped connection.
-- [ ] An idle keep-alive connection is closed after a timeout you chose, rather than held forever ([`instruction/05-http-stack/04-keepalive.md`](../../instruction/05-http-stack/04-keepalive.md)).
+- [ ] An idle keep-alive connection is closed after a timeout you chose, rather than held forever ([`instruction/05-http-stack/05-keepalive.md`](../../instruction/05-http-stack/05-keepalive.md)).
 - [ ] Reviewed per [`instruction/00-introduction/03-study-loop.md`](../../instruction/00-introduction/03-study-loop.md) step 5.
 
 ## Handbook references
 - [`instruction/05-http-stack/01-parser.md`](../../instruction/05-http-stack/01-parser.md) — do [`labs/01-http-parser`](../01-http-parser) first so hyper's API makes sense
-- [`instruction/05-http-stack/04-keepalive.md`](../../instruction/05-http-stack/04-keepalive.md) — persistent connections, when a connection can't be reused
-- [`instruction/05-http-stack/02-hop-by-hop-headers.md`](../../instruction/05-http-stack/02-hop-by-hop-headers.md) — which headers must not be forwarded
-- [`instruction/01-network/10-http.md`](../../instruction/01-network/10-http.md), [`instruction/01-network/11-http2.md`](../../instruction/01-network/11-http2.md) — status codes/headers, h1 vs h2
+- [`instruction/05-http-stack/05-keepalive.md`](../../instruction/05-http-stack/05-keepalive.md) — persistent connections, when a connection can't be reused
+- [`instruction/05-http-stack/03-hop-by-hop-headers.md`](../../instruction/05-http-stack/03-hop-by-hop-headers.md) — which headers must not be forwarded
+- [`instruction/01-network/10-http.md`](../../instruction/01-network/10-http.md), [`instruction/01-network/12-http2.md`](../../instruction/01-network/12-http2.md) — status codes/headers, h1 vs h2
+- [`instruction/05-http-stack/02-hyper.md`](../../instruction/05-http-stack/02-hyper.md) — how hyper 1.x fits together: the accept loop, services (and why `Err` is not a `500`), the auto builder, `header_read_timeout` as the idle timeout
+- [`instruction/12-testing/06-lab-environment.md`](../../instruction/12-testing/06-lab-environment.md) — installing and running the tools the checks above use
 
 ## After you finish
 - Read [`instruction/19-reading-source/hyper/reading-guide.md`](../../instruction/19-reading-source/hyper/reading-guide.md) stops 4-5 — hyper's connection state machine and dispatcher.

@@ -32,13 +32,13 @@ mà mỗi cái trông có vẻ cục bộ và cùng nhau định nghĩa pipeline
 | 2 | Lọc IP trên peer thật | Trước bất cứ thứ gì đắt; dùng địa chỉ socket, không phải header ([`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)) |
 | 3 | TLS termination | Reject client-cert nên xảy ra lúc handshake, không phải sau đó ([`07-security/01-auth.md`](../07-security/01-auth.md)) |
 | 4 | Codec / parse | Kiểm tra framing và reject smuggling ([`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md)) |
-| 5 | **Strip header hop-by-hop và identity** | Phải xảy ra trước khi bất cứ thứ gì đọc chúng ([`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md), [`07-security/01-auth.md`](../07-security/01-auth.md)) |
-| 6 | Chuẩn hóa path | Trước routing, nếu không routing quyết định trên một path khác với cái upstream thấy ([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)) |
+| 5 | **Strip header hop-by-hop và identity** | Phải xảy ra trước khi bất cứ thứ gì đọc chúng ([`05-http-stack/05-keepalive.md`](../05-http-stack/05-keepalive.md), [`07-security/01-auth.md`](../07-security/01-auth.md)) |
+| 6 | Chuẩn hóa path | Trước routing, nếu không routing quyết định trên một path khác với cái upstream thấy ([`05-http-stack/04-router.md`](../05-http-stack/04-router.md)) |
 | 7 | Routing | Cần để biết chính sách *nào* áp dụng cho phần còn lại |
 | 8 | Rate limiting theo route | Reject rẻ trước công việc đắt ([`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md)) |
 | 9 | Auth | Trước khi kiểm tra body và trước bất kỳ chi phí upstream nào |
 | 10 | WAF / kiểm tra body | Kiểm tra đắt nhất, chạy cuối và chỉ cho traffic đã xác thực, không bị rate-limit ([`07-security/06-waf.md`](../07-security/06-waf.md)) |
-| 11 | Tra cứu cache | Trước lệnh gọi upstream, sau auth (nếu không bạn phục vụ response của người này cho người khác — [`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)) |
+| 11 | Tra cứu cache | Trước lệnh gọi upstream, sau auth (nếu không bạn phục vụ response của người này cho người khác — [`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)) |
 | 12 | Lệnh gọi upstream | Load balancing, retry, circuit breaking ([`06-proxy/`](../06-proxy)) |
 
 Logging và metrics bọc quanh toàn bộ, vì chúng phải quan sát các request bị
@@ -138,8 +138,8 @@ chạy theo thứ tự ngược với công việc phía-request của nó, thư
 điều bạn muốn (module logging ngoài cùng thấy status cuối cùng) và thỉnh
 thoảng không phải (compression phải chạy *bên trong* caching, để cache lưu
 một biểu diễn mà nó có thể re-serve cho một client khác thay vì một cái đã
-nén không thể — [`05-http-stack/06-compression.md`](../05-http-stack/06-compression.md),
-[`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)). Ghi rõ thứ tự đường đi response; đừng giả
+nén không thể — [`05-http-stack/07-compression.md`](../05-http-stack/07-compression.md),
+[`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)). Ghi rõ thứ tự đường đi response; đừng giả
 định nó tự nhiên đúng.
 
 Gotcha: một response dạng streaming nghĩa là response "đi qua" các module

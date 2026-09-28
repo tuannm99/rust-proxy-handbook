@@ -1,7 +1,7 @@
 # Page Cache
 
 Cache của kernel cho dữ liệu file trong RAM. Thứ khiến việc serve static
-file ([`05-http-stack/05-static.md`](../05-http-stack/05-static.md)) nhanh, và thứ khiến việc đo bộ nhớ của
+file ([`05-http-stack/06-static.md`](../05-http-stack/06-static.md)) nhanh, và thứ khiến việc đo bộ nhớ của
 proxy bạn trở nên khó hiểu.
 
 ## What to learn

@@ -46,16 +46,18 @@ works, and it is a permanent structural gap rather than a bug you fix
 once.
 
 This is a large enough topic to live on its own, and it is shared with
-routing ([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)) and framing
+routing ([`05-http-stack/04-router.md`](../05-http-stack/04-router.md)) and framing
 ([`07-security/05-request-smuggling.md`](05-request-smuggling.md)): see
 [`07-security/04-normalization.md`](04-normalization.md). Nothing else in this file works if that
 doesn't.
 
 ### Body inspection: the cost and the hard limit
-Inspecting a body means having the whole body, which means buffering it —
-so WAF inspection and streaming are mutually exclusive, and the buffer is
-bounded by memory you're willing to spend per concurrent request. This is
-the same constraint as retry buffering ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)), and the two
+Rules that need the whole body at once (a regex with unbounded context,
+parsing JSON to inspect one field) mean buffering it, and the buffer is
+bounded by memory you're willing to spend per concurrent request. Literal
+signatures don't need that. They can be matched on a stream (next
+section), which keeps memory flat. For buffered inspection, this is the
+same constraint as retry buffering ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)), and the two
 should share one limit rather than each holding their own copy.
 
 The unavoidable decision is what happens to a body larger than the limit:
@@ -67,6 +69,43 @@ Neither is "correct" — but fail-open is a *silent* bypass and fail-closed
 is a visible error, so default to closed and carve out explicit,
 authenticated routes for large uploads. If you fail open, alert on it; a
 sudden rise in oversized bodies is an attack signature by itself.
+
+### Matching literal signatures on a streamed body
+A body arrives as chunks, and a signature can straddle two of them
+(`...UNION SE` | `LECT...`). Matching each chunk on its own misses it,
+and an attacker can arrange that split deliberately. Two ways to handle
+it without buffering the whole body:
+
+- **Carry the automaton state across chunks.** An Aho-Corasick automaton's
+  current state *is* "the longest prefix of any pattern I have just seen"
+  ([`13-algorithms/aho-corasick.md`](../13-algorithms/aho-corasick.md)). Feed chunk 1 byte by byte, keep the
+  final state, and start chunk 2 from it instead of from the start state,
+  and a split signature is found exactly as if the body were contiguous.
+  In the `aho-corasick` crate, the high-level `AhoCorasick::find` always
+  starts fresh. The low-level `aho_corasick::automaton::Automaton` trait,
+  implemented by `aho_corasick::dfa::DFA` and the `nfa` types, exposes
+  `start_state`, `next_state`, `is_match` and `match_pattern`, which is
+  everything needed to carry a `StateID` from one chunk to the next.
+  Memory per request: one state ID.
+- **Overlap window.** Keep the last `max_pattern_len - 1` bytes of each
+  chunk (`AhoCorasick::max_pattern_len()`) and scan them joined with the
+  next chunk. It is simpler, but you must de-duplicate matches found twice
+  in the overlap.
+
+The decision this forces is **when to forward a chunk upstream**. If you
+forward chunk 1 as soon as it's scanned and the match completes in chunk
+2, part of the attack has already reached the upstream. You can hold back
+the last `max_pattern_len - 1` bytes of each chunk until the next one
+arrives (bounded delay, bounded memory), which guarantees nothing
+matching is ever forwarded. Or you accept partial forwarding, and on a
+match abort the upstream request and discard that upstream connection
+(its framing is now unknown, see [`07-security/05-request-smuggling.md`](05-request-smuggling.md)),
+then answer the client `403`.
+
+Gotcha: normalization has the same chunk-boundary problem. A
+percent-escape split as `%2` | `7` decodes to `'` only if the decoder also
+carries state across chunks. Run a streaming decoder in front of the
+streaming matcher. Don't decode each chunk separately.
 
 ### Anomaly scoring
 Instead of a hard block per rule, each matched rule adds a score; the

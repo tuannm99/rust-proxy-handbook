@@ -75,7 +75,7 @@ trusted must be stripped at the edge, every time, on every path —
 including error paths and any route that skips auth.
 
 Gotcha: stripping must happen at a single, early point, alongside
-hop-by-hop header removal ([`05-http-stack/02-hop-by-hop-headers.md`](../05-http-stack/02-hop-by-hop-headers.md)), not
+hop-by-hop header removal ([`05-http-stack/03-hop-by-hop-headers.md`](../05-http-stack/03-hop-by-hop-headers.md)), not
 inside the auth module. A route configured `Public` skips the auth module
 entirely — and if stripping lived there, that route forwards forged
 identity headers straight through.

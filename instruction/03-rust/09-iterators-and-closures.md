@@ -23,7 +23,7 @@ let record_hit = || counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed); 
 Gotcha: a closure that must run more than once (a per-connection handler mapped over many connections) needs `Fn`/`FnMut`, but if it *moves* a non-`Clone` resource into itself it degrades to `FnOnce` and won't compile where `Fn` is required — the usual fix is cloning an `Arc` into the closure instead of moving the original value.
 
 ### `impl Trait` return position vs `Box<dyn Fn>`
-Returning `impl Fn(...) -> ...` gives a concrete, unnamed, monomorphized closure type at zero cost — but every function returning `impl Fn` with an identical signature still returns its *own* distinct type. `Box<dyn Fn(...)>` erases the type, which is what you need to store heterogeneous closures in one collection (a `Vec` of route handlers — see [`05-http-stack/03-router.md`](../05-http-stack/03-router.md)).
+Returning `impl Fn(...) -> ...` gives a concrete, unnamed, monomorphized closure type at zero cost — but every function returning `impl Fn` with an identical signature still returns its *own* distinct type. `Box<dyn Fn(...)>` erases the type, which is what you need to store heterogeneous closures in one collection (a `Vec` of route handlers — see [`05-http-stack/04-router.md`](../05-http-stack/04-router.md)).
 
 ```rust
 fn make_key_extractor(header: &'static str) -> impl Fn(&Request) -> Option<&str> {

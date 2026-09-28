@@ -86,7 +86,7 @@ public internet. Two shapes matter here:
 Why this matters for a proxy specifically: by the time a connection
 reaches your listening socket, `peer_addr()` may already be several NAT
 hops removed from the actual client — this is *exactly* the problem
-[`01-network/14-proxy-protocol.md`](14-proxy-protocol.md) and the `X-Forwarded-For` discussion in
+[`01-network/15-proxy-protocol.md`](15-proxy-protocol.md) and the `X-Forwarded-For` discussion in
 [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md) exist to solve, and it's why "just trust
 the socket's peer address" is naive the moment there's any load balancer,
 NAT gateway, or CDN in front of you.

@@ -76,7 +76,7 @@ tin cậy đều phải bị loại bỏ ở edge, mỗi lần, trên mọi path
 path và bất kỳ route nào bỏ qua auth.
 
 Gotcha: việc loại bỏ phải xảy ra tại một điểm duy nhất, sớm, cùng chỗ với
-việc loại bỏ hop-by-hop header ([`05-http-stack/02-hop-by-hop-headers.md`](../05-http-stack/02-hop-by-hop-headers.md)),
+việc loại bỏ hop-by-hop header ([`05-http-stack/03-hop-by-hop-headers.md`](../05-http-stack/03-hop-by-hop-headers.md)),
 không phải bên trong module auth. Một route cấu hình `Public` bỏ qua hoàn
 toàn module auth — và nếu việc loại bỏ nằm ở đó, route này chuyển tiếp
 thẳng identity header giả mạo.

@@ -1,7 +1,7 @@
 # Cache Stampede
 
 Sự cố nơi một cache, đúng vào lúc nó ngừng giúp ích, chủ động làm mọi thứ
-tệ hơn. [`05-http-stack/07-cache.md`](07-cache.md) bao quát semantics caching HTTP; file
+tệ hơn. [`05-http-stack/08-cache.md`](08-cache.md) bao quát semantics caching HTTP; file
 này bao quát bài toán concurrency bên dưới bất kỳ cache nào, và vì sao
 single-flight là một yêu cầu chứ không phải một tối ưu.
 
@@ -61,7 +61,7 @@ nên nó cần cùng giới hạn như bất kỳ map nào tương tự
 
 ### Serve stale trong khi refresh
 Single-flight giảm N lần fetch xuống một, nhưng các bên chờ vẫn phải chờ.
-Với `stale-while-revalidate` ([`05-http-stack/07-cache.md`](07-cache.md)) việc chờ biến
+Với `stale-while-revalidate` ([`05-http-stack/08-cache.md`](08-cache.md)) việc chờ biến
 mất hoàn toàn: serve ngay bản stale cho tất cả mọi người, refresh một lần
 ở nền, swap nó vào khi xong.
 

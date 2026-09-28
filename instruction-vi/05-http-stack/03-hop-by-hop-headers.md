@@ -58,7 +58,7 @@ chính nó và những gì nó nói với upstream để mong đợi. Đó chín
 desync trong [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md), do tự mình gây ra.
 
 Điều tương tự áp dụng khi bạn thay đổi body: nén response trong lúc
-streaming ([`05-http-stack/06-compression.md`](06-compression.md)) làm `Content-Length` inbound
+streaming ([`05-http-stack/07-compression.md`](07-compression.md)) làm `Content-Length` inbound
 không còn đúng, và forward nó tiếp tục tạo ra cùng loại bug từ chiều ngược
 lại.
 
@@ -71,7 +71,7 @@ connection của mình tới upstream. Nên một implementation đúng strip ch
 Gotcha: đây là cách phổ biến nhất khiến một proxy đang chạy tốt mất hỗ trợ
 WebSocket trong một lần refactor — ai đó thêm việc strip hop-by-hop đúng
 đắn và đường upgrade lặng lẽ ngừng hoạt động, vì không gì thêm lại các
-header đó. [`05-http-stack/09-websocket.md`](09-websocket.md) bao quát luồng upgrade; việc xử
+header đó. [`05-http-stack/10-websocket.md`](10-websocket.md) bao quát luồng upgrade; việc xử
 lý header là một trường hợp đặc biệt của file này.
 
 ### Các header end-to-end mà bạn vẫn không nên forward mù quáng

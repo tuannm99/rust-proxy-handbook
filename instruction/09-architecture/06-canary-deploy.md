@@ -36,7 +36,7 @@ users.
 Gotcha: a client bouncing between versions is worse than it sounds when
 the versions differ in behavior — a browser that loads `index.html` from
 canary and its hashed JS bundle from stable gets a 404
-([`05-http-stack/05-static.md`](../05-http-stack/05-static.md)'s immutable assets), and the user sees a broken
+([`05-http-stack/06-static.md`](../05-http-stack/06-static.md)'s immutable assets), and the user sees a broken
 page rather than a clean error.
 
 ### Automated rollback triggers
@@ -76,7 +76,7 @@ Worth knowing so a green canary isn't mistaken for proof:
   ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)), and thundering herds only appear near capacity
   — which a 1% canary is nowhere near.
 - **Time-dependent bugs.** A daily batch, a certificate expiry
-  ([`01-network/13-tls.md`](../01-network/13-tls.md)), a month-boundary calculation.
+  ([`01-network/14-tls.md`](../01-network/14-tls.md)), a month-boundary calculation.
 - **Anything downstream.** If the canary shares upstreams and a database
   with stable, it can't reveal a problem in the shared dependency — and
   can *cause* one that harms stable traffic too.

@@ -54,4 +54,4 @@ Each project subfolder is planned to eventually hold:
 - [`hyper/`](hyper) — the HTTP library [`labs/02-http-server`](../../labs/02-http-server) onward is built on
 - [`tokio/`](tokio) — the async runtime underneath everything in this workspace
 - [`mio/`](mio) — the epoll/kqueue abstraction underneath tokio
-- [`quinn/`](quinn) — QUIC/HTTP-3 implementation, relevant once [`01-network/12-http3.md`](../01-network/12-http3.md) is in scope
+- [`quinn/`](quinn) — QUIC/HTTP-3 implementation, relevant once [`01-network/13-http3.md`](../01-network/13-http3.md) is in scope

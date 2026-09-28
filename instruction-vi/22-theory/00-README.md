@@ -30,7 +30,7 @@ bạn đã tune bằng cảm tính.
 - [`04-cpu-scheduling.md`](04-cpu-scheduling.md) → [`16-kernel/07-scheduler.md`](../16-kernel/07-scheduler.md), [`04-runtime/01-tokio.md`](../04-runtime/01-tokio.md)
 - [`05-congestion-control-math.md`](05-congestion-control-math.md) → [`01-network/08-tcp.md`](../01-network/08-tcp.md)
 - [`06-queueing-theory.md`](06-queueing-theory.md) → [`07-security/11-load-shedding.md`](../07-security/11-load-shedding.md)
-- [`07-crypto-math.md`](07-crypto-math.md) → [`01-network/06-crypto-basics.md`](../01-network/06-crypto-basics.md), [`01-network/13-tls.md`](../01-network/13-tls.md)
+- [`07-crypto-math.md`](07-crypto-math.md) → [`01-network/06-crypto-basics.md`](../01-network/06-crypto-basics.md), [`01-network/14-tls.md`](../01-network/14-tls.md)
 - [`08-amdahls-law.md`](08-amdahls-law.md) → [`04-runtime/03-runtime-config.md`](../04-runtime/03-runtime-config.md), [`04-runtime/05-runtime-comparisons.md`](../04-runtime/05-runtime-comparisons.md), [`17-performance/`](../17-performance)
 - [`09-cap-flp.md`](09-cap-flp.md) → [`18-distributed/`](../18-distributed) (cả bốn file)
 

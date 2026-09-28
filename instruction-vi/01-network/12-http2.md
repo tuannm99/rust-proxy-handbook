@@ -19,7 +19,7 @@ một kết nối TCP, mỗi cái được flow-control độc lập. Đây là 
 giải quyết head-of-line blocking ở *tầng kết nối* nhưng không giải quyết
 HOL blocking ở *tầng TCP* — một TCP segment bị mất vẫn khựng mọi stream
 trên kết nối đó cho tới khi nó được retransmit (đây chính xác là thứ
-HTTP/3 trên QUIC sửa, xem [`12-http3.md`](12-http3.md)).
+HTTP/3 trên QUIC sửa, xem [`13-http3.md`](13-http3.md)).
 
 ### Nén header HPACK
 Header được nén bằng HPACK: một bảng tĩnh chứa các cặp tên/giá trị header
@@ -118,9 +118,12 @@ trong số này, đây là một luận điểm cụ thể cho lập trường t
 `h2` (được `hyper` dùng nội bộ khi feature `http2` bật) là implementation
 HTTP/2 trên thực tế trong hệ sinh thái Rust; auto server builder của
 `hyper-util` trong [`labs/02-http-server`](../../labs/02-http-server)/`reverse-proxy` negotiate
-HTTP/1.1 vs HTTP/2 qua ALPN (xem [`13-tls.md`](13-tls.md)) nên bạn có được điều này
+HTTP/1.1 vs HTTP/2 qua ALPN (xem [`14-tls.md`](14-tls.md)) nên bạn có được điều này
 "miễn phí" một khi TLS đã được cắm vào, nhưng bạn vẫn nên giải thích được
-chuyện gì đang xảy ra bên dưới abstraction đó.
+chuyện gì đang xảy ra bên dưới abstraction đó. Cấu hình nào của hyper ứng
+với khái niệm nào trong file này (stream, window, giới hạn header, Rapid
+Reset) nằm ở [`05-http-stack/02-hyper.md`](../05-http-stack/02-hyper.md). Các công cụ giúp bạn *nhìn thấy*
+frame và tạo tải multiplex (`nghttp`, `h2load`) nằm ở [`12-testing/06-lab-environment.md`](../12-testing/06-lab-environment.md).
 
 ## Practice
 

@@ -75,7 +75,7 @@ connection pool and [`07-security/07-ratelimit.md`](../07-security/07-ratelimit.
 arena/slab designs and [`17-performance/`](../17-performance)'s cache-layout work. [`16-testing-idioms.md`](16-testing-idioms.md)
 is the Rust-craft counterpart to [`12-testing/`](../12-testing)'s infrastructure-level load/fuzz/chaos
 work; [`17-cargo-workspace.md`](17-cargo-workspace.md) explains this very repo's own `Cargo.toml` shape and
-backs [`05-http-stack/10-grpc.md`](../05-http-stack/10-grpc.md)'s `build.rs` codegen step; [`18-async-traits.md`](18-async-traits.md)
+backs [`05-http-stack/11-grpc.md`](../05-http-stack/11-grpc.md)'s `build.rs` codegen step; [`18-async-traits.md`](18-async-traits.md)
 is the concrete gotcha behind [`09-architecture/02-plugin.md`](../09-architecture/02-plugin.md)'s middleware trait and
 [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md)'s strategy trait the moment either needs to be both
 async and `dyn`-dispatched.

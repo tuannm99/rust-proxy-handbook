@@ -28,7 +28,7 @@ cả `read()` và `mmap()`. Đây là lý do `sendfile()` (xem
 [`02-linux/11-zerocopy.md`](11-zerocopy.md)) nhanh cho các static asset được phục vụ lặp
 lại — dữ liệu thường đã resident sẵn, và kernel copy page-cache-tới-socket
 mà hoàn toàn không đi vòng qua buffer userspace của process bạn. Điều
-này ảnh hưởng trực tiếp tới cách [`05-http-stack/05-static.md`](../05-http-stack/05-static.md) nên phục vụ
+này ảnh hưởng trực tiếp tới cách [`05-http-stack/06-static.md`](../05-http-stack/06-static.md) nên phục vụ
 file: để cache của kernel tự làm việc caching thay vì tự implement lại
 một LRU ở userspace cho dữ liệu lạnh vốn đã nóng sẵn trong page cache.
 

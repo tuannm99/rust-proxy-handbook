@@ -5,6 +5,11 @@ edition.workspace = true
 publish.workspace = true
 
 [dependencies]
-tokio = { version = "1", features = ["rt-multi-thread", "macros", "signal", "fs"] }
+tokio = { version = "1", features = ["rt-multi-thread", "net", "io-util", "macros", "time", "signal", "fs"] }
+hyper = { version = "1", features = ["server", "client", "http1"] }
+hyper-util = { version = "0.1", features = ["tokio", "server-auto", "client-legacy"] }
+http-body-util = "0.1"
+bytes = "1"
 serde = { version = "1", features = ["derive"] }
 toml = "0.8"
+arc-swap = "1"

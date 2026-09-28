@@ -10,7 +10,8 @@ you whether the previous nine phases actually work.
 - [`02-fuzzing.md`](02-fuzzing.md) — fuzzing the parser and any attacker-facing input
 - [`03-chaos.md`](03-chaos.md) — injecting upstream failures, latency, and partial degradation
 - [`04-ci-tooling.md`](04-ci-tooling.md) — clippy, miri, sanitizers, and what to gate merges on
-- [`05-debugging.md`](05-debugging.md) — `tracing`, `curl -v`/`nc`/`ss`/`tcpdump`, `strace`, `tokio-console`, debuggers, flamegraphs, heap profilers — the evidence-gathering toolkit. Unlike the other four, useful from [`labs/00-tcp-server`](../../labs/00-tcp-server) onward, not only once [`proxy/`](../../proxy) exists
+- [`05-debugging.md`](05-debugging.md) — `tracing`, `curl -v`/`nc`/`ss`/`tcpdump`, `strace`, `tokio-console`, debuggers, flamegraphs, heap profilers — the evidence-gathering toolkit. Unlike the others, useful from [`labs/00-tcp-server`](../../labs/00-tcp-server) onward, not only once [`proxy/`](../../proxy) exists
+- [`06-lab-environment.md`](06-lab-environment.md) — installing and driving the external tools the labs' `Done when` checks use: `oha`/`wrk`/`vegeta`/`h2load`, Zipf-skewed load, `criterion` setup, measuring RSS and threads, Prometheus + `promtool`
 
 ## Where it goes
 

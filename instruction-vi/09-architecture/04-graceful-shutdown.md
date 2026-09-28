@@ -94,18 +94,18 @@ nên một client với các request in-flight biết chính xác cái nào đã
 chấp nhận và cái nào nó phải retry ở nơi khác. Dạng graceful là hai frame
 `GOAWAY` — một với stream ID tối đa để công bố ý định (để các stream
 in-flight hoàn thành trong khi client ngừng mở stream mới), rồi một cái
-cuối với ID đã-xử-lý-cuối-cùng thật ([`01-network/11-http2.md`](../01-network/11-http2.md)).
+cuối với ID đã-xử-lý-cuối-cùng thật ([`01-network/12-http2.md`](../01-network/12-http2.md)).
 
 Gotcha: một kết nối keep-alive đang idle là cùng race như xung đột
-close/request của [`05-http-stack/04-keepalive.md`](../05-http-stack/04-keepalive.md), giờ xảy ra trên cả
+close/request của [`05-http-stack/05-keepalive.md`](../05-http-stack/05-keepalive.md), giờ xảy ra trên cả
 bảng kết nối của bạn cùng lúc. Công bố (`Connection: close` / `GOAWAY`)
 trước khi đóng là thứ biến "client thấy một reset" thành "client mở một
 kết nối mới ở nơi khác."
 
 ### Kết nối sống lâu cần một chính sách khác
 "Để các request in-flight hoàn thành" giả định các request có hoàn thành.
-Một WebSocket ([`05-http-stack/09-websocket.md`](../05-http-stack/09-websocket.md)), một lệnh gọi gRPC
-server-streaming ([`05-http-stack/10-grpc.md`](../05-http-stack/10-grpc.md)), hoặc một stream SSE có thể
+Một WebSocket ([`05-http-stack/10-websocket.md`](../05-http-stack/10-websocket.md)), một lệnh gọi gRPC
+server-streaming ([`05-http-stack/11-grpc.md`](../05-http-stack/11-grpc.md)), hoặc một stream SSE có thể
 cách hoàn thành hàng phút hoặc hàng giờ, và chờ chúng nghĩa là không bao
 giờ shutdown.
 

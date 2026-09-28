@@ -83,7 +83,7 @@ công cộng. Hai dạng quan trọng ở đây:
 
 Vì sao điều này quan trọng với riêng một proxy: đến lúc một kết nối tới
 được listening socket của bạn, `peer_addr()` có thể đã cách client thật
-vài hop NAT — đây *chính xác* là vấn đề mà [`01-network/14-proxy-protocol.md`](14-proxy-protocol.md)
+vài hop NAT — đây *chính xác* là vấn đề mà [`01-network/15-proxy-protocol.md`](15-proxy-protocol.md)
 và phần thảo luận `X-Forwarded-For` trong [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)
 tồn tại để giải quyết, và đó là lý do "cứ tin vào peer address của socket"
 là ngây thơ ngay khi có bất kỳ load balancer, NAT gateway, hay CDN nào ở

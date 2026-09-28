@@ -1,7 +1,7 @@
 # Cache Stampede
 
 The failure where a cache, at the exact moment it stops helping, actively
-makes things worse. [`05-http-stack/07-cache.md`](07-cache.md) covers HTTP caching
+makes things worse. [`05-http-stack/08-cache.md`](08-cache.md) covers HTTP caching
 semantics; this file covers the concurrency problem underneath any cache,
 and why single-flight is a requirement rather than an optimization.
 
@@ -61,7 +61,7 @@ needs the same bound as any other such map
 
 ### Serving stale while you refresh
 Single-flight reduces N fetches to one, but the waiters still wait. With
-`stale-while-revalidate` ([`05-http-stack/07-cache.md`](07-cache.md)) the waiting disappears
+`stale-while-revalidate` ([`05-http-stack/08-cache.md`](08-cache.md)) the waiting disappears
 entirely: serve the stale copy immediately to everyone, refresh once in
 the background, swap it in when it arrives.
 

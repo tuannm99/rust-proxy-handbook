@@ -1,6 +1,6 @@
 # Trie (Prefix Tree)
 
-[`05-http-stack/03-router.md`](../05-http-stack/03-router.md) nói về việc match method+path ở tầng proxy.
+[`05-http-stack/04-router.md`](../05-http-stack/04-router.md) nói về việc match method+path ở tầng proxy.
 File này nói về cấu trúc mà matching của một router thật được xây trên đó:
 lookup theo prefix dùng chung, đúng là thứ mà một path (`/users/:id/posts`)
 được tạo thành từ đó.

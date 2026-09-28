@@ -54,8 +54,8 @@ whose individual polls take a long time. A poll that runs for
 milliseconds is a task blocking the executor thread
 ([`03-rust/05-async.md`](../03-rust/05-async.md)'s cooperative scheduling), which stalls every other
 connection on that worker. Common culprits in a proxy: a synchronous file
-read ([`05-http-stack/05-static.md`](../05-http-stack/05-static.md)), a large compression
-([`05-http-stack/06-compression.md`](../05-http-stack/06-compression.md)), regex over a large body
+read ([`05-http-stack/06-static.md`](../05-http-stack/06-static.md)), a large compression
+([`05-http-stack/07-compression.md`](../05-http-stack/07-compression.md)), regex over a large body
 ([`07-security/06-waf.md`](../07-security/06-waf.md)), or a synchronous log write
 ([`08-observability/01-logging.md`](01-logging.md)).
 
@@ -73,7 +73,7 @@ bpftrace -e 'tracepoint:syscalls:sys_enter_read /pid == $1/ { @start[tid] = nsec
 ### Where a Rust proxy's time actually goes
 1. Syscalls (epoll_wait/read/write) — see [`02-linux/07-epoll.md`](../02-linux/07-epoll.md), [`02-linux/11-zerocopy.md`](../02-linux/11-zerocopy.md) for how to reduce these.
 2. Allocation — every `Vec<u8>`/`String` clone on the hot path costs; profile with `heaptrack` or `dhat` (via the `dhat` crate) alongside CPU profiling.
-3. TLS — handshake CPU cost is real at high connection-churn (short-lived connections re-handshake constantly); session resumption ([`01-network/13-tls.md`](../01-network/13-tls.md)) matters more than micro-optimizing the parser.
+3. TLS — handshake CPU cost is real at high connection-churn (short-lived connections re-handshake constantly); session resumption ([`01-network/14-tls.md`](../01-network/14-tls.md)) matters more than micro-optimizing the parser.
 Gotcha: profiling a debug build is close to meaningless — always profile `--release`, and profile under realistic concurrent load (see [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)), not a single curl request.
 
 Gotcha: allocation shows up in a CPU profile as `malloc`/`free` frames,
@@ -132,7 +132,7 @@ Build these in order.
    means time is being spent before your instrumentation starts.
 8. Compare TLS vs plaintext profiles. **Done when** you can quantify
    handshake CPU cost per connection and show it falling once session
-   resumption is enabled ([`01-network/13-tls.md`](../01-network/13-tls.md)).
+   resumption is enabled ([`01-network/14-tls.md`](../01-network/14-tls.md)).
 9. (Stretch) Expose `pprof-rs` on the internal listener and capture
    profiles continuously during a chaos test ([`12-testing/03-chaos.md`](../12-testing/03-chaos.md)).
    **Done when** you can retrieve the profile from the exact minute a

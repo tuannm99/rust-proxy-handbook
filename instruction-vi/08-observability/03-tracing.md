@@ -93,7 +93,7 @@ Một span chỉ ghi lại tên và thời lượng cho bạn biết một reque
   upstream ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)) — hai cái này thường bị nhầm lẫn
   trong các buổi review sự cố, và phép tách này giải quyết dứt điểm
 - số lần retry và circuit có đang mở không ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md))
-- cache hit/miss/stale ([`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md))
+- cache hit/miss/stale ([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md))
 - request có bị rate-limit hay bị shed không, và bởi rule nào
 - thời gian dành cho kiểm tra WAF ([`07-security/06-waf.md`](../07-security/06-waf.md))
 
@@ -159,6 +159,54 @@ OpenTelemetry: `tracing-opentelemetry` bắc cầu `tracing::Span` sang OTel
 span để export tới một collector (Jaeger/Tempo/Honeycomb), nên chính
 instrumentation bạn thêm cho [`08-observability/01-logging.md`](01-logging.md) cũng đóng
 vai trò là trace data.
+
+### Nối pipeline trong Rust
+Năm crate phối hợp với nhau, và version của chúng phải khớp nhau chính
+xác. `opentelemetry`, `opentelemetry_sdk` và `opentelemetry-otlp` phát hành
+cùng nhau (0.33 tại thời điểm viết), còn `tracing-opentelemetry` có số
+version riêng bám theo một bản OTel (0.34 đi cặp với OTel 0.33). Trộn các
+bản phát hành sẽ sinh ra lỗi khó hiểu kiểu "expected `Tracer`, found
+`Tracer`", vì tồn tại hai bản sao của cùng một trait. Kiểm tra bằng
+`cargo tree -i opentelemetry` rằng chỉ có một version.
+
+Mỗi mảnh làm gì, theo thứ tự luồng dữ liệu:
+1. Code của bạn tạo span của `tracing` (`#[instrument]`, `info_span!` +
+   `.instrument(...)`), y như phần còn lại của file này.
+2. `tracing_opentelemetry::layer().with_tracer(tracer)` là một layer của
+   `tracing_subscriber` biến các span đó thành OTel span. Thêm nó vào
+   `tracing_subscriber::registry()` bên cạnh fmt layer của bạn.
+3. Tracer đến từ một `opentelemetry_sdk::trace::SdkTracerProvider`, dựng
+   bằng `.with_batch_exporter(exporter)` (gom span thành lô, ngoài đường xử
+   lý request), `.with_sampler(...)` (ví dụ
+   `Sampler::ParentBased(Box::new(Sampler::TraceIdRatioBased(0.1)))`, chính
+   là policy "tôn trọng quyết định đi vào, nếu không thì sample 10%" ở phần
+   Sampling phía trên), và `.with_resource(...)` mang tên service
+   (`Resource::builder().with_service_name("proxy")`). Lấy tracer từ nó qua
+   `.tracer(...)` của trait `opentelemetry::trace::TracerProvider`.
+4. Exporter là `opentelemetry_otlp::SpanExporter::builder()` với
+   `.with_http()` (OTLP qua HTTP, port 4318, feature mặc định của crate)
+   hoặc `.with_tonic()` (gRPC, port 4317, cần feature `grpc-tonic`).
+5. Khi tắt, gọi `provider.shutdown()`. Batch exporter giữ các span chưa gửi
+   trong memory, và một process thoát mà không flush sẽ mất vài giây trace
+   cuối cùng, thường chính là những trace bạn cần.
+
+**Propagation qua một hop** tách biệt với export. Đăng ký định dạng W3C một
+lần bằng
+`opentelemetry::global::set_text_map_propagator(opentelemetry_sdk::propagation::TraceContextPropagator::new())`.
+Với request đi vào, trích context cha từ header
+(`opentelemetry_http::HeaderExtractor(req.headers())` với `extract` của
+propagator) và gắn nó vào span của request bằng
+`OpenTelemetrySpanExt::set_parent`. Với request đi ra upstream, inject
+context của span hiện tại (`span.context()`) vào header của request
+upstream bằng `HeaderInjector`. Việc đó ghi ra header `traceparent` mà định
+dạng của nó nằm ở đầu file này. Hai proxy instance nối nhau theo cách này
+sẽ hiện ra thành một trace.
+
+**Một viewer local.** Jaeger nhận OTLP trực tiếp:
+`docker run --rm -d --name jaeger -p 16686:16686 -p 4317:4317 -p 4318:4318 jaegertracing/jaeger:latest`,
+rồi mở `http://localhost:16686`. Trace xuất hiện vài giây sau request (do
+gom lô). Nếu không thấy gì, kiểm tra port của exporter khớp với protocol
+của nó (HTTP là 4318, gRPC là 4317) và `shutdown()` đã chạy.
 
 ## Practice
 Xây dựng theo thứ tự sau.

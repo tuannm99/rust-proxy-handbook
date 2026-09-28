@@ -18,7 +18,7 @@ Gotcha: "idempotent theo RFC" và "idempotent ở upstream này" là hai khẳng
 upstream phát ra một webhook hoặc giảm inventory ở mỗi lần gọi, retry nó
 vẫn có một side effect thấy được. Chính sách retry dựa trên method là một
 mặc định hợp lý, không phải một bằng chứng — hãy làm nó override được
-theo từng route ([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)) để một team biết endpoint
+theo từng route ([`05-http-stack/04-router.md`](../05-http-stack/04-router.md)) để một team biết endpoint
 của họ không an toàn có thể tắt nó đi.
 
 ### Ràng buộc đặc thù của proxy: bạn có thể không retry được chút nào

@@ -60,7 +60,7 @@ proxy HTTP L7 không rõ ràng cần nó, và hệ sinh thái của tokio (hyper
 rustls, h2, quinn) là thứ phần còn lại của handbook này giả định. Hiểu
 giải pháp thay thế là thứ giúp bạn nhận ra sau này, liệu một hot path cụ
 thể bên trong [`proxy`](../../proxy) (một lần tra cứu cache rất nóng,
-[`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)) có được lợi từ việc tách ra thành component
+[`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)) có được lợi từ việc tách ra thành component
 shard-per-core riêng của nó thay vì luôn giả định mặc định của tokio là
 công cụ đúng.
 

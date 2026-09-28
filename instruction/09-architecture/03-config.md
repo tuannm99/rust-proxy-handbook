@@ -42,9 +42,9 @@ Never apply a config that hasn't been fully parsed and validated (upstream addre
 
 "Validated" has to mean more than "parsed." The checks that actually catch
 real breakage are the ones that try the side effects:
-- **Certificate and key actually load and match** ([`01-network/13-tls.md`](../01-network/13-tls.md)) —
+- **Certificate and key actually load and match** ([`01-network/14-tls.md`](../01-network/14-tls.md)) —
   a path typo or a mismatched pair is a total outage for that vhost.
-- **Routes don't conflict** ([`05-http-stack/03-router.md`](../05-http-stack/03-router.md)) — two rules that
+- **Routes don't conflict** ([`05-http-stack/04-router.md`](../05-http-stack/04-router.md)) — two rules that
   can never be distinguished mean one endpoint silently disappears.
 - **Referenced upstream pools exist** — a route pointing at a pool name
   that isn't defined should fail validation, not 502 at request time.

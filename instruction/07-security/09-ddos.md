@@ -134,7 +134,7 @@ let n = limited.read_to_end(&mut buf)?;   // stops at the cap, not at the bomb's
 Gotcha: also bound the *ratio*, not only the absolute size. A body that
 expands 1000:1 is hostile even if it lands under your cap, and the ratio
 is a much better signal than size alone for distinguishing an attack from
-a legitimately large upload. See [`05-http-stack/06-compression.md`](../05-http-stack/06-compression.md) for the
+a legitimately large upload. See [`05-http-stack/07-compression.md`](../05-http-stack/07-compression.md) for the
 response-side mirror of this.
 
 ### Load shedding beats queueing

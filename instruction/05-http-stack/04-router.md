@@ -74,13 +74,13 @@ difference debuggable.
 
 ### Routing on more than the path
 A proxy routes on the whole request, not just the path: `Host` (see
-[`05-http-stack/11-vhost-routing.md`](11-vhost-routing.md)), arbitrary headers (canary routing by
+[`05-http-stack/12-vhost-routing.md`](12-vhost-routing.md)), arbitrary headers (canary routing by
 `X-Version`, [`09-architecture/06-canary-deploy.md`](../09-architecture/06-canary-deploy.md)), sometimes weights for
 traffic splitting.
 
 Gotcha: `Host` is not one thing. In HTTP/1.1 it's the `Host` header; in
 HTTP/2 and HTTP/3 it's the `:authority` pseudo-header; and under TLS
-there's also the SNI name from the handshake ([`01-network/13-tls.md`](../01-network/13-tls.md)), which
+there's also the SNI name from the handshake ([`01-network/14-tls.md`](../01-network/14-tls.md)), which
 the client chose *before* sending any of them. These can all disagree —
 an attacker connects with SNI `public.example.com` and sends `Host:
 admin.internal`. Decide which one is authoritative for routing, validate

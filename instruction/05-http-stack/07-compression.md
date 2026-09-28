@@ -9,12 +9,12 @@ Gotcha: the quality level dominates this comparison, and the top levels
 are traps for dynamic content. Brotli quality 11 can be an order of
 magnitude slower to encode than quality 4-5 for a few percent better
 ratio — fine when you compress once at build time and serve forever
-([`05-http-stack/05-static.md`](05-static.md)'s content-hashed assets), never worth it when
+([`05-http-stack/06-static.md`](06-static.md)'s content-hashed assets), never worth it when
 compressing a per-request response. Use high quality for precompressed
 static files, low-to-middle for anything dynamic.
 
 ### Negotiation via Accept-Encoding
-The client lists what it can decode, optionally with quality weights: `Accept-Encoding: gzip, br;q=0.8`. The server (or proxy) picks one it supports, sets `Content-Encoding` on the response, and must add `Vary: Accept-Encoding` so any cache in front of it (see [`05-http-stack/07-cache.md`](07-cache.md)) doesn't serve a gzip response to a client that only asked for brotli.
+The client lists what it can decode, optionally with quality weights: `Accept-Encoding: gzip, br;q=0.8`. The server (or proxy) picks one it supports, sets `Content-Encoding` on the response, and must add `Vary: Accept-Encoding` so any cache in front of it (see [`05-http-stack/08-cache.md`](08-cache.md)) doesn't serve a gzip response to a client that only asked for brotli.
 
 Gotcha: handle the q-value edge cases, because they're how the negotiation
 gets subtly wrong. `q=0` means explicitly *not* acceptable, not "lowest
@@ -59,7 +59,7 @@ common ways a proxy manufactures one by accident.
 
 Gotcha: flushing is a latency/ratio trade. A compressor that never flushes
 buffers data for better ratios, which stalls streaming responses (SSE,
-long-poll, [`05-http-stack/09-websocket.md`](09-websocket.md)-adjacent patterns) — the client
+long-poll, [`05-http-stack/10-websocket.md`](10-websocket.md)-adjacent patterns) — the client
 waits for output that's sitting in the compressor. Flush at meaningful
 boundaries for streaming content types; don't for bulk downloads.
 
@@ -127,7 +127,7 @@ Build these in order.
 5. Measure the CPU cost. **Done when** you have throughput numbers at
    brotli quality 4 vs 11 under load ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)) and
    can state the ratio gained for the CPU spent.
-6. Cache compressed bytes for cacheable responses ([`05-http-stack/07-cache.md`](07-cache.md)).
+6. Cache compressed bytes for cacheable responses ([`05-http-stack/08-cache.md`](08-cache.md)).
    **Done when** repeat requests for the same resource compress zero times.
 7. In [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), handle an already-compressed upstream
    response. **Done when** a gzip'd upstream body is passed through

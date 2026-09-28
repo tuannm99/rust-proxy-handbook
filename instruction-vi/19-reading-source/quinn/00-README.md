@@ -1,6 +1,6 @@
 # quinn
 
-Implementation QUIC/HTTP-3, liên quan khi [`01-network/12-http3.md`](../../01-network/12-http3.md) nằm
+Implementation QUIC/HTTP-3, liên quan khi [`01-network/13-http3.md`](../../01-network/13-http3.md) nằm
 trong phạm vi.
 
 Chưa được viết. Đọc dự án này sau khi [`proxy/`](../../../proxy) chạy được, không phải

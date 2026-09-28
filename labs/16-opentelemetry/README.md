@@ -16,6 +16,7 @@ connects spans across a chain of proxied requests.
 ## Handbook references
 - [`instruction/08-observability/03-tracing.md`](../../instruction/08-observability/03-tracing.md)
 - [`instruction/04-runtime/04-structured-concurrency.md`](../../instruction/04-runtime/04-structured-concurrency.md) — `task_local!` for per-request context
+- [`instruction/05-http-stack/02-hyper.md`](../../instruction/05-http-stack/02-hyper.md) — the server and client the spans wrap
 
 ## Run
 

@@ -4,12 +4,12 @@ gRPC is HTTP/2 with a specific framing convention on top — proxying it correct
 
 ## What to learn
 ### gRPC's message framing inside HTTP/2 DATA frames
-Each gRPC message is a 1-byte compression flag, a 4-byte big-endian length prefix, then that many bytes of protobuf payload — all carried inside ordinary HTTP/2 `DATA` frames (see [`01-network/11-http2.md`](../01-network/11-http2.md)). A proxy forwarding gRPC does not need to understand protobuf or even this framing; it only needs to forward `DATA` frames faithfully, byte-for-byte, without doing anything an HTTP/1.1-oriented code path might reflexively do (buffering the whole body to compute `Content-Length`, for instance — gRPC bodies are length-prefixed per-message, not once for the whole stream, and are often unbounded/streaming).
+Each gRPC message is a 1-byte compression flag, a 4-byte big-endian length prefix, then that many bytes of protobuf payload — all carried inside ordinary HTTP/2 `DATA` frames (see [`01-network/12-http2.md`](../01-network/12-http2.md)). A proxy forwarding gRPC does not need to understand protobuf or even this framing; it only needs to forward `DATA` frames faithfully, byte-for-byte, without doing anything an HTTP/1.1-oriented code path might reflexively do (buffering the whole body to compute `Content-Length`, for instance — gRPC bodies are length-prefixed per-message, not once for the whole stream, and are often unbounded/streaming).
 
 Gotcha: gRPC has its own per-message compression (that 1-byte flag),
 negotiated with `grpc-encoding`/`grpc-accept-encoding`. It is *not*
 HTTP `Content-Encoding`, and a proxy that applies its own response
-compression ([`05-http-stack/06-compression.md`](06-compression.md)) to a gRPC body corrupts it —
+compression ([`05-http-stack/07-compression.md`](07-compression.md)) to a gRPC body corrupts it —
 the client will try to parse a gzip stream as length-prefixed messages.
 Exclude `application/grpc` content types from response compression
 explicitly.
@@ -56,7 +56,7 @@ gRPC has four call shapes: unary, client-streaming, server-streaming, and bidire
 
 Gotcha: the same applies to every timeout you inherited from the
 request/response model, exactly as with WebSockets
-([`05-http-stack/09-websocket.md`](09-websocket.md)). A server-streaming RPC that emits an
+([`05-http-stack/10-websocket.md`](10-websocket.md)). A server-streaming RPC that emits an
 update every few minutes is healthy; a total-request timeout kills it on
 schedule. Worse, gRPC clients send their own deadline in the
 `grpc-timeout` header — the proxy should *honor* that (and shorten it by
@@ -69,12 +69,12 @@ RPCs. Decide per content-type, not globally, or your first bidi-streaming
 customer discovers it for you.
 
 ### Load balancing gRPC is not the same problem as load balancing HTTP/1.1
-A gRPC client typically opens one long-lived HTTP/2 connection and multiplexes many independent RPCs over it (see [`01-network/11-http2.md`](../01-network/11-http2.md)'s multiplexing). A load balancer that picks an upstream *per connection* (like a plain L4/TCP balancer, or a naive [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md) implementation written with one-request-per-connection HTTP/1.1 in mind) sends every RPC on that connection to the same upstream forever, defeating load balancing entirely once a client connects. Correct gRPC load balancing has to be aware of individual HTTP/2 streams and pick an upstream per-RPC, not per-connection.
+A gRPC client typically opens one long-lived HTTP/2 connection and multiplexes many independent RPCs over it (see [`01-network/12-http2.md`](../01-network/12-http2.md)'s multiplexing). A load balancer that picks an upstream *per connection* (like a plain L4/TCP balancer, or a naive [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md) implementation written with one-request-per-connection HTTP/1.1 in mind) sends every RPC on that connection to the same upstream forever, defeating load balancing entirely once a client connects. Correct gRPC load balancing has to be aware of individual HTTP/2 streams and pick an upstream per-RPC, not per-connection.
 
 Gotcha: this interacts badly with scaling events. Long-lived connections
 pinned to a subset of upstreams means new upstreams added by autoscaling
 ([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)) receive nothing — the connection
-lifetime caps from [`05-http-stack/04-keepalive.md`](04-keepalive.md) are what eventually
+lifetime caps from [`05-http-stack/05-keepalive.md`](05-keepalive.md) are what eventually
 rebalance, and for gRPC the equivalent is periodically sending `GOAWAY` so
 clients reconnect and redistribute.
 

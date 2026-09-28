@@ -17,6 +17,7 @@ composed and reordered without recompiling the core proxy logic.
 ## Handbook references
 - [`instruction/09-architecture/02-plugin.md`](../../instruction/09-architecture/02-plugin.md)
 - [`instruction/03-rust/18-async-traits.md`](../../instruction/03-rust/18-async-traits.md), [`instruction/03-rust/07-traits-and-generics.md`](../../instruction/03-rust/07-traits-and-generics.md)
+- [`instruction/05-http-stack/02-hyper.md`](../../instruction/05-http-stack/02-hyper.md) — what hyper does with a service `Err` or a panic, which the chain must prevent
 
 ## Run
 

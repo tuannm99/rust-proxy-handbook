@@ -23,8 +23,8 @@ Page on what the *user* experiences (elevated error rate, elevated p99 latency, 
 conditions with no symptom *now* and a guaranteed one later. These are
 worth a ticket-level alert precisely because waiting for the symptom means
 waiting for the outage:
-- **Certificate expiry** ([`01-network/13-tls.md`](../01-network/13-tls.md),
-  [`05-http-stack/11-vhost-routing.md`](../05-http-stack/11-vhost-routing.md)) — alert weeks out, per certificate.
+- **Certificate expiry** ([`01-network/14-tls.md`](../01-network/14-tls.md),
+  [`05-http-stack/12-vhost-routing.md`](../05-http-stack/12-vhost-routing.md)) — alert weeks out, per certificate.
   The symptom is total failure at an exactly predictable moment.
 - **Config reload failures** ([`09-architecture/03-config.md`](../09-architecture/03-config.md)) — the proxy
   keeps running on old config and looks perfectly healthy while diverging

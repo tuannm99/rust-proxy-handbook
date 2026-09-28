@@ -33,8 +33,8 @@ sau khi alert ở mức triệu chứng đã đánh thức ai đó rồi.
 kiện không có triệu chứng *ngay bây giờ* nhưng chắc chắn sẽ có sau này.
 Chúng đáng để có một alert mức ticket chính xác vì chờ triệu chứng nghĩa
 là chờ sự cố xảy ra:
-- **Chứng chỉ hết hạn** ([`01-network/13-tls.md`](../01-network/13-tls.md),
-  [`05-http-stack/11-vhost-routing.md`](../05-http-stack/11-vhost-routing.md)) — alert trước vài tuần, theo từng
+- **Chứng chỉ hết hạn** ([`01-network/14-tls.md`](../01-network/14-tls.md),
+  [`05-http-stack/12-vhost-routing.md`](../05-http-stack/12-vhost-routing.md)) — alert trước vài tuần, theo từng
   chứng chỉ. Triệu chứng là thất bại toàn bộ tại một thời điểm dự đoán
   được chính xác.
 - **Config reload thất bại** ([`09-architecture/03-config.md`](../09-architecture/03-config.md)) — proxy vẫn

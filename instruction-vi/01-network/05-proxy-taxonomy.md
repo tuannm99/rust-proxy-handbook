@@ -71,8 +71,8 @@ người ta gọi là API gateway.
 Một **CDN** về mặt cấu trúc cũng là một reverse proxy — nó chấm dứt kết
 nối của client và quyết định cách phục vụ chúng — chuyên biệt hóa cho một
 việc: cache content gần người dùng qua nhiều điểm hiện diện địa lý, để
-phần lớn request không bao giờ chạm tới origin. [`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md)
-và [`05-http-stack/08-cache-stampede.md`](../05-http-stack/08-cache-stampede.md) mô tả cơ chế caching mà một
+phần lớn request không bao giờ chạm tới origin. [`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)
+và [`05-http-stack/09-cache-stampede.md`](../05-http-stack/09-cache-stampede.md) mô tả cơ chế caching mà một
 instance proxy đơn lẻ cần; một CDN là cùng cơ chế đó nhân lên qua hàng
 nghìn edge location cùng một cách để giữ chúng nhất quán (cuối cùng).
 

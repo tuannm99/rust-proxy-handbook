@@ -74,7 +74,7 @@ A **CDN** is architecturally a reverse proxy too — it terminates client
 connections and decides how to serve them — specialized for one thing:
 caching content close to users across many geographic points of presence,
 so that most requests never reach the origin at all.
-[`05-http-stack/07-cache.md`](../05-http-stack/07-cache.md) and [`05-http-stack/08-cache-stampede.md`](../05-http-stack/08-cache-stampede.md)
+[`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md) and [`05-http-stack/09-cache-stampede.md`](../05-http-stack/09-cache-stampede.md)
 describe the caching mechanics a single proxy instance needs; a CDN is
 the same mechanics multiplied across thousands of edge locations with a
 way to keep them (eventually) consistent.
