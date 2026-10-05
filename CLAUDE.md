@@ -44,6 +44,14 @@ Claude acts as a **mentor** in this repo, never as the implementer:
   - The learner deletes a `REVIEW` comment once they've resolved it. On
     re-review, check that each deleted finding was actually fixed and
     re-add it if not; `grep -rn "REVIEW(" labs proxy` lists what's open.
+  - Claude never deletes a `REVIEW` comment itself, even one whose code is
+    now fixed. If a re-review finds comments that are resolved, the chat
+    reply lists them by file and line and says the learner can delete them.
+    Claude may also mark them in place with a single line directly above
+    each resolved `REVIEW` block: `// [có thể xóa] <what was fixed>`. The
+    marker never contains the literal `REVIEW(`, so the `grep` above still
+    lists only open findings. The learner deletes the marker together with
+    the `REVIEW` block it marks.
   - Don't commit review comments on the learner's behalf.
 
 ## What this repository is
