@@ -28,7 +28,7 @@ làm sai. Sự đối chiếu đó chính là toàn bộ giá trị của thư m
 
 Có hai ngoại lệ đáng đọc sớm, và cả hai đã được trỏ tới ngay từ nơi chúng
 quan trọng: reactor của tokio ngay sau bài tập raw-epoll
-([`02-linux/07-epoll.md`](../02-linux/07-epoll.md), Practice bước 6) và codec `h1` của [`hyper`](hyper) ngay
+([`02-linux/14-epoll.md`](../02-linux/14-epoll.md), Practice bước 6) và codec `h1` của [`hyper`](hyper) ngay
 sau khi bạn tự viết parser của mình
 ([`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md), Practice bước 8). Hai cái đó hiệu quả khi
 đọc sớm chính vì bạn vừa mới tự xây thứ đang được đem ra so sánh.
@@ -61,4 +61,4 @@ Mỗi subfolder dự án được dự kiến sẽ chứa:
 - [`tokio/`](tokio) — async runtime bên dưới mọi thứ trong workspace này
 - [`mio/`](mio) — lớp trừu tượng epoll/kqueue bên dưới tokio
 - [`quinn/`](quinn) — implementation QUIC/HTTP-3, liên quan khi
-  [`01-network/13-http3.md`](../01-network/13-http3.md) nằm trong phạm vi
+  [`01-network/18-http3.md`](../01-network/18-http3.md) nằm trong phạm vi

@@ -1,7 +1,7 @@
 # Crypto Basics: Encryption, Hashing, Signatures, PKI
 
 Part of the from-scratch fundamentals series — see [`01-network/01-fundamentals.md`](01-fundamentals.md)
-for the full index. [`01-network/14-tls.md`](14-tls.md) opens with "negotiate a
+for the full index. [`01-network/19-tls.md`](19-tls.md) opens with "negotiate a
 cipher suite, exchange (EC)DHE key shares, derive session keys" and
 [`07-security/02-jwt.md`](../07-security/02-jwt.md)/[`07-security/03-mtls.md`](../07-security/03-mtls.md)/[`07-security/01-auth.md`](../07-security/01-auth.md)
 all lean on "signature," "public key," and "certificate chain" — none of
@@ -36,7 +36,7 @@ over the wire at all — at the cost of being computationally much more
 expensive than symmetric encryption, too slow to use for bulk traffic.
 
 **Key exchange** algorithms (Diffie-Hellman and its elliptic-curve
-variant, ECDHE — the "(EC)DHE" in [`14-tls.md`](14-tls.md)'s opening line) are a
+variant, ECDHE — the "(EC)DHE" in [`19-tls.md`](19-tls.md)'s opening line) are a
 clever asymmetric-adjacent trick: both sides exchange public values over
 the open wire, and each independently *computes* the same shared secret
 from their own private value and the other side's public value — an
@@ -49,7 +49,7 @@ Neither building block alone is both fast and distribution-friendly, so
 TLS uses both, in sequence: **asymmetric** key exchange (ECDHE) during
 the handshake to agree on a shared secret without transmitting it, then
 **symmetric** encryption (AES/ChaCha20) using that derived secret for all
-the actual request/response traffic. This is why [`14-tls.md`](14-tls.md)'s cipher
+the actual request/response traffic. This is why [`19-tls.md`](19-tls.md)'s cipher
 suite name has multiple parts (e.g.
 `TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256`) — it's naming the key-exchange
 algorithm, the signature algorithm (next section), and the symmetric
@@ -107,7 +107,7 @@ transmitting it," but leaves a gap: when your browser gets a public key
 from a server, how does it know that key actually belongs to
 `example.com` and not to an attacker in the middle? A **certificate**
 answers this: it's a public key plus an identity (a hostname, in
-[`14-tls.md`](14-tls.md)'s SNI-matched case) plus a **digital signature** — signed not
+[`19-tls.md`](19-tls.md)'s SNI-matched case) plus a **digital signature** — signed not
 by the server itself, but by a **Certificate Authority (CA)**, a third
 party your browser/OS already trusts.
 
@@ -124,7 +124,7 @@ sign for gets a valid chain.
 
 **PKI** (public key infrastructure) is just the umbrella term for this
 whole system: the CAs, the certificates, the chain-of-trust verification,
-and the tooling (ACME/Let's Encrypt, referenced in [`14-tls.md`](14-tls.md)'s
+and the tooling (ACME/Let's Encrypt, referenced in [`19-tls.md`](19-tls.md)'s
 certificate management section) that issues and renews them.
 
 ## Practice

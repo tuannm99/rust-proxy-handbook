@@ -11,7 +11,7 @@ file, gửi packet, cấp phát memory, tạo socket — nó thực hiện một
 **syscall**: một yêu cầu có kiểm soát, được định nghĩa rõ ràng, chuyển
 CPU sang kernel mode, để kernel làm công việc có đặc quyền, rồi chuyển
 lại. `bind()`, `listen()`, `accept()`, `read()`, `write()` — mọi thứ
-trong [`01-network/07-socket.md`](../01-network/07-socket.md) — đều là syscall, hoặc các wrapper mỏng
+trong [`01-network/11-socket.md`](../01-network/11-socket.md) — đều là syscall, hoặc các wrapper mỏng
 quanh chúng.
 
 ```rust
@@ -28,7 +28,7 @@ quyền memory khác, kiểm tra yêu cầu, làm việc, rồi chuyển lại. 
 bước nào trong đó "miễn phí" như một lời gọi hàm thuần túy, dù từ góc nhìn
 của Rust một wrapper syscall *trông* giống hệt một lời gọi hàm khác.
 
-Đây là lý do cụ thể khiến [`01-network/07-socket.md`](../01-network/07-socket.md), [`02-linux/11-zerocopy.md`](11-zerocopy.md),
+Đây là lý do cụ thể khiến [`01-network/11-socket.md`](../01-network/11-socket.md), [`02-linux/18-zerocopy.md`](18-zerocopy.md),
 và phần thảo luận về vectored I/O trong file đó quan tâm đến *số lượng*
 syscall, không chỉ số byte di chuyển — `writev` với ba buffer tốn một
 context switch; ba lời gọi `write` riêng lẻ tốn ba. Ở request rate cao,
@@ -45,7 +45,7 @@ bảng mà kernel giữ *theo từng process*, và mỗi entry trỏ tới objec
 của kernel (một file đang mở, trạng thái kết nối của một socket, v.v.)
 cùng với một offset và một số flag.
 
-Sự thống nhất này là lý do [`02-linux/07-epoll.md`](07-epoll.md) có thể đăng ký một
+Sự thống nhất này là lý do [`02-linux/14-epoll.md`](14-epoll.md) có thể đăng ký một
 listening socket, một client socket, *và* một pipe thuần trên cùng một
 epoll instance với cùng một API — với epoll, chúng chỉ là các fd có thể
 trở nên "ready." Đây cũng là lý do [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md) và

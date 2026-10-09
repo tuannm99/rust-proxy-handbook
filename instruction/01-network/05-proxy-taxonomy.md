@@ -84,7 +84,7 @@ A **sidecar proxy** (Envoy in a service mesh, e.g. Istio) is the same L7
 reverse-proxy mechanics again, deployed differently: instead of one
 shared proxy fronting a whole fleet, every single service instance gets
 its own tiny proxy instance running alongside it (same pod, in
-Kubernetes terms — see [`02-linux/06-containers.md`](../02-linux/06-containers.md)), handling that one
+Kubernetes terms — see [`02-linux/13-containers.md`](../02-linux/13-containers.md)), handling that one
 instance's inbound and outbound traffic. The mechanics this handbook
 teaches — load balancing, retries, circuit breaking, mTLS — are identical;
 only the deployment topology differs.

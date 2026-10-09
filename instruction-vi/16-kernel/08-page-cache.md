@@ -33,7 +33,7 @@ hợp với một đợt dirty page dồn dập, nó không phải lúc nào cũ
 hạn, đây là điều đầu tiên cần kiểm tra.
 
 ### Zero-copy phụ thuộc hoàn toàn vào nó
-`sendfile()` và `splice()` (xem [`02-linux/11-zerocopy.md`](../02-linux/11-zerocopy.md)) chuyển dữ liệu
+`sendfile()` và `splice()` (xem [`02-linux/18-zerocopy.md`](../02-linux/18-zerocopy.md)) chuyển dữ liệu
 từ page cache tới một socket mà không copy qua user space. Điều đó chỉ
 nhanh khi cache *hit* — khi miss, syscall block trên disk I/O, và trong
 một async runtime, việc đó block toàn bộ worker thread (vấn đề

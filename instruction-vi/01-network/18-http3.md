@@ -16,7 +16,7 @@ QUIC multiplex các stream độc lập giống cách HTTP/2 làm, nhưng vì vi
 khôi phục mất gói diễn ra theo từng stream bên trong QUIC (không phải
 theo từng kết nối như cách retransmission của TCP làm), một packet bị mất
 trên một stream không khựng các stream khác. Điều này sửa HOL blocking ở
-tầng TCP mà HTTP/2 trên TCP vẫn còn (xem [`12-http2.md`](12-http2.md)).
+tầng TCP mà HTTP/2 trên TCP vẫn còn (xem [`17-http2.md`](17-http2.md)).
 
 ### Connection migration và 0-RTT
 Kết nối QUIC được định danh bởi một Connection ID, không phải một 4-tuple
@@ -32,7 +32,7 @@ safe/idempotent.
 QUIC không chồng TLS lên trên theo cách TCP+TLS làm — handshake của QUIC
 *chính là* một handshake TLS 1.3 được mang trong các tham số transport
 của QUIC, nên không có QUIC dạng cleartext. Điều này nghĩa là mọi
-deployment HTTP/3 cần cùng bộ máy cert/SNI/ALPN như [`14-tls.md`](14-tls.md), chỉ được
+deployment HTTP/3 cần cùng bộ máy cert/SNI/ALPN như [`19-tls.md`](19-tls.md), chỉ được
 mang khác đi trên đường truyền.
 
 ### Một UDP socket, nhiều kết nối
@@ -106,7 +106,7 @@ Những gì bạn cần để [`labs/09-http3`](../../labs/09-http3) nói chuy�
 
 - **Certificate.** QUIC luôn chạy TLS 1.3, nên ngay cả một echo server
   trong lab cũng cần certificate. Tạo một CA và một leaf đúng như phần "Một
-  CA local để test" trong [`01-network/14-tls.md`](14-tls.md). Đừng phục vụ chính CA:
+  CA local để test" trong [`01-network/19-tls.md`](19-tls.md). Đừng phục vụ chính CA:
   client quinn verify bằng rustls, và rustls từ chối một CA certificate được
   đưa ra làm server certificate.
 - **Phía server.** `quinn::ServerConfig::with_single_cert(chain, key)` dựng

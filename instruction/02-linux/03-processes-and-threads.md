@@ -9,9 +9,9 @@ for the full index.
 A **process** is a running program with its own private address space —
 its own view of memory, isolated from every other process, enforced by
 the kernel's memory-management hardware (the MMU, see
-[`04-memory-basics.md`](04-memory-basics.md)). Two processes cannot read or corrupt each other's
+[`08-memory-basics.md`](08-memory-basics.md)). Two processes cannot read or corrupt each other's
 memory by accident. A process also owns its own set of open file
-descriptors ([`03-kernel-and-syscalls.md`](03-kernel-and-syscalls.md)), its own process ID, and its
+descriptors ([`05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md)), its own process ID, and its
 own resource limits.
 
 Creating a new process (`fork()` on Unix, under the hood of
@@ -67,7 +67,7 @@ gives you only the first.
 With more runnable threads than CPU cores — normal on any real machine —
 the kernel's scheduler decides which thread runs on which core for how
 long, switching between them (a context switch,
-[`03-kernel-and-syscalls.md`](03-kernel-and-syscalls.md)'s subject). Tokio has its *own* scheduler one
+[`05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md)'s subject). Tokio has its *own* scheduler one
 level up, deciding which of *your* tasks a given OS thread works on next.
 These are genuinely two different, independently-acting schedulers: the
 kernel doesn't know your tokio tasks exist at all, and tokio doesn't

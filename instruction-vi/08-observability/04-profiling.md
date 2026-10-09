@@ -84,14 +84,14 @@ bpftrace -e 'tracepoint:syscalls:sys_enter_read /pid == $1/ { @start[tid] = nsec
 ```
 
 ### Thời gian của một proxy Rust thực sự đi đâu
-1. Syscall (epoll_wait/read/write) — xem [`02-linux/07-epoll.md`](../02-linux/07-epoll.md),
-   [`02-linux/11-zerocopy.md`](../02-linux/11-zerocopy.md) để biết cách giảm những cái này.
+1. Syscall (epoll_wait/read/write) — xem [`02-linux/14-epoll.md`](../02-linux/14-epoll.md),
+   [`02-linux/18-zerocopy.md`](../02-linux/18-zerocopy.md) để biết cách giảm những cái này.
 2. Allocation — mỗi lần clone `Vec<u8>`/`String` trên hot path đều tốn chi
    phí; profile bằng `heaptrack` hoặc `dhat` (qua crate `dhat`) song song
    với profiling CPU.
 3. TLS — chi phí CPU của handshake là có thật ở connection churn cao (các
    connection ngắn ngày liên tục handshake lại); session resumption
-   ([`01-network/14-tls.md`](../01-network/14-tls.md)) quan trọng hơn việc micro-optimize parser.
+   ([`01-network/19-tls.md`](../01-network/19-tls.md)) quan trọng hơn việc micro-optimize parser.
 Gotcha: profile một build debug gần như vô nghĩa — luôn profile
 `--release`, và profile dưới tải đồng thời thực tế (xem
 [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)), không phải một request curl đơn lẻ.
@@ -159,7 +159,7 @@ Xây dựng theo thứ tự sau.
    instrumentation của bạn bắt đầu.
 8. So sánh profile TLS với profile plaintext. **Xong khi** bạn có thể định
    lượng chi phí CPU của handshake trên mỗi connection và cho thấy nó
-   giảm xuống khi session resumption được bật ([`01-network/14-tls.md`](../01-network/14-tls.md)).
+   giảm xuống khi session resumption được bật ([`01-network/19-tls.md`](../01-network/19-tls.md)).
 9. (Mở rộng) Expose `pprof-rs` trên listener nội bộ và chụp profile liên
    tục trong một chaos test ([`12-testing/03-chaos.md`](../12-testing/03-chaos.md)). **Xong khi** bạn
    có thể lấy lại profile từ đúng phút một fault được tiêm vào, sau khi

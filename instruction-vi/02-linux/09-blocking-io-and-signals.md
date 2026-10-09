@@ -31,11 +31,11 @@ match nonblocking_socket.read(&mut buf) {
 Một thread blocking cho mỗi kết nối là thiết kế đơn giản nhất và không
 scale — hàng ngàn kết nối keep-alive idle sẽ có nghĩa là hàng ngàn OS
 thread phần lớn không làm gì, mỗi thread có memory stack riêng và overhead
-lập lịch của kernel riêng ([`02-processes-and-threads.md`](02-processes-and-threads.md)). Giải pháp thay
+lập lịch của kernel riêng ([`03-processes-and-threads.md`](03-processes-and-threads.md)). Giải pháp thay
 thế là non-blocking socket cộng với một cơ chế để hỏi kernel "cho tôi
 biết trong số một ngàn fd này cái nào thực sự có gì sẵn sàng" trong một
 lời gọi, thay vì tự poll từng cái — cơ chế đó là `epoll`
-([`02-linux/07-epoll.md`](07-epoll.md)), và nó là toàn bộ nền tảng mà reactor của tokio
+([`02-linux/14-epoll.md`](14-epoll.md)), và nó là toàn bộ nền tảng mà reactor của tokio
 được xây trên đó ([`04-runtime/01-tokio.md`](../04-runtime/01-tokio.md)).
 
 Đây là lý do cụ thể khiến tiêu chí hoàn thành của [`labs/00-tcp-server`](../../labs/00-tcp-server)
@@ -43,7 +43,7 @@ khăng khăng đòi xử lý 500+ kết nối mà không dùng 500+ thread: nó 
 thực sự cảm nhận sự khác biệt mà phần này mô tả, chứ không chỉ đọc về nó.
 
 ### Mẫu event loop, một tầng cao hơn epoll
-Dù bạn tự viết tay (bài tập trong [`02-linux/07-epoll.md`](07-epoll.md)) hay để tokio làm
+Dù bạn tự viết tay (bài tập trong [`02-linux/14-epoll.md`](14-epoll.md)) hay để tokio làm
 hộ, hình dạng luôn là: đăng ký quan tâm tới một tập fd, block *một lần*
 trên "cho tôi biết khi bất kỳ cái nào trong số này sẵn sàng" thay vì block
 theo từng fd, và dispatch tới bất kỳ logic nào sở hữu fd đó khi việc chờ
@@ -76,7 +76,7 @@ handler không làm gì ngoài ghi một byte vào một pipe/eventfd (hoặc t�
 một atomic — cả hai đều nằm trong danh sách async-signal-safe), và logic
 reload/shutdown thật sự của bạn chạy sau đó, trên một thread bình thường,
 được đánh thức bởi lần ghi đó qua cùng cơ chế event-loop mô tả ở trên.
-`tokio::signal` implement chính xác mẫu này cho bạn; [`02-linux/10-signals.md`](10-signals.md)
+`tokio::signal` implement chính xác mẫu này cho bạn; [`02-linux/17-signals.md`](17-signals.md)
 bao quát các signal cụ thể (`SIGHUP`, `SIGTERM`) mà một proxy quan tâm và
 API tương ứng.
 

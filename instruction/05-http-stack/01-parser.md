@@ -3,14 +3,14 @@
 How to turn the HTTP/1.1 grammar into a parser that survives a real
 socket. The grammar itself (every byte class, the request line, header
 rules, the body-length rules, the full chunked format, which status to
-answer) is in [`01-network/11-http1-wire-format.md`](../01-network/11-http1-wire-format.md). Read that first. This file
+answer) is in [`01-network/16-http1-wire-format.md`](../01-network/16-http1-wire-format.md). Read that first. This file
 assumes it and focuses on what the grammar doesn't tell you: incremental
 input, buffers, limits, and types.
 
 ## What to learn
 
 ### Request/status line
-An HTTP/1.1 request line is `METHOD SP request-target SP HTTP-version CRLF` (RFC 9112 §3, spelled out in [`01-network/11-http1-wire-format.md`](../01-network/11-http1-wire-format.md)). The RFC allows some leniency here (splitting on any whitespace, accepting a bare `\n`), and every leniency is a place where your parser and the next one can disagree about the same bytes. Treat each one as a decision you make on purpose and write down, not a default you inherit from whatever `split` does.
+An HTTP/1.1 request line is `METHOD SP request-target SP HTTP-version CRLF` (RFC 9112 §3, spelled out in [`01-network/16-http1-wire-format.md`](../01-network/16-http1-wire-format.md)). The RFC allows some leniency here (splitting on any whitespace, accepting a bare `\n`), and every leniency is a place where your parser and the next one can disagree about the same bytes. Treat each one as a decision you make on purpose and write down, not a default you inherit from whatever `split` does.
 
 ### Header parsing
 Headers are `name: value CRLF` lines until an empty line. Naive parsers get bitten by: header name matching being case-insensitive, leading/trailing whitespace in values, duplicate headers (some must be rejected outright, e.g. duplicate `Content-Length`), and obsolete line folding (a continuation line starting with whitespace) which modern parsers should simply reject.
@@ -29,13 +29,13 @@ fn parse_header_line(line: &str) -> Option<(&str, &str)> {
 This sketch shows the shape only. It works on `&str` and checks for a
 space, while the real rule is "the name is one or more `tchar` bytes"
 and the input is `&[u8]` (see "Bytes, not `String`" below and the
-character-class table in [`01-network/11-http1-wire-format.md`](../01-network/11-http1-wire-format.md)).
+character-class table in [`01-network/16-http1-wire-format.md`](../01-network/16-http1-wire-format.md)).
 
 ### Body framing: the part that actually matters
-The body's length comes from exactly one of: `Content-Length`, `Transfer-Encoding: chunked`, or "read until connection close" (responses only). If a message has *both* `Content-Length` and `Transfer-Encoding`, or multiple conflicting `Content-Length` values, the message is ambiguous. For conflicting `Content-Length` values RFC 9112 §6.3 requires rejection. For CL + TE it says TE wins, that the message "ought to be handled as an error", and that a server may reject it and must close the connection either way. Rejecting both cases is the stricter policy this handbook recommends, and the full ordered rule list is in [`01-network/11-http1-wire-format.md`](../01-network/11-http1-wire-format.md). Getting this wrong is exactly how request smuggling happens (see [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md)).
+The body's length comes from exactly one of: `Content-Length`, `Transfer-Encoding: chunked`, or "read until connection close" (responses only). If a message has *both* `Content-Length` and `Transfer-Encoding`, or multiple conflicting `Content-Length` values, the message is ambiguous. For conflicting `Content-Length` values RFC 9112 §6.3 requires rejection. For CL + TE it says TE wins, that the message "ought to be handled as an error", and that a server may reject it and must close the connection either way. Rejecting both cases is the stricter policy this handbook recommends, and the full ordered rule list is in [`01-network/16-http1-wire-format.md`](../01-network/16-http1-wire-format.md). Getting this wrong is exactly how request smuggling happens (see [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md)).
 
 ### Chunked transfer-encoding
-Each chunk is `<hex-size>[;extensions]CRLF<data>CRLF`, terminated by a `0`-size chunk, optional trailers, and an empty line (full grammar and a byte-by-byte example in [`01-network/11-http1-wire-format.md`](../01-network/11-http1-wire-format.md)). A correct parser must cap chunk-size digits and total decoded size (an attacker can claim an enormous chunk size to exhaust memory), and must not treat trailer headers as equivalent to headers sent before the body.
+Each chunk is `<hex-size>[;extensions]CRLF<data>CRLF`, terminated by a `0`-size chunk, optional trailers, and an empty line (full grammar and a byte-by-byte example in [`01-network/16-http1-wire-format.md`](../01-network/16-http1-wire-format.md)). A correct parser must cap chunk-size digits and total decoded size (an attacker can claim an enormous chunk size to exhaust memory), and must not treat trailer headers as equivalent to headers sent before the body.
 
 ### Incremental parsing: the constraint that shapes everything
 A parser reading from a socket does **not** get a complete request. It gets

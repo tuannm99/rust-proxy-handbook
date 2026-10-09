@@ -6,7 +6,7 @@ không chỉ path của nó — thứ mà [`04-router.md`](04-router.md) giả �
 
 ## What to learn
 ### Routing theo Host header (sau TLS, tầng HTTP)
-[`04-router.md`](04-router.md) bao quát việc match path và method trong bảng route của một backend. Một proxy đứng trước nhiều site/tenant trước tiên phải chọn *bảng route nào* để dùng, dựa trên header `Host` (HTTP/1.1) hoặc pseudo-header `:authority` (HTTP/2, xem [`01-network/12-http2.md`](../01-network/12-http2.md)) — cả hai mang cùng thông tin, chỉ framing khác nhau. Lookup này xảy ra sau khi TLS đã terminate, vì header nằm trong request đã mã hóa.
+[`04-router.md`](04-router.md) bao quát việc match path và method trong bảng route của một backend. Một proxy đứng trước nhiều site/tenant trước tiên phải chọn *bảng route nào* để dùng, dựa trên header `Host` (HTTP/1.1) hoặc pseudo-header `:authority` (HTTP/2, xem [`01-network/17-http2.md`](../01-network/17-http2.md)) — cả hai mang cùng thông tin, chỉ framing khác nhau. Lookup này xảy ra sau khi TLS đã terminate, vì header nằm trong request đã mã hóa.
 
 ```rust
 use std::collections::HashMap;
@@ -101,7 +101,7 @@ mối quan tâm thực tế theo sau:
   từ [`07-security/01-auth.md`](../07-security/01-auth.md) nhân lên theo số tenant.
 
 ### Chứng chỉ wildcard/multi-domain tương tác với cả hai
-Một chứng chỉ wildcard (`*.example.com`) hay một chứng chỉ SAN bao phủ nhiều hostname cho phép một instance terminate-TLS trả lời cho nhiều vhost dưới một handshake — đơn giản hóa routing theo Host header (một chứng chỉ, nhiều giá trị `Host`) nhưng làm routing theo SNI trở nên vô nghĩa cho các hostname đó (chúng đều là cùng một backend theo định nghĩa). Xem [`01-network/14-tls.md`](../01-network/14-tls.md) cho cơ chế handshake mà điều này phụ thuộc vào.
+Một chứng chỉ wildcard (`*.example.com`) hay một chứng chỉ SAN bao phủ nhiều hostname cho phép một instance terminate-TLS trả lời cho nhiều vhost dưới một handshake — đơn giản hóa routing theo Host header (một chứng chỉ, nhiều giá trị `Host`) nhưng làm routing theo SNI trở nên vô nghĩa cho các hostname đó (chúng đều là cùng một backend theo định nghĩa). Xem [`01-network/19-tls.md`](../01-network/19-tls.md) cho cơ chế handshake mà điều này phụ thuộc vào.
 
 ### Cách ly giữa các tenant, không chỉ routing
 Routing tách *traffic* của các tenant; nó không làm gì để tách *tiêu thụ tài nguyên* của chúng. Một đợt tăng traffic của một tenant tiêu thụ ngân sách connection chung ([`07-security/09-ddos.md`](../07-security/09-ddos.md)), concurrency của upstream pool chung, dung lượng cache chung ([`05-http-stack/08-cache.md`](08-cache.md)), và worker thread — nên mọi tenant khác đều tệ đi. Đó là vấn đề noisy-neighbor, và trong một proxy multi-tenant nó là hành vi mặc định trừ khi bạn thiết kế để chống lại nó.

@@ -52,7 +52,7 @@ Gotcha: malloc của glibc đặc biệt miễn cưỡng trong việc trả lạ
 các arena per-thread của nó nhân hiệu ứng này lên — mỗi thread có arena
 riêng, nên một proxy với 16 worker thread có thể giữ 16 mức đỉnh riêng
 biệt. `MALLOC_ARENA_MAX` giới hạn điều này, và chuyển sang jemalloc hay
-mimalloc ([`02-linux/09-memory.md`](../02-linux/09-memory.md) nói về việc đổi `#[global_allocator]`)
+mimalloc ([`02-linux/16-memory.md`](../02-linux/16-memory.md) nói về việc đổi `#[global_allocator]`)
 thường giúp ích nhiều hơn bất kỳ việc tune glibc nào.
 
 ### Các cách sửa mang tính cấu trúc

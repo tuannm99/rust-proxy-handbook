@@ -1,13 +1,13 @@
 # mTLS (Mutual TLS)
 
 Xác thực *kết nối* bằng một client certificate, trước khi bất kỳ HTTP
-request nào được parse. [`01-network/14-tls.md`](../01-network/14-tls.md) nói về cơ chế handshake;
+request nào được parse. [`01-network/19-tls.md`](../01-network/19-tls.md) nói về cơ chế handshake;
 [`07-security/01-auth.md`](01-auth.md) nói về việc này kết hợp thế nào với identity ở
 mức request.
 
 ## What to learn
 ### mTLS ở tầng proxy
-Với mutual TLS, TLS server của proxy (xem [`01-network/14-tls.md`](../01-network/14-tls.md)) yêu cầu
+Với mutual TLS, TLS server của proxy (xem [`01-network/19-tls.md`](../01-network/19-tls.md)) yêu cầu
 và xác minh một client certificate trong lúc handshake, trước khi bất kỳ
 HTTP request nào được parse. Proxy kiểm tra cert có chain tới một CA tin
 cậy và tùy chọn kiểm tra các trường cụ thể (CN/SAN) so với một allowlist.
@@ -70,7 +70,7 @@ set nó.
 ## Practice
 Làm lần lượt theo thứ tự sau.
 
-1. Cấu hình TLS listener của [`proxy`](../../proxy) ([`01-network/14-tls.md`](../01-network/14-tls.md)) để yêu cầu và
+1. Cấu hình TLS listener của [`proxy`](../../proxy) ([`01-network/19-tls.md`](../01-network/19-tls.md)) để yêu cầu và
    xác minh client certificate cho một route, dùng `tokio-rustls`. **Xong
    khi** một client không có cert bị từ chối ngay tại handshake, trước khi
    bất kỳ request nào được parse.

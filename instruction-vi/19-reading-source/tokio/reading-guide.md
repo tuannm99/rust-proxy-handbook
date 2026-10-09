@@ -15,7 +15,7 @@ repository tên type hoặc function được nêu bên cạnh.
 
 | Đọc | Sau khi | Vì sao lúc đó |
 | --- | --- | --- |
-| Điểm dừng 1-2: I/O driver | Bài tập raw-epoll trong [`02-linux/07-epoll.md`](../../02-linux/07-epoll.md) | Vòng `epoll_wait` của chính bạn là thứ để so sánh |
+| Điểm dừng 1-2: I/O driver | Bài tập raw-epoll trong [`02-linux/14-epoll.md`](../../02-linux/14-epoll.md) | Vòng `epoll_wait` của chính bạn là thứ để so sánh |
 | Điểm dừng 3-4: scheduler và task | [`04-runtime/01-tokio.md`](../../04-runtime/01-tokio.md), [`04-runtime/02-waker.md`](../../04-runtime/02-waker.md), [`labs/00-tcp-server`](../../../labs/00-tcp-server) | Bạn đã spawn task và thấy chúng rải qua các worker |
 | Điểm dừng 5: blocking pool và coop | [`04-runtime/03-runtime-config.md`](../../04-runtime/03-runtime-config.md) | Bạn đã tự làm kẹt một worker và sửa nó |
 | Điểm dừng 6: channel | [`03-rust/11-concurrency-patterns.md`](../../03-rust/11-concurrency-patterns.md) | Bạn đã dùng `mpsc`/`oneshot` trong một lab |
@@ -35,7 +35,7 @@ Bắt đầu ở `net/tcp/stream.rs` và theo một lần đọc: `TcpStream` b�
 Trong `runtime/io/driver.rs`, tìm hàm block chờ event (nó đi qua `mio`,
 xem [`19-reading-source/mio/`](../mio)).
 - So nó với vòng `epoll_wait` bạn tự viết. tokio làm gì mà bạn không làm?
-- Nó edge-triggered hay level-triggered? Chỗ nào trong code cho bạn câu trả lời, và tokio tránh bug missed-wakeup trong [`02-linux/07-epoll.md`](../../02-linux/07-epoll.md) thế nào?
+- Nó edge-triggered hay level-triggered? Chỗ nào trong code cho bạn câu trả lời, và tokio tránh bug missed-wakeup trong [`02-linux/14-epoll.md`](../../02-linux/14-epoll.md) thế nào?
 
 ### Điểm dừng 3: scheduler work-stealing
 `runtime/scheduler/multi_thread/worker.rs` là vòng lặp worker;

@@ -54,7 +54,7 @@ thể hoạt động lại ngay cả với TLS, nhưng đó là một tính năn
 trợ hẹp hơn (cần kernel + thường cần hỗ trợ offload NIC cụ thể) và hỗ trợ
 từ hệ sinh thái Rust (`ktls`, gắn với `rustls`) kém trưởng thành hơn nhiều
 so với `rustls` thuần. Trong thực tế: [`proxy`](../../proxy) terminate TLS
-([`01-network/14-tls.md`](../01-network/14-tls.md)) sẽ làm một bản copy-và-encrypt ở userspace trên
+([`01-network/19-tls.md`](../01-network/19-tls.md)) sẽ làm một bản copy-và-encrypt ở userspace trên
 đường response trừ khi bạn cố tình dùng kTLS, và đó là một mặc định bình
 thường, chấp nhận được — đừng coi việc mất zero-copy dưới TLS là một bug.
 

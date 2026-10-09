@@ -59,10 +59,10 @@ no acknowledgment, no guaranteed order, no automatic retransmission. If
 you need those properties over UDP, your application layer has to build
 them itself. This sounds strictly worse, and for a normal request/response
 it usually is — but it's also why **QUIC** (the transport underneath
-HTTP/3, see [`01-network/13-http3.md`](13-http3.md)) is built on UDP rather than TCP:
+HTTP/3, see [`01-network/18-http3.md`](18-http3.md)) is built on UDP rather than TCP:
 TCP's in-kernel, one-size-fits-all reliability creates head-of-line
 blocking that HTTP/2 suffers from at the multiplexed-stream level
-([`01-network/12-http2.md`](12-http2.md)), and QUIC reimplements reliability
+([`01-network/17-http2.md`](17-http2.md)), and QUIC reimplements reliability
 *per-stream*, in userspace, specifically to avoid that — something you
 can't do on top of TCP because TCP's ordering guarantee applies to the
 whole connection, not per logical stream.
@@ -71,9 +71,9 @@ whole connection, not per logical stream.
 A "handshake" is any exchange where both sides agree on shared state
 before real data flows — you'll meet this word three separate times in
 this directory, each a different instance of the same idea:
-- **TCP's 3-way handshake** ([`08-tcp.md`](08-tcp.md)) agrees on connection state and
+- **TCP's 3-way handshake** ([`12-tcp.md`](12-tcp.md)) agrees on connection state and
   initial sequence numbers.
-- **TLS's handshake** ([`14-tls.md`](14-tls.md)) agrees on encryption keys and which
+- **TLS's handshake** ([`19-tls.md`](19-tls.md)) agrees on encryption keys and which
   protocol version/cipher to use.
 - **HTTP/1.1's `Upgrade` handshake** ([`05-http-stack/10-websocket.md`](../05-http-stack/10-websocket.md))
   agrees to stop speaking HTTP and start speaking a different protocol on
@@ -88,7 +88,7 @@ doesn't (which is where a lot of real bugs live).
 The connection-level distinction above (TCP tracks state, UDP doesn't)
 has an application-level echo worth naming separately: **stateless**
 protocols (plain HTTP/1.1 request/response, at the semantic level — see
-[`01-network/10-http.md`](10-http.md)) treat every request independently, with no
+[`01-network/15-http.md`](15-http.md)) treat every request independently, with no
 memory of previous ones; **stateful** interactions (a WebSocket session,
 an authenticated session tracked via cookies) require the server to
 remember something between exchanges. A proxy that load-balances
@@ -111,6 +111,6 @@ somewhere shared, not on one instance.
 3. Write down, in one sentence each, what state a TCP connection is
    tracking that a UDP "connection" (really just a fixed 4-tuple you're
    choosing to reuse) is not.
-4. Read [`01-network/08-tcp.md`](08-tcp.md)'s 3-way handshake section and
-   [`01-network/14-tls.md`](14-tls.md)'s handshake section back to back; list what
+4. Read [`01-network/12-tcp.md`](12-tcp.md)'s 3-way handshake section and
+   [`01-network/19-tls.md`](19-tls.md)'s handshake section back to back; list what
    each one is agreeing on, using the framing from this file.

@@ -49,10 +49,10 @@ Namespace giới hạn *tầm nhìn*; **cgroup** (control group) giới hạn *m
 tiêu thụ* — CPU time, memory, băng thông I/O — cho một nhóm process, được
 kernel enforce bất kể các process đó nghĩ chúng được phép làm gì. Đây là
 cơ chế trực tiếp đứng sau gotcha về giới hạn memory theo cgroup trong
-[`02-linux/09-memory.md`](09-memory.md) và mọi sự cố "bị OOM-killed trong Kubernetes":
+[`02-linux/16-memory.md`](16-memory.md) và mọi sự cố "bị OOM-killed trong Kubernetes":
 giới hạn memory của một container là một giới hạn cgroup, được enforce
 dựa trên **RSS** (memory thường trú, thực sự được backing vật lý — hệ quả
-thực tế của phân biệt virtual-vs-physical trong [`04-memory-basics.md`](04-memory-basics.md)),
+thực tế của phân biệt virtual-vs-physical trong [`08-memory-basics.md`](08-memory-basics.md)),
 không phải dựa trên bao nhiêu virtual memory process của bạn chỉ đơn
 thuần *reserve*.
 
@@ -65,7 +65,7 @@ Một process đã cấp phát (reserve) virtual memory nhiều hơn hẳn giớ
 cgroup của nó thì hoàn toàn ổn — cho tới khi nó thực sự *ghi* vào đủ số
 trang để RSS vượt giới hạn, lúc đó OOM killer của kernel kết thúc process
 một cách đột ngột, thường không có cảnh báo nào mà code của bạn có thể
-bắt được. Đây chính xác là kịch bản [`02-linux/09-memory.md`](09-memory.md) cảnh báo cho
+bắt được. Đây chính xác là kịch bản [`02-linux/16-memory.md`](16-memory.md) cảnh báo cho
 một proxy pre-allocate các buffer pool lớn.
 
 ### Một pod là một tập namespace được chia sẻ
@@ -84,7 +84,7 @@ trên `localhost` một cách trong suốt mà không cần thủ thuật networ
 ### Vì sao điều này quan trọng với một proxy
 Một proxy chạy bên trong một container thừa hưởng mọi giới hạn này dù
 code của chính nó có nhận thức được hay không: giới hạn fd của nó
-([`03-kernel-and-syscalls.md`](03-kernel-and-syscalls.md)) có thể bị container runtime giới hạn chặt
+([`05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md)) có thể bị container runtime giới hạn chặt
 hơn mặc định của host, số CPU nó thấy được có thể không khớp số core vật
 lý của host (giới hạn CPU cgroup có thể hiện ra như core phân số —
 `nproc` bên trong một container có thể nói dối về thứ thực sự khả dụng,

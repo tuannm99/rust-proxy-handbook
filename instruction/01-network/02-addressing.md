@@ -34,7 +34,7 @@ Gotcha, and a real production one: a proxy that opens many short-lived
 outbound connections to the same upstream can exhaust its own ephemeral
 port pool (roughly 28,000 available by default) faster than `TIME_WAIT`
 releases them — this is the practical reason [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)
-and [`01-network/08-tcp.md`](08-tcp.md) push so hard toward connection reuse rather
+and [`01-network/12-tcp.md`](12-tcp.md) push so hard toward connection reuse rather
 than dial-per-request.
 
 ### A socket, precisely
@@ -44,7 +44,7 @@ identified by *four* values together (the "4-tuple"): source IP, source
 port, destination IP, destination port. That's why one server process
 listening on one port can serve thousands of simultaneous clients — each
 client's 4-tuple is different even though the server's IP and port are
-fixed. [`01-network/07-socket.md`](07-socket.md) covers the actual API that creates one.
+fixed. [`01-network/11-socket.md`](11-socket.md) covers the actual API that creates one.
 
 ### CIDR notation: describing a block of addresses
 An IPv4 address is 32 bits, written as four decimal octets
@@ -86,7 +86,7 @@ public internet. Two shapes matter here:
 Why this matters for a proxy specifically: by the time a connection
 reaches your listening socket, `peer_addr()` may already be several NAT
 hops removed from the actual client — this is *exactly* the problem
-[`01-network/15-proxy-protocol.md`](15-proxy-protocol.md) and the `X-Forwarded-For` discussion in
+[`01-network/20-proxy-protocol.md`](20-proxy-protocol.md) and the `X-Forwarded-For` discussion in
 [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md) exist to solve, and it's why "just trust
 the socket's peer address" is naive the moment there's any load balancer,
 NAT gateway, or CDN in front of you.

@@ -47,10 +47,10 @@ Namespaces limit *visibility*; **cgroups** (control groups) limit
 *consumption* — CPU time, memory, I/O bandwidth — for a group of
 processes, enforced by the kernel regardless of what those processes
 think they're allowed to do. This is the direct mechanism behind
-[`02-linux/09-memory.md`](09-memory.md)'s cgroup-memory-limit gotcha and every
+[`02-linux/16-memory.md`](16-memory.md)'s cgroup-memory-limit gotcha and every
 "OOM-killed in Kubernetes" incident: a container's memory limit is a
 cgroup limit, enforced against **RSS** (resident, physically-backed
-memory — the actual consequence of [`04-memory-basics.md`](04-memory-basics.md)'s
+memory — the actual consequence of [`08-memory-basics.md`](08-memory-basics.md)'s
 virtual-vs-physical distinction), not against however much virtual
 memory your process merely *reserved*.
 
@@ -63,7 +63,7 @@ A process that's allocated (reserved) far more virtual memory than its
 cgroup limit is completely fine — right up until it actually *writes* to
 enough of those pages that RSS crosses the limit, at which point the
 kernel's OOM killer ends the process abruptly, often with no warning your
-own code can catch. This is precisely the scenario [`02-linux/09-memory.md`](09-memory.md)
+own code can catch. This is precisely the scenario [`02-linux/16-memory.md`](16-memory.md)
 warns about for a proxy that pre-allocates large buffer pools.
 
 ### A pod is a shared set of namespaces
@@ -82,7 +82,7 @@ any special networking trick.
 ### Why this matters for a proxy
 A proxy running inside a container inherits every one of these limits
 whether or not its own code is aware of them: its fd limit
-([`03-kernel-and-syscalls.md`](03-kernel-and-syscalls.md)) may be capped tighter by the container
+([`05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md)) may be capped tighter by the container
 runtime than the host default, its visible CPU count may not match the
 host's physical core count (cgroup CPU limits can present as fractional
 cores — `nproc` inside a container can lie about what's actually

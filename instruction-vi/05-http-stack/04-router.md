@@ -81,7 +81,7 @@ traffic splitting.
 
 Gotcha: `Host` không phải một thứ duy nhất. Trong HTTP/1.1 nó là header
 `Host`; trong HTTP/2 và HTTP/3 nó là pseudo-header `:authority`; và dưới
-TLS còn có tên SNI từ handshake ([`01-network/14-tls.md`](../01-network/14-tls.md)), thứ mà client
+TLS còn có tên SNI từ handshake ([`01-network/19-tls.md`](../01-network/19-tls.md)), thứ mà client
 chọn *trước khi* gửi bất kỳ cái nào trong số đó. Chúng đều có thể bất
 đồng — một attacker connect với SNI `public.example.com` rồi gửi
 `Host: admin.internal`. Quyết định cái nào là authoritative cho routing,

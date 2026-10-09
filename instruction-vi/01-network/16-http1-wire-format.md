@@ -2,7 +2,7 @@
 
 Grammar chính xác ở mức byte của một message HTTP/1.1 (RFC 9112, cùng các
 lớp ký tự lấy từ RFC 9110): cái gì hợp lệ, cái gì phải reject, và chỗ nào
-spec để bạn tự chọn. [`01-network/10-http.md`](10-http.md) nói một message *mang ý
+spec để bạn tự chọn. [`01-network/15-http.md`](15-http.md) nói một message *mang ý
 nghĩa gì*; file này nói nó *trông thế nào trên dây*, và đây là spec mà
 [`labs/01-http-parser`](../../labs/01-http-parser) implement. Bạn không cần mở RFC mới làm xong lab
 đó. Số section được ghi kèm để bạn đối chiếu bất kỳ luật nào tại nguồn.

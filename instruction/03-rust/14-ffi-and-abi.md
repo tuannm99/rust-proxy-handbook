@@ -43,5 +43,5 @@ Rust has no stable ABI across compiler versions — a `dylib` built with one rus
 1. Write a tiny C function, call it from Rust via a hand-written `extern "C"` block, confirm it works, then break it by mismatching an argument type and observe that this is undefined behavior, not a compile error.
 2. Add `#[repr(C)]` to a struct used across an FFI boundary in a small example, remove it, and use `std::mem::size_of` to confirm the layout actually can differ without it.
 3. Write a `Drop`-based wrapper around a C-allocated resource (a stand-in "C" function is fine) and confirm double-free/use-after-free is prevented by construction.
-4. Read the `libc` crate's source for one syscall binding you've already used by hand (`epoll_ctl`, from [`02-linux/07-epoll.md`](../02-linux/07-epoll.md)'s exercise) and identify its `#[repr(C)]` struct definitions.
+4. Read the `libc` crate's source for one syscall binding you've already used by hand (`epoll_ctl`, from [`02-linux/14-epoll.md`](../02-linux/14-epoll.md)'s exercise) and identify its `#[repr(C)]` struct definitions.
 5. Explain, referencing [`09-architecture/02-plugin.md`](../09-architecture/02-plugin.md), why an ABI-stable ecosystem like C makes `dlopen`-style plugins practical while Rust's lack of a stable ABI pushes toward compiling plugins into the same binary instead.

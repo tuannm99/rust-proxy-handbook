@@ -49,7 +49,7 @@ Body decoder có một số ít kiểu (độ dài cố định, chunked, đọc
 ### Điểm dừng 5: dispatcher: `proto/h1/dispatch.rs`
 Đây là nơi `Service` của bạn được gọi.
 - Dispatcher đan xen việc đọc request kế tiếp, poll future của service, và ghi response thế nào?
-- Backpressure được áp ở đâu khi client đọc body response chậm ([`01-network/12-http2.md`](../../01-network/12-http2.md) bàn phiên bản HTTP/2 của vấn đề này)?
+- Backpressure được áp ở đâu khi client đọc body response chậm ([`01-network/17-http2.md`](../../01-network/17-http2.md) bàn phiên bản HTTP/2 của vấn đề này)?
 
 ## Viết gì vào notes
 `interesting-code.md` nên liệt kê, cho mỗi điểm dừng, một quyết định hyper

@@ -77,7 +77,7 @@ tiếp theo trên kết nối pooled đó bị dán `G` vào đầu, trở thàn
 
 ### Downgrade smuggling (H2.CL / H2.TE)
 Biến thể hiện đại, và là loại liên quan nhất tới một proxy terminate
-HTTP/2 rồi nói HTTP/1.1 lên upstream ([`01-network/12-http2.md`](../01-network/12-http2.md)). Frame
+HTTP/2 rồi nói HTTP/1.1 lên upstream ([`01-network/17-http2.md`](../01-network/17-http2.md)). Frame
 HTTP/2 mang độ dài tường minh của riêng chúng, nên không có sự mơ hồ nào
 *bên trong* HTTP/2 — nhưng `content-length` vẫn tồn tại như một header
 bình thường, và kẻ tấn công có thể gửi một request HTTP/2 với
@@ -113,7 +113,7 @@ trọng ngay cả khi việc validate framing của bạn hoàn hảo.
    đoán cái nào "thắng". RFC 9112 §6.1 cho server chọn hoặc từ chối, hoặc
    xử lý chỉ theo `Transfer-Encoding` (và dù cách nào cũng phải đóng
    connection sau đó). Từ chối là lựa chọn chặt hơn và là cái nên chọn
-   ([`01-network/11-http1-wire-format.md`](../01-network/11-http1-wire-format.md) có thứ tự luật đầy đủ).
+   ([`01-network/16-http1-wire-format.md`](../01-network/16-http1-wire-format.md) có thứ tự luật đầy đủ).
 2. **Normalize trước khi chuyển tiếp**: loại bỏ/từ chối các framing header
    trùng lặp hoặc sai định dạng thay vì chuyển tiếp nguyên vẹn. Từ chối
    thay vì "dọn dẹp": một header bạn normalize thành hợp lệ là một header

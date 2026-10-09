@@ -19,7 +19,7 @@ HTTP/1.1's need for 6 parallel TCP connections per origin. Gotcha:
 multiplexing solves *connection-level* head-of-line blocking but not
 *TCP-level* HOL blocking — one dropped TCP segment still stalls every
 stream on that connection until it's retransmitted (this is exactly what
-HTTP/3 over QUIC fixes, see [`13-http3.md`](13-http3.md)).
+HTTP/3 over QUIC fixes, see [`18-http3.md`](18-http3.md)).
 
 ### HPACK header compression
 Headers are compressed with HPACK: a static table of common header
@@ -116,7 +116,7 @@ these, which is a concrete argument for the position in
 `h2` (used internally by `hyper` when the `http2` feature is enabled) is
 the de facto HTTP/2 implementation in the Rust ecosystem; `hyper-util`'s
 auto server builder in [`labs/02-http-server`](../../labs/02-http-server)/`reverse-proxy`
-negotiates HTTP/1.1 vs HTTP/2 via ALPN (see [`14-tls.md`](14-tls.md)) so you get this "for
+negotiates HTTP/1.1 vs HTTP/2 via ALPN (see [`19-tls.md`](19-tls.md)) so you get this "for
 free" once TLS is wired up, but you should still be able to explain what's
 happening below that abstraction. Which hyper settings map to which
 concept in this file (streams, windows, header limits, Rapid Reset) is in

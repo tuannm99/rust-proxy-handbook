@@ -22,7 +22,7 @@ Resolve một tên DNS (thường là một bản ghi SRV, cái cũng mang theo
 port + weight, khác với A/AAAA thuần) theo một interval và diff kết quả
 với pool hiện tại. Rẻ, không dependency, nhưng bị giới hạn bởi DNS TTL —
 bạn không thể phản ứng nhanh hơn TTL, và resolver cache cũ (xem
-[`01-network/09-dns.md`](../01-network/09-dns.md)) có thể để bạn trỏ vào một upstream đã ngừng hoạt
+[`01-network/14-dns.md`](../01-network/14-dns.md)) có thể để bạn trỏ vào một upstream đã ngừng hoạt
 động trong một thời gian ngắn sau một thay đổi.
 
 Gotcha, và đây là cái kinh điển: **resolve một lần lúc khởi động không

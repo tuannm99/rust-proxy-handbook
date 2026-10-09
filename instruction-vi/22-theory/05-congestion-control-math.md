@@ -7,7 +7,7 @@ Congestion window (`cwnd`) của TCP chặn số byte chưa được ack có th�
 bay; throughput xấp xỉ `cwnd / RTT`. Mỗi giải thuật congestion control,
 về mặt cơ chế, là một quy tắc tăng và giảm `cwnd` phản ứng với các tín
 hiệu — loss, delay, explicit congestion notification. Phần xử lý thực
-dụng của [`01-network/08-tcp.md`](../01-network/08-tcp.md) gọi tên cái này; file này suy ra phần
+dụng của [`01-network/12-tcp.md`](../01-network/12-tcp.md) gọi tên cái này; file này suy ra phần
 toán tăng/giảm thật.
 
 ### Slow start: theo cấp số, có chủ đích
@@ -26,7 +26,7 @@ RTT 3: cwnd = 40
 Cú tăng theo cấp số này là lý do cụ thể, định lượng được, vì sao một kết
 nối TCP hoàn toàn mới chậm hơn một kết nối được tái sử dụng dù mạng
 không hề tắc nghẽn — luận điểm tái sử dụng kết nối của
-[`01-network/08-tcp.md`](../01-network/08-tcp.md) có hình dạng chính xác ở đây.
+[`01-network/12-tcp.md`](../01-network/12-tcp.md) có hình dạng chính xác ở đây.
 
 ### Congestion avoidance: AIMD (additive increase, multiplicative decrease)
 Sau slow start, `cwnd` tăng khoảng một segment mỗi RTT (additive
@@ -62,7 +62,7 @@ drop một packet — phản ứng trực tiếp với quan sát rằng control 
 loss lấp đầy buffer (bufferbloat) rất lâu trước khi nó báo hiệu congestion.
 
 ### Vì sao một proxy không tự implement cái này — nhưng vẫn nên biết nó
-Đây hoàn toàn là việc của TCP stack của kernel ([`01-network/08-tcp.md`](../01-network/08-tcp.md) đã
+Đây hoàn toàn là việc của TCP stack của kernel ([`01-network/12-tcp.md`](../01-network/12-tcp.md) đã
 nói vậy); giá trị của phần toán ở đây là khả năng suy luận định lượng về
 một câu hỏi production thật — "vì sao throughput tới vùng này giảm mà
 không có gì phía chúng ta thay đổi" — thay vì chỉ suy luận định tính.
@@ -83,6 +83,6 @@ không có gì phía chúng ta thay đổi" — thay vì chỉ suy luận địn
    throughput/latency trên một đường truyền giả lập cố tình lossy hoặc
    RTT cao (`tc netem`).
 5. Viết một đoạn nối phần toán của file này với tuyên bố của
-   [`01-network/08-tcp.md`](../01-network/08-tcp.md) rằng tái sử dụng kết nối quan trọng cho
+   [`01-network/12-tcp.md`](../01-network/12-tcp.md) rằng tái sử dụng kết nối quan trọng cho
    throughput "không chỉ latency" — chỉ ra lý do định lượng vì sao slow
    start của một kết nối mới thực sự tốn của bạn.

@@ -48,14 +48,14 @@ back is real physical distance). For a small request/response exchange —
 most HTTP traffic — the transfer itself is so quick that RTT, not
 bandwidth, dominates total time: you're waiting on round trips, not on
 bytes. This is precisely why HTTP/2's multiplexing
-([`01-network/12-http2.md`](12-http2.md)) and 0-RTT/session resumption in TLS
-([`01-network/14-tls.md`](14-tls.md)) exist — they're attacking round-trip *count*,
+([`01-network/17-http2.md`](17-http2.md)) and 0-RTT/session resumption in TLS
+([`01-network/19-tls.md`](19-tls.md)) exist — they're attacking round-trip *count*,
 not throughput.
 
 ### Bandwidth-delay product: how much can be "in flight"
 The **bandwidth-delay product** (bandwidth × RTT) is how many bytes can
 be in transit on the link at once, unacknowledged — TCP's congestion
-window ([`01-network/08-tcp.md`](08-tcp.md)) has to grow to roughly this size before a
+window ([`01-network/12-tcp.md`](12-tcp.md)) has to grow to roughly this size before a
 single connection can use the link's full bandwidth. On a high-bandwidth,
 high-latency link ("long fat network" — a satellite link, or a
 cross-continental fiber run), this product is large, and a connection

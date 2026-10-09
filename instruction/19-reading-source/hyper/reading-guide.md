@@ -52,7 +52,7 @@ the buffering.
 ### Stop 5: the dispatcher: `proto/h1/dispatch.rs`
 This is where your `Service` gets called.
 - How does the dispatcher interleave reading the next request, polling your service's future, and writing the response?
-- Where is backpressure applied when the client reads the response body slowly ([`01-network/12-http2.md`](../../01-network/12-http2.md) covers the HTTP/2 version of this problem)?
+- Where is backpressure applied when the client reads the response body slowly ([`01-network/17-http2.md`](../../01-network/17-http2.md) covers the HTTP/2 version of this problem)?
 
 ## What to write in your notes
 `interesting-code.md` should list, for each stop, one decision hyper made

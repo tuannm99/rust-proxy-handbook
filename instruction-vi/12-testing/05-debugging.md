@@ -51,7 +51,7 @@ ss -tanp | grep 8080                              # ai giữ socket nào, ở tr
 process thực hiện. Nó trả lời những câu mà không log nào trả lời được:
 process đang block trong `epoll_wait` (rảnh, đang chờ) hay đang quay vòng
 trên `accept` trả về `EMFILE` ([`07-security/09-ddos.md`](../07-security/09-ddos.md))? `write` có trả về
-ít byte hơn yêu cầu không (một short write, [`01-network/08-tcp.md`](../01-network/08-tcp.md))?
+ít byte hơn yêu cầu không (một short write, [`01-network/12-tcp.md`](../01-network/12-tcp.md))?
 `strace -c` cho bảng tổng hợp số syscall, cách nhanh nhất để thấy cái gì
 chiếm ưu thế.
 

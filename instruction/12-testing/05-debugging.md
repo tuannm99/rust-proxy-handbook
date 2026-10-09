@@ -50,7 +50,7 @@ ss -tanp | grep 8080                              # who holds which sockets, in 
 process makes. It answers questions no log can: is the process blocked in
 `epoll_wait` (idle, waiting) or spinning on `accept` returning `EMFILE`
 ([`07-security/09-ddos.md`](../07-security/09-ddos.md))? Did `write` return fewer bytes than asked (a short
-write, [`01-network/08-tcp.md`](../01-network/08-tcp.md))? `strace -c` gives a syscall count summary,
+write, [`01-network/12-tcp.md`](../01-network/12-tcp.md))? `strace -c` gives a syscall count summary,
 the quickest way to see what dominates.
 
 ### The runtime's view: `tokio-console`

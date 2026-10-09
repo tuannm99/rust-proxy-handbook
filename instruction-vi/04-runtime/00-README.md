@@ -1,6 +1,6 @@
 # Async Runtime
 
-Phase 4. Cách tokio biến readiness notification của [`02-linux/07-epoll.md`](../02-linux/07-epoll.md)
+Phase 4. Cách tokio biến readiness notification của [`02-linux/14-epoll.md`](../02-linux/14-epoll.md)
 và state machine của [`03-rust/05-async.md`](../03-rust/05-async.md) thành một scheduler thực sự
 hoạt động — và điều đó có nghĩa gì cho code bạn viết trên nền đó.
 

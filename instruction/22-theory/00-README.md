@@ -26,11 +26,11 @@ already tuned by feel.
 ## Where this connects back
 
 - [`01-deadlock.md`](01-deadlock.md) and [`02-sync-classics.md`](02-sync-classics.md) → [`03-rust/04-sync.md`](../03-rust/04-sync.md), [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)
-- [`03-page-replacement.md`](03-page-replacement.md) → [`02-linux/09-memory.md`](../02-linux/09-memory.md)
+- [`03-page-replacement.md`](03-page-replacement.md) → [`02-linux/16-memory.md`](../02-linux/16-memory.md)
 - [`04-cpu-scheduling.md`](04-cpu-scheduling.md) → [`16-kernel/07-scheduler.md`](../16-kernel/07-scheduler.md), [`04-runtime/01-tokio.md`](../04-runtime/01-tokio.md)
-- [`05-congestion-control-math.md`](05-congestion-control-math.md) → [`01-network/08-tcp.md`](../01-network/08-tcp.md)
+- [`05-congestion-control-math.md`](05-congestion-control-math.md) → [`01-network/12-tcp.md`](../01-network/12-tcp.md)
 - [`06-queueing-theory.md`](06-queueing-theory.md) → [`07-security/11-load-shedding.md`](../07-security/11-load-shedding.md)
-- [`07-crypto-math.md`](07-crypto-math.md) → [`01-network/06-crypto-basics.md`](../01-network/06-crypto-basics.md), [`01-network/14-tls.md`](../01-network/14-tls.md)
+- [`07-crypto-math.md`](07-crypto-math.md) → [`01-network/06-crypto-basics.md`](../01-network/06-crypto-basics.md), [`01-network/19-tls.md`](../01-network/19-tls.md)
 - [`08-amdahls-law.md`](08-amdahls-law.md) → [`04-runtime/03-runtime-config.md`](../04-runtime/03-runtime-config.md), [`04-runtime/05-runtime-comparisons.md`](../04-runtime/05-runtime-comparisons.md), [`17-performance/`](../17-performance)
 - [`09-cap-flp.md`](09-cap-flp.md) → [`18-distributed/`](../18-distributed) (all four files)
 

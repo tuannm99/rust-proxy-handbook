@@ -39,7 +39,7 @@ unsafe { buf.set_len(len); }
   profiling chứng minh điều đó).
 - FFI vào `libc` cho `epoll_ctl`/`epoll_wait`, các socket option thô
   (`setsockopt` cho `SO_REUSEPORT`, `TCP_NODELAY`), hoặc `io_uring` — xem
-  [`02-linux/07-epoll.md`](../02-linux/07-epoll.md), [`02-linux/08-io_uring.md`](../02-linux/08-io_uring.md).
+  [`02-linux/14-epoll.md`](../02-linux/14-epoll.md), [`02-linux/15-io_uring.md`](../02-linux/15-io_uring.md).
 - `Vec::set_len` sau khi ghi vào spare capacity lấy được qua
   `spare_capacity_mut`, để tránh phải zero-initialize một read buffer
   trước khi một syscall `read()` điền đầy nó.
@@ -68,7 +68,7 @@ vẫn compile và "chạy được" dưới `cargo test` bình thường.
 2. Cài và chạy `cargo miri test` trên một type buffer-pool unsafe nhỏ;
    cố tình đưa vào một lỗi ghi out-of-bounds và xác nhận Miri bắt được
    nó.
-3. Trong bài tập raw-epoll echo server từ [`02-linux/07-epoll.md`](../02-linux/07-epoll.md), xác định
+3. Trong bài tập raw-epoll echo server từ [`02-linux/14-epoll.md`](../02-linux/14-epoll.md), xác định
    mọi lời gọi `unsafe` bạn cần (tạo socket, `epoll_ctl`, `epoll_wait` qua
    `libc`) và viết một comment `// SAFETY:` cho từng cái trước khi chạy
    code.

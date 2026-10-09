@@ -11,7 +11,7 @@ send a packet, allocate memory, create a socket — it makes a
 **syscall**: a controlled, well-defined request that switches the CPU
 into kernel mode, lets the kernel do the privileged work, and switches
 back. `bind()`, `listen()`, `accept()`, `read()`, `write()` — everything
-in [`01-network/07-socket.md`](../01-network/07-socket.md) — are syscalls, or thin wrappers around
+in [`01-network/11-socket.md`](../01-network/11-socket.md) — are syscalls, or thin wrappers around
 them.
 
 ```rust
@@ -29,7 +29,7 @@ and switch back. None of that is "free" the way a plain function call
 is, even though from Rust's point of view a syscall wrapper *looks* like
 any other function call.
 
-This is the concrete reason [`01-network/07-socket.md`](../01-network/07-socket.md), [`02-linux/11-zerocopy.md`](11-zerocopy.md),
+This is the concrete reason [`01-network/11-socket.md`](../01-network/11-socket.md), [`02-linux/18-zerocopy.md`](18-zerocopy.md),
 and the vectored-I/O discussion in that file care about syscall *count*,
 not just the bytes moved — `writev` with three buffers costs one context
 switch; three separate `write` calls cost three. At high request rates,
@@ -47,7 +47,7 @@ keeps *per process*, and each entry points to the kernel's real object
 (an open file, a socket's connection state, etc.) along with an offset
 and some flags.
 
-This uniformity is why [`02-linux/07-epoll.md`](07-epoll.md) can register a listening
+This uniformity is why [`02-linux/14-epoll.md`](14-epoll.md) can register a listening
 socket, a client socket, *and* a plain pipe on the same `epoll` instance
 with the same API — as far as epoll is concerned, they're all just fds
 that can become "ready." It's also why [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md) and

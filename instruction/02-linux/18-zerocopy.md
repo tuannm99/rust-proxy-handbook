@@ -53,7 +53,7 @@ with `SOL_TLS`) pushes the encrypt/decrypt step itself into the kernel so
 feature (needs kernel + often specific NIC offload support) and Rust
 ecosystem support (`ktls`, ties into `rustls`) is much less mature than
 plain `rustls`. In practice: [`proxy`](../../proxy) terminating TLS
-([`01-network/14-tls.md`](../01-network/14-tls.md)) will do a userspace copy-and-encrypt on the response
+([`01-network/19-tls.md`](../01-network/19-tls.md)) will do a userspace copy-and-encrypt on the response
 path unless you deliberately reach for kTLS, and that's a normal, acceptable
 default — don't treat losing zero-copy under TLS as a bug.
 

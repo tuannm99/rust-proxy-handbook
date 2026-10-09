@@ -52,7 +52,7 @@ handshake đầy đủ trên một kết nối mới, cắt bớt một round tr
 proxy, điều này quan trọng nhất dưới connection churn cao — hỗ trợ
 resumption (và việc xoay key của nó) ảnh hưởng trực tiếp tới tail latency
 cho các client kết nối lại thường xuyên. Gotcha: resumption kiểu 0-RTT
-tái tạo lại rủi ro replay tương tự 0-RTT của QUIC ([`13-http3.md`](13-http3.md)) — áp
+tái tạo lại rủi ro replay tương tự 0-RTT của QUIC ([`18-http3.md`](18-http3.md)) — áp
 dụng cùng sự thận trọng "chỉ cho request idempotent".
 
 ### Quản lý certificate

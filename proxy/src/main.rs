@@ -3,7 +3,7 @@
 // TODO:
 // - load config from file, support hot reload (see instruction/09-architecture/03-config.md)
 // - wire up the component pipeline (see instruction/09-architecture/01-components.md)
-// - TLS termination (see instruction/01-network/14-tls.md)
+// - TLS termination (see instruction/01-network/19-tls.md)
 // - auth, rate limiting, WAF (see instruction/07-security/*.md)
 // - structured logging, metrics, tracing (see instruction/08-observability/*.md)
 // - graceful shutdown on SIGTERM (see instruction/09-architecture/04-graceful-shutdown.md)

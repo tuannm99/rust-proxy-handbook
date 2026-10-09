@@ -8,10 +8,10 @@ Một phần của chuỗi fundamentals từ-con-số-0 — xem
 ### Process: thế giới riêng của nó
 Một **process** là một chương trình đang chạy với address space riêng của
 nó — góc nhìn memory riêng, cách ly khỏi mọi process khác, được enforce
-bởi phần cứng quản lý memory của kernel (MMU, xem [`04-memory-basics.md`](04-memory-basics.md)).
+bởi phần cứng quản lý memory của kernel (MMU, xem [`08-memory-basics.md`](08-memory-basics.md)).
 Hai process không thể đọc hoặc làm hỏng memory của nhau một cách tình cờ.
 Một process cũng sở hữu tập file descriptor đang mở của riêng nó
-([`03-kernel-and-syscalls.md`](03-kernel-and-syscalls.md)), process ID riêng, và resource limit riêng.
+([`05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md)), process ID riêng, và resource limit riêng.
 
 Tạo một process mới (`fork()` trên Unix, nằm dưới `std::process::Command`
 trong Rust) tương đối tốn kém: phải thiết lập một address space mới (dù
@@ -66,7 +66,7 @@ cho bạn cái đầu tiên.
 Với nhiều thread có thể chạy hơn số CPU core — bình thường trên bất kỳ máy
 thật nào — scheduler của kernel quyết định thread nào chạy trên core nào
 trong bao lâu, chuyển đổi giữa chúng (một context switch, chủ đề của
-[`03-kernel-and-syscalls.md`](03-kernel-and-syscalls.md)). Tokio có scheduler *riêng* của nó ở một tầng
+[`05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md)). Tokio có scheduler *riêng* của nó ở một tầng
 cao hơn, quyết định một OS thread cho trước sẽ làm task nào của *bạn*
 tiếp theo. Đây thực sự là hai scheduler khác nhau, hoạt động độc lập:
 kernel hoàn toàn không biết các tokio task của bạn tồn tại, và tokio không

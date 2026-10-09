@@ -50,7 +50,7 @@ handshake on a new connection, cutting a round trip. For a proxy, this
 matters most under high connection churn — resumption support (and its
 key rotation) directly affects tail latency for clients reconnecting
 frequently. Gotcha: 0-RTT-style resumption reintroduces replay risk similar
-to QUIC 0-RTT ([`13-http3.md`](13-http3.md)) — apply the same "only for idempotent requests"
+to QUIC 0-RTT ([`18-http3.md`](18-http3.md)) — apply the same "only for idempotent requests"
 caution.
 
 ### Certificate management

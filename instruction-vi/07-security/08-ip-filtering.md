@@ -64,7 +64,7 @@ request-path read không bao giờ nên block chờ một lần update danh sác
 
 ### Chỉ tin forwarded-for header từ các proxy đã biết
 `X-Forwarded-For` (hoặc header PROXY protocol, xem
-[`01-network/15-proxy-protocol.md`](../01-network/15-proxy-protocol.md)) là dữ liệu do client cung cấp trừ khi
+[`01-network/20-proxy-protocol.md`](../01-network/20-proxy-protocol.md)) là dữ liệu do client cung cấp trừ khi
 chính bạn strip và set lại nó ở một trust boundary. Nếu proxy tin mù quáng
 bất kỳ giá trị `X-Forwarded-For` nào tới, client nào cũng có thể tự nhận là
 `127.0.0.1` hoặc một IP internal nằm trong allowlist và bypass hoàn toàn IP
@@ -180,7 +180,7 @@ Làm theo thứ tự này.
    khi rate limiter chạy, ban hết hạn đúng lịch, và lấp bảng với 1M địa chỉ
    giả plateau về bộ nhớ thay vì tăng mãi.
 7. (Stretch) Nối parsing PROXY protocol v2
-   ([`01-network/15-proxy-protocol.md`](../01-network/15-proxy-protocol.md)) như một lựa chọn thay thế có cấu
+   ([`01-network/20-proxy-protocol.md`](../01-network/20-proxy-protocol.md)) như một lựa chọn thay thế có cấu
    trúc cho XFF. **Xong khi** IP client thật được lấy lại từ header binary
    và một kết nối *không có* header mong đợi trên một listener PROXY
    protocol bị reject thay vì bị parse như HTTP.

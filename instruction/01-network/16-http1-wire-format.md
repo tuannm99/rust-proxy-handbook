@@ -2,7 +2,7 @@
 
 The exact byte grammar of an HTTP/1.1 message (RFC 9112, with character
 classes from RFC 9110): what is legal, what must be rejected, and where
-the spec leaves you a choice. [`01-network/10-http.md`](10-http.md) covers what a message
+the spec leaves you a choice. [`01-network/15-http.md`](15-http.md) covers what a message
 *means*; this file covers what it *looks like on the wire*, and it is the
 spec [`labs/01-http-parser`](../../labs/01-http-parser) implements. You should not need to open the
 RFC to finish that lab. Section numbers are given so you can check any

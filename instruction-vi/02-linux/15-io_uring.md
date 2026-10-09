@@ -60,7 +60,7 @@ phải một mặc định.
    file với một vòng SQE/CQE duy nhất.
 2. Mở rộng nó để nộp nhiều lần đọc trước khi thu bất kỳ completion nào,
    và quan sát việc gộp trong `strace`.
-3. Chuyển echo server raw-epoll từ bài tập [`02-linux/07-epoll.md`](07-epoll.md) sang
+3. Chuyển echo server raw-epoll từ bài tập [`02-linux/14-epoll.md`](14-epoll.md) sang
    `tokio-uring` và so sánh độ phức tạp code và hành vi dưới connection
    churn.
 4. Kiểm tra `uname -r` trên máy dev của bạn và bất kỳ môi trường triển

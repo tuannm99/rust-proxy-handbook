@@ -2,14 +2,14 @@
 
 Một phần của chuỗi fundamentals từ-con-số-0 — xem
 [`02-linux/01-fundamentals.md`](01-fundamentals.md) để có index đầy đủ. Cố tình viết ngắn gọn:
-[`02-linux/09-memory.md`](09-memory.md) mới là nơi virtual memory, overcommit, page cache,
+[`02-linux/16-memory.md`](16-memory.md) mới là nơi virtual memory, overcommit, page cache,
 và NUMA được phát triển sâu thật sự — file này tồn tại chỉ để bạn không
 bắt đầu từ con số 0.
 
 ## What to learn
 
 ### Mỗi process có address space ảo riêng
-"Thế giới riêng của nó" của một process ([`02-processes-and-threads.md`](02-processes-and-threads.md))
+"Thế giới riêng của nó" của một process ([`03-processes-and-threads.md`](03-processes-and-threads.md))
 không phải RAM vật lý trực tiếp — đó là một address space **ảo** mà
 kernel ánh xạ tới physical memory (hoặc tới "chưa có, fault vào khi truy
 cập lần đầu") qua page table. Chương trình của bạn chỉ bao giờ thấy địa
@@ -19,7 +19,7 @@ dữ liệu hoàn toàn khác nhau, một cách an toàn, vì page table của k
 ánh xạ `0x1000` của mỗi process tới physical memory khác nhau.
 
 Đó thực sự là tất cả những gì bạn cần ở đây để đoạn mở đầu của
-[`02-linux/09-memory.md`](09-memory.md) — "mỗi process nhận một virtual address space
+[`02-linux/16-memory.md`](16-memory.md) — "mỗi process nhận một virtual address space
 riêng; page table của kernel ánh xạ virtual page tới physical frame" —
 cảm giác như một lời nhắc lại thay vì thông tin mới.
 
@@ -29,7 +29,7 @@ nhất/rẻ nhất: **register** của CPU, rồi **cache** (L1/L2/L3, vài MB, 
 sẵn trong CPU), rồi **RAM** (hàng gigabyte, vẫn volatile — mất khi tắt
 nguồn), rồi **disk/SSD** (lớn hơn nhiều, chậm hơn nhiều, persistent). Mỗi
 tầng đóng vai trò cache cho tầng bên dưới nó: RAM cache nội dung disk
-(phần page cache trong [`09-memory.md`](09-memory.md) chính xác là điều này), CPU cache
+(phần page cache trong [`16-memory.md`](16-memory.md) chính xác là điều này), CPU cache
 cache nội dung RAM.
 
 Con số quan trọng nhất trong thực tế: một L1 cache hit tốn khoảng
@@ -38,12 +38,12 @@ SSD tốn hàng chục *microsecond*; một seek trên đĩa quay tốn hàng
 *millisecond* — mỗi bước xuống chậm hơn khoảng 1-2 bậc độ lớn. Đây là
 toàn bộ động lực đằng sau sự tồn tại của [`17-performance/01-cpu-cache.md`](../17-performance/01-cpu-cache.md)
 (các lựa chọn data layout giữ dữ liệu nóng trong cache) và đằng sau vì
-sao page cache trong [`02-linux/09-memory.md`](09-memory.md) quan trọng đến vậy với một
+sao page cache trong [`02-linux/16-memory.md`](16-memory.md) quan trọng đến vậy với một
 proxy phục vụ static file: một cache hit ở đó là một truy cập RAM; một
 cache miss là một truy cập disk, chậm hơn 100-1000 lần.
 
 ### Stack vs heap, ngắn gọn
-Mỗi thread ([`02-processes-and-threads.md`](02-processes-and-threads.md)) có **stack** riêng — một vùng
+Mỗi thread ([`03-processes-and-threads.md`](03-processes-and-threads.md)) có **stack** riêng — một vùng
 được quản lý tự động, hướng cố định, cho biến local và call frame của
 hàm, cấp phát nhanh (chỉ di chuyển một pointer) và tự động giải phóng khi
 hàm return. **Heap** được chia sẻ giữa mọi thread trong một process, dùng
@@ -60,14 +60,14 @@ Toàn bộ profile hiệu năng của một proxy là một câu chuyện về t
 memory: giữ một route table nóng đủ nhỏ để nằm gọn trong cache
 ([`17-performance/01-cpu-cache.md`](../17-performance/01-cpu-cache.md)), để page cache của kernel hấp thụ các
 lần đọc static-file lặp lại thay vì tự implement lại cache đó ở userspace
-([`09-memory.md`](09-memory.md)), và tránh cấp phát heap không cần thiết trên hot path
+([`16-memory.md`](16-memory.md)), và tránh cấp phát heap không cần thiết trên hot path
 của request ([`14-memory/02-arena.md`](../14-memory/02-arena.md), [`14-memory/03-object-pool.md`](../14-memory/03-object-pool.md)) đều
 là các biến thể khác nhau của "giữ dữ liệu càng gần đỉnh thứ bậc này càng
 tốt, càng lâu càng tốt."
 
 ## Practice
 1. Chạy `free -h` và xác định tổng RAM, đã dùng, và "available" (không
-   giống "free" — [`09-memory.md`](09-memory.md) giải thích vì sao khi bạn tới đó).
+   giống "free" — [`16-memory.md`](16-memory.md) giải thích vì sao khi bạn tới đó).
 2. Viết một chương trình Rust nhỏ cấp phát một `Vec<u8>` lớn bằng
    `with_capacity` (chỉ reserve virtual memory) so với một phiên bản còn
    ghi vào từng byte (buộc physical page phải backing nó) — theo dõi

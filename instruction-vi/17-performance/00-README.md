@@ -2,7 +2,7 @@
 
 Tuning hiệu năng ở mức hardware — cách CPU và memory subsystem thực sự
 hoạt động, khác với các kỹ thuật zero-copy ở mức syscall trong
-[`02-linux/11-zerocopy.md`](../02-linux/11-zerocopy.md) (thư mục này cross-reference tới đó thay vì lặp
+[`02-linux/18-zerocopy.md`](../02-linux/18-zerocopy.md) (thư mục này cross-reference tới đó thay vì lặp
 lại).
 
 ## Trạng thái: đã viết, nhưng hãy đọc sau khi profile
@@ -27,4 +27,4 @@ bottleneck. Điểm kích hoạt tự nhiên là [`proxy`](../../proxy) dưới 
 - [`06-simd.md`](06-simd.md) — thao tác vector hóa, chỗ chúng xuất hiện trong một proxy (parse header, checksum)
 
 I/O zero-copy (`sendfile`/`splice`/`mmap`) được nói ở
-[`02-linux/11-zerocopy.md`](../02-linux/11-zerocopy.md), không lặp lại ở đây.
+[`02-linux/18-zerocopy.md`](../02-linux/18-zerocopy.md), không lặp lại ở đây.

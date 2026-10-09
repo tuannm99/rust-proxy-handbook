@@ -29,6 +29,32 @@ Stuck is normal and informative. A useful protocol:
 - **Still stuck:** ask for a *hint* at the concept level ("which handbook section explains why this future isn't `Send`?"), not for the fix.
 - **Stuck on the same concept across two labs:** go back a directory. The gap is upstream of the lab.
 
+### Why you forget, and the fix
+Reading feels like learning, but a fact read once is mostly gone in two days;
+what stays is what you *pulled out of your own head* later. So the study loop
+needs a retention layer, especially for networking and OS, where the facts are
+many and interlocking:
+
+- **Retrieval, not re-reading.** After each file, close it and write the answer
+  to "what problem does this solve, and what would break without it?" Then
+  check. [`01-network/22-recall-and-review.md`](../01-network/22-recall-and-review.md) and
+  [`02-linux/22-recall-and-review.md`](../02-linux/22-recall-and-review.md) give you the questions.
+- **Spacing.** Review the same questions after 1, 3, 7 and 21 days, then
+  monthly. Short and repeated beats long and once. Put the dates in your log.
+- **Derive before you look up.** When you can't recall something, reason it out
+  from the layer model or the resource/OS-question map first. Understanding the
+  *why* is what makes a fact reconstructible instead of memorised.
+- **Make it physical.** A packet you captured, a syscall you `strace`d, or a
+  limit you hit yourself is remembered far longer than a paragraph. Every lab's
+  `Done when` is also a memory aid.
+- **Teach it.** Explain a topic aloud to nobody. The point where you stall is the
+  gap to fix.
+- **Keep an error log.** Record every question you got wrong twice; those, and
+  only those, become flashcards.
+
+Gotcha: the feeling of "oh yes, I remember that" while reading an answer is
+recognition, not recall. If you didn't produce the answer first, count it as a miss.
+
 ### A realistic timeline
 At about ten hours a week, starting with serious gaps:
 
@@ -72,3 +98,4 @@ on: tokio, hyper, h2, rustls, quinn, pingora. Rough milestones:
 2. Start a learning log (a plain markdown file is enough). After each lab, record: what broke, what the review found, and the one thing production source did differently. **Done when** the log has an entry per finished lab.
 3. For [`labs/00-tcp-server`](../../labs/00-tcp-server), run the full loop including step 5 review. **Done when** the review finds nothing you disagree with and you've fixed everything else.
 4. Every quarter, re-read this file's timeline and adjust it to your actual pace instead of abandoning the plan when it slips.
+5. After finishing each file in [`01-network/`](../01-network) or [`02-linux/`](../02-linux), schedule its review questions from `22-recall-and-review.md` at +1, +3, +7 and +21 days in your learning log. **Done when** the log has dated review entries and a score for each.
