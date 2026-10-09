@@ -29,8 +29,6 @@
 // - đọc vào buffer tích lũy, gọi lại parse_request mỗi lần có thêm byte
 // - đủ rồi thì xử lý request, drain `consumed` byte khỏi buffer (pipelining)
 
-const CR: u8 = b'\r';
-const LF: u8 = b'\n';
 const CRLF: &[u8; 2] = b"\r\n";
 const SP: u8 = 0x20; // ' ' (space)
 const HTAB: u8 = 0x09; // \t
@@ -165,7 +163,7 @@ pub fn parse_request(buf: &[u8]) -> Result<ParseStatus<'_>, ParseError> {
                     // Content-Length hay Transfer-Encoding. Với request có body, bạn
                     // đang báo "xong" trước khi body tới, và `consumed` không tính
                     // body. Bước 4 (body framing) phải nằm TRƯỚC điểm trả Complete
-                    // này. Xem lại instruction/01-network/11-http1-wire-format.md.
+                    // này. Xem lại instruction/01-network/16-http1-wire-format.md.
                     Ok(ParseStatus::Complete {
                         request,
                         consumed: header_consumed + request_line_consumed,
@@ -174,20 +172,6 @@ pub fn parse_request(buf: &[u8]) -> Result<ParseStatus<'_>, ParseError> {
             }
         }
     }
-}
-
-fn is_crlf(first: u8, second: u8) -> bool {
-    if first == CR && second == LF {
-        return true;
-    }
-    false
-}
-
-fn end_header(first: u8, second: u8, third: u8, forth: u8) -> bool {
-    if is_crlf(first, second) && is_crlf(third, forth) {
-        return true;
-    }
-    false
 }
 
 fn is_tchar(b: u8) -> bool {
@@ -328,7 +312,7 @@ fn trim_ows(mut value: &[u8]) -> &[u8] {
 
 #[cfg(test)]
 mod tests {
-    use crate::{end_header, is_tchar, parse_request, ParseStatus};
+    use crate::{is_tchar, parse_request, ParseStatus};
     use proptest::prelude::*;
 
     // REVIEW(low): assert `is_ok()` / `is_err()` không kiểm tra field nào
@@ -404,10 +388,5 @@ mod tests {
         fn test_is_tchar_never_panics(b in any::<u8>()) {
             assert_eq!(is_tchar(b), expected_tchar(b));
         }
-    }
-
-    #[test]
-    fn test_end_header() {
-        assert_eq!(end_header(b'\r', b'\n', b'\r', b'\n'), true);
     }
 }
