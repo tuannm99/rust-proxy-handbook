@@ -1,8 +1,7 @@
 # Slab
 
 Lưu trữ object kích thước cố định với insert và remove O(1), đánh địa chỉ
-bằng chỉ số nguyên thay vì con trỏ. Cấu trúc dữ liệu đứng sau bảng kết
-nối, node của LRU, và các đồ thị dựa trên arena.
+bằng chỉ số nguyên thay vì con trỏ. Cấu trúc dữ liệu đứng sau bảng connection, node của LRU, và các đồ thị dựa trên arena.
 [`14-memory/05-slab-allocator.md`](../14-memory/05-slab-allocator.md) nói về góc nhìn ở tầng allocator; file
 này nói về cấu trúc dữ liệu bạn thực sự dùng trong Rust.
 
@@ -10,7 +9,7 @@ này nói về cấu trúc dữ liệu bạn thực sự dùng trong Rust.
 
 ### Vì sao chỉ số thắng con trỏ trong Rust
 Một proxy cần một tập hợp các object tồn tại lâu dài, có thể xóa từng cái
-riêng lẻ — một entry cho mỗi kết nối đang hoạt động, một node cho mỗi entry
+riêng lẻ — một entry cho mỗi connection đang hoạt động, một node cho mỗi entry
 LRU. Các dạng hiển nhiên đều có vấn đề: `HashMap<Id, T>` hash mỗi lần truy
 cập và rải rác các allocation; `Vec<T>` làm mọi chỉ số vô hiệu khi remove;
 đồ thị `Rc<RefCell<T>>` leak khi có chu trình; con trỏ raw nghĩa là
@@ -52,10 +51,9 @@ implementation slab production nén discriminant vào một bit dư hoặc giữ
 một bitmap occupancy riêng.
 
 ### Vấn đề ABA / stale-handle
-Đây là con bug hay cắn người. Kết nối 7 đóng, giải phóng slot 7; một kết
-nối mới lập tức tái sử dụng slot 7. Bất kỳ đoạn code nào vẫn giữ chỉ số 7
+Đây là con bug hay cắn người. Connection 7 đóng, giải phóng slot 7; một connection mới lập tức tái sử dụng slot 7. Bất kỳ đoạn code nào vẫn giữ chỉ số 7
 — một timer đang chờ, một response đang bay, một callback metric — giờ
-đọc hoặc sửa *nhầm kết nối*. Không có lỗi kiểu dữ liệu, không panic; đó là
+đọc hoặc sửa *nhầm connection*. Không có lỗi kiểu dữ liệu, không panic; đó là
 sự nhiễu chéo âm thầm giữa các client không liên quan, mà trong một proxy
 nghĩa là response của người dùng này đến tay người khác.
 
@@ -72,15 +70,15 @@ kỹ chứ không nên mặc định là đủ.
 
 ### Capacity và vấn đề shrink
 Một slab không bao giờ tự co lại: sau khi một đợt spike traffic tạo ra
-100 nghìn slot kết nối, `Vec` vẫn giữ nguyên độ rộng 100 nghìn slot ngay
-cả khi chỉ còn 100 kết nối active. Với một proxy chạy dài hạn, đó là một
+100 nghìn slot connection, `Vec` vẫn giữ nguyên độ rộng 100 nghìn slot ngay
+cả khi chỉ còn 100 connection active. Với một proxy chạy dài hạn, đó là một
 mức đỉnh bộ nhớ vĩnh viễn được set bởi đợt spike tệ nhất của bạn
 (xem [`14-memory/06-fragmentation.md`](../14-memory/06-fragmentation.md)).
 
 Nén lại nghĩa là di chuyển các entry đang chiếm dụng vào các slot thấp,
 điều này làm vô hiệu chỉ số của chúng — đúng chính cái tính chất mà slab
-tồn tại để cung cấp. Các lựa chọn thực tế là chặn trên slab và từ chối khi
-vượt capacity (hợp lý: nó kiêm luôn vai trò giới hạn số kết nối), hoặc
+tồn tại để cung cấp. Các lựa chọn thực tế là bound slab và từ chối khi
+vượt capacity (hợp lý: nó kiêm luôn vai trò giới hạn số connection), hoặc
 chấp nhận mức đỉnh đó như một chi phí. Pre-size với `with_capacity` cho
 tải đỉnh dự kiến cũng tránh được việc reallocate lặp lại trong lúc ramp-up,
 khi proxy vốn đã đang chịu áp lực.

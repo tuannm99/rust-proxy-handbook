@@ -17,7 +17,7 @@ cái cắn một network service:
 - **`RLIMIT_NPROC`** — số process/thread cho mỗi user (ảnh hưởng thread pool).
 - **`RLIMIT_CORE`** — kích thước core dump (`0` = không có). Một core file chứa bộ nhớ của process, **gồm cả private key và
   token** ([`07-users-permissions-capabilities.md`](07-users-permissions-capabilities.md)); hãy tắt hoặc kiểm soát chặt.
-- **`RLIMIT_MEMLOCK`** — bộ nhớ có thể bị khóa trong RAM (`mlock`, và bộ nhớ ring của io_uring trên kernel cũ hơn —
+- **`RLIMIT_MEMLOCK`** — bộ nhớ có thể bị lock trong RAM (`mlock`, và bộ nhớ ring của io_uring trên kernel cũ hơn —
   [`15-io_uring.md`](15-io_uring.md)).
 - **`RLIMIT_STACK`** — kích thước stack của main thread (mặc định 8 MiB); stack của thread được đặt riêng.
 - **`RLIMIT_AS`/`RLIMIT_DATA`** — trần address-space; hiếm khi hữu ích với một runtime reserve các vùng ảo lớn — hãy dùng giới hạn
@@ -38,7 +38,7 @@ Hết fd trong một vòng `accept` rất khó chịu: connection đang chờ v�
 vẫn đọc được, và một vòng lặp ngây thơ **quay ở 100% CPU** retry `accept()` cứ fail mãi. Server tốt (1) nâng `RLIMIT_NOFILE` lúc khởi
 động lên hard limit (`setrlimit`, qua crate `rlimit` hoặc `libc`), (2) khi gặp `EMFILE`/`ENFILE` thì log, **lùi lại một chút** (ví dụ sleep
 vài ms) thay vì quay vòng, và đôi khi giữ một fd dự phòng để accept-rồi-đóng một connection nhằm xả tải một cách nhẹ nhàng
-([`07-security/11-load-shedding.md`](../07-security/11-load-shedding.md)), và (3) chặn số connection đồng thời một cách có chủ đích để limit là một chính sách chứ không phải tai nạn
+([`07-security/11-load-shedding.md`](../07-security/11-load-shedding.md)), và (3) cap số connection đồng thời một cách có chủ đích để limit là một chính sách chứ không phải tai nạn
 ([`07-security/09-ddos.md`](../07-security/09-ddos.md)). Đếm fd trong monitoring (`ls /proc/<pid>/fd | wc -l` so với limit, [`08-observability/02-metrics.md`](../08-observability/02-metrics.md)) và cảnh báo ở ~80%.
 Một độ trôi tăng đều là **leak** (thường là các socket `CLOSE_WAIT`, [`01-network/12-tcp.md`](../01-network/12-tcp.md)).
 
@@ -67,7 +67,7 @@ state của device và cgroup ([`13-containers.md`](13-containers.md)).
 (`ss -e` in inode). Nên khi `lsof -p <pid>` hiện 40.000 socket bạn có thể nhóm chúng theo state và peer (`ss -tn state close-wait`) và quyết
 định đó là leak hay là tải.
 
-### Hộp công cụ quan sát, theo câu hỏi
+### Toolbox quan sát, theo câu hỏi
 - *Nó đang gọi syscall nào, và cái nào fail?* `strace -f -p <pid>` (`-c` tóm tắt, `-e trace=network`); thấy trực tiếp `EMFILE`, `EAGAIN`, `ECONNRESET`
   ([`12-testing/05-debugging.md`](../12-testing/05-debugging.md)). Đắt trên một process nóng — nó tạm dừng process ở mỗi syscall; trên production ưu tiên `perf trace` hoặc eBPF
   ([`16-kernel/09-ebpf.md`](../16-kernel/09-ebpf.md)).

@@ -26,16 +26,16 @@ lần retry đã xảy ra, một lần GC pause 50ms). Nếu load balancer trong
 upstream không nên page ai cả; mất tất cả thì nên. Các tín hiệu ở mức
 nguyên nhân vẫn quan trọng — hãy giữ chúng như metrics/dashboard
 ([`08-observability/02-metrics.md`](02-metrics.md)) để tìm nguyên nhân gốc của một sự cố
-sau khi alert ở mức triệu chứng đã đánh thức ai đó rồi.
+sau khi alert ở mức triệu chứng đã wake up ai đó rồi.
 
 ### Các ngoại lệ: những thứ vô hình cho tới khi đã quá muộn
 "Chỉ triệu chứng" có một nhóm ngoại lệ cụ thể và quan trọng — các điều
 kiện không có triệu chứng *ngay bây giờ* nhưng chắc chắn sẽ có sau này.
 Chúng đáng để có một alert mức ticket chính xác vì chờ triệu chứng nghĩa
 là chờ sự cố xảy ra:
-- **Chứng chỉ hết hạn** ([`01-network/19-tls.md`](../01-network/19-tls.md),
+- **Certificate expire** ([`01-network/19-tls.md`](../01-network/19-tls.md),
   [`05-http-stack/12-vhost-routing.md`](../05-http-stack/12-vhost-routing.md)) — alert trước vài tuần, theo từng
-  chứng chỉ. Triệu chứng là thất bại toàn bộ tại một thời điểm dự đoán
+  certificate. Triệu chứng là thất bại toàn bộ tại một thời điểm dự đoán
   được chính xác.
 - **Config reload thất bại** ([`09-architecture/03-config.md`](../09-architecture/03-config.md)) — proxy vẫn
   chạy trên config cũ và trông hoàn toàn healthy trong khi lệch dần khỏi
@@ -102,18 +102,18 @@ lấp:
 - **Probe từ bên ngoài** bằng một kiểm tra black-box/synthetic thực sự gửi
   một request qua proxy từ một mạng khác. Nó bắt được mọi thứ mà metrics
   nội bộ về bản chất không thể: process vẫn chạy nhưng listener bị kẹt,
-  DNS cho hostname của bạn bị hỏng, một rule firewall thay đổi, chứng chỉ
-  hết hạn.
+  DNS cho hostname của bạn bị hỏng, một rule firewall thay đổi, certificate
+  expire.
 
 Gotcha: kiểm tra xem chính đường đi alert của bạn phụ thuộc vào cái gì.
 Nếu thông báo alert đi qua hạ tầng nằm sau proxy này, một sự cố của proxy
-sẽ chặn luôn cái alert về sự cố của proxy. Probe synthetic nên chạy ở một
+sẽ block luôn cái alert về sự cố của proxy. Probe synthetic nên chạy ở một
 nơi có đường đi độc lập ra ngoài.
 
 ### Mệt mỏi vì alert và routing
 Mỗi alert cần một chủ sở hữu, một mức độ nghiêm trọng, và một link runbook
 — một alert mà không ai có thể hành động lúc 3 giờ sáng chỉ huấn luyện
-mọi người bỏ qua page. Route theo mức độ nghiêm trọng: page (đánh thức ai
+mọi người bỏ qua page. Route theo mức độ nghiêm trọng: page (wake up ai
 đó, mức triệu chứng, đang đốt ngân sách), ticket (giờ hành chính, mức
 nguyên nhân, chưa hiện ra với người dùng), và chỉ-metric (không thông báo,
 chỉ để dashboard/hỗ trợ debug). Nếu một page bắn và phản ứng luôn là
@@ -123,7 +123,7 @@ một bậc, không phải lý do để tiếp tục bỏ qua nó.
 Gotcha: route theo *ai có thể sửa nó*, không phải ai phát hiện ra nó. Một
 proxy báo cáo đúng "mọi upstream cho service X đang trả về 500" nên page
 chủ sở hữu của service X — page team proxy, những người chỉ có thể chuyển
-tiếp thông báo, thêm một bước độ trễ con người vào mọi sự cố. Đây là lý do
+tiếp thông báo, thêm một bước latency con người vào mọi sự cố. Đây là lý do
 vì sao hai SLI ở trên cần là hai metric riêng biệt: chúng có lịch trực
 on-call khác nhau.
 
@@ -145,8 +145,8 @@ Xây dựng theo thứ tự sau.
 5. Kiểm chứng tính độc lập của đường đi alert. **Xong khi** bạn có thể nói
    việc gửi thông báo của bạn phụ thuộc vào cái gì, và xác nhận không cái
    nào đi qua proxy đang được giám sát.
-6. Thêm alert mức ticket cho chứng chỉ hết hạn, config reload thất bại, và
-   độ bão hòa fd/pool. **Xong khi** một chứng chỉ còn 7 ngày là hết hạn và
+6. Thêm alert mức ticket cho certificate expire, config reload thất bại, và
+   độ bão hòa fd/pool. **Xong khi** một certificate còn 7 ngày là expire và
    một config reload bị cố tình làm hỏng mỗi cái tạo ra một ticket mà
    không page ai.
 7. Chạy một chaos test ([`12-testing/03-chaos.md`](../12-testing/03-chaos.md)) dưới tải

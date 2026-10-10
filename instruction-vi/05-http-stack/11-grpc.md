@@ -66,9 +66,9 @@ không khách hàng bidi-streaming đầu tiên của bạn sẽ tự phát hi�
 đó cho bạn.
 
 ### Load balancing gRPC không phải cùng bài toán với load balancing HTTP/1.1
-Một client gRPC thường mở một connection HTTP/2 sống lâu và đa hợp nhiều RPC độc lập trên đó (xem phần multiplexing của [`01-network/17-http2.md`](../01-network/17-http2.md)). Một load balancer chọn một upstream *theo từng connection* (như một balancer L4/TCP thuần, hay một implementation [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md) ngây thơ viết theo tư duy một-request-mỗi-connection của HTTP/1.1) gửi mọi RPC trên connection đó tới cùng một upstream mãi mãi, đánh bại hoàn toàn load balancing một khi client đã kết nối. Load balancing gRPC đúng đắn phải nhận biết từng stream HTTP/2 riêng và chọn một upstream theo từng RPC, không phải theo từng connection.
+Một client gRPC thường mở một connection HTTP/2 sống lâu và đa hợp nhiều RPC độc lập trên đó (xem phần multiplexing của [`01-network/17-http2.md`](../01-network/17-http2.md)). Một load balancer chọn một upstream *theo từng connection* (như một balancer L4/TCP thuần, hay một implementation [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md) ngây thơ viết theo tư duy một-request-mỗi-connection của HTTP/1.1) gửi mọi RPC trên connection đó tới cùng một upstream mãi mãi, đánh bại hoàn toàn load balancing một khi client đã connection. Load balancing gRPC đúng đắn phải nhận biết từng stream HTTP/2 riêng và chọn một upstream theo từng RPC, không phải theo từng connection.
 
-Gotcha: điều này tương tác xấu với các sự kiện scaling. Connection sống
+Gotcha: điều này tương tác xấu với các event scaling. Connection sống
 lâu bị gắn vào một tập con upstream nghĩa là upstream mới được thêm bởi
 autoscaling ([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)) không nhận được gì —
 giới hạn tuổi thọ connection từ [`05-http-stack/05-keepalive.md`](05-keepalive.md) là thứ

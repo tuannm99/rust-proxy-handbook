@@ -68,7 +68,7 @@ mình đang khiêm tốn. Đây là một nguyên nhân lặp lại của các o
 phần trong lúc suy giảm một phần, vì hệ số nhân traffic đạt đỉnh đúng lúc
 hệ thống ít khả năng hấp thụ nó nhất.
 
-Hai kỷ luật giữ nó bị chặn: **chỉ retry ở một lớp** (thường là lớp gần
+Hai kỷ luật giữ nó bounded: **chỉ retry ở một lớp** (thường là lớp gần
 failure nhất, với nhiều context nhất), và lan truyền trạng thái
 "đã-retry-rồi" để các lớp downstream không thêm retry riêng của chúng —
 cụ thể, một header mà proxy đặt và hop tiếp theo tôn trọng. Nếu bạn chỉ
@@ -76,7 +76,7 @@ kiểm soát lớp của riêng mình, ít nhất hãy biết các lớp trên v
 được cấu hình làm gì, và ghi nó xuống cạnh config retry của bạn.
 
 ### Exponential backoff với jitter
-Retry với delay cố định từ nhiều client đồng bộ hóa thành retry storm.
+Retry với delay cố định từ nhiều client bị synchronize thành retry storm.
 Exponential backoff với jitter ngẫu nhiên dàn trải các retry ra theo thời
 gian.
 

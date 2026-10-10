@@ -1,8 +1,8 @@
 # Slab Allocator
 
-Cấp phát theo size-class cố định: câu trả lời ở mức allocator cho
+Allocate theo size-class cố định: câu trả lời ở mức allocator cho
 fragmentation. [`13-algorithms/slab.md`](../13-algorithms/slab.md) nói về cấu trúc dữ liệu Rust bạn tự
-viết; file này nói về chiến lược cấp phát đứng sau nó.
+viết; file này nói về chiến lược allocate đứng sau nó.
 
 ## What to learn
 
@@ -21,22 +21,22 @@ Sự giới hạn đó mang lại ba thứ cùng lúc:
   các connection đang hoạt động chạm vào các cache line liên tiếp (khía
   cạnh CPU cache của việc này được nói ở [`17-performance/01-cpu-cache.md`](../17-performance/01-cpu-cache.md)).
 
-Ý tưởng này bắt nguồn từ kernel Solaris và là cách Linux cấp phát các
+Ý tưởng này bắt nguồn từ kernel Solaris và là cách Linux allocate các
 object kích thước cố định của chính nó (`task_struct`, inode, socket
-buffer) — cùng lý do đó áp dụng cho một proxy cấp phát một connection
+buffer) — cùng lý do đó áp dụng cho một proxy allocate một connection
 struct mỗi connection.
 
 ### Cấu trúc: slab, free list, và cache
 Một allocator cho một size class giữ một tập slab, mỗi slab thường là một
 hoặc vài page, được cắt thành N slot. Slab được theo dõi theo trạng thái
-— full, partial, empty — và việc cấp phát ưu tiên một slab *partial*, để
+— full, partial, empty — và việc allocate ưu tiên một slab *partial*, để
 các slab đang dùng dở được lấp đầy thay vì mọi slab đều nửa vơi nửa đầy.
 Chỉ những slab empty mới có thể được trả lại cho OS.
 
 Giống trong [`13-algorithms/slab.md`](../13-algorithms/slab.md), free list được xâu chuỗi xuyên qua
 chính các slot trống, nên không tốn thêm bộ nhớ.
 
-Gotcha: cấp phát từ slab partial trước, và thứ tự của free list quan trọng
+Gotcha: allocate từ slab partial trước, và thứ tự của free list quan trọng
 hơn vẻ ngoài của nó. LIFO (tái sử dụng slot vừa mới free gần nhất) giữ
 working set nóng trong cache; FIFO xoay vòng qua mọi slot và liên tục làm
 evict. Đây là một khác biệt một dòng code nhưng có tác động đo được lên
@@ -48,14 +48,14 @@ serialize hóa mọi allocation trên một lock duy nhất — không chấp nh
 được trên một proxy multi-threaded nơi allocation nằm trên hot path.
 
 Các implementation thật giữ một "magazine" nhỏ per-CPU (hoặc per-thread)
-gồm các object trống, được nạp lại từ các slab dùng chung theo lô. Trường
+gồm các object trống, được refill từ các slab dùng chung theo lô. Trường
 hợp phổ biến chỉ chạm vào thread-local state, không có atomic nào cả; lock
 dùng chung chỉ được lấy một lần mỗi lô thay vì mỗi lần allocation. Đây là
 mẹo cốt lõi trong cả tcache của jemalloc lẫn mimalloc.
 
 Gotcha: caching theo từng thread tạo ra sự mất cân bằng giữa các thread.
 Một proxy nơi thread A accept connection còn thread B đóng chúng sẽ tích
-lũy object trống trong cache của B trong khi A cạn kiệt và liên tục nạp
+lũy object trống trong cache của B trong khi A cạn kiệt và liên tục refill
 lại từ pool dùng chung. Các allocator xử lý việc này bằng cách flush cache
 định kỳ và các remote-free queue; nếu bạn tự viết một pool, sự bất đối
 xứng này chính là bug bạn sẽ gặp, và nó xuất hiện dưới dạng bộ nhớ tăng
@@ -63,11 +63,11 @@ xứng này chính là bug bạn sẽ gặp, và nó xuất hiện dưới dạn
 
 ### Chỗ này thực sự thuộc về đâu trong một proxy
 Gần như chắc chắn bạn không nên tự viết một slab allocator toàn cục.
-jemalloc và mimalloc đã implement cấp phát theo size-class với per-CPU
+jemalloc và mimalloc đã implement allocate theo size-class với per-CPU
 cache, và chỉ cần đổi global allocator ([`02-linux/16-memory.md`](../02-linux/16-memory.md)) là bạn đã
 có phần lớn lợi ích chỉ với một dòng code.
 
-Thứ đáng để tự viết là một **typed pool** cho số ít object được cấp phát
+Thứ đáng để tự viết là một **typed pool** cho số ít object được allocate
 một lần mỗi connection hoặc mỗi request — connection state và buffer I/O
 (buffer pooling chuyên dụng được lên kế hoạch trong [`14-memory/00-README.md`](00-README.md)).
 Đó là những object có kích thước đã biết, churn cao, và đủ sống lâu để
@@ -100,7 +100,7 @@ và export kích thước cùng hit rate của pool dưới dạng metric
    alloc/free và đo khác biệt về cache miss (`perf stat -e cache-misses`).
 4. Thêm một magazine per-thread và benchmark so với phiên bản một lock
    duy nhất ở 1, 4, và 8 thread.
-5. Tái tạo sự mất cân bằng giữa các thread: cấp phát trên một thread và
+5. Tái tạo sự mất cân bằng giữa các thread: allocate trên một thread và
    free trên thread khác trong một vòng lặp, quan sát tổng bộ nhớ tăng
    lên. Sau đó thêm một đường flush hoặc remote-free và xác nhận nó ổn
    định lại.

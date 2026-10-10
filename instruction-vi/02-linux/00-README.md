@@ -46,7 +46,7 @@ file bên dưới đều giả định bạn đã nắm nhóm này):
 - [`17-signals.md`](17-signals.md) — xử lý signal trong một process bất đồng bộ, quy ước `SIGTERM`/`SIGHUP`
 - [`18-zerocopy.md`](18-zerocopy.md) — `sendfile`, `splice`, `mmap`, và khi nào chúng thực sự đáng dùng
 - [`19-netfilter-and-linux-networking.md`](19-netfilter-and-linux-networking.md) — netfilter hook, iptables/nftables, conntrack, NAT, transparent proxying, namespace/veth, `tc netem`
-- [`20-limits-and-proc.md`](20-limits-and-proc.md) — rlimit và `EMFILE`, `/proc`, và hộp công cụ quan sát theo câu hỏi
+- [`20-limits-and-proc.md`](20-limits-and-proc.md) — rlimit và `EMFILE`, `/proc`, và toolbox quan sát theo câu hỏi
 - [`21-systemd-and-services.md`](21-systemd-and-services.md) — unit file, hợp đồng SIGTERM/restart, socket activation, hardening
 
 **Review:**

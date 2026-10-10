@@ -37,7 +37,7 @@ Mở `/var/log/proxy/access.log` khiến kernel đi dọc path: bắt đầu t�
 gọi `open`/`read`/`write` của bạn đi tới VFS, cái này chuyển cho filesystem cụ thể — ext4,
 xfs, tmpfs (RAM), overlayfs (container, [`13-containers.md`](13-containers.md)), NFS (mạng), `/proc` (state
 của kernel được phơi ra dưới dạng file). **Mount** ghép một filesystem vào một directory của
-filesystem khác; một path băng qua mount point mà không thấy. Đó cũng là lý do một path chỉ
+filesystem khác; một path cross mount point mà không thấy. Đó cũng là lý do một path chỉ
 là một *yêu cầu*: giữa `stat` và `open` của bạn, ai đó có thể tráo một symlink — race
 **TOCTOU** (time-of-check to time-of-use) đằng sau nhiều lỗ hổng file-serving
 ([`05-http-stack/06-static.md`](../05-http-stack/06-static.md), [`07-security/04-normalization.md`](../07-security/04-normalization.md)). Phòng thủ bằng cách mở trước, rồi
@@ -78,7 +78,7 @@ filesystem), `fsync` nó, `rename(tmp, final)` — reader thấy file cũ hoặc
 giờ là một mớ rách, vì rename là atomic. Config reload
 ([`09-architecture/03-config.md`](../09-architecture/03-config.md)) và xoay certificate dựa vào điều này. Process sau đó có thể được báo
 reload bằng một signal ([`17-signals.md`](17-signals.md)) hoặc tự nhận ra qua **inotify** — một cơ chế của
-kernel giao các sự kiện "path này đã đổi" dưới dạng fd đọc được (crate `notify`). Hãy watch
+kernel giao các event "path này đã đổi" dưới dạng fd đọc được (crate `notify`). Hãy watch
 *directory*: editor lưu bằng rename, nên inode đang watch biến mất.
 
 ### Filesystem đặc biệt: /proc, /sys, /dev

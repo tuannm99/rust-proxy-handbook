@@ -63,7 +63,7 @@ ARC là code production thật, không chỉ là một bài báo: cache ARC củ
 block. Nhưng nó đòi hỏi nhiều state và sổ sách hơn đáng kể so với LRU hay
 LFU riêng lẻ — bốn danh sách phải giữ nhất quán, và một lần cập nhật `p`
 ở mỗi ghost hit không được race với eviction đang diễn ra đồng thời.
-(Thuật toán gốc có trước một bằng sáng chế của IBM nay đã hết hạn; ngày
+(Thuật toán gốc có trước một bằng sáng chế của IBM nay đã expire; ngày
 nay implement nó là miễn phí, nhưng lịch sử đó là một phần lý do vì sao nó
 mất nhiều năm mới xuất hiện trong các cache mã nguồn mở phổ biến.)
 

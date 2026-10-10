@@ -72,11 +72,11 @@ thường chỉ quan tâm `A`/`AAAA` và đôi khi `SRV`.
 ### TTL và caching — dương và âm
 TTL cho mọi cache phía dưới (OS, resolver, proxy của bạn) biết một record được
 dùng lại trong bao lâu. Một proxy tự resolve hostname upstream cần cache riêng
-với việc hết hạn tôn trọng TTL — dùng lại IP cũ sau khi địa chỉ backend đổi sẽ
+với việc expire tôn trọng TTL — dùng lại IP cũ sau khi địa chỉ backend đổi sẽ
 âm thầm đẩy traffic vào hư không. **Câu trả lời âm cũng được cache**: một
 `NXDOMAIN` được nhớ trong khoảng `SOA` minimum của zone, nên một record bạn *vừa
 tạo* có thể vẫn "không tồn tại" hàng phút ở các resolver đã tra trước đó. Gotcha
-production: một số recursive resolver hoặc client library kẹp hoặc bỏ qua TTL
+production: một số recursive resolver hoặc client library clamp hoặc bỏ qua TTL
 rất thấp (dưới 5s), làm hỏng các deployment failover dựa trên DNS — đừng giả
 định TTL 1 giây cho bạn failover 1 giây. Và không gì đã connect sẽ re-resolve:
 một pooled connection tới IP cũ vẫn tiếp tục dùng nó
@@ -101,7 +101,7 @@ let addrs = tokio::task::spawn_blocking(|| {
 
 Một answer của resolver có thể chứa nhiều địa chỉ của cả hai họ. Connect cho tốt
 nghĩa là thử chúng một cách hợp lý — **Happy Eyeballs**: bắt đầu với IPv6, và
-nếu chưa connect được trong ~250 ms thì chạy đua IPv4 — để một đường `AAAA` hỏng
+nếu chưa connect được trong ~250 ms thì race IPv4 — để một đường `AAAA` hỏng
 không làm mỗi request tốn một timeout dài. Một `TcpStream::connect(name)` trần
 thử các địa chỉ tuần tự, mỗi cái với đủ connect timeout.
 
@@ -113,7 +113,7 @@ hoán đổi upstream set một cách atomic gần như có service discovery đ
 miễn phí; xem [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md) để biết việc hoán đổi đó cần
 xảy ra thế nào mà không làm rơi request đang bay. **DNS round-robin** (nhiều
 record `A`, thứ tự xoay vòng) rải client một cách thô: không biết health, answer
-được cache ghim client trong suốt TTL, và vài resolver lớn có thể đẩy phần lớn
+được cache pin client trong suốt TTL, và vài resolver lớn có thể đẩy phần lớn
 traffic vào một địa chỉ. **GeoDNS** trả answer khác nhau theo vị trí client. Cả
 hai đều là công cụ thô so với một load balancer thật
 ([`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md)).

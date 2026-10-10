@@ -10,8 +10,8 @@ có lý do để tồn tại.
 ### Hai cấu trúc: một cây cho việc đăng ký, một list cho việc sẵn sàng
 Một instance `epoll` (`eventpoll` trong source kernel) giữ hai cấu trúc dữ
 liệu tách biệt: một red-black tree chứa mọi file descriptor đang được theo
-dõi, khóa theo fd, để `epoll_ctl(ADD/MOD/DEL)` chạy ở O(log n); và một
-**ready list** — một linked list thuần chỉ chứa các fd hiện đang có sự kiện
+dõi, keyed theo fd, để `epoll_ctl(ADD/MOD/DEL)` chạy ở O(log n); và một
+**ready list** — một linked list thuần chỉ chứa các fd hiện đang có event
 chờ xử lý. `epoll_wait` chỉ làm mỗi việc rút cạn ready list: chi phí của nó
 tỷ lệ với số fd *sẵn sàng*, không phải số fd *đang theo dõi*. Đây chính là
 toàn bộ lý do epoll scale được ở nơi `select`/`poll` không làm được — hai
@@ -24,7 +24,7 @@ giao cho một softirq ([`16-kernel/04-interrupt.md`](04-interrupt.md)) đi ngư
 stack tới tầng socket. Socket có một wait queue chứa các callback được
 đăng ký bởi bất cứ thứ gì đang chờ nó; epoll đăng ký một callback như vậy
 khi bạn add fd. Việc duy nhất callback đó làm: thêm entry của fd này vào
-ready list, và nếu có task đang block trong `epoll_wait`, đánh thức nó.
+ready list, và nếu có task đang block trong `epoll_wait`, wake up nó.
 Không có việc match, filter, hay scan nào xảy ra trên đường đi này — đó là
 một push O(1) trực tiếp vào ready list.
 
@@ -45,10 +45,10 @@ kernel hành xử như vậy thay vì chỉ quan sát triệu chứng.
 ### `EPOLLEXCLUSIVE` và thundering herd
 Nhiều thread hoặc process có thể chia sẻ một listening socket và mỗi cái
 đăng ký nó với epoll instance riêng của mình. Không có `EPOLLEXCLUSIVE`,
-tất cả bọn chúng đều wake trên cùng một kết nối đến và đua nhau `accept()`
+tất cả bọn chúng đều wake trên cùng một connection đến và đua nhau `accept()`
 — tất cả trừ một cái sẽ nhận `EAGAIN`, và mọi wakeup sau cái đầu tiên đều
-là CPU lãng phí. `EPOLLEXCLUSIVE` (Linux 4.5+) bảo kernel chỉ đánh thức một
-waiter mỗi sự kiện, điều này quan trọng khi một proxy chạy nhiều accept
+là CPU lãng phí. `EPOLLEXCLUSIVE` (Linux 4.5+) bảo kernel chỉ wake up một
+waiter mỗi event, điều này quan trọng khi một proxy chạy nhiều accept
 loop (một cho mỗi worker thread, hoặc `SO_REUSEPORT` với nhiều listening
 socket) trên cùng một địa chỉ.
 
@@ -62,7 +62,7 @@ socket) trên cùng một địa chỉ.
    transition kế tiếp, chứ không chỉ là "làm đúng theo docs".
 3. Chạy nhiều accept-loop thread trên cùng một `SO_REUSEPORT` listener mà
    không có `EPOLLEXCLUSIVE`, đếm số wakeup `EAGAIN` lãng phí dưới một đợt
-   kết nối đến dồn dập; thêm `EPOLLEXCLUSIVE` và so sánh.
+   connection burst; thêm `EPOLLEXCLUSIVE` và so sánh.
 4. Trace (bằng `strace -e epoll_wait,epoll_ctl` hoặc tương tự) một chương
    trình `tokio` đang chạy trong [`labs/00-tcp-server`](../../labs/00-tcp-server) và đối chiếu những gì
    bạn thấy với mô hình tree/ready-list ở trên.

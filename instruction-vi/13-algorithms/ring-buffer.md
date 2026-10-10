@@ -39,11 +39,11 @@ channel (`crossbeam`, `ringbuf`) implement.
 Một ring buffer dùng cho logging phải quyết định chuyện gì xảy ra khi đầy,
 và "block producer" là lựa chọn mặc định sai cho một thread xử lý request
 — nó biến việc đĩa chậm thành latency của request. Hai lựa chọn tiêu chuẩn
-là **drop cái mới nhất** (từ chối dòng log vừa đến, rẻ, mất sự kiện gần
+là **drop cái mới nhất** (từ chối dòng log vừa đến, rẻ, mất event gần
 đây nhất) hoặc **ghi đè cái cũ nhất** (dịch `tail` theo cùng với `head`,
 mất lịch sử nhưng không bao giờ từ chối). Chọn dựa trên việc "chúng ta
 biết mình đã mất gì đó" (kèm một metric đếm số bị drop,
-[`08-observability/02-metrics.md`](../08-observability/02-metrics.md)) có quan trọng hơn việc giữ sự kiện mới
+[`08-observability/02-metrics.md`](../08-observability/02-metrics.md)) có quan trọng hơn việc giữ event mới
 nhất hay không.
 
 ### Gotcha: false sharing giữa head và tail

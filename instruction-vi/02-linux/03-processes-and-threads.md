@@ -19,7 +19,7 @@ copy-on-write của Linux làm cho bản thân `fork()` *ban đầu* rẻ — ch
 thật xuất hiện khi con ghi vào bản copy trang riêng của nó).
 
 ### Thread: chia sẻ thế giới, nhưng không chia sẻ stack
-Một **thread** là một đơn vị lập lịch *bên trong* một process. Mọi thread
+Một **thread** là một đơn vị scheduling *bên trong* một process. Mọi thread
 trong một process **chia sẻ** address space của process đó — cùng heap,
 cùng biến global, cùng tập file descriptor đang mở — nhưng mỗi thread có
 stack riêng và trạng thái CPU register riêng, nên kernel có thể chạy các
@@ -53,7 +53,7 @@ Runtime của tokio ([`04-runtime/01-tokio.md`](../04-runtime/01-tokio.md)) là 
 thật, mỗi thread có khả năng chạy nhiều task `async fn` của bạn, chuyển
 đổi giữa chúng một cách cooperative. Một tokio task không phải một thread
 và cũng không phải một process — nó rẻ hơn cả hai (không có kernel stack,
-không có một entity lập lịch riêng mà *kernel* biết đến), và rất nhiều
+không có một entity scheduling riêng mà *kernel* biết đến), và rất nhiều
 task như vậy chia sẻ thời gian trên một nhúm OS thread thật. Cấu trúc ba
 tầng này — process chứa thread, thread (trong một chương trình async)
 chạy nhiều task — đáng để nắm rõ: "concurrency" (nhiều task cùng tiến
@@ -71,27 +71,27 @@ cao hơn, quyết định một OS thread cho trước sẽ làm task nào của
 tiếp theo. Đây thực sự là hai scheduler khác nhau, hoạt động độc lập:
 kernel hoàn toàn không biết các tokio task của bạn tồn tại, và tokio không
 kiểm soát worker thread của chính nó chạy trên core nào. Khi bạn đang chẩn
-đoán một độ trễ bất thường ([`04-runtime/02-waker.md`](../04-runtime/02-waker.md),
+đoán một latency bất thường ([`04-runtime/02-waker.md`](../04-runtime/02-waker.md),
 [`08-observability/04-profiling.md`](../08-observability/04-profiling.md)), biết mình đang nhìn vào tầng nào
 trong hai tầng đó thường là toàn bộ câu hỏi.
 
 Gotcha: một tokio task chạy một tính toán đồng bộ dài sẽ block *OS thread*
 mà nó đang nằm trên đó — và vì thread đó được scheduler của tokio dùng
 chung cho có thể nhiều task, một task tệ sẽ làm nghẽn mọi task khác đang
-xếp hàng trên thread đó, hoàn toàn vô hình với kernel scheduler (OS thread
+queue trên thread đó, hoàn toàn vô hình với kernel scheduler (OS thread
 trông vẫn bận rộn hoàn hảo; nó chỉ bận sai việc).
 
 ## Practice
 1. Viết một chương trình nhỏ spawn 3 OS thread chia sẻ một `Vec` sau một
-   `Mutex`, và một phiên bản thứ hai dùng `Rc` thuần không đồng bộ hóa —
+   `Mutex`, và một phiên bản thứ hai dùng `Rc` thuần không bị synchronize —
    xác nhận phiên bản thứ hai không compile, và đọc lỗi compiler để xem
    nó thực sự phản đối điều gì.
 2. Chạy `ps -eLf` (Linux) và tìm một process multi-threaded trên máy bạn
    (ví dụ browser, hoặc một chương trình `tokio` đang chạy) — đếm nó có
    bao nhiêu thread (LWP) so với một process single-threaded như shell.
 3. Spawn một instance [`labs/00-tcp-server`](../../labs/00-tcp-server) và, trong khi nó đang xử lý vài
-   kết nối idle, kiểm tra `ps -eLf | grep tcp-server` — xác nhận số OS
-   thread nhỏ và xấp xỉ số core của bạn, không phải số kết nối.
+   connection idle, kiểm tra `ps -eLf | grep tcp-server` — xác nhận số OS
+   thread nhỏ và xấp xỉ số core của bạn, không phải số connection.
 4. Viết một chương trình nhỏ tốn 2 giây trong một vòng lặp CPU chặt bên
    trong một task `tokio::spawn` trên một runtime single-threaded
    (`#[tokio::main(flavor = "current_thread")]`) trong khi một task khác

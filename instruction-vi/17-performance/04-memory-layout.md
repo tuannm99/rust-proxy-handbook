@@ -42,7 +42,7 @@ con cùng lúc.
 ### Hot/cold splitting
 Một struct theo từng connection thường có một vài field được chạm trên
 mỗi request (state, con trỏ buffer) và nhiều field hiếm khi được chạm
-(chứng chỉ client gốc, timestamp tạo, các bộ đếm debug). Đóng gói chúng
+(certificate client gốc, timestamp tạo, các bộ đếm debug). Đóng gói chúng
 cùng nhau kéo các field lạnh qua cache trên mỗi lần truy cập. Tách chúng
 ra: giữ các field nóng trong một struct nhỏ và box các field lạnh phía
 sau một con trỏ.
@@ -88,7 +88,7 @@ Dùng sắp xếp field và niche `NonZero`, không phải `packed`.
 4. Thay một liên kết kiểu "u32::MAX nghĩa là none" trong một cấu trúc
    arena bằng `Option<NonZeroU32>` và xác nhận struct nhỏ đi mà không có
    thay đổi runtime nào.
-5. Xác minh mối liên kết với fragmentation: cấp phát 100 nghìn struct đó
+5. Xác minh mối liên kết với fragmentation: allocate 100 nghìn struct đó
    trước và sau khi thu nhỏ nó qua một ranh giới size-class và so sánh
    RSS, nối điều này lại với số object-trên-mỗi-page của
    [`13-algorithms/slab.md`](../13-algorithms/slab.md).

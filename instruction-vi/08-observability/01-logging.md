@@ -23,16 +23,16 @@ fn init_logging() {
 // per-request:
 tracing::info!(method = %req.method(), path = %req.uri().path(), status = 200, latency_ms = 4, "request completed");
 ```
-Gotcha: layer JSON của `tracing` cấp phát bộ nhớ cho mỗi field trong mỗi
+Gotcha: layer JSON của `tracing` allocate bộ nhớ cho mỗi field trong mỗi
 event — dưới tải thật, chi phí này trở nên đo được rõ ràng trên CPU. Hãy
 sample hoặc batch log ở QPS cao thay vì log vô điều kiện mọi request.
 
 ### Log level và cái gì thuộc về đâu
 `ERROR` = bản thân proxy thất bại trong việc làm nhiệm vụ của nó (upstream
-không kết nối được, panic bị bắt lại, config không hợp lệ). `WARN` =
+không connection được, panic bị bắt lại, config không hợp lệ). `WARN` =
 xuống cấp nhưng đã được xử lý (retry thành công ở lần thử thứ 2, circuit
 breaker mở ra). `INFO` = một dòng cho mỗi request trong production, hoặc
-cho mỗi sự kiện lifecycle đáng chú ý (config được reload, listener đã
+cho mỗi event lifecycle đáng chú ý (config được reload, listener đã
 bind). `DEBUG`/`TRACE` = dump header, nội tình connection pool — được
 compile vào nhưng bị lọc bỏ mặc định qua `RUST_LOG`/`EnvFilter`, vì ngay cả
 việc *đánh giá* có nên log hay không cũng có chi phí nếu argument không
@@ -42,7 +42,7 @@ Authorization ở mức INFO — đó là cách các proxy làm rò rỉ credent
 các hệ thống log aggregator mà một team rộng hơn có thể đọc được.
 
 Gotcha: bài test hữu ích cho `ERROR` là "mình có muốn bị page vì cái này
-không?" Một proxy log mọi lần kết nối upstream thất bại ở mức `ERROR` sẽ
+không?" Một proxy log mọi lần connection upstream thất bại ở mức `ERROR` sẽ
 tạo ra hàng nghìn dòng trong một lần restart upstream thông thường, và
 level đó không còn mang thông tin gì nữa — nghĩa là lỗi thực sự mới lạ duy
 nhất trở nên vô hình. Những thất bại mà proxy đã *xử lý được* (một retry
@@ -90,7 +90,7 @@ field (một `User-Agent` 1 MB là cách rẻ tiền để lấp đầy ổ đĩ
 
 Gotcha: điều này cũng áp dụng ở downstream. Một dòng log là JSON hợp lệ
 vẫn có thể mang một payload tấn công bất cứ thứ gì *đọc* nó — một dashboard
-render field log ra HTML có một lỗ hổng XSS được nạp bởi chính traffic đi
+render field log ra HTML có một lỗ hổng XSS được feed bởi chính traffic đi
 qua proxy của bạn.
 
 ### Correlation ID / request ID
@@ -128,8 +128,8 @@ từ ngày đầu.
 
 Gotcha: ghi đồng bộ vào một file log là một syscall blocking trên request
 path. Khi ổ đĩa chậm — hoặc chính log volume đã lấp đầy page cache bằng
-các trang dirty ([`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md)) — write đó chặn một tokio
-worker thread và làm khựng mọi connection multiplex trên nó.
+các trang dirty ([`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md)) — write đó block một tokio
+worker thread và làm stall mọi connection multiplex trên nó.
 `tracing_appender::non_blocking` chuyển việc ghi sang một thread riêng
 đứng sau một queue có giới hạn; queue đó là một ring buffer
 ([`13-algorithms/ring-buffer.md`](../13-algorithms/ring-buffer.md)), và bạn phải biết nó làm gì khi đầy.

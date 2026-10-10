@@ -13,7 +13,7 @@ theo. Cách làm từng phase — và thực tế mất bao lâu — nằm trong
 
 1. **Networking** ([`01-network/`](../01-network)) — đọc được một bản capture TCP hoặc TLS
    trong Wireshark và giải thích chuyện gì đang xảy ra; giải thích được vì
-   sao HTTP/2 chỉ cần một kết nối TCP trong khi HTTP/1.1 cần tới sáu. Nếu
+   sao HTTP/2 chỉ cần một connection TCP trong khi HTTP/1.1 cần tới sáu. Nếu
    các thuật ngữ như "port," "packet," "handshake," hay "certificate" chưa
    có nghĩa chính xác với bạn, bắt đầu từ [`01-network/01-fundamentals.md`](../01-network/01-fundamentals.md)
    — đây là nhóm file duy nhất trong handbook được viết như một primer từ
@@ -40,7 +40,7 @@ theo. Cách làm từng phase — và thực tế mất bao lâu — nằm trong
 8. **Observability** ([`08-observability/`](../08-observability)) — trả lời được "p99 latency
    hiện tại là bao nhiêu và nó đến từ upstream nào" bằng chính
    logs/metrics/traces của proxy bạn viết.
-9. **Architecture** ([`09-architecture/`](../09-architecture)) — reload config và drain kết nối
+9. **Architecture** ([`09-architecture/`](../09-architecture)) — reload config và drain connection
    khi shutdown mà không làm rớt request đang xử lý dở.
 10. **Production** ([`proxy/README.md`](../../proxy/README.md)) — chạy bài load test và chaos
     trong [`12-testing/`](../12-testing) nhắm vào chính proxy của bạn và sống sót qua nó.
@@ -67,14 +67,14 @@ từng crate — đây là bản one-page để thấy toàn bộ đường đi 
 | [`labs/10-cache`](../../labs/10-cache) | [`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md), [`05-http-stack/09-cache-stampede.md`](../05-http-stack/09-cache-stampede.md), [`13-algorithms/lru.md`](../13-algorithms/lru.md), [`13-algorithms/lfu.md`](../13-algorithms/lfu.md), [`13-algorithms/arc.md`](../13-algorithms/arc.md), [`13-algorithms/tinylfu.md`](../13-algorithms/tinylfu.md), [`12-testing/06-lab-environment.md`](../12-testing/06-lab-environment.md) | cache HTTP response + chính sách eviction |
 | [`labs/11-rate-limit`](../../labs/11-rate-limit) | [`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md), [`07-security/11-load-shedding.md`](../07-security/11-load-shedding.md), [`13-algorithms/token-bucket.md`](../13-algorithms/token-bucket.md), [`13-algorithms/sliding-window.md`](../13-algorithms/sliding-window.md), [`13-algorithms/leaky-bucket.md`](../13-algorithms/leaky-bucket.md) | token bucket / sliding window / leaky bucket |
 | [`labs/12-waf`](../../labs/12-waf) | [`07-security/06-waf.md`](../07-security/06-waf.md), [`07-security/04-normalization.md`](../07-security/04-normalization.md), [`13-algorithms/aho-corasick.md`](../13-algorithms/aho-corasick.md) | filtering theo rule |
-| [`labs/13-hot-reload`](../../labs/13-hot-reload) | [`09-architecture/03-config.md`](../09-architecture/03-config.md) | reload config mà không rớt kết nối |
+| [`labs/13-hot-reload`](../../labs/13-hot-reload) | [`09-architecture/03-config.md`](../09-architecture/03-config.md) | reload config mà không rớt connection |
 | [`labs/14-plugin`](../../labs/14-plugin) | [`09-architecture/02-plugin.md`](../09-architecture/02-plugin.md) | middleware cho request/response |
 | [`labs/15-prometheus`](../../labs/15-prometheus) | [`08-observability/02-metrics.md`](../08-observability/02-metrics.md), [`12-testing/06-lab-environment.md`](../12-testing/06-lab-environment.md) | export metrics |
 | [`labs/16-opentelemetry`](../../labs/16-opentelemetry) | [`08-observability/03-tracing.md`](../08-observability/03-tracing.md) | export distributed tracing |
 | [`labs/17-ebpf`](../../labs/17-ebpf) | [`16-kernel/09-ebpf.md`](../16-kernel/09-ebpf.md), [`16-kernel/10-xdp.md`](../16-kernel/10-xdp.md), [`07-security/09-ddos.md`](../07-security/09-ddos.md), [`07-security/10-slowloris.md`](../07-security/10-slowloris.md) | packet filtering bằng XDP/eBPF |
 | [`proxy/`](../../proxy) | [`01-network/19-tls.md`](../01-network/19-tls.md), [`01-network/20-proxy-protocol.md`](../01-network/20-proxy-protocol.md), `07-security/*.md`, `08-observability/*.md`, `09-architecture/*.md` (xem [`proxy/README.md`](../../proxy/README.md)) | proxy L7 cuối cùng, gộp mọi lab ở trên |
 
-Các đường dẫn ở trên là tương đối so với `instruction/` (hay
+Các path ở trên là tương đối so với `instruction/` (hay
 `instruction-vi/` trong bản này) trừ khi có tiền tố [`labs/`](../../labs) hoặc [`proxy/`](../../proxy).
 Nếu README của một crate lệch khỏi bảng này, README của crate đó là đúng —
 cập nhật bảng này theo nó, không phải ngược lại.

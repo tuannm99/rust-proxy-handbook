@@ -7,13 +7,13 @@ Nơi rẻ nhất để drop một packet trên Linux.
 ## What to learn
 
 ### XDP nằm ở đâu, và vì sao điều đó khiến nó nhanh
-Hành trình bình thường của một packet cấp phát một `sk_buff` (vài trăm
-byte metadata), đi qua các netfilter hook, băng qua TCP/IP stack, và cuối
-cùng chạm tới một socket. XDP chạy *trước* khi `sk_buff` được cấp phát,
+Hành trình bình thường của một packet allocate một `sk_buff` (vài trăm
+byte metadata), đi qua các netfilter hook, cross TCP/IP stack, và cuối
+cùng chạm tới một socket. XDP chạy *trước* khi `sk_buff` được allocate,
 trên frame thô đã DMA trong đường receive của driver.
 
 Drop ở đó chỉ tốn một bounds check và một return code. Drop ở iptables
-tốn việc cấp phát `sk_buff` cộng với việc đi qua netfilter; drop trong
+tốn việc allocate `sk_buff` cộng với việc đi qua netfilter; drop trong
 proxy của bạn tốn tất cả những thứ đó cộng thêm một wakeup, một syscall,
 và một TCP handshake. Khoảng cách đo được là gần một bậc độ lớn (order of
 magnitude) mỗi bước — XDP duy trì được hàng chục triệu packet mỗi giây
@@ -46,7 +46,7 @@ không có log là trải nghiệm debug XDP kinh điển — theo dõi tracepoi
 - **Offloaded** — chạy ngay trên hardware của NIC. Nhanh nhất, gần như
   không tốn CPU host, chỉ được hỗ trợ bởi rất ít card (Netronome).
 - **Generic (SKB mode)** — một phương án dự phòng chạy sau khi `sk_buff`
-  đã được cấp phát, nên nó từ bỏ toàn bộ lợi thế hiệu năng. Hoạt động ở
+  đã được allocate, nên nó từ bỏ toàn bộ lợi thế hiệu năng. Hoạt động ở
   mọi nơi.
 
 Gotcha: chế độ generic là thứ bạn âm thầm nhận được khi driver không hỗ
@@ -100,7 +100,7 @@ user space, đó là vòng feedback khiến cả hai lớp trở nên hữu dụ
 
 Gotcha: một entry blocklist cũ hoặc quá rộng giờ đang drop traffic ở một
 lớp không có logging và không có visibility ở tầng ứng dụng. Luôn cho các
-block cài trong XDP một TTL mà user space làm mới, để một bug tự hết hạn
+block cài trong XDP một TTL mà user space làm mới, để một bug tự expire
 thay vì tồn tại cho tới khi ai đó nhận ra.
 
 ## Practice
@@ -118,4 +118,4 @@ thay vì tồn tại cho tới khi ai đó nhận ra.
    generator và so sánh cả throughput lẫn CPU host.
 6. Đóng vòng feedback: cho [`proxy`](../../proxy) phát hiện một nguồn lạm dụng qua
    [`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) và đẩy nó vào map XDP với một TTL; xác
-   nhận traffic ngừng chạm tới user space, và entry đó tự hết hạn.
+   nhận traffic ngừng chạm tới user space, và entry đó tự expire.

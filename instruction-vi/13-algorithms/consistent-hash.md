@@ -65,8 +65,7 @@ toàn để dùng như một balancer đa dụng thay vì chỉ cho việc routi
 Cả Envoy lẫn HAProxy đều có một biến thể của nó.
 
 Gotcha: cái giới hạn (cap) phải được tính dựa trên tải trung bình *hiện
-tại* và tính lại khi tải thay đổi, và bước đi tràn (overflow walk) phải bị
-chặn — một implementation ngây thơ với mọi upstream đều ở giới hạn sẽ đi
+tại* và tính lại khi tải thay đổi, và bước đi tràn (overflow walk) phải bounded — một implementation ngây thơ với mọi upstream đều ở giới hạn sẽ đi
 hết cả ring ở mỗi request.
 
 ### Nơi nó thực sự có chỗ đứng trong một proxy
@@ -88,6 +87,6 @@ consistent hashing thì cố tình không làm vậy.
    cùng pool đó.
 4. Implement bounded loads: giới hạn mỗi upstream ở 1.25× trung bình và đi
    tràn khi vượt. Gửi 50% traffic vào một hot key và xác nhận tải được
-   trải ra thay vì ghim vào một upstream.
+   trải ra thay vì pin vào một upstream.
 5. Xác nhận bước đi tràn kết thúc khi mọi upstream đều ở giới hạn — viết
    test mà đáng lẽ đã bắt được một vòng lặp tràn vô hạn.

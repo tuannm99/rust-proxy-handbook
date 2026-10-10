@@ -13,8 +13,8 @@ IP/port nguồn/đích, protocol) bằng một hàm hash cài trong hardware
 (Toeplitz là loại phổ biến) để chọn một trong nhiều receive queue. Mỗi
 queue có interrupt riêng, và mỗi interrupt có thể được điều hướng (qua
 `/proc/irq/<n>/smp_affinity` hoặc `irqbalance`) tới một core cụ thể. Kết
-quả: các packet thuộc cùng một flow (cùng 5-tuple, tức cùng một kết nối
-TCP) luôn rơi vào cùng một queue và cùng một core, trong khi các kết nối
+quả: các packet thuộc cùng một flow (cùng 5-tuple, tức cùng một connection
+TCP) luôn rơi vào cùng một queue và cùng một core, trong khi các connection
 khác nhau dàn ra nhiều queue tùy theo NIC và driver hỗ trợ bao nhiêu.
 
 ### Vì sao chính điều này cho phép bạn dùng nhiều core hơn cho networking
@@ -35,7 +35,7 @@ Indirection table ánh xạ các bucket hash tới queue; trên hầu hết NIC 
 không tự tay chỉnh bảng đó, chỉ chỉnh số queue và IRQ affinity của từng
 queue.
 
-### Gotcha: tập trung kết nối phía sau một proxy/NAT khác
+### Gotcha: tập trung connection phía sau một proxy/NAT khác
 Hash 5-tuple giả định có sự đa dạng về IP/port nguồn để dàn tải đều. Một
 proxy nằm sau một load balancer khác đang làm source NAT, hoặc phục vụ một
 workload mà phần lớn traffic đến từ một số ít IP upstream/client, có thể
@@ -52,9 +52,9 @@ theo từng queue (`ethtool -S eth0 | grep rx_queue`) thay vì giả định RSS
 2. Nếu có nhiều queue, set IRQ affinity từng queue để dàn ra nhiều core và
    xác nhận qua `/proc/interrupts` rằng interrupt của các queue khác nhau
    rơi vào các core khác nhau.
-3. Tạo tải vào [`proxy`](../../proxy) từ nhiều source port/kết nối khác nhau và so sánh
+3. Tạo tải vào [`proxy`](../../proxy) từ nhiều source port/connection khác nhau và so sánh
    số packet theo từng queue (`ethtool -S`) với một bài test tái sử dụng
-   rất ít kết nối nguồn — quan sát hiệu ứng tập trung mà gotcha ở trên mô
+   rất ít connection nguồn — quan sát hiệu ứng tập trung mà gotcha ở trên mô
    tả.
 4. Đối chiếu CPU usage theo từng core (`mpstat -P ALL`) với số packet theo
    từng queue trong một bài load test để xác nhận ánh xạ queue-tới-core

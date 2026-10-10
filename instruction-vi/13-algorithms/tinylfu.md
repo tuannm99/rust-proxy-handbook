@@ -24,10 +24,10 @@ cứ thứ gì đang có sẵn và "ấm", nên chúng bị từ chối ngay ở
 
 ### Bộ ước tính tần suất: count-min sketch, không phải counter mỗi key
 Lưu một counter chính xác cho mỗi key (như LFU thường làm) tốn bộ nhớ tỷ
-lệ với số lượng key khác nhau từng thấy, điều này không bị chặn trên với
+lệ với số lượng key khác nhau từng thấy, điều này không bounded với
 một cache của proxy. Thay vào đó, TinyLFU dùng một count-min sketch
 ([`13-algorithms/count-min-sketch.md`](count-min-sketch.md)) — kích thước cố định, nhỏ (vài bit
-cho mỗi key dự kiến), với sai số overestimation bị chặn trên và không có
+cho mỗi key dự kiến), với sai số overestimation bounded và không có
 allocation nào cho mỗi key.
 
 ```rust
@@ -89,7 +89,7 @@ key khác nhau đã chạm tới, kể cả các key ghost/đã evict). Thiết 
 admission-trước của nó nghĩa là phần lớn quyết định "cái này có đáng cache
 không" chỉ là vài lần tra sketch, không phải một điệu nhảy thăng cấp qua
 nhiều danh sách. Đánh đổi là tín hiệu tần suất chỉ là xấp xỉ (overestimation
-bị chặn trên, không bao giờ underestimate, từ count-min sketch) thay vì
+bounded, không bao giờ underestimate, từ count-min sketch) thay vì
 chính xác — một đánh đổi mà trên thực tế đo lường (các benchmark công bố
 của chính Caffeine) gần như không tốn gì về hit rate trong khi tốn ít hơn
 nhiều về bộ nhớ và CPU so với ARC hay LFU lý tưởng.

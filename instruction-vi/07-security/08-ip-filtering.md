@@ -8,7 +8,7 @@ tính xem các bit của IP, sau khi mask theo prefix length của CIDR, có b�
 các bit của network không — đừng tự viết lại chuyện này bằng tay, dùng
 `ipnet` hoặc các thao tác bit `Ipv4Addr`/`Ipv6Addr` của std, và luôn hỗ trợ
 cả v4 và v6 (một allowlist chỉ có v4 sẽ bị bypass dễ dàng bởi attacker có
-kết nối v6, nếu listener nhận cả hai).
+connection v6, nếu listener nhận cả hai).
 
 ```rust
 fn ip_in_cidr(ip: std::net::Ipv4Addr, network: std::net::Ipv4Addr, prefix_len: u8) -> bool {
@@ -28,7 +28,7 @@ IPv4: `::ffff:10.0.0.1`, không phải `10.0.0.1`. So sánh cái này với rule
 `10.0.0.0/8` của bạn dưới dạng địa chỉ v6 sẽ không match — âm thầm.
 
 Hướng nó gãy tùy vào loại danh sách, và cả hai đều tệ: một *allowlist* thì
-ngừng match và khóa cửa mọi client IPv4 hợp lệ; một *denylist* thì ngừng
+ngừng match và lock out mọi client IPv4 hợp lệ; một *denylist* thì ngừng
 match và cho mọi client IPv4 bị cấm đi thẳng qua. Cái thứ hai là một lỗ hổng
 an ninh mà không có test nào dùng client v6 phát hiện ra được.
 
@@ -46,7 +46,7 @@ fn canonical(ip: std::net::IpAddr) -> std::net::IpAddr {
 ```
 Gotcha: dùng `to_ipv4_mapped()`, không dùng `to_ipv4()` cũ hơn. Cái sau còn
 convert cả địa chỉ IPv4-*compatible* (`::1.2.3.4`, một format đã deprecated)
-và, nổi tiếng là, map `::1` thành `0.0.0.1` — nên một kết nối loopback có
+và, nổi tiếng là, map `::1` thành `0.0.0.1` — nên một connection loopback có
 thể lộ ra ở đầu bên kia trông như một địa chỉ public bất kỳ.
 
 ### Match với danh sách lớn
@@ -102,10 +102,10 @@ CDN cung cấp cái khác là một dạng khác của parser differential
 ([`05-request-smuggling.md`](05-request-smuggling.md)).
 
 ### Lưu ý về IP spoofing
-Spoof source IP trên TCP là khó trong thực tế (bắt tay 3 bước nghĩa là một
-SYN có source giả không thể hoàn thành một kết nối thật mà không thấy được
+Spoof source IP trên TCP là khó trong thực tế (handshake 3 bước nghĩa là một
+SYN có source giả không thể hoàn thành một connection thật mà không thấy được
 SYN-ACK), đó là vì sao IP allowlisting mạnh một cách có ý nghĩa cho các
-giao thức dựa trên TCP — nhưng chính trust boundary ở *forwarded-header*
+protocol dựa trên TCP — nhưng chính trust boundary ở *forwarded-header*
 phía trên mới là lỗ hổng thực sự khai thác được trong hầu hết incident
 thật, không phải raw IP spoofing.
 
@@ -127,24 +127,24 @@ như một công cụ rate-limiting hoặc incident-response có TTL, không ph�
 control an ninh vĩnh viễn, và kết hợp nó với [`07-security/07-ratelimit.md`](07-ratelimit.md)
 vốn degrade nhẹ nhàng hơn nhiều với các địa chỉ được chia sẻ.
 
-### Ban động, và chặn giới hạn nó
+### Ban động, và bound nó
 Dạng denylist hữu ích là được sinh ra, không phải viết tay: một client làm
 trigger rate limiter hoặc WAF nhiều lần bị ban tạm thời, tránh phải chạy
 lại các check đắt đỏ trên traffic đã bị đánh giá rồi.
 
 Có hai ràng buộc để làm việc này an toàn. Mọi entry cần một **TTL** (vài
 phút đến vài giờ), vừa vì địa chỉ được chia sẻ vừa vì một autoban list vĩnh
-viễn cuối cùng sẽ tự gây ra outage. Và bảng phải **bị chặn giới hạn** — nó
+viễn cuối cùng sẽ tự gây ra outage. Và bảng phải **bounded** — nó
 được key bằng dữ liệu do attacker kiểm soát, nên một map không giới hạn là
 vector cạn kiệt bộ nhớ được mô tả trong [`13-algorithms/count-min-sketch.md`](../13-algorithms/count-min-sketch.md).
-Chặn giới hạn nó và evict (LRU, hoặc TTL cũ nhất trước) thay vì cho nó lớn
+Bound nó và evict (LRU, hoặc TTL cũ nhất trước) thay vì cho nó lớn
 mãi.
 
 ### Enforce ở đâu: proxy hay kernel
-Đến lúc proxy của bạn evaluate một rule, nó đã hoàn thành một bắt tay TCP
+Đến lúc proxy của bạn evaluate một rule, nó đã hoàn thành một handshake TCP
 và thường cả TLS — những phần đắt đỏ — cho một peer mà bạn đang chuẩn bị từ
 chối. Vậy ổn cho các quyết định chính sách trên traffic bình thường, nhưng
-vô dụng chống lại một cuộc flood, nơi chi phí trên mỗi kết nối bị reject
+vô dụng chống lại một cuộc flood, nơi chi phí trên mỗi connection bị reject
 chính là thứ attacker đang chi budget của bạn để tạo ra.
 
 Block theo dạng volumetric nên thuộc về lớp thấp hơn: `nftables`/`ipset`
@@ -176,11 +176,11 @@ Làm theo thứ tự này.
    danh sách 10 entry và 100k entry, và một config reload swap bảng mà
    không block các read trên request-path.
 6. Thêm ban động có TTL, được kích hoạt bởi vi phạm rate-limit, với một
-   bảng bị chặn giới hạn. **Xong khi** một client bị ban bị reject trước
-   khi rate limiter chạy, ban hết hạn đúng lịch, và lấp bảng với 1M địa chỉ
+   bảng bounded. **Xong khi** một client bị ban bị reject trước
+   khi rate limiter chạy, ban expire đúng lịch, và lấp bảng với 1M địa chỉ
    giả plateau về bộ nhớ thay vì tăng mãi.
 7. (Stretch) Nối parsing PROXY protocol v2
    ([`01-network/20-proxy-protocol.md`](../01-network/20-proxy-protocol.md)) như một lựa chọn thay thế có cấu
    trúc cho XFF. **Xong khi** IP client thật được lấy lại từ header binary
-   và một kết nối *không có* header mong đợi trên một listener PROXY
+   và một connection *không có* header mong đợi trên một listener PROXY
    protocol bị reject thay vì bị parse như HTTP.

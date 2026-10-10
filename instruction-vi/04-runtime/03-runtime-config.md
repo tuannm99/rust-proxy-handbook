@@ -7,9 +7,9 @@
 [`01-tokio.md`](01-tokio.md), với số worker mặc định bằng số CPU core.
 `#[tokio::main(flavor = "current_thread")]` chạy mọi thứ trên đúng một
 thread gọi, hoàn toàn không có work-stealing. Một proxy hầu như luôn
-muốn `multi_thread` ở production (nó rải kết nối qua các core), nhưng
+muốn `multi_thread` ở production (nó rải connection qua các core), nhưng
 `current_thread` thực sự hữu ích cho test và công cụ nơi thực thi
-single-threaded, có thể đoán trước đáng giá hơn thông lượng.
+single-threaded, có thể đoán trước đáng giá hơn throughput.
 
 ```rust
 #[tokio::main(worker_threads = 4)] // ghi đè tường minh; mặc định là num_cpus
@@ -50,7 +50,7 @@ vọng bận CPU; nhầm lẫn hai cái — vặn `worker_threads` vượt xa s�
 tốt hơn.
 
 ### Quan sát một runtime đang chạy: tokio-console và metrics
-`tokio-console` (một TUI kết nối qua crate `console-subscriber`) cho thấy
+`tokio-console` (một TUI connection qua crate `console-subscriber`) cho thấy
 số task đang sống và thời lượng poll theo thời gian thực, và làm cho bug
 gọi-blocking-trong-code-async (failure mode trung tâm của [`01-tokio.md`](01-tokio.md))
 hiện rõ trực tiếp thay vì phải suy đoán từ triệu chứng.
@@ -63,7 +63,7 @@ cho một proxy đang chạy.
 
 ### Chọn `worker_threads` một cách có chủ đích
 Ít worker hơn số core sẽ không tận dụng hết phần cứng; nhiều worker hơn
-số core thêm overhead lập lịch mà không có chỗ nào cho các thread thừa
+số core thêm overhead scheduling mà không có chỗ nào cho các thread thừa
 thực sự chạy song song. Ngoại lệ chủ đích phổ biến duy nhất: dành riêng
 một core cho việc khác — một thread chuyên scrape metrics, hoặc chừa
 khoảng trống trên một host dùng chung — bằng cách đặt `worker_threads`
@@ -74,7 +74,7 @@ gần chế độ của Gustafson hơn là của Amdahl — xem [`22-theory/08-a
 ## Practice
 1. Chạy [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) dưới cả `flavor = "multi_thread"` (mặc
    định) và `flavor = "current_thread"`, load-test cả hai, và đo khác
-   biệt thông lượng dưới các kết nối đồng thời.
+   biệt throughput dưới các connection đồng thời.
 2. Xây một ví dụ nhỏ dùng `LocalSet` + `spawn_local` với trạng thái chia
    sẻ `Rc<RefCell<_>>`, và xác nhận cùng đoạn code đó không compile với
    `tokio::spawn` thuần.
@@ -84,6 +84,6 @@ gần chế độ của Gustafson hơn là của Amdahl — xem [`22-theory/08-a
 4. Build với `RUSTFLAGS="--cfg tokio_unstable"` và in steal count của
    worker từ `tokio::runtime::Handle::metrics()` cho
    [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) dưới tải, và nối một đợt tăng đột biến steal
-   count với việc phân phối kết nối không đều giữa các worker.
+   count với việc phân phối connection không đều giữa các worker.
 5. Giải thích bằng lời của bạn vì sao đặt `worker_threads` vượt xa số
    core sẽ làm [`proxy`](../../proxy) chậm hơn, không nhanh hơn, dưới tải bền vững.

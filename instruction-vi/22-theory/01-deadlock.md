@@ -64,7 +64,7 @@ avoidance và detection quá tốn kém để chạy trên hot path.
 Borrow checker của Rust ngăn data race (hai thread mutate cùng memory
 không đồng bộ) lúc compile, nhưng deadlock là một bug liveness, không phải
 bug memory-safety — code hoàn toàn an toàn, nó chỉ đơn giản là không bao
-giờ tiến triển. Không có gì trong type system chặn bạn lấy hai `Mutex`
+giờ tiến triển. Không có gì trong type system ngăn bạn lấy hai `Mutex`
 theo thứ tự không nhất quán qua hai code path. Feature deadlock-detection
 của `parking_lot` (một bộ phát hiện chu trình chỉ dùng cho debug, trên các
 lock đang giữ) là thứ gần nhất với hỗ trợ tự động, và nó là opt-in, không

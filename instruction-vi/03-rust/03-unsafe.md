@@ -2,8 +2,8 @@
 
 ## What to learn
 
-### `unsafe` thực sự mở khóa cái gì
-`unsafe` không tắt borrow checker hay type checker — nó mở khóa đúng năm
+### `unsafe` thực sự unlock cái gì
+`unsafe` không tắt borrow checker hay type checker — nó unlock đúng năm
 khả năng bổ sung: dereference raw pointer, gọi các `unsafe` fn (bao gồm
 FFI), implement các `unsafe` trait, mutate một `static`, và truy cập field
 của union. Mọi quy tắc khác của Rust vẫn áp dụng bên trong một block
@@ -50,7 +50,7 @@ unsafe { buf.set_len(len); }
 Gotcha: một `unsafe impl Send` không sound trên một type thực ra không an
 toàn để di chuyển giữa các thread vẫn compile được bình thường và chỉ sinh
 ra data race hoặc UB dưới một timing cụ thể — đúng kiểu bug sẽ không xuất
-hiện trong một test đơn luồng nhưng sẽ xuất hiện dưới tải trong production.
+hiện trong một test single-threaded nhưng sẽ xuất hiện dưới tải trong production.
 
 ### Giữ unsafe tối thiểu và sound
 Bọc mỗi thao tác `unsafe` trong một hàm safe nhỏ nhất có thể với một tên

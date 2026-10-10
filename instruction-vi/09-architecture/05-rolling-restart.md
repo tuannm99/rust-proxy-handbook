@@ -8,17 +8,17 @@ deploy được quản lý bởi Kubernetes/systemd để dựa vào.
 [`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md) bao quát việc dừng *một* process
 sạch sẽ. Một rolling restart cần một process **mới** (binary mới, config
 mới) tiếp quản listening port trước khi cái cũ biến mất — với zero
-khoảng trống nơi một lượt thử kết nối của client bị từ chối. Trên một
+khoảng trống nơi một lượt thử connection của client bị từ chối. Trên một
 host duy nhất không có orchestrator để dựng một instance thứ hai đứng sau
 một load balancer, chính proxy phải làm cho việc chuyển giao này an toàn.
 
 ### SO_REUSEPORT: dual-accept trong cửa sổ chồng lấn
 `SO_REUSEPORT` cho phép nhiều process bind *cùng* address:port đồng thời;
-kernel load-balance các kết nối mới trên tất cả chúng. Khởi động process
+kernel load-balance các connection mới trên tất cả chúng. Khởi động process
 mới với `SO_REUSEPORT` được đặt, để nó bind cạnh process cũ vẫn đang
 chạy, xác nhận cái mới khỏe mạnh, rồi gửi cho cái cũ `SIGTERM` (kích hoạt
 drain bình thường của nó từ [`04-graceful-shutdown.md`](04-graceful-shutdown.md)). Trong khoảng chồng
-lấn ngắn, cả hai process accept kết nối mới — không có cửa sổ nào port bị
+lấn ngắn, cả hai process accept connection mới — không có cửa sổ nào port bị
 unbind.
 
 ```rust
@@ -34,19 +34,18 @@ fn bind_reuseport(addr: SocketAddr) -> std::io::Result<std::net::TcpListener> {
     Ok(socket.into())
 }
 ```
-Gotcha: `SO_REUSEPORT` phân phối các kết nối *mới* trên tất cả process đã
+Gotcha: `SO_REUSEPORT` phân phối các connection *mới* trên tất cả process đã
 bind gần như ngẫu nhiên — trong cửa sổ chồng lấn, process cũ (đang drain)
-vẫn có thể nhận kết nối hoàn toàn mới trừ khi nó cũng đang từ chối chúng ở
+vẫn có thể nhận connection hoàn toàn mới trừ khi nó cũng đang từ chối chúng ở
 lớp ứng dụng, điều này phần nào phá hỏng mục đích. Giữ cửa sổ chồng lấn
 ngắn.
 
-Gotcha, và đây là cái âm thầm tốn của bạn vài kết nối: kernel gán một kết
-nối đến cho một listener **tại thời điểm SYN**, bằng cách hash 4-tuple, và
+Gotcha, và đây là cái âm thầm tốn của bạn vài connection: kernel gán một connection đến cho một listener **tại thời điểm SYN**, bằng cách hash 4-tuple, và
 nó rơi vào accept queue của *listener đó*. Khi process cũ đóng socket
-listening của nó, các kết nối đang nằm trong accept queue của nó — các
+listening của nó, các connection đang nằm trong accept queue của nó — các
 handshake đã hoàn thành mà client tin là đã thiết lập — bị reset, không
 được phân phối lại. Vậy nên process đang drain phải tiếp tục gọi
-`accept()` và phục vụ những gì đã xếp hàng sẵn trong một lúc sau khi nó
+`accept()` và phục vụ những gì đã queue sẵn trong một lúc sau khi nó
 ngừng là mục tiêu ưu tiên, thay vì đóng listener ngay khi nó quyết định
 drain. Đây là cùng bài học "ngừng-accept-không-miễn-phí" như pre-stop
 delay trong [`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md), ở một tầng thấp
@@ -65,7 +64,7 @@ Gotcha: "thừa kế qua `exec`" đòi hỏi xóa `FD_CLOEXEC` trên descriptor 
 — Rust đặt close-on-exec trên các socket nó tạo theo mặc định, và quên
 xóa nó tạo ra một process mới khởi động, không thấy listener thừa kế nào,
 và hoặc thoát hoặc bind một socket mới với một khoảng trống. Truyền số fd
-cho tiến trình con một cách tường minh (một biến môi trường là kênh
+cho process con một cách tường minh (một biến môi trường là kênh
 thường dùng) thay vì giả định một quy ước.
 
 Gotcha: phiên bản đầy đủ của nginx cho điều này giữ master cũ sống vô thời
@@ -78,7 +77,7 @@ rollback, bạn đã trả chi phí phức tạp mà không có lợi ích.
 Nếu systemd có sẵn (ngay cả không có orchestrator/Kubernetes đầy đủ), một
 unit `.socket` có thể sở hữu socket listening độc lập với unit
 `.service`. Systemd mở và giữ socket; `systemctl restart` trên service
-chỉ restart process, và kernel xếp hàng các kết nối đến trong socket
+chỉ restart process, và kernel queue các connection đến trong socket
 backlog trong vài trăm mili giây process bị down — không cần code
 `SO_REUSEPORT` hay fd-passing nào trong proxy cả, với chi phí là phụ
 thuộc vào việc systemd có mặt.
@@ -86,7 +85,7 @@ thuộc vào việc systemd có mặt.
 Gotcha: điều này hoạt động vì accept queue của kernel hấp thụ khoảng
 trống — nên nó chỉ hoạt động nếu khoảng trống ngắn hơn thời gian để queue
 đầy. Ở connection rate cao, một process khởi động chậm (cert TLS cần
-load, config cần validate, cache cần xây) làm tràn backlog và các kết nối
+load, config cần validate, cache cần xây) làm tràn backlog và các connection
 vẫn bị từ chối dù sao. Đo thời gian từ khởi động tới accepting của bạn và
 so sánh nó với connection rate của bạn nhân độ sâu backlog
 ([`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md)) trước khi tin tưởng nó.
@@ -95,14 +94,14 @@ so sánh nó với connection rate của bạn nhân độ sâu backlog
 Process mới phải qua được kiểm tra readiness của chính nó (config đã
 parse, upstream tới được — gắn với [`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)) *trước
 khi* cái cũ được tín hiệu để drain, nếu không một binary/config mới tồi sẽ
-làm sập cả proxy thay vì chỉ fail deploy. Các kết nối sống lâu (WebSocket,
+làm sập cả proxy thay vì chỉ fail deploy. Các connection sống lâu (WebSocket,
 [`05-http-stack/10-websocket.md`](../05-http-stack/10-websocket.md)) được giữ bởi process cũ cần cùng drain
 deadline như [`04-graceful-shutdown.md`](04-graceful-shutdown.md) — một rolling restart không làm
-vấn đề đó biến mất, nó chỉ thêm "và đừng từ chối kết nối mới trong khi
+vấn đề đó biến mất, nó chỉ thêm "và đừng từ chối connection mới trong khi
 drain."
 
 ### Restart làm mất state, và state đó có ý nghĩa
-Zero *kết nối bị rớt* không giống zero tác động, vì mọi thứ process cũ đã
+Zero *connection bị rớt* không giống zero tác động, vì mọi thứ process cũ đã
 tích lũy trong bộ nhớ đều biến mất. Mỗi cái dưới đây được bao quát ở nơi
 khác; cùng nhau chúng là lý do một lần restart zero-downtime "thành công"
 vẫn có thể xuất hiện như một cú tăng vọt trên mọi dashboard:
@@ -127,16 +126,16 @@ vẫn có thể xuất hiện như một cú tăng vọt trên mọi dashboard:
 
 Gotcha: cách sửa cho hầu hết những cái này là làm cho readiness nghĩa là
 *ấm*, không chỉ *đã khởi động* — hoàn thành một chu kỳ health-check và
-mở trước vài kết nối trong pool trước khi công bố sẵn sàng. Cache là
+mở trước vài connection trong pool trước khi công bố sẵn sàng. Cache là
 ngoại lệ; làm nóng nó nói chung không đáng, nhưng biết trước cú tăng miss
 sắp tới nghĩa là không nhầm nó với một regression.
 
 ### Xác minh một cách trung thực
 Một load test chỉ báo cáo status code HTTP sẽ vui vẻ tuyên bố thành công
-trong khi các kết nối đang bị reset, vì một kết nối bị reset thường không
+trong khi các connection đang bị reset, vì một connection bị reset thường không
 tạo ra status code nào cả — request đơn giản biến mất khỏi tập kết quả,
-hoặc được đếm vào một hạng mục không ai đọc. Đo ở cấp kết nối: đếm lỗi
-kết nối, reset, và từ chối riêng biệt với các response không-2xx, và
+hoặc được đếm vào một hạng mục không ai đọc. Đo ở cấp connection: đếm lỗi
+connection, reset, và từ chối riêng biệt với các response không-2xx, và
 khẳng định cả ba đều bằng không xuyên suốt quá trình chuyển giao.
 
 ## Practice
@@ -144,20 +143,20 @@ Xây theo thứ tự.
 
 1. Cài đặt helper bind `SO_REUSEPORT` trong [`proxy`](../../proxy) và chạy hai instance
    trên một port. **Xong khi** log theo-từng-instance cho thấy kernel
-   phân phối kết nối mới trên cả hai.
+   phân phối connection mới trên cả hai.
 2. Thêm một kiểm tra readiness process mới phải vượt qua — config đã
    parse, cert đã load, một chu kỳ health-check đầy đủ hoàn thành, vài
-   kết nối upstream trong pool đã mở. **Xong khi** một process với config
+   connection upstream trong pool đã mở. **Xong khi** một process với config
    hỏng hoặc upstream không tới được không bao giờ báo cáo sẵn sàng.
 3. Viết script restart: khởi động cái mới, chờ readiness, `SIGTERM` cái
    cũ (tái sử dụng drain từ [`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)),
    xác nhận nó thoát sau khi drain. **Xong khi** một binary mới tồi để
    lại cái cũ vẫn phục vụ, không bị đụng tới.
-4. Làm cho process đang drain tiếp tục accept các kết nối đã xếp hàng sẵn
+4. Làm cho process đang drain tiếp tục accept các connection đã queue sẵn
    trước khi đóng listener. **Xong khi** một load test ở connection rate
    cao xuyên qua quá trình chuyển giao cho thấy zero reset — chạy nó
    không có bước này trước và đếm chúng, vì chúng vô hình trừ khi bạn tìm.
-5. Load test xuyên qua một lần restart, đo lỗi ở cấp kết nối riêng biệt
+5. Load test xuyên qua một lần restart, đo lỗi ở cấp connection riêng biệt
    ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)). **Xong khi** connection refusal,
    reset, và non-2xx đều bằng không xuyên suốt quá trình chuyển giao.
 6. Đo chi phí mất state. **Xong khi** bạn có một biểu đồ tỷ lệ request tới
@@ -170,7 +169,7 @@ Xây theo thứ tự.
    rằng chỉ một process sở hữu listener tại bất kỳ thời điểm nào.
 8. (Stretch) Thêm đường rollback: nếu process mới fail readiness sau khi
    tiếp quản, tín hiệu nó thoát và để cái cũ tiếp tục. **Xong khi** một
-   lần nâng cấp cố ý hỏng tự động rollback với zero kết nối bị rớt.
+   lần nâng cấp cố ý hỏng tự động rollback với zero connection bị rớt.
 9. Tùy chọn: viết một cặp `.socket` + `.service` của systemd và so sánh.
    **Xong khi** `systemctl restart` đạt cùng kết quả zero-dropped mà
    không cần bất kỳ code nào ở trên — và bạn đã đo thời gian khởi động

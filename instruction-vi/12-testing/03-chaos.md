@@ -14,8 +14,7 @@ hoạt động không.
 
 ### toxiproxy
 `toxiproxy` (Shopify) nằm giữa proxy của bạn và các upstream của nó như
-một TCP proxy có thể lập trình: bạn có thể tiêm latency, giới hạn băng
-thông, và reset connection trên một connection đang sống qua HTTP API của
+một TCP proxy có thể lập trình: bạn có thể tiêm latency, giới hạn bandwidth, và reset connection trên một connection đang sống qua HTTP API của
 nó, và bật/tắt chúng giữa lúc test. Đây là cách dễ nhất để test circuit
 breaker của [`06-proxy/05-retry.md`](../06-proxy/05-retry.md) mà không cần đụng tới công cụ ở mức
 kernel — trỏ config upstream của [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) vào một instance

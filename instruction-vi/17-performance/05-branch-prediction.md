@@ -10,7 +10,7 @@ ngoài của một phép so sánh đơn thuần. Giống phần còn lại của
 CPU hiện đại pipeline sâu khoảng ~15–20 instruction và bắt đầu thực thi
 qua một branch *trước khi* biết nó sẽ đi hướng nào, bằng cách đoán hướng
 đi. Một dự đoán đúng gần như miễn phí. Một dự đoán sai vứt bỏ toàn bộ công
-việc suy đoán và nạp lại pipeline — một stall khoảng ~15–20 chu kỳ. Một
+việc suy đoán và refill pipeline — một stall khoảng ~15–20 chu kỳ. Một
 branch mà bộ dự đoán đoán đúng 99% thời gian gần như miễn phí; một branch
 đoán đúng 50% thời gian (một cú tung đồng xu trên dữ liệu) là một trong
 những thứ tốn kém nhất mà một vòng lặp nóng có thể chứa.

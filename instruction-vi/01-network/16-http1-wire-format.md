@@ -170,7 +170,7 @@ quyết định cho từng cái và ghi lại lý do:
   bằng SP trước khi diễn giải value.
 - **LF trơ** (§2.2): bên nhận *được phép* chấp nhận một `\n` đơn lẻ làm
   ký tự kết thúc dòng. Hai parser mà một cái chấp nhận `\n` còn cái kia chỉ
-  nhận `\r\n` sẽ thấy ranh giới header khác nhau trên cùng một chuỗi byte.
+  nhận `\r\n` sẽ thấy ranh giới header khác nhau trên cùng một byte sequence.
 
 Một MUST liên quan từ §2.2: một dòng khoảng trắng nằm giữa request line và
 header đầu tiên phải bị reject, hoặc toàn bộ dòng bắt đầu bằng khoảng

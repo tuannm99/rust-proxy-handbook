@@ -26,28 +26,28 @@ starve job dài vô hạn dưới sự đến liên tục của job ngắn.
 
 ### Round-robin và trade-off kích thước quantum
 Mỗi process nhận một time slice cố định (quantum) trước khi bị preempt
-lại vào hàng đợi. Quantum quá lớn suy biến về gần FCFS, với convoy effect
+lại vào queue. Quantum quá lớn suy biến về gần FCFS, với convoy effect
 của nó; quantum quá nhỏ lãng phí thời gian vào overhead context-switch so
 với công việc thật được làm. Không có quantum đúng phổ quát — nó là một
 trade-off trực tiếp giữa responsiveness và throughput, tune theo từng
 workload.
 
 ```text
-quantum quá lớn  -> hành xử như FCFS, job dài chặn job ngắn
+quantum quá lớn  -> hành xử như FCFS, job dài block job ngắn
 quantum quá nhỏ  -> hầu hết thời gian CPU tốn vào context-switch, không tính toán
 ```
 
 ### Multi-Level Feedback Queue (MLFQ): xấp xỉ SJF mà không cần biết độ dài job
-MLFQ chạy nhiều hàng đợi ở các mức priority khác nhau với quantum khác
+MLFQ chạy nhiều queue ở các mức priority khác nhau với quantum khác
 nhau; một process dùng hết quantum của nó (hành xử như job dài) bị giảm
-xuống một hàng đợi priority thấp hơn, quantum dài hơn, còn một process
+xuống một queue priority thấp hơn, quantum dài hơn, còn một process
 yield sớm (hành xử như job ngắn I/O-bound) giữ priority cao. Cái này xấp
 xỉ lợi ích của SJF chỉ dùng hành vi *quan sát được* thay vì cần biết
 trước — nguyên lý thiết kế đằng sau nhiều scheduler OS đa dụng (Windows,
 BSD/Solaris đời cũ). Linux đi đường khác: CFS (fair share theo virtual
 runtime) và, từ kernel 6.6, EEVDF (earliest eligible virtual deadline
 first) — cả hai ưu ái task ngắn, I/O-bound qua cơ chế accounting chứ không
-qua hàng đợi priority tường minh, nên *mục tiêu* giống MLFQ dù cơ chế thì
+qua queue priority tường minh, nên *mục tiêu* giống MLFQ dù cơ chế thì
 không.
 
 ### Nơi cái này nối với bài toán scheduling của chính proxy

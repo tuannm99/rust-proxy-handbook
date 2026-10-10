@@ -7,7 +7,7 @@ số giả định bạn đã nắm các thư mục trước đó.
 
 ```
 00 introduction  -> vì sao handbook này tồn tại, cách dùng nó
-01 network       -> các giao thức trên dây mà proxy phải nói (DNS, HTTP/1/2/3, TCP, TLS)
+01 network       -> các protocol trên dây mà proxy phải nói (DNS, HTTP/1/2/3, TCP, TLS)
 02 linux         -> các primitive của kernel mà proxy được xây trên đó (epoll, io_uring, zero-copy)
 03 rust          -> cơ chế ngôn ngữ mà async Rust cần (ownership, Pin, unsafe, sync)
 04 runtime       -> cách tokio biến 02+03 thành một async runtime
@@ -62,7 +62,7 @@ Trong phạm vi: mọi thứ cần để tự xây một L7 HTTP proxy từ đ�
 termination, HTTP parsing, routing, load balancing, và các lớp
 security/observability mà một deployment thật cần.
 
-Ngoài phạm vi: load balancer chỉ ở L3/L4 (kiểu IPVS), các giao thức không
+Ngoài phạm vi: load balancer chỉ ở L3/L4 (kiểu IPVS), các protocol không
 phải HTTP (gRPC được nhắc qua ở chỗ nó ảnh hưởng đến xử lý HTTP/2 nhưng
 không phải một topic riêng), và các vấn đề cloud/infra (Kubernetes Ingress
 controller, service mesh) ngoài các pointer kiểu "chỗ này sẽ cắm vào đâu"

@@ -48,7 +48,7 @@ nhau:
 - **Làm cho nó hữu hình.** Một packet bạn đã bắt, một syscall bạn đã `strace`, hay một
   limit bạn tự chạm vào được nhớ lâu hơn nhiều so với một đoạn văn. `Done when` của
   mỗi lab cũng là một công cụ trợ nhớ.
-- **Dạy lại.** Giải thích một chủ đề thành tiếng cho không ai nghe. Chỗ bạn khựng là
+- **Dạy lại.** Giải thích một chủ đề thành tiếng cho không ai nghe. Chỗ bạn stall là
   lỗ hổng cần sửa.
 - **Giữ một error log.** Ghi lại mỗi câu hỏi bạn đã sai hai lần; chỉ những câu đó mới
   thành flashcard.

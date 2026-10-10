@@ -51,10 +51,10 @@ mọi giao tiếp với user space, đi qua **map** — các key/value store có
 được kernel tạo và quản lý.
 
 Các loại quan trọng ở đây: `HASH` (key/value tổng quát, ví dụ counter theo
-từng IP), `ARRAY` (khóa theo index, nhanh), `PERCPU_HASH`/`PERCPU_ARRAY`
+từng IP), `ARRAY` (keyed theo index, nhanh), `PERCPU_HASH`/`PERCPU_ARRAY`
 (một instance cho mỗi CPU, không cần atomic — lựa chọn đúng cho counter),
 `LPM_TRIE` (longest-prefix match, chính xác là CIDR matching cho
-[`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)), và `RINGBUF` (streaming sự kiện
+[`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)), và `RINGBUF` (streaming event
 kernel-tới-userspace hiệu quả).
 
 ```
@@ -71,7 +71,7 @@ chính xác từ phía kernel.
 ### Các attach point liên quan tới một proxy
 - **XDP** — sớm nhất có thể, trong NIC driver trước khi một `sk_buff` tồn
   tại. Nhanh nhất, bị giới hạn nhiều nhất. Xem [`16-kernel/10-xdp.md`](10-xdp.md).
-- **TC (traffic control)** — sau khi `sk_buff` được cấp phát; chậm hơn XDP
+- **TC (traffic control)** — sau khi `sk_buff` được allocate; chậm hơn XDP
   nhưng thấy cả ingress lẫn egress và có thể sửa packet tự do hơn.
 - **Socket filter / `SO_ATTACH_BPF`** — theo từng socket, hữu ích cho việc
   điều hướng.
@@ -175,11 +175,11 @@ qua đó.
    là vòng lặp bạn sẽ dành phần lớn thời gian eBPF của mình trong đó.
 3. Thay counter per-CPU bằng một `HASH` dùng chung và benchmark cả hai
    dưới tải; đo chi phí tranh chấp.
-4. Xây một map `LPM_TRIE` chứa các CIDR bị chặn, điền nó từ user space, và
+4. Xây một map `LPM_TRIE` chứa các CIDR bị block, điền nó từ user space, và
    tra cứu địa chỉ nguồn với nó từ phía kernel — cùng loại matching mà
    [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md) làm trong proxy.
-5. Stream sự kiện tới user space bằng `RINGBUF` và so sánh throughput của
-   nó với việc tra cứu map theo từng sự kiện.
+5. Stream event tới user space bằng `RINGBUF` và so sánh throughput của
+   nó với việc tra cứu map theo từng event.
 6. Dùng `bpftrace` (không cần viết code) để vẽ histogram latency của
    `tcp_sendmsg` trong khi proxy của bạn phục vụ tải, và đối chiếu nó với
    metric từ [`08-observability/02-metrics.md`](../08-observability/02-metrics.md).

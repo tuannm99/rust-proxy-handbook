@@ -16,11 +16,11 @@ nền tảng tổng quát không có lab riêng — file của chính chúng nó
 dụng ở đâu thay vào đó:
 
 - [`smooth-wrr.md`](smooth-wrr.md) — thuật toán current-weight của nginx, effective weight, phản ứng khi lỗi thụ động
-- [`consistent-hash.md`](consistent-hash.md) — cách sizing virtual node, bài toán cân bằng tải, bounded loads
+- [`consistent-hash.md`](consistent-hash.md) — cách sizing virtual node, bài toán load balancing, bounded loads
 - [`rendezvous-hash.md`](rendezvous-hash.md) — HRW: gián đoạn tối thiểu mà không cần ring hay shared state
 - [`maglev.md`](maglev.md) — bảng lookup O(1), cách xây permutation, vòng lặp population
 - [`lru.md`](lru.md) — LRU dùng arena, vấn đề mỗi lần đọc cũng là một lần ghi lock, CLOCK, khả năng chống scan
-- [`token-bucket.md`](token-bucket.md) — refill lazy, GCRA, cập nhật lock-free, chặn key tăng vô hạn
+- [`token-bucket.md`](token-bucket.md) — refill lazy, GCRA, cập nhật lock-free, bound key tăng vô hạn
 - [`aho-corasick.md`](aho-corasick.md) — trie + failure link, output link, prefilter theo literal
 - [`count-min-sketch.md`](count-min-sketch.md) — đếm tần suất xấp xỉ trong bộ nhớ cố định, error bound, decay
 - [`regex-engine.md`](regex-engine.md) — backtracking so với automata, ReDoS, lazy DFA, `RegexSet`

@@ -72,7 +72,7 @@ bucket" không hề miễn phí.
 
 ### Phương pháp RED cho một proxy
 Với mỗi hop (client-facing và mỗi upstream) theo dõi: **R**ate
-(request/giây), **E**rrors (tỉ lệ non-2xx hoặc kết nối thất bại),
+(request/giây), **E**rrors (tỉ lệ non-2xx hoặc connection thất bại),
 **D**uration (histogram latency). Đây là dashboard tối thiểu để trả lời
 "proxy có healthy không" và "upstream X có healthy không" mà không cần
 đoán. Kết hợp với USE (Utilization/Saturation/Errors) cho chính cái máy
@@ -141,7 +141,7 @@ không có một flamegraph ([`08-observability/04-profiling.md`](04-profiling.m
 Prometheus pull (scrape `/metrics` theo chu kỳ); metrics của OTel có thể
 push tới một collector, sau đó collector export sang Prometheus/Datadog/v.v.
 Một proxy thường expose một endpoint `/metrics` để scrape — đơn giản,
-không thêm phụ thuộc mạng, và nó sống sót khi proxy tạm thời không kết nối
+không thêm phụ thuộc mạng, và nó sống sót khi proxy tạm thời không connection
 được từ collector (dữ liệu chỉ bị bỏ lỡ, không bị queue rồi mất).
 
 Gotcha: expose `/metrics` trên một **listener riêng** tách khỏi traffic
@@ -167,7 +167,7 @@ Xây dựng theo thứ tự sau.
 2. Thêm metrics RED phía client vào [`proxy`](../../proxy) trên một listener nội bộ
    riêng. **Xong khi** `/metrics` không truy cập được từ listener công
    khai và vẫn được phục vụ khi listener chính đang bão hòa.
-3. Thêm RED theo từng upstream, khóa theo *tên* upstream, cộng với các tín
+3. Thêm RED theo từng upstream, keyed theo *tên* upstream, cộng với các tín
    hiệu đặc thù của proxy (độ bão hòa pool, tỉ lệ retry, số lượng healthy,
    tỉ lệ cache hit, số lượng bị shed). **Xong khi** bạn có thể trả lời
    "latency này là của mình hay của upstream" chỉ từ dashboard.

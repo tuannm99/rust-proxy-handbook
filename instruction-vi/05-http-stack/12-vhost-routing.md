@@ -64,7 +64,7 @@ TLS của connection vẫn còn sẵn cùng với request — không phải ở 
 component có thể bất đồng về cái nào là authoritative.
 
 ### Routing theo SNI (trước TLS, không cần giải mã)
-ClientHello của TLS mang hostname đích ở dạng rõ trong SNI extension — kể cả dưới TLS 1.3, cho tới khi Encrypted Client Hello (ECH) trở nên phổ biến. Một proxy có thể chỉ nhìn vào ClientHello, đọc SNI, và quyết định *backend terminate-TLS nào* để forward byte vẫn còn mã hóa tới, mà không cần giữ private key của backend đó. Đây là cách một tầng passthrough đứng trước nhiều bộ terminate TLS độc lập (mỗi cái có chứng chỉ riêng) route traffic mà không trở thành bên thứ tư của phiên TLS.
+ClientHello của TLS mang hostname đích ở dạng rõ trong SNI extension — kể cả dưới TLS 1.3, cho tới khi Encrypted Client Hello (ECH) trở nên phổ biến. Một proxy có thể chỉ nhìn vào ClientHello, đọc SNI, và quyết định *backend terminate-TLS nào* để forward byte vẫn còn mã hóa tới, mà không cần giữ private key của backend đó. Đây là cách một tầng passthrough đứng trước nhiều bộ terminate TLS độc lập (mỗi cái có certificate riêng) route traffic mà không trở thành bên thứ tư của phiên TLS.
 
 Gotcha: nhìn trộm nghĩa là đọc byte từ socket mà sau đó bạn phải forward
 *bao gồm* các byte bạn đã tiêu thụ — backend cần trọn vẹn ClientHello.
@@ -79,29 +79,28 @@ một probe cố ý có thể không gửi gì cả — quyết định đó là
 ro rơi-xuống như một `Host` không khớp.
 
 ### Routing theo SNI và routing theo Host header không thể hoán đổi cho nhau
-Routing theo SNI quyết định *trước* khi giải mã và chỉ thấy hostname — nó không thấy được path, method, hay bất kỳ header nào. Routing theo Host header quyết định *sau* khi giải mã và thấy toàn bộ request, nhưng đòi hỏi proxy làm việc routing đó cũng phải là bên terminate TLS (giữ chứng chỉ). Một proxy có thể làm một trong hai, hoặc cả hai theo trình tự (route theo SNI tới đúng instance terminate-TLS, cái đó rồi route theo Host tới đúng upstream pool của tenant) — biết cái nào một deployment cụ thể thực sự cần trước khi xây nó.
+Routing theo SNI quyết định *trước* khi giải mã và chỉ thấy hostname — nó không thấy được path, method, hay bất kỳ header nào. Routing theo Host header quyết định *sau* khi giải mã và thấy toàn bộ request, nhưng đòi hỏi proxy làm việc routing đó cũng phải là bên terminate TLS (giữ certificate). Một proxy có thể làm một trong hai, hoặc cả hai theo trình tự (route theo SNI tới đúng instance terminate-TLS, cái đó rồi route theo Host tới đúng upstream pool của tenant) — biết cái nào một deployment cụ thể thực sự cần trước khi xây nó.
 
-### Chọn chứng chỉ ở quy mô multi-tenant
-Terminate TLS cho nhiều hostname nghĩa là chọn một chứng chỉ *trong lúc*
+### Chọn certificate ở quy mô multi-tenant
+Terminate TLS cho nhiều hostname nghĩa là chọn một certificate *trong lúc*
 handshake, từ SNI, trước khi bạn biết bất cứ gì khác về request. rustls
 phơi bày cái này như một callback resolver (`ResolvesServerCert`), và ba
 mối quan tâm thực tế theo sau:
-- **Callback nằm trên hot path của handshake.** Nạp và parse một chứng
-  chỉ từ đĩa ở đó thêm latency vào mỗi connection mới; giữ chứng chỉ đã
+- **Callback nằm trên hot path của handshake.** Load và parse một certificate từ đĩa ở đó thêm latency vào mỗi connection mới; giữ certificate đã
   parse trong memory, key theo hostname, và reload khi config thay đổi
   ([`09-architecture/03-config.md`](../09-architecture/03-config.md)) thay vì mỗi lần handshake.
 - **Wildcard và match chính xác phải có precedence rõ ràng.** Với cả
   `example.com` lẫn `*.example.com` được cấu hình, một match chính xác
   nên thắng; wildcard chỉ match đúng một label (`*.example.com` bao phủ
   `a.example.com` nhưng không phải `a.b.example.com`).
-- **Hết hạn là theo từng tenant và im lặng.** Chứng chỉ hết hạn của một
+- **Expire là theo từng tenant và im lặng.** Certificate expire của một
   tenant chỉ làm fail handshake của tenant đó, nên traffic tổng thể
   trông vẫn ổn. Export thời gian-tới-khi-hết-hạn như một metric theo
-  từng chứng chỉ ([`08-observability/06-alerting.md`](../08-observability/06-alerting.md)); đây là gotcha mTLS
+  từng certificate ([`08-observability/06-alerting.md`](../08-observability/06-alerting.md)); đây là gotcha mTLS
   từ [`07-security/01-auth.md`](../07-security/01-auth.md) nhân lên theo số tenant.
 
-### Chứng chỉ wildcard/multi-domain tương tác với cả hai
-Một chứng chỉ wildcard (`*.example.com`) hay một chứng chỉ SAN bao phủ nhiều hostname cho phép một instance terminate-TLS trả lời cho nhiều vhost dưới một handshake — đơn giản hóa routing theo Host header (một chứng chỉ, nhiều giá trị `Host`) nhưng làm routing theo SNI trở nên vô nghĩa cho các hostname đó (chúng đều là cùng một backend theo định nghĩa). Xem [`01-network/19-tls.md`](../01-network/19-tls.md) cho cơ chế handshake mà điều này phụ thuộc vào.
+### Certificate wildcard/multi-domain tương tác với cả hai
+Một certificate wildcard (`*.example.com`) hay một certificate SAN bao phủ nhiều hostname cho phép một instance terminate-TLS trả lời cho nhiều vhost dưới một handshake — đơn giản hóa routing theo Host header (một certificate, nhiều giá trị `Host`) nhưng làm routing theo SNI trở nên vô nghĩa cho các hostname đó (chúng đều là cùng một backend theo định nghĩa). Xem [`01-network/19-tls.md`](../01-network/19-tls.md) cho cơ chế handshake mà điều này phụ thuộc vào.
 
 ### Cách ly giữa các tenant, không chỉ routing
 Routing tách *traffic* của các tenant; nó không làm gì để tách *tiêu thụ tài nguyên* của chúng. Một đợt tăng traffic của một tenant tiêu thụ ngân sách connection chung ([`07-security/09-ddos.md`](../07-security/09-ddos.md)), concurrency của upstream pool chung, dung lượng cache chung ([`05-http-stack/08-cache.md`](08-cache.md)), và worker thread — nên mọi tenant khác đều tệ đi. Đó là vấn đề noisy-neighbor, và trong một proxy multi-tenant nó là hành vi mặc định trừ khi bạn thiết kế để chống lại nó.
@@ -122,7 +121,7 @@ của một tenant cho tenant khác.
 Làm theo thứ tự này.
 
 1. Trong [`proxy`](../../proxy), thêm một vhost map key theo `Host` đã normalize (viết
-   thường, bỏ dấu chấm cuối, bỏ port với IPv6 được xử lý riêng), nạp từ
+   thường, bỏ dấu chấm cuối, bỏ port với IPv6 được xử lý riêng), load từ
    config. **Xong khi** `EXAMPLE.com.`, `example.com:443`, và
    `example.com` đều resolve về cùng một tenant.
 2. Reject các host không khớp một cách tường minh. **Xong khi** một
@@ -132,12 +131,11 @@ Làm theo thứ tự này.
 3. Thêm validate tính nhất quán `Host`/SNI. **Xong khi** một connection
    với `SNI: a.example.com` mang `Host: b.example.com` bị reject; dùng
    `openssl s_client -servername` để dựng nó.
-4. Thêm chọn chứng chỉ theo từng hostname qua một resolver rustls dựa
-   trên một map trong memory. **Xong khi** hai hostname trình bày chứng
-   chỉ khác nhau trên cùng một listener, match chính xác thắng wildcard,
+4. Thêm chọn certificate theo từng hostname qua một resolver rustls dựa
+   trên một map trong memory. **Xong khi** hai hostname trình bày certificate khác nhau trên cùng một listener, match chính xác thắng wildcard,
    và resolver không truy cập filesystem nào mỗi lần handshake.
-5. Export thời gian-tới-khi-hết-hạn theo từng chứng chỉ như một metric.
-   **Xong khi** một chứng chỉ hết hạn trong 7 ngày thấy được mà không ai
+5. Export thời gian-tới-khi-hết-hạn theo từng certificate như một metric.
+   **Xong khi** một certificate expire trong 7 ngày thấy được mà không ai
    phải tự kiểm tra.
 6. Thêm một test config-reload cho vhost map ([`labs/13-hot-reload`](../../labs/13-hot-reload)).
    **Xong khi** swap map dưới tải đồng thời thay đổi routing cho request

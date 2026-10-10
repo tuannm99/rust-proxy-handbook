@@ -3,7 +3,7 @@
 ## What to learn
 
 ### Congestion window như biến state thật
-Congestion window (`cwnd`) của TCP chặn số byte chưa được ack có thể đang
+Congestion window (`cwnd`) của TCP cap số byte chưa được ack có thể đang
 bay; throughput xấp xỉ `cwnd / RTT`. Mỗi giải thuật congestion control,
 về mặt cơ chế, là một quy tắc tăng và giảm `cwnd` phản ứng với các tín
 hiệu — loss, delay, explicit congestion notification. Phần xử lý thực
@@ -23,9 +23,8 @@ RTT 2: cwnd = 20
 RTT 3: cwnd = 40
 ... tiếp tục gấp đôi tới khi loss hoặc ssthresh
 ```
-Cú tăng theo cấp số này là lý do cụ thể, định lượng được, vì sao một kết
-nối TCP hoàn toàn mới chậm hơn một kết nối được tái sử dụng dù mạng
-không hề tắc nghẽn — luận điểm tái sử dụng kết nối của
+Cú tăng theo cấp số này là lý do cụ thể, định lượng được, vì sao một connection TCP hoàn toàn mới chậm hơn một connection được tái sử dụng dù mạng
+không hề congestion — luận điểm tái sử dụng connection của
 [`01-network/12-tcp.md`](../01-network/12-tcp.md) có hình dạng chính xác ở đây.
 
 ### Congestion avoidance: AIMD (additive increase, multiplicative decrease)
@@ -45,8 +44,8 @@ multiplicative decrease: cwnd = cwnd / 2 (khi loss)
 Với AIMD dựa trên loss, throughput ở trạng thái ổn định xấp xỉ tỷ lệ với
 `MSS / (RTT * sqrt(loss_rate))` — "công thức căn bậc hai." Hệ quả trực
 tiếp, khó chịu: trên một đường truyền RTT cao, loss thấp, throughput tỷ
-lệ với `1/RTT`, nên cùng một tỷ lệ loss không đáng kể trên một kết nối
-nội bộ datacenter có thể chặn cứng throughput trên một kết nối xuyên lục
+lệ với `1/RTT`, nên cùng một tỷ lệ loss không đáng kể trên một connection
+nội bộ datacenter có thể cap cứng throughput trên một connection xuyên lục
 địa — một lý do định lượng vì sao latency upstream-tới-origin của một
 proxy quan trọng cho throughput, không chỉ cho tail latency.
 
@@ -83,6 +82,6 @@ không có gì phía chúng ta thay đổi" — thay vì chỉ suy luận địn
    throughput/latency trên một đường truyền giả lập cố tình lossy hoặc
    RTT cao (`tc netem`).
 5. Viết một đoạn nối phần toán của file này với tuyên bố của
-   [`01-network/12-tcp.md`](../01-network/12-tcp.md) rằng tái sử dụng kết nối quan trọng cho
+   [`01-network/12-tcp.md`](../01-network/12-tcp.md) rằng tái sử dụng connection quan trọng cho
    throughput "không chỉ latency" — chỉ ra lý do định lượng vì sao slow
-   start của một kết nối mới thực sự tốn của bạn.
+   start của một connection mới thực sự tốn của bạn.

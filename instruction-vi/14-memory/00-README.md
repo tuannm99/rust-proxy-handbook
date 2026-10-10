@@ -16,8 +16,8 @@ tất cả các phần trên tồn tại để tránh.
 ## Đã viết
 
 - [`06-fragmentation.md`](06-fragmentation.md) — vì sao process chạy lâu dài xuống cấp theo thời gian, và pooling/arena tránh nó thế nào
-- [`05-slab-allocator.md`](05-slab-allocator.md) — cấp phát theo size-class cố định, per-CPU cache, typed pool; bổ sung cho [`13-algorithms/slab.md`](../13-algorithms/slab.md)
+- [`05-slab-allocator.md`](05-slab-allocator.md) — allocate theo size-class cố định, per-CPU cache, typed pool; bổ sung cho [`13-algorithms/slab.md`](../13-algorithms/slab.md)
 - [`01-allocator.md`](01-allocator.md) — size class, thread-local arena, `#[global_allocator]`, vì sao default của glibc thường không phải lựa chọn đúng
 - [`02-arena.md`](02-arena.md) — bump allocation cho dữ liệu theo phạm vi request, giải phóng hàng loạt
-- [`03-object-pool.md`](03-object-pool.md) — tái sử dụng object đã cấp phát trên heap (buffer, connection struct) thay vì alloc/free mỗi request
+- [`03-object-pool.md`](03-object-pool.md) — tái sử dụng object đã allocate trên heap (buffer, connection struct) thay vì alloc/free mỗi request
 - [`04-buffer-pool.md`](04-buffer-pool.md) — pooling byte buffer riêng cho I/O, các tier theo size-class, liên kết với [`02-linux/18-zerocopy.md`](../02-linux/18-zerocopy.md)

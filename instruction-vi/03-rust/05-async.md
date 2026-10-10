@@ -34,7 +34,7 @@ Executor của tokio là cooperative: một task chạy cho tới khi nó trả 
 `Poll::Pending` (thường vì đang chờ I/O) hoặc hoàn tất — nó không bao giờ
 bị preempt giữa chừng một lần poll. Gọi một hàm *blocking* thật sự
 (`std::thread::sleep`, sync file I/O, một vòng lặp nặng CPU) bên trong một
-async fn làm nghẽn toàn bộ worker thread, bỏ đói mọi task khác được lên
+async fn làm nghẽn toàn bộ worker thread, starve mọi task khác được lên
 lịch trên nó. Đây là một trong những bug tokio thực tế phổ biến nhất trong
 một proxy: một connection làm DNS hoặc disk I/O đồng bộ âm thầm làm nghẽn
 các connection không liên quan đang chia sẻ thread đó.

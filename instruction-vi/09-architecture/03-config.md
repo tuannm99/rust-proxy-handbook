@@ -3,7 +3,7 @@
 ## What to learn
 ### Vì sao "cứ restart process đi" là chưa đủ
 Một L7 proxy production đang phục vụ traffic thật; một thay đổi config
-(upstream mới, rate limit cập nhật) đòi hỏi restart nghĩa là rớt kết nối
+(upstream mới, rate limit cập nhật) đòi hỏi restart nghĩa là rớt connection
 cho mọi request in-flight. Hot reload nghĩa là: load config mới, validate
 nó, swap nó vào nguyên tử cho các request mới, trong khi các request hiện
 có tiếp tục chạy với config chúng đã bắt đầu (hoặc với config mới, nếu
@@ -12,7 +12,7 @@ field đó không ảnh hưởng tới request in-flight).
 ### SIGHUP như trigger reload
 Quy ước Unix (nginx, hầu hết daemon) là: `SIGHUP` = "reload config,"
 `SIGTERM` = "shutdown gracefully" (xem [`02-linux/17-signals.md`](../02-linux/17-signals.md),
-[`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)). Lắng nghe nó bằng
+[`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)). Listen nó bằng
 `tokio::signal::unix::signal(SignalKind::hangup())` thay vì blocking
 signal handling — điều này giữ reload async và không gây gián đoạn I/O
 in-flight.
@@ -58,7 +58,7 @@ là một no-op, không phải một outage.**
 "Đã validate" phải có nghĩa nhiều hơn "đã parse." Các kiểm tra thực sự bắt
 được sự cố thật là những cái thử các side effect:
 - **Certificate và key thực sự load và khớp nhau**
-  ([`01-network/19-tls.md`](../01-network/19-tls.md)) — một lỗi gõ đường dẫn hay một cặp không khớp
+  ([`01-network/19-tls.md`](../01-network/19-tls.md)) — một lỗi gõ path hay một cặp không khớp
   là một outage toàn phần cho vhost đó.
 - **Route không xung đột** ([`05-http-stack/04-router.md`](../05-http-stack/04-router.md)) — hai rule
   không bao giờ phân biệt được nghĩa là một endpoint âm thầm biến mất.
@@ -74,7 +74,7 @@ thứ có thể fail (parse, load cert, bind socket mới) vào một object dà
 dựng, và chỉ sau đó *commit* bằng cách swap con trỏ. Bất cứ thứ gì fail
 trong lúc prepare để lại config đang chạy hoàn toàn không bị đụng tới.
 
-Gotcha: validation chạm vào mạng (resolve DNS upstream, kết nối để kiểm
+Gotcha: validation chạm vào mạng (resolve DNS upstream, connection để kiểm
 tra liveness) khiến reload fail khi một *dependency* down, đó là vấn đề
 fail-static từ [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md) mặc bộ đồ khác. Validate
 cú pháp và tính nhất quán nội bộ một cách nghiêm ngặt; coi một upstream
@@ -126,7 +126,7 @@ Gotcha: giữ `Arc` đó cho suốt thời gian sống của request cũng là t
 config cũ sống trong khi các request in-flight dùng nó — bộ nhớ được giải
 phóng khi request cuối cùng giữ nó hoàn thành, đó chính xác là drain dẫn
 dắt bởi refcount từ [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md). Một request
-streaming sống lâu ghim một phiên bản config; điều đó đúng, và đáng biết
+streaming sống lâu pin một phiên bản config; điều đó đúng, và đáng biết
 khi bạn thắc mắc vì sao một config cũ chưa bị drop.
 
 ### Bí mật không thuộc về file config
@@ -161,7 +161,7 @@ Xây theo thứ tự.
 
 1. Làm bước 1-5 trong [`labs/13-hot-reload`](../../labs/13-hot-reload), rồi lặp lại trong [`proxy`](../../proxy).
    Định nghĩa một struct `Config` với `serde` + `toml` (upstream, route,
-   rate limit, đường dẫn TLS). **Xong khi** nó load lúc khởi động đứng sau
+   rate limit, path TLS). **Xong khi** nó load lúc khởi động đứng sau
    một `ArcSwap` và các handler đọc qua `.load()`.
 2. Load config đúng một lần mỗi request và truyền `Arc` xuống pipeline.
    **Xong khi** một test reload liên tục dưới load đồng thời không thể

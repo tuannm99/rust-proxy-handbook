@@ -57,7 +57,7 @@ mà không ghi bất kỳ response nào. Trên HTTP/2 nó reset stream đó. Vì
 mọi lỗi ứng dụng (handler lỗi, upstream chết, input xấu) phải trở thành
 một `Response` với status đúng *bên trong* service của bạn. Nhiều server
 đặt kiểu lỗi là `std::convert::Infallible` để compiler bắt buộc điều này.
-Đó chính là thứ mục "một lỗi sinh ra `500`, không phải connection bị ngắt"
+Đó chính là thứ mục "một lỗi sinh ra `500`, không phải connection bị drop"
 của [`labs/02-http-server`](../../labs/02-http-server) kiểm tra.
 
 Một **panic** bên trong service còn tệ hơn. Nó unwind task connection đã
@@ -90,7 +90,7 @@ Kiểu response body, vì một handler phải trả về một kiểu cụ th�
 `StreamBody` bọc một `Stream` các `Result<Frame<Bytes>, E>` để stream, ví
 dụ một file qua `tokio_util::io::ReaderStream`. Khi các nhánh khác nhau
 sinh ra kiểu body khác nhau, `.boxed()` xóa kiểu tất cả thành một
-`BoxBody<Bytes, E>` (một lần cấp phát mỗi response, chấp nhận được).
+`BoxBody<Bytes, E>` (một lần allocation mỗi response, chấp nhận được).
 
 ### Header mà hyper tự ghi cho bạn
 hyper tự tính framing. Nếu body biết chính xác độ dài của nó (`Full` biết,
@@ -114,7 +114,7 @@ vụ cả hai. Nó nhìn vào những byte đầu tiên của connection: client
 luôn mở đầu bằng preface cố định 24 byte `PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n`,
 và mọi thứ khác được coi là HTTP/1.1. Đó là lý do HTTP/2 không mã hóa hoạt
 động với `curl --http2-prior-knowledge`, khi curl gửi preface ngay lập tức.
-Còn `curl --http2` thường trên kết nối không mã hóa thì xin một
+Còn `curl --http2` thường trên connection không mã hóa thì xin một
 `Upgrade: h2c` của HTTP/1.1, thứ mà hyper không implement, nên nó ở lại
 HTTP/1.1. Qua TLS, protocol được chọn bằng ALPN ([`01-network/19-tls.md`](../01-network/19-tls.md)),
 và client sau đó gửi preface, nên auto builder vẫn làm đúng. Executor là
@@ -147,7 +147,7 @@ WebSocket ([`05-http-stack/10-websocket.md`](10-websocket.md)).
 Trên `http2()`: `max_concurrent_streams` (giới hạn concurrency mỗi
 connection từ [`01-network/17-http2.md`](../01-network/17-http2.md)), `initial_stream_window_size` và
 `initial_connection_window_size` (flow-control window), `adaptive_window`
-(để h2 tự định cỡ window theo băng thông đo được), `max_header_list_size`
+(để h2 tự định cỡ window theo bandwidth đo được), `max_header_list_size`
 (giới hạn header sau decode, chính là giới hạn chống HPACK bomb),
 `max_send_buf_size`, và `max_pending_accept_reset_streams` cùng
 `max_local_error_reset_streams` (giới hạn Rapid Reset có sẵn của h2: client
@@ -179,7 +179,7 @@ hoặc một TLS connector bọc nó. Những gì một proxy cần biết:
   chính upstream, xem [`05-http-stack/05-keepalive.md`](05-keepalive.md)) và
   `pool_max_idle_per_host`.
 - **Lỗi cho biết nó xảy ra ở đâu.** Kiểu lỗi của client có `is_connect()`:
-  true nghĩa là kết nối TCP/TLS chưa bao giờ lên, nên request chưa hề được
+  true nghĩa là connection TCP/TLS chưa bao giờ lên, nên request chưa hề được
   gửi và retry trên upstream khác là an toàn kể cả với `POST`. Nó tương ứng
   với `502`, và với các luật retry trong [`06-proxy/05-retry.md`](../06-proxy/05-retry.md).
   `HttpConnector::set_connect_timeout` giới hạn riêng bước connect. Deadline

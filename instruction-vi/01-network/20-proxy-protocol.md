@@ -7,7 +7,7 @@ tiên.
 
 ### Vấn đề nó giải quyết
 Khi proxy của bạn đứng sau một load balancer hay proxy khác (một cloud
-LB, một edge CDN, một reverse proxy khác), kết nối TCP mà proxy của bạn
+LB, một edge CDN, một reverse proxy khác), connection TCP mà proxy của bạn
 thấy đến *từ* bên trung gian đó, không phải từ client gốc — `peer_addr()`
 trên socket đã accept cho bạn IP của LB, không phải IP của client. PROXY
 protocol giải quyết việc này ở tầng TCP, trước khi bất kỳ HTTP parsing
@@ -16,7 +16,7 @@ mang địa chỉ của client gốc.
 
 ### PROXY protocol v1 (văn bản)
 Một dòng đọc được, con người đọc hiểu, được gửi như những byte đầu tiên
-của kết nối:
+của connection:
 
 ```
 PROXY TCP4 192.0.2.1 198.51.100.1 56324 443\r\n
@@ -33,7 +33,7 @@ tùy chọn theo sau bởi các TLV cho metadata bổ sung như SNI/ALPN TLS g�
 cần quét delimiter, chỉ offset cố định và một body có tiền tố độ dài.
 
 ### Phát hiện và parse nó trước tầng HTTP
-Proxy phải peek các byte đầu tiên của một kết nối vừa được accept *trước*
+Proxy phải peek các byte đầu tiên của một connection vừa được accept *trước*
 khi đưa nó cho HTTP parser: kiểm tra signature nhị phân v2 trước (các byte
 cố định không mập mờ), rồi fallback về kiểm tra tiền tố `PROXY ` theo
 nghĩa đen cho v1, và nếu không thì giả định không có header PROXY protocol
@@ -53,7 +53,7 @@ async fn peek_is_proxy_v2(stream: &tokio::net::TcpStream) -> std::io::Result<boo
 ```
 
 ### Ranh giới tin cậy
-Chỉ chấp nhận một header PROXY protocol từ các kết nối bạn thực sự tin
+Chỉ chấp nhận một header PROXY protocol từ các connection bạn thực sự tin
 tưởng (tức là dải IP của LB upstream đã biết của bạn) — nếu không, bất kỳ
 ai tiếp cận trực tiếp được listener của bạn đều có thể *giả mạo* địa chỉ
 client theo cùng cách một `X-Forwarded-For` không được validate có thể bị
@@ -65,13 +65,13 @@ chấp nhận nó vô điều kiện trên một listener công khai.
 
 1. Gửi thủ công một dòng PROXY v1 thô bằng `nc` phía trước một test
    server và xác nhận server có thể parse ra địa chỉ client gốc từ đó.
-2. Implement phát hiện/parse v1 trong đường accept-kết nối của [`proxy`](../../proxy),
+2. Implement phát hiện/parse v1 trong đường accept-connection của [`proxy`](../../proxy),
    expose IP client thật cho phần còn lại của request pipeline (logging,
    rate limiting, WAF).
 3. Thêm hỗ trợ v2 (nhị phân) và test cả hai format trên cùng một
    listener.
 4. Thêm một kiểm tra trusted-source: chỉ tôn trọng một header PROXY nếu
-   IP của peer đang kết nối nằm trong một danh sách cho phép (gắn với
+   IP của peer đang connection nằm trong một danh sách cho phép (gắn với
    [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)).
 5. Giải thích vì sao một client không bao giờ nên có khả năng gửi trực
    tiếp một header PROXY protocol và được tin tưởng.

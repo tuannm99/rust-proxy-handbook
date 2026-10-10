@@ -25,7 +25,7 @@ qua ranh giới thread, điều mà compiler tự check giúp bạn.
 reader); `RwLock<T>` cho phép nhiều reader đồng thời HOẶC một writer. Với
 bảng health của upstream trong một proxy — đọc trên mỗi request, hiếm khi
 ghi bởi một health-checker chạy nền — `RwLock` cho phép hàng nghìn task
-request đọc đồng thời mà không chặn lẫn nhau, đúng chính là access pattern
+request đọc đồng thời mà không block lẫn nhau, đúng chính là access pattern
 bạn muốn. Dùng `Mutex` khi đọc và ghi có tần suất tương đương, hoặc khi sự
 đơn giản quan trọng hơn tính đồng thời khi đọc.
 
@@ -78,7 +78,7 @@ hãy biết rằng `RwLock` và `watch` là hai lối thoát đầu tiên nên t
 ## Practice
 1. Xây một `HealthTable` như trên với `Arc<RwLock<HashMap<...>>>`, spawn 8
    task đọc nó trong một vòng lặp và 1 task ghi vào nó mỗi 100ms; xác nhận
-   các reader không bị chặn lẫn nhau.
+   các reader không bị block lẫn nhau.
 2. Tái tạo lỗi "future cannot be sent between threads" bằng cách giữ một
    `std::sync::MutexGuard` qua một `.await`, rồi sửa nó bằng
    `tokio::sync::Mutex` và sửa lại lần nữa bằng cách tái cấu trúc để drop

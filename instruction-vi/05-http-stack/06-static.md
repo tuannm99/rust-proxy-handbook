@@ -21,9 +21,9 @@ Ngoài phần thân file, một static handler còn thực hiện nhiều syscal
 
 `tokio::fs` bọc chúng trong `spawn_blocking`, đúng đắn nhưng không miễn
 phí: blocking pool có giới hạn (mặc định 512 thread), và một đợt static
-request dồn dập nhắm vào một filesystem chậm có thể làm bão hòa nó — lúc
+request burst nhắm vào một filesystem chậm có thể làm bão hòa nó — lúc
 đó *mọi* người dùng `spawn_blocking` trong process, kể cả những phần không
-liên quan, đều xếp hàng phía sau chúng.
+liên quan, đều queue phía sau chúng.
 
 Hai cách giảm nhẹ đáng biết: cache metadata (và thậm chí cả file
 descriptor đang mở) cho các file nóng, kiểu `open_file_cache` của nginx,
@@ -48,7 +48,7 @@ và **cả hai đầu đều bao gồm**:
 | `bytes=0-99` | 100 byte đầu tiên | `206`, `Content-Range: bytes 0-99/1000`, `Content-Length: 100` |
 | `bytes=900-` | từ 900 tới hết | `206`, `Content-Range: bytes 900-999/1000` |
 | `bytes=-100` | 100 byte *cuối cùng* (suffix) | `206`, `Content-Range: bytes 900-999/1000` |
-| `bytes=0-5000` | điểm cuối vượt EOF: kẹp lại về 999 | `206`, `Content-Range: bytes 0-999/1000` |
+| `bytes=0-5000` | điểm cuối vượt EOF: clamp lại về 999 | `206`, `Content-Range: bytes 0-999/1000` |
 | `bytes=1000-` hoặc `bytes=-0` | bắt đầu tại hoặc sau điểm cuối, hoặc xin 0 byte | `416`, `Content-Range: bytes */1000` |
 | `bytes=500-100`, `bytes=abc`, `items=0-5` | hoàn toàn không phải byte range hợp lệ | **bỏ qua header**: `200` với toàn bộ file |
 
@@ -76,7 +76,7 @@ hai phiên bản khác nhau của một file lại với nhau. Nếu validator k
 khớp, bạn phải trả về *toàn bộ* file (200), không phải range được yêu cầu.
 
 ### Conditional request: ETag & If-Modified-Since
-Trả một response 200 đầy đủ cho một client đã có bản cache cập nhật là lãng phí băng thông. Một `ETag` (hash hoặc dấu phiên bản của file) hay timestamp `Last-Modified` cho phép client gửi `If-None-Match`/`If-Modified-Since`; nếu không đổi, trả về `304 Not Modified` không body.
+Trả một response 200 đầy đủ cho một client đã có bản cache cập nhật là lãng phí bandwidth. Một `ETag` (hash hoặc dấu phiên bản của file) hay timestamp `Last-Modified` cho phép client gửi `If-None-Match`/`If-Modified-Since`; nếu không đổi, trả về `304 Not Modified` không body.
 
 ```rust
 // sketch: conditional check before touching the file body at all

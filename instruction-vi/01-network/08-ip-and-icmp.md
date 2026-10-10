@@ -72,7 +72,7 @@ fragmentation; chỉ bên gửi mới được fragment.
 **Gotcha — PMTUD black hole.** Nếu một firewall drop *toàn bộ* ICMP (kiểu
 hardening sai lầm phổ biến), các message "too big" không bao giờ tới nơi.
 Packet nhỏ (handshake, request ngắn) chạy được; segment full-size đầu tiên
-của một response lớn biến mất và kết nối **treo** — triệu chứng kinh điển
+của một response lớn biến mất và connection **treo** — triệu chứng kinh điển
 "connect được, trang nhỏ load được, trang lớn thì đứng", nhất là qua VPN và
 tunnel có MTU giảm. Cách sửa là cho phép ICMP type 3 code 4, hoặc **MSS
 clamping** (router ghi đè MSS option trong SYN để hai đầu gửi segment đủ
@@ -91,7 +91,7 @@ dữ liệu ứng dụng. Những loại cần nhận ra:
 - **Redirect** — router báo cho bạn first hop tốt hơn (thường bị bỏ qua vì
   lý do bảo mật).
 
-ICMP không phải đường ống tùy chọn: chặn sạch nó làm hỏng PMTUD và biến lỗi
+ICMP không phải đường ống tùy chọn: block sạch nó làm hỏng PMTUD và biến lỗi
 thành thầm lặng thay vì nhanh.
 
 ### IPv6 trong một trang
@@ -128,10 +128,10 @@ trông như "timeout".
 4. Chạy `sysctl net.ipv4.ip_forward` và giải thích điều gì thay đổi nếu set
    thành 1; tìm xem thành phần nào của Docker/Kubernetes set nó trên một
    container host và vì sao.
-5. Kết nối tới một UDP port không có gì listen
+5. Connect tới một UDP port không có gì listen
    (`echo hi | nc -u -w1 127.0.0.1 9999`) khi `sudo tcpdump -n -i lo icmp`
    đang chạy, và tìm ICMP port-unreachable reply.
 6. Chạy `ip -6 addr` và `curl -6 -v http://[::1]:8080/` vào
    [`labs/00-tcp-server`](../../labs/00-tcp-server) sau khi cho nó listen trên `[::]`; xác nhận một
-   IPv4 client (`curl -4 http://127.0.0.1:8080/`) có kết nối được không, và
+   IPv4 client (`curl -4 http://127.0.0.1:8080/`) có connection được không, và
    giải thích từ `IPV6_V6ONLY` vì sao có hoặc không.

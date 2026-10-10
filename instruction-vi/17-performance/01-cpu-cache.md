@@ -39,8 +39,7 @@ nhiều lần chỉ đơn giản vì không fetch các field nó không đọc.
 ### Prefetching thưởng cho truy cập có thể đoán trước
 Bộ prefetch phần cứng theo dõi pattern truy cập của bạn và kéo các line
 tiếp theo *trước khi* bạn hỏi, nhưng chỉ khi pattern đó có thể đoán trước
-— tuần tự hoặc stride cố định. Duyệt array tuần tự chạy gần tới băng
-thông bộ nhớ; đuổi theo con trỏ ngẫu nhiên đánh bại hoàn toàn prefetcher
+— tuần tự hoặc stride cố định. Duyệt array tuần tự chạy gần tới bandwidth bộ nhớ; đuổi theo con trỏ ngẫu nhiên đánh bại hoàn toàn prefetcher
 và trả giá miss đầy đủ ở mỗi bước nhảy. Đây là lý do cụ thể, đo được, vì
 sao "mảng phẳng thắng cấu trúc liên kết" cứ liên tục xuất hiện.
 

@@ -48,16 +48,16 @@ nào với auth dựa trên JWT cho request của end-user.
 
 ### Session resumption
 Session ticket (hoặc session ID) cho phép một client quay lại bỏ qua
-handshake đầy đủ trên một kết nối mới, cắt bớt một round trip. Với một
+handshake đầy đủ trên một connection mới, cắt bớt một round trip. Với một
 proxy, điều này quan trọng nhất dưới connection churn cao — hỗ trợ
 resumption (và việc xoay key của nó) ảnh hưởng trực tiếp tới tail latency
-cho các client kết nối lại thường xuyên. Gotcha: resumption kiểu 0-RTT
+cho các client connect lại thường xuyên. Gotcha: resumption kiểu 0-RTT
 tái tạo lại rủi ro replay tương tự 0-RTT của QUIC ([`18-http3.md`](18-http3.md)) — áp
 dụng cùng sự thận trọng "chỉ cho request idempotent".
 
 ### Quản lý certificate
 Một proxy production cần certificate được phát hành, gia hạn (thường qua
-ACME/Let's Encrypt), và reload *mà không* làm rớt các kết nối hiện có
+ACME/Let's Encrypt), và reload *mà không* làm rớt các connection hiện có
 hoặc yêu cầu restart — đây là lý do [`proxy`](../../proxy) coi việc reload cert là một
 mối quan tâm của config-reload, xem [`09-architecture/03-config.md`](../09-architecture/03-config.md).
 
@@ -85,7 +85,7 @@ openssl verify -CAfile ca.pem a.pem        # phải in ra "a.pem: OK"
 
 Lặp lại bước 2-3 với `b.test` cho hostname thứ hai. Server load `a.pem` +
 `a.key`. Client nhận `ca.pem`: `curl --cacert ca.pem https://localhost:8443/`.
-Để test một tên không resolve được, ghim nó lại:
+Để test một tên không resolve được, pin nó lại:
 `curl --cacert ca.pem --resolve a.test:8443:127.0.0.1 https://a.test:8443/`.
 `openssl s_client -connect 127.0.0.1:8443 -servername a.test -CAfile ca.pem`
 cho thấy certificate nào được trả về (`subject=`) và ALPN đã thương lượng
@@ -116,8 +116,7 @@ Các mảnh ghép, theo thứ tự một connection dùng tới chúng:
   `alpn_protocols` trên config nhận được, như ở phần ALPN phía trên.
 - **Handshake.** `tokio_rustls::TlsAcceptor::from(Arc::new(config))`, rồi
   `acceptor.accept(tcp_stream)` là một future thực hiện toàn bộ handshake và
-  trả ra một TLS stream. Future đó không có deadline riêng: một client kết
-  nối rồi không gửi gì sẽ giữ nó mãi mãi. Bọc nó trong
+  trả ra một TLS stream. Future đó không có deadline riêng: một client connection rồi không gửi gì sẽ giữ nó mãi mãi. Bọc nó trong
   `tokio::time::timeout` ([`07-security/10-slowloris.md`](../07-security/10-slowloris.md)).
 - **Sau handshake.** TLS stream đi vào `TokioIo::new(...)` rồi vào hyper y
   như một TCP stream ([`05-http-stack/02-hyper.md`](../05-http-stack/02-hyper.md)). `tls_stream.get_ref().1`
@@ -158,7 +157,7 @@ TLS 1.1. Khi đó một lần thất bại mới chứng minh server đã nói k
    động trên cùng một port, và xác nhận qua `curl -v` protocol nào đã
    được negotiate.
 4. Thêm mTLS: yêu cầu và xác minh một client certificate, và từ chối các
-   kết nối không trình ra cái nào hoặc trình ra một cái không đáng tin.
+   connection không trình ra cái nào hoặc trình ra một cái không đáng tin.
 5. Mô phỏng một lần xoay cert (đổi file cert, kích hoạt reload theo
-   [`09-architecture/03-config.md`](../09-architecture/03-config.md)) và xác nhận các kết nối hiện có không
+   [`09-architecture/03-config.md`](../09-architecture/03-config.md)) và xác nhận các connection hiện có không
    bị rớt giữa chừng request.

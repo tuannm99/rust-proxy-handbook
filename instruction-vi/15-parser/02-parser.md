@@ -55,7 +55,7 @@ rule của WAF hay một config với điều kiện `a && b || c` thì có.
 Các thư viện như `nom` và `winnow` xây một parser bằng cách ghép các hàm
 nhỏ (`tag`, `take_while`, `alt`, `many0`) thay vì viết một state machine
 tường minh. Chúng rất tốt cho các định dạng nhị phân và mạng — `nom` được
-dùng rộng rãi chính xác cho kiểu parsing giao thức ở mức byte mà một proxy
+dùng rộng rãi chính xác cho kiểu parsing protocol ở mức byte mà một proxy
 làm. Đánh đổi: error message khó làm cho chính xác hơn, và các kiểu
 combinator có thể trở nên rối rắm. Dùng combinator cho binary framing,
 recursive descent viết tay cho bất cứ chỗ nào chất lượng error quan trọng

@@ -49,7 +49,7 @@ bảng, kể cả với UDP và ICMP qua timeout. Các rule stateful dựa vào 
 phép reply của các connection tôi đã cho đi ra"), và NAT dựa vào nó để nhớ mapping và dịch ngược packet reply. `conntrack -L` liệt kê
 các entry; `conntrack -C` đếm chúng; `cat /proc/sys/net/netfilter/nf_conntrack_max` là dung lượng bảng.
 
-**Gotcha: conntrack-table-full.** Một NAT box bận, một Kubernetes node, hay bất kỳ host nào có conntrack được nạp và một proxy tạo
+**Gotcha: conntrack-table-full.** Một NAT box bận, một Kubernetes node, hay bất kỳ host nào có conntrack được load và một proxy tạo
 nhiều connection ngắn đều có thể làm đầy bảng; kernel khi đó **drop connection mới** và log `nf_conntrack: table full, dropping
 packet` (`dmesg`). Triệu chứng là timeout connection chập chờn trong khi service và CPU đều khỏe. Cách xử lý: tăng `nf_conntrack_max`
 (để ý bộ nhớ), hạ timeout (một entry TCP `ESTABLISHED` idle sống 5 ngày theo mặc định!), tái sử dụng connection
@@ -67,14 +67,14 @@ Khái niệm nằm ở [`01-network/02-addressing.md`](../01-network/02-addressi
   hỏng NAT" là reply đi vòng qua nó ([`01-network/08-ip-and-icmp.md`](../01-network/08-ip-and-icmp.md)).
 - **Kubernetes** `kube-proxy` cài Service dưới dạng rule DNAT (iptables) hoặc IPVS virtual server: virtual IP của một Service không
   phải địa chỉ của interface nào — nó là một rule viết lại chọn một pod IP cho mỗi *connection*. Đây là một L4 load balancer bên trong
-  kernel. Một client có connection sống lâu (HTTP/2, gRPC) vì thế bị ghim vào một pod suốt đời connection, lý do gRPC cần cân bằng L7
+  kernel. Một client có connection sống lâu (HTTP/2, gRPC) vì thế bị pin vào một pod suốt đời connection, lý do gRPC cần cân bằng L7
   ([`05-http-stack/11-grpc.md`](../05-http-stack/11-grpc.md), [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md)).
 
 NAT giấu client: proxy của bạn đứng sau một load balancer SNAT thấy IP của balancer, đó là lý do PROXY protocol và `X-Forwarded-For` tồn tại
 ([`01-network/20-proxy-protocol.md`](../01-network/20-proxy-protocol.md), [`01-network/15-http.md`](../01-network/15-http.md)).
 
-### Transparent proxying: chặn traffic không gửi cho bạn
-Một service mesh sidecar hay một forward proxy thường phải chặn các connection được gửi tới *người khác*, mà client không biết. Rule
+### Transparent proxying: intercept traffic không gửi cho bạn
+Một service mesh sidecar hay một forward proxy thường phải intercept các connection được gửi tới *người khác*, mà client không biết. Rule
 redirect chúng về một port local (`-j REDIRECT --to-ports 15001`, hoặc `TPROXY` cho UDP và để giữ địa chỉ), và proxy khôi phục nơi client
 **thật sự** định đến bằng `getsockopt(SO_ORIGINAL_DST)` trên socket đã accept (sau `REDIRECT`) hoặc từ `getsockname` (dưới `TPROXY` với
 `IP_TRANSPARENT`). Việc tra original-destination đó là cách các sidecar Istio/Envoy và công cụ kiểu `redsocks` hoạt động
@@ -94,7 +94,7 @@ tiêm latency và loss; `tbf`/`htb` định hình bandwidth; `fq_codel` chống 
 của [`12-testing/03-chaos.md`](../12-testing/03-chaos.md). `netem` áp dụng trên **egress**; để tác động traffic mà một host *nhận*, bạn áp dụng nó ở peer, hoặc trên một device `ifb`.
 
 ### Các sysctl mà một network service gặp
-`net.core.somaxconn` (trần của mọi backlog `listen`; `listen(1024)` của bạn bị kẹp âm thầm, [`01-network/11-socket.md`](../01-network/11-socket.md)),
+`net.core.somaxconn` (trần của mọi backlog `listen`; `listen(1024)` của bạn bị clamp âm thầm, [`01-network/11-socket.md`](../01-network/11-socket.md)),
 `net.ipv4.tcp_max_syn_backlog`, `net.ipv4.ip_local_port_range`, `net.ipv4.ip_forward`, `net.ipv4.tcp_tw_reuse`, `net.netfilter.nf_conntrack_max`,
 `net.ipv4.conf.*.rp_filter` (drop packet mà source của nó không tới ngược lại được qua interface đến — nguồn gốc của các vụ drop bí ẩn
 với asymmetric routing). `sysctl -a | grep <name>` đọc chúng; `sysctl -w` đổi chúng cho tới khi reboot; `/etc/sysctl.d/` lưu bền. Trong container nhiều cái

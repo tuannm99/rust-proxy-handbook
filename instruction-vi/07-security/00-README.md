@@ -11,7 +11,7 @@ nói gì và upstream sẽ *hiểu* nó nói gì.
 bạn — [`02-jwt.md`](02-jwt.md) và [`03-mtls.md`](03-mtls.md) đều giả định điều đó)
 - [`01-auth.md`](01-auth.md) — auth nằm ở đâu trong pipeline, truyền identity lên upstream, và loại bỏ identity header giả mạo
 - [`02-jwt.md`](02-jwt.md) — xác thực signature và claim, algorithm confusion, xoay vòng JWKS, revocation
-- [`03-mtls.md`](03-mtls.md) — client certificate, giới hạn phạm vi CA, hết hạn như một outage đã lên lịch sẵn
+- [`03-mtls.md`](03-mtls.md) — client certificate, giới hạn phạm vi CA, expire như một outage đã lên lịch sẵn
 
 **Input handling**
 - [`04-normalization.md`](04-normalization.md) — parser differential: decode depth, Unicode, thứ tự ưu tiên tham số
@@ -21,7 +21,7 @@ bạn — [`02-jwt.md`](02-jwt.md) và [`03-mtls.md`](03-mtls.md) đều giả �
 **Abuse and overload**
 - [`07-ratelimit.md`](07-ratelimit.md) — key trên cái gì, tính phí theo cost, giới hạn phân tán và các kiểu thất bại của nó
 - [`08-ip-filtering.md`](08-ip-filtering.md) — matching CIDR, IPv4-mapped IPv6, tin `X-Forwarded-For` đúng cách
-- [`09-ddos.md`](09-ddos.md) — cost asymmetry, resource ceiling, giới hạn tốc độ accept, decompression bomb
+- [`09-ddos.md`](09-ddos.md) — cost asymmetry, resource ceiling, rate limiting accept, decompression bomb
 - [`10-slowloris.md`](10-slowloris.md) — ba biến thể slow-client và rate floor
 - [`11-load-shedding.md`](11-load-shedding.md) — shed vs queue, giới hạn theo thời gian, adaptive concurrency
 

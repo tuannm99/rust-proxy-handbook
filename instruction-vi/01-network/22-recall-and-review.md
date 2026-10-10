@@ -20,7 +20,7 @@ Nó không dạy gì mới; nó bắt bạn dùng những gì các file khác đ
    7 ngày, 21 ngày, rồi hàng tháng. Mỗi lần ôn chỉ vài phút. Sai một câu hai lần?
    Ghi vào log của bạn (xem [`00-introduction/03-study-loop.md`](../00-introduction/03-study-loop.md)) và làm một flashcard.
 4. **Dạy lại.** Giải thích "vòng đời request" ([`21-life-of-a-request.md`](21-life-of-a-request.md)) cho một con vịt
-   cao su hoặc một người bạn mà không có ghi chú. Chỗ bạn khựng là lỗ hổng.
+   cao su hoặc một người bạn mà không có ghi chú. Chỗ bạn stall là lỗ hổng.
 5. **Chạy nó.** Mỗi khái niệm dưới đây đều có một lệnh cho thấy nó. Một sự thật bạn
    đã *thấy trong `tcpdump`* được nhớ lâu hơn nhiều so với thứ bạn đọc.
 
@@ -94,7 +94,7 @@ những câu mọi người hay sai nhất.
 **08 IP and ICMP** ([`08-ip-and-icmp.md`](08-ip-and-icmp.md))
 - Hai route cùng khớp một đích. Router chọn cái nào? Default route là gì?
 - Với DF được set, một packet quá lớn cho một link. Chuyện gì xảy ra, và triệu chứng gì
-  hiện ra nếu ICMP bị chặn? *
+  hiện ra nếu ICMP bị block? *
 - `traceroute` hoạt động thế nào bằng TTL?
 
 **09 UDP** ([`09-udp.md`](09-udp.md))
@@ -122,7 +122,7 @@ những câu mọi người hay sai nhất.
 - Flow-control window vs congestion window: mỗi cái bảo vệ gì, và cái nào đang giới hạn
   throughput lúc này?
 - Vì sao một connection mới chậm, và slow-start-after-idle là gì? *
-- Giải thích cú khựng Nagle + delayed-ACK từng bước.
+- Giải thích stall Nagle + delayed-ACK từng bước.
 
 **14 DNS** ([`14-dns.md`](14-dns.md))
 - `getaddrinfo` tra theo thứ tự nào? Vì sao `ndots:5` thêm query?
@@ -137,7 +137,7 @@ những câu mọi người hay sai nhất.
 
 **16 HTTP/1.1 wire format** ([`16-http1-wire-format.md`](16-http1-wire-format.md))
 - Một request có cả `Content-Length` và `Transfer-Encoding: chunked`. Bạn phải làm gì, và
-  điều đó chặn tấn công nào? *
+  điều đó ngăn tấn công nào? *
 - Một chunked body kết thúc thế nào? Bạn biết body của request kết thúc ở đâu bằng cách nào?
 
 **17 HTTP/2** ([`17-http2.md`](17-http2.md))

@@ -15,7 +15,7 @@ Các trait `tower::Service`/`Layer` của Rust cho bạn ghép hành vi xử lý
 request (auth, rate limit, WAF, logging — xem
 [`09-architecture/01-components.md`](01-components.md)) như các type generic, dispatch tĩnh.
 Compiler inline và monomorphize cả stack, nên không có chi phí runtime cho
-"plugin", và một module tồi là một lỗi compile hoặc một panic bị chặn lại,
+"plugin", và một module tồi là một lỗi compile hoặc một panic bị catch,
 không phải một crash ABI. Chi phí: thêm/bớt một module cần rebuild, không
 phải một artifact hot-swap được.
 
@@ -76,7 +76,7 @@ này được làm cho một proxy thật.
 An toàn bộ nhớ là nửa dễ của sandboxing. Nửa khó hơn là một plugin chạy
 trên đường đi request của bạn đơn giản là có thể *không trả về* — một vòng
 lặp vô hạn trong một WASM guest treo worker thread đúng như bất kỳ thao
-tác blocking nào khác ([`03-rust/05-async.md`](../03-rust/05-async.md)), kéo theo mọi kết nối
+tác blocking nào khác ([`03-rust/05-async.md`](../03-rust/05-async.md)), kéo theo mọi connection
 multiplex trên nó cùng với request đã kích hoạt nó.
 
 `wasmtime` cung cấp hai cơ chế cho việc này, và bạn cần một trong số đó:

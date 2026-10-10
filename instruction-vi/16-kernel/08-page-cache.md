@@ -9,7 +9,7 @@ proxy bạn trở nên khó hiểu.
 ### Mọi lần đọc file đều đi qua nó
 `read()` trên một file không chạm tới disk nếu dữ liệu đã được cache:
 kernel giữ nội dung file theo đơn vị kích thước trang (4 KB) trong page
-cache, khóa theo (inode, offset). Một cú hit copy từ RAM; một cú miss kích
+cache, keyed theo (inode, offset). Một cú hit copy từ RAM; một cú miss kích
 hoạt disk I/O, điền vào cache, rồi mới copy.
 
 Hai hệ quả cho một proxy serve static file: request thứ hai cho một file
@@ -28,7 +28,7 @@ Gotcha: bên trong một container, chuyện này không còn vô hại nữa. P
 cache do một cgroup tạo ra tính vào giới hạn bộ nhớ của cgroup đó, nên một
 proxy đang stream file lớn có thể bị OOM-kill vì bộ nhớ *có thể thu hồi
 được* — kernel thường thu hồi trước khi kill, nhưng dưới áp lực bộ nhớ kết
-hợp với một đợt dirty page dồn dập, nó không phải lúc nào cũng thắng cuộc
+hợp với một dirty page burst, nó không phải lúc nào cũng thắng cuộc
 đua. Nếu proxy của bạn chết vì OOM mà RSS trông thấp hơn nhiều so với giới
 hạn, đây là điều đầu tiên cần kiểm tra.
 
@@ -37,7 +37,7 @@ hạn, đây là điều đầu tiên cần kiểm tra.
 từ page cache tới một socket mà không copy qua user space. Điều đó chỉ
 nhanh khi cache *hit* — khi miss, syscall block trên disk I/O, và trong
 một async runtime, việc đó block toàn bộ worker thread (vấn đề
-cooperative-scheduling ở [`03-rust/05-async.md`](../03-rust/05-async.md)), làm đình trệ mọi kết nối
+cooperative-scheduling ở [`03-rust/05-async.md`](../03-rust/05-async.md)), làm đình trệ mọi connection
 khác trên đó.
 
 Đây là cái bẫy của "cứ dùng sendfile cho static file": nó tuyệt vời cho

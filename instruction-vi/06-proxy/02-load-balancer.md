@@ -30,7 +30,7 @@ impl RoundRobin {
 }
 ```
 Gotcha: round robin thuần bỏ qua load — nếu một upstream chậm, nó vẫn nhận
-một phần bằng nhau trong các request mới và hàng đợi của nó chất đống.
+một phần bằng nhau trong các request mới và queue của nó chất đống.
 
 Gotcha: `fetch_add` trên một counter dùng chung là một cache line bị tranh
 chấp trên mọi worker thread ở mọi request ([`17-performance/02-false-sharing.md`](../17-performance/02-false-sharing.md))
@@ -55,14 +55,14 @@ upstream, không ổn với hàng nghìn (dùng một heap,
 [`13-algorithms/heap.md`](../13-algorithms/heap.md), nếu bạn cần scale xa hơn).
 
 Gotcha: least-connection có thể gây thundering herd lên một upstream vừa
-hồi phục (0 kết nối trông hấp dẫn nhất) — kết hợp với slow start / ramp-up
-kết nối ([`03-healthcheck.md`](03-healthcheck.md)).
+hồi phục (0 connection trông hấp dẫn nhất) — kết hợp với slow start / ramp-up
+connection ([`03-healthcheck.md`](03-healthcheck.md)).
 
-Gotcha, và cái này mang tính cấu trúc: **số đếm kết nối của bạn là cục
-bộ.** Với M instance proxy, mỗi instance chỉ biết những kết nối *chính nó*
+Gotcha, và cái này mang tính cấu trúc: **số đếm connection của bạn là cục
+bộ.** Với M instance proxy, mỗi instance chỉ biết những connection *chính nó*
 đã mở. Mỗi instance độc lập tính toán "upstream 7 đang ít tải nhất" từ góc
 nhìn một phần của riêng nó, và tất cả chúng đồng thời gửi request tiếp
-theo tới đó. Thuật toán được kỳ vọng dàn đều tải đã đồng bộ hóa M proxy
+theo tới đó. Thuật toán được kỳ vọng dàn đều tải đã synchronization M proxy
 vào một host. Chất lượng của least-connection giảm khi số lượng proxy
 tăng, chính xác là điều ngược lại với những gì bạn muốn từ một câu chuyện
 scaling — và đó là lý do cho phần tiếp theo.
@@ -95,7 +95,7 @@ leak làm một host khỏe mạnh trở nên vĩnh viễn kém hấp dẫn); v�
 thừa hưởng vấn đề host-nguội bên dưới.
 
 ### Latency-aware: peak EWMA
-Số lượng kết nối là một proxy cho load, không phải bản thân load — một
+Số lượng connection là một proxy cho load, không phải bản thân load — một
 upstream với 4 request nhanh ít tải hơn một upstream với 3 request chậm.
 Peak EWMA chấm điểm mỗi upstream bằng một exponentially-weighted moving
 average của latency phản hồi quan sát được, nhân với số request đang chờ,
@@ -182,7 +182,7 @@ Xây theo thứ tự — mỗi bước cần các phép đo của bước trư�
    chọn.
 6. Cài đặt chấm điểm peak EWMA đứng sau cùng một trait và kết hợp với P2C.
    **Xong khi** một test với một upstream *chậm nhưng khỏe mạnh* route
-   traffic tránh xa nó nhanh hơn cách chấm điểm dựa trên số kết nối, và
+   traffic tránh xa nó nhanh hơn cách chấm điểm dựa trên số connection, và
    một test với một upstream đang idle cho thấy nó không nhận một đợt
    bùng nổ khi lần đầu có traffic.
 7. Cài đặt consistent hash theo key từ một header. **Xong khi** cùng một

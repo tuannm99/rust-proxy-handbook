@@ -66,7 +66,7 @@ streaming; đừng làm vậy với download hàng loạt.
 ### Chi phí CPU dưới tải
 Compression tốn CPU; ở tốc độ request cao, encode mỗi request có thể trở thành bottleneck trước cả network. Hai cách giảm nhẹ phổ biến: cache byte đã nén cho các response cacheable (nén một lần, serve nhiều lần) và bỏ qua compression dưới một kích thước body tối thiểu (nén một response JSON 50 byte thường không đáng CPU).
 
-Gotcha: compression cũng là cách kinh điển vô tình chặn một async
+Gotcha: compression cũng là cách kinh điển vô tình block một async
 runtime. Nén một buffer lớn đồng bộ bên trong một task giữ worker thread
 cho toàn bộ phép toán (cooperative scheduling của
 [`03-rust/05-async.md`](../03-rust/05-async.md)), làm đứng mọi connection khác trên nó. Hoặc dùng
@@ -94,7 +94,7 @@ Nếu upstream đã nén body rồi (nó gửi `Content-Encoding: gzip`), proxy 
 
 Gotcha: khi bạn *thực sự* giải nén một response upstream, bạn đã nhận lấy
 rủi ro decompression-bomb từ [`07-security/09-ddos.md`](../07-security/09-ddos.md) — giới hạn kích
-thước đã giải nén và tỉ lệ giãn nở, và streaming thay vì vật chất hóa toàn
+thước đã giải nén và tỉ lệ giãn nở, và streaming thay vì materialize toàn
 bộ. Điều tương tự áp dụng cho body *request* đã nén mà bạn giải nén để
 kiểm tra WAF ([`07-security/06-waf.md`](../07-security/06-waf.md)).
 

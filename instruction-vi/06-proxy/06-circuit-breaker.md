@@ -102,7 +102,7 @@ vào một upstream đã biết là tồi
 Retry trước, circuit sau: một retry xử lý sự cố thoáng qua đơn lẻ, và
 circuit nhận ra rằng sự cố thoáng qua đã trở thành chuyện thường ngày.
 Thứ tự quan trọng là **retry phải tôn trọng circuit** — retry vào một
-circuit mở chính xác là loại traffic mà circuit tồn tại để chặn, nên việc
+circuit mở chính xác là loại traffic mà circuit tồn tại để block, nên việc
 chọn upstream của retry phải bỏ qua các host có circuit mở thay vì coi
 "circuit open" chỉ là một failure khác để retry vượt qua.
 
@@ -119,7 +119,7 @@ Xây theo thứ tự.
    không còn xảy ra.
 3. Loại 4xx khỏi số đếm failure và bao gồm timeout. **Xong khi** 1000
    request tới một path không tồn tại để circuit đóng, và một upstream
-   chấp nhận kết nối nhưng không bao giờ phản hồi mở nó.
+   chấp nhận connection nhưng không bao giờ phản hồi mở nó.
 4. Gate `HalfOpen` chỉ một lệnh gọi thử nghiệm. **Xong khi** một load test
    đồng thời tại thời điểm circuit half-open cho thấy đúng một request
    chạm tới upstream.

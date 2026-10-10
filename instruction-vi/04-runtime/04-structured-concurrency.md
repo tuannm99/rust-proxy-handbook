@@ -41,7 +41,7 @@ while let Some(res) = set.join_next().await {
     handle_health_result(res);
 }
 // nếu hàm này return sớm (ví dụ qua `?`), JoinSet bị drop ở đây và mọi
-// health check còn đang chạy bị abort — không có task mồ côi nào sót lại
+// health check còn đang chạy bị abort — không có task orphan nào sót lại
 ```
 Đây là câu trả lời trực tiếp cho câu hỏi "ai hủy các health checker khi
 pool bị dỡ bỏ" trong [`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md).
@@ -80,10 +80,10 @@ REQUEST_ID.scope(request_id, async move {
 
 ### Graceful shutdown như một dạng structured concurrency
 Bài toán cốt lõi của [`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md) — ngừng
-nhận kết nối mới, để các kết nối đang xử lý dở hoàn tất, rồi thoát — về
+nhận connection mới, để các connection đang xử lý dở hoàn tất, rồi thoát — về
 bản chất là một bài toán hủy/theo-dõi-hoàn-thành: một `JoinSet`, hoặc một
 tín hiệu shutdown `tokio::sync::watch` được đua qua `select!` bên trong
-vòng lặp mỗi kết nối, là cơ chế cụ thể mà mẫu thiết kế này biên dịch
+vòng lặp mỗi connection, là cơ chế cụ thể mà mẫu thiết kế này biên dịch
 thành.
 
 ## Practice

@@ -1,7 +1,7 @@
 # SLI, SLO, và Error Budget
 
 Định nghĩa "hoạt động tốt" nghĩa là gì, bằng con số, trước khi quyết định
-cái gì nên đánh thức một con người. [`08-observability/06-alerting.md`](06-alerting.md) xây
+cái gì nên wake up một con người. [`08-observability/06-alerting.md`](06-alerting.md) xây
 trên nền này — một alert không có SLO đứng sau chỉ là một ngưỡng ai đó
 đoán ra.
 

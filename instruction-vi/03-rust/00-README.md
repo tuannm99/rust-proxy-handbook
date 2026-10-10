@@ -37,7 +37,7 @@ khác trong thư mục này và trong [`04-runtime/`](../04-runtime) đều gi�
 file này):
 - [`01-ownership.md`](01-ownership.md) — move semantics, `Copy` vs `Clone`, quy tắc borrowing, drop order và RAII
 - [`02-lifetimes.md`](02-lifetimes.md) — elision, struct giữ borrowed data, lifetime với async, HRTB
-- [`03-unsafe.md`](03-unsafe.md) — `unsafe` mở khóa cái gì, hợp đồng bạn phải giữ, giữ nó tối thiểu và sound
+- [`03-unsafe.md`](03-unsafe.md) — `unsafe` unlock cái gì, hợp đồng bạn phải giữ, giữ nó tối thiểu và sound
 - [`04-sync.md`](04-sync.md) — `Arc`, `Mutex` vs `RwLock`, atomics và `Ordering`, shared state vs message passing
 - [`05-async.md`](05-async.md) — trait `Future`, async/await desugaring, cooperative scheduling, drop-is-cancel
 - [`06-pin.md`](06-pin.md) — vì sao `Pin` tồn tại, self-referential future, `Unpin`
@@ -66,7 +66,7 @@ Nhóm ngôn ngữ cốt lõi là nền cho [`04-runtime/`](../04-runtime). Ngữ
 counter) và trong [`08-observability/03-tracing.md`](../08-observability/03-tracing.md) (một span guard bị giữ
 qua `.await`); [`04-runtime/04-structured-concurrency.md`](../04-runtime/04-structured-concurrency.md) cho ý tưởng đó
 các API tokio thật (`JoinSet`, tính cancellation-safety của `select!`).
-Nhóm type-system và nhóm kỹ năng kỹ thuật systems nạp trực tiếp vào
+Nhóm type-system và nhóm kỹ năng kỹ thuật systems feed trực tiếp vào
 [`05-http-stack/`](../05-http-stack), [`06-proxy/`](../06-proxy), và [`09-architecture/`](../09-architecture) — [`07-traits-and-generics.md`](07-traits-and-generics.md)
 là nền cho mọi thiết kế pluggable-strategy (load balancer, plugin system),
 [`11-concurrency-patterns.md`](11-concurrency-patterns.md) là nền cho connection pool trong

@@ -11,7 +11,7 @@ hợp đồng giữa supervisor và process của bạn (signal vào, exit code 
 trong một môi trường được kiểm soát — user, working directory, environment, limit, cgroup — theo dõi nó, restart nếu nó chết, giao signal
 dừng, và thu output của nó. Việc của process bạn là cư xử có thể dự đoán được trong hợp đồng đó thay vì tự daemonize: **ở foreground,
 log ra stdout/stderr, xử lý `SIGTERM`, thoát với exit code có ý nghĩa** ([`04-process-lifecycle.md`](04-process-lifecycle.md),
-[`08-observability/01-logging.md`](../08-observability/01-logging.md)). systemd là PID 1 trên host nên thu dọn orphan và sở hữu cgroup của mọi service.
+[`08-observability/01-logging.md`](../08-observability/01-logging.md)). systemd là PID 1 trên host nên reap orphan và sở hữu cgroup của mọi service.
 
 ### Một unit file
 ```ini
@@ -62,14 +62,14 @@ bỏ cuộc sau vài lần restart trong một cửa sổ ngắn (`StartLimitBur
 không làm sập service ([`09-architecture/03-config.md`](../09-architecture/03-config.md)). Hãy cảnh báo theo số lần restart, không chỉ "process đang chạy" ([`08-observability/06-alerting.md`](../08-observability/06-alerting.md)).
 
 ### Type=notify: readiness, không chỉ "đã khởi động"
-Với `Type=simple`, systemd coi service đã khởi động ngay khoảnh khắc process được fork — trước khi nó bind port hay nạp config. Các dependent và health gate khi đó chạy lố lên trước.
+Với `Type=simple`, systemd coi service đã khởi động ngay khoảnh khắc process được fork — trước khi nó bind port hay load config. Các dependent và health gate khi đó chạy lố lên trước.
 `Type=notify` sửa việc này: process gửi `READY=1` qua socket có tên trong `$NOTIFY_SOCKET` (qua `sd_notify`, hoặc crate `sd-notify`) *sau khi* nó thực sự sẵn sàng, và có thể gửi
 `RELOADING=1`/`STOPPING=1`. Cùng sự phân biệt đó tồn tại trong Kubernetes dưới dạng **readiness probe** vs việc process chỉ đang chạy
 ([`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)). Tránh `Type=forking` (kiểu daemonize cũ) cho phần mềm mới.
 
 ### Socket activation: systemd sở hữu listening socket
 Một unit `.socket` cho phép **systemd bind port** và trao cho process của bạn fd đã listen sẵn (truyền dưới dạng fd 3, với `$LISTEN_FDS`/`$LISTEN_PID` được set; các crate
-`listenfd` hoặc `sd-listen-fds` đọc nó). Lợi ích: port vẫn mở và **connection xếp hàng trong kernel backlog khi service restart** — một cách restart không downtime đơn giản
+`listenfd` hoặc `sd-listen-fds` đọc nó). Lợi ích: port vẫn mở và **connection được queue trong kernel backlog khi service restart** — một cách restart không downtime đơn giản
 ([`01-network/11-socket.md`](../01-network/11-socket.md)); service có thể bind port 443 và chạy không đặc quyền vì nó không bao giờ tự gọi `bind`
 ([`07-users-permissions-capabilities.md`](07-users-permissions-capabilities.md)); và thứ tự khởi động thôi quan trọng. Nó dùng cùng cơ chế thừa kế như một hot restart
 ([`10-ipc.md`](10-ipc.md), [`09-architecture/05-rolling-restart.md`](../09-architecture/05-rolling-restart.md)): một listening fd sống lâu hơn bất kỳ process đơn lẻ nào.

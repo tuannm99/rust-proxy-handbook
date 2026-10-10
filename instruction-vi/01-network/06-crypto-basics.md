@@ -13,13 +13,13 @@ chế chữ ký của JWT không còn là phép màu.
 
 ### Mã hóa symmetric: một bí mật dùng chung, nhanh
 Mã hóa **symmetric** dùng *cùng một* key để encrypt và decrypt. Nó nhanh —
-đủ rẻ để chạy trên mọi byte của mọi traffic của một kết nối — và chính tốc
-độ đó là lý do nó thực sự bảo vệ phần lớn dữ liệu trên một kết nối TLS
+đủ rẻ để chạy trên mọi byte của mọi traffic của một connection — và chính tốc
+độ đó là lý do nó thực sự bảo vệ phần lớn dữ liệu trên một connection TLS
 (AES và ChaCha20 là hai cái tên bạn sẽ thấy trong một TLS cipher suite).
 
 Vấn đề là phân phối key: cả hai bên cần *cùng* một secret key *trước khi*
 họ có thể nói chuyện an toàn, đây là bài toán con-gà-quả-trứng qua một
-mạng mà hai người lạ vừa mới kết nối — làm sao bạn đồng ý về một bí mật mà
+mạng mà hai người lạ vừa mới connection — làm sao bạn đồng ý về một bí mật mà
 không để kẻ nghe lén trên đường truyền cũng thấy nó? Giải quyết chính xác
 vấn đề này là việc của mục tiếp theo.
 
@@ -40,9 +40,9 @@ toán* ra cùng một secret dùng chung từ giá trị private của chính m�
 giá trị public của bên kia — một kẻ nghe lén thấy cả hai giá trị public
 không thể suy ra được secret dùng chung nếu thiếu giá trị private của một
 trong hai bên. Đây là cách TLS có được một symmetric key tươi mới cho mỗi
-kết nối, mà không bao giờ truyền chính key đó.
+connection, mà không bao giờ truyền chính key đó.
 
-### Cách tiếp cận hybrid mà mọi kết nối TLS thực sự dùng
+### Cách tiếp cận hybrid mà mọi connection TLS thực sự dùng
 Không khối xây dựng nào một mình vừa nhanh vừa dễ phân phối, nên TLS dùng
 cả hai, theo trình tự: key exchange **asymmetric** (ECDHE) trong lúc
 handshake để đồng ý về một secret dùng chung mà không truyền nó, rồi

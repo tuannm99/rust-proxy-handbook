@@ -95,7 +95,7 @@ compile time, không phải một sở thích về style.
    consistent-hash; chọn chiến lược cụ thể tại runtime từ một chuỗi config
    qua `Box<dyn LoadBalancer>`.
 4. Viết một extension trait cho một type bạn không sở hữu (ví dụ
-   `http::HeaderMap`) và giải thích vì sao orphan rule sẽ chặn việc
+   `http::HeaderMap`) và giải thích vì sao orphan rule sẽ ngăn việc
    implement trực tiếp một trait ngoại lai lên nó thay vào đó.
 5. Thêm một generic method vào một trait và thử dùng nó như `dyn Trait`;
    đọc lỗi object-safety và xác định chính xác nó vi phạm quy tắc nào.

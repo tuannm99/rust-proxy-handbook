@@ -20,7 +20,7 @@ sâu một frame và vô dụng theo một cách khác. Hãy build với
 (chính xác hơn, file perf.data lớn hơn nhiều, overhead cao hơn).
 
 Gotcha: `perf` cần quyền. `kernel.perf_event_paranoid` thường mặc định
-một giá trị chặn việc profile các process không có đặc quyền, và bên
+một giá trị block việc profile các process không có đặc quyền, và bên
 trong container bạn thường cần `CAP_PERFMON` (hoặc `--privileged`) cùng
 một kernel tương thích. Hãy giải quyết chuyện này *trước* khi có sự cố cần
 một profile.
@@ -59,15 +59,15 @@ nơi latency của một proxy thường nằm ở đó.
 Với riêng async, `tokio-console` là công cụ nhắm đúng: nó cho thấy số lần
 poll theo từng task, thời lượng poll, và — tín hiệu quan trọng — các task
 mà mỗi lần poll mất nhiều thời gian. Một lần poll chạy nhiều mili-giây là
-một task đang chặn executor thread ([`03-rust/05-async.md`](../03-rust/05-async.md)'s cooperative
-scheduling), làm khựng mọi connection khác trên worker đó. Thủ phạm phổ
+một task đang block executor thread ([`03-rust/05-async.md`](../03-rust/05-async.md)'s cooperative
+scheduling), làm stall mọi connection khác trên worker đó. Thủ phạm phổ
 biến trong một proxy: một lần đọc file đồng bộ
 ([`05-http-stack/06-static.md`](../05-http-stack/06-static.md)), một lần nén lớn
 ([`05-http-stack/07-compression.md`](../05-http-stack/07-compression.md)), regex trên một body lớn
 ([`07-security/06-waf.md`](../07-security/06-waf.md)), hoặc một lần ghi log đồng bộ
 ([`08-observability/01-logging.md`](01-logging.md)).
 
-Gotcha: một executor thread bị chặn xuất hiện như *latency trên các
+Gotcha: một executor thread bị block xuất hiện như *latency trên các
 request không liên quan*, đó là lý do vì sao nó khó chẩn đoán chỉ từ dữ
 liệu ở mức request — request chậm và các request bị ảnh hưởng là các
 request khác nhau.
@@ -143,7 +143,7 @@ Xây dựng theo thứ tự sau.
    profile lại. **Xong khi** bạn thấy nó xuất hiện — điều này giúp hiệu
    chỉnh mức độ dễ thấy của một regression cỡ đó trong thực tế.
 4. Chứng minh vấn đề quy kết của async. **Xong khi** bạn có thể cho thấy
-   một upstream chậm (tiêm 200ms độ trễ) không làm rộng bất cứ thứ gì
+   một upstream chậm (tiêm 200ms latency) không làm rộng bất cứ thứ gì
    trong flamegraph, và giải thích chỉ từ profile vì sao lại như vậy.
 5. Chạy `tokio-console` nhắm vào [`proxy`](../../proxy). **Xong khi** bạn có thể xác định
    task có thời lượng poll đơn lẻ dài nhất — rồi thêm một thao tác đồng

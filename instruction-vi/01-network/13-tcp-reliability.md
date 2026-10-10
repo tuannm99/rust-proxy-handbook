@@ -44,7 +44,7 @@ connection, không cần bắt packet.
 TCP giao byte **đúng thứ tự**. Nếu segment N mất, các byte sau N đã tới nằm
 trong receive buffer của kernel, **bị giữ lại không đưa cho application** cho
 tới khi N được retransmit. Mọi logical stream được multiplex trên connection đó
-cùng khựng lại. Đây là vấn đề HTTP/2 thừa hưởng (nhiều stream, một TCP
+cùng stall lại. Đây là vấn đề HTTP/2 thừa hưởng (nhiều stream, một TCP
 connection, [`17-http2.md`](17-http2.md)) và là lý do HTTP/3 chuyển sang QUIC, nơi mỗi stream
 tự hồi phục độc lập ([`18-http3.md`](18-http3.md)).
 
@@ -58,7 +58,7 @@ việc write phía client sẽ bị block ([`04-runtime/`](../04-runtime)). Nế
 buffer vô hạn, áp lực bị hấp thụ trong bộ nhớ của process — cách kinh điển để
 một client chậm làm sập proxy.
 
-Field window 16-bit bị chặn ở 64 KB, quá nhỏ cho link nhanh và dài. **Window
+Field window 16-bit bị cap ở 64 KB, quá nhỏ cho link nhanh và dài. **Window
 scaling** (thương lượng trong SYN, dịch tối đa 14 bit) nâng trần lên ~1 GB.
 **Bandwidth-delay product** ([`04-latency-throughput.md`](04-latency-throughput.md)) là window cần lớn cỡ nào để
 lấp đầy một đường truyền: link 1 Gbit/s với RTT 100 ms cần ~12,5 MB đang bay.
@@ -103,7 +103,7 @@ giữ các write nhỏ và gộp chúng lại cho tới khi ACK tới (hoặc go
 segment) — ít packet tí hon hơn. **Delayed ACK**: bên nhận chờ (tới ~40 ms) hy
 vọng ACK có thể đi kèm một reply, hoặc ACK hai segment một lúc. Kết hợp lại:
 client write một request thành hai mảnh nhỏ; mảnh thứ hai chờ ACK của mảnh thứ
-nhất, mà server đang trì hoãn vì đang chờ phần còn lại của request. Kết quả: khựng
+nhất, mà server đang trì hoãn vì đang chờ phần còn lại của request. Kết quả: stall
 ~40 ms ở mỗi request.
 
 `TCP_NODELAY` tắt Nagle; proxy và RPC server set nó, vì chúng đã tự framing các
@@ -139,11 +139,11 @@ queue) nằm ở [`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md).
 3. Đọc `wscale` và `sackOK` từ một SYN trong `tcpdump -n`, tính window tối đa
    nó cho phép (65535 << wscale), rồi tính BDP của đường 1 Gbit/s, 50 ms và so
    với mức tối đa của `net.ipv4.tcp_rmem`.
-4. Tái hiện cú khựng Nagle/delayed-ACK: viết một client scratch gửi `"GET /"` và
+4. Tái hiện stall Nagle/delayed-ACK: viết một client scratch gửi `"GET /"` và
    `" HTTP/1.1\r\n\r\n"` thành hai `write` riêng tới một server chỉ reply sau
    khi có request đầy đủ, có và không có `set_nodelay(true)`, và đo round trip;
    sửa theo cách thứ hai bằng cách ghép request thành một write duy nhất.
-5. Tạo backpressure có chủ đích: làm một client kết nối tới
+5. Tạo backpressure có chủ đích: làm một client connect tới
    [`labs/00-tcp-server`](../../labs/00-tcp-server) và gửi liên tục, trong khi handler phía server
    sleep trước mỗi lần read; cho thấy window rơi về 0 trong `tcpdump -n`
    (`win 0`) và `write` của client bị block, rồi xác nhận server giữ bộ nhớ

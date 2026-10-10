@@ -1,12 +1,12 @@
 # Vòng đời Process: fork, exec, wait, Zombie, và PID 1
 
-Một process được sinh ra, bị thay thế, được giám sát và được thu dọn như thế nào — và vì
+Một process được sinh ra, bị thay thế, được giám sát và được reap như thế nào — và vì
 sao hành vi của proxy khi là con của một shell, systemd hay container runtime lại phụ
 thuộc vào nó. Xây trên [`03-processes-and-threads.md`](03-processes-and-threads.md).
 
 ## What to learn
 
-### fork: nhân bản process
+### fork: clone process
 `fork()` tạo một **child** gần như là bản sao y hệt của caller: cùng code, cùng nội dung
 bộ nhớ (copy-on-write, nên việc copy là lười và rẻ — [`16-memory.md`](16-memory.md)), cùng **file
 descriptor đang mở** (cả hai process giờ cùng trỏ vào *cùng* các kernel object;
@@ -24,9 +24,9 @@ match pid {
     _  => /* parent: pid là id của child */ {},
 }
 ```
-Code Rust trong một process đa luồng (mọi chương trình tokio) không được `fork` rồi tiếp
+Code Rust trong một process multi-threaded (mọi chương trình tokio) không được `fork` rồi tiếp
 tục chạy code Rust trong child: chỉ thread gọi fork sống sót ở đó, và các lock do thread
-khác giữ sẽ bị khóa vĩnh viễn. Vì thế mới có lời gọi tiếp theo.
+khác giữ sẽ bị lock vĩnh viễn. Vì thế mới có lời gọi tiếp theo.
 
 ### exec: thay thế chương trình
 `execve(path, argv, envp)` **thay thế** process image hiện tại bằng một chương trình mới:
@@ -54,7 +54,7 @@ theo quy ước) hoặc "bị giết bởi signal N" — `128+N` trong shell, n�
 
 ```rust
 let mut child = std::process::Command::new("sleep").arg("1").spawn()?;
-let status = child.wait()?;           // thu dọn zombie; status.code() / .signal()
+let status = child.wait()?;           // reap zombie; status.code() / .signal()
 ```
 
 ### Orphan và PID 1
@@ -63,7 +63,7 @@ Nếu parent chết trước, các child của nó trở thành **orphan** và �
 `init`/`systemd`, và nó làm vậy. Trong container, **PID 1 là process của bạn** (process đầu
 tiên trong PID namespace, [`13-containers.md`](13-containers.md)) — và kernel đối xử đặc biệt với nó: nó
 **bỏ qua các signal mà nó không có handler** (nên `SIGTERM` không làm gì trừ khi bạn xử lý —
-[`17-signals.md`](17-signals.md)), và nó chịu trách nhiệm thu dọn các child mồ côi. Một proxy là PID 1 và
+[`17-signals.md`](17-signals.md)), và nó chịu trách nhiệm reap các child orphan. Một proxy là PID 1 và
 spawn helper có thể tích lũy zombie, và một proxy không cài `SIGTERM` handler thì không thể
 dừng một cách graceful. Các cách sửa chuẩn: cài handler (dù sao cũng cần cho graceful
 shutdown, [`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md)), hoặc chạy một init nhỏ (`tini`, `docker
@@ -102,7 +102,7 @@ qua SIGTERM và mất 10 giây mới dừng".
    `sleep` 60 s mà không gọi `wait()`; cho thấy entry `Z` bằng
    `ps -o pid,ppid,stat,cmd --ppid <parent>` và xác nhận nó biến mất khi parent gọi `wait()`
    hoặc thoát.
-3. Làm mồ côi một child: spawn `sleep 300` từ một shell rồi shell đó thoát
+3. Làm orphan một child: spawn `sleep 300` từ một shell rồi shell đó thoát
    (`sh -c 'sleep 300 &'`), và dùng `ps -o pid,ppid,cmd -C sleep` để xem `PPID` của nó đổi
    thành 1 (hoặc một subreaper).
 4. Làm một shell script `exec` một binary và một cái không, chạy mỗi cái dưới
@@ -113,5 +113,5 @@ qua SIGTERM và mất 10 giây mới dừng".
    `docker stop`/`kill -TERM 1` có và không có `tokio::signal` handler được cài, và ghi lại
    việc shutdown mất bao lâu và exit code (`echo $?`: 143 vs 137).
 6. Xem `/proc/<pid>/status` (`PPid`, `Threads`, `State`), `/proc/<pid>/fd`, và
-   `ls /proc/<pid>/task` của một chương trình tokio đa luồng đang chạy; khớp số thread với
+   `ls /proc/<pid>/task` của một chương trình tokio multi-threaded đang chạy; khớp số thread với
    các worker thread của runtime cộng blocking pool của nó.

@@ -1,6 +1,6 @@
 # Network
 
-Phase 1 của lộ trình học. Các giao thức mà một proxy phải nói, từ socket
+Phase 1 của lộ trình học. Các protocol mà một proxy phải nói, từ socket
 cho tới HTTP/3 — đọc trước [`02-linux/`](../02-linux) và [`05-http-stack/`](../05-http-stack), hai phần giả
 định bạn đã biết một connection và một request thực sự là gì.
 

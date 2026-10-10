@@ -14,14 +14,14 @@ UDP socket, không phải một `TcpListener`.
 ### Vì sao QUIC tránh được head-of-line blocking
 QUIC multiplex các stream độc lập giống cách HTTP/2 làm, nhưng vì việc
 khôi phục mất gói diễn ra theo từng stream bên trong QUIC (không phải
-theo từng kết nối như cách retransmission của TCP làm), một packet bị mất
-trên một stream không khựng các stream khác. Điều này sửa HOL blocking ở
+theo từng connection như cách retransmission của TCP làm), một packet bị mất
+trên một stream không stall các stream khác. Điều này sửa HOL blocking ở
 tầng TCP mà HTTP/2 trên TCP vẫn còn (xem [`17-http2.md`](17-http2.md)).
 
 ### Connection migration và 0-RTT
-Kết nối QUIC được định danh bởi một Connection ID, không phải một 4-tuple
+Connection QUIC được định danh bởi một Connection ID, không phải một 4-tuple
 (source IP, source port, dest IP, dest port) — nên một client chuyển mạng
-(WiFi sang di động) có thể giữ nguyên cùng một kết nối QUIC. 0-RTT cho
+(WiFi sang di động) có thể giữ nguyên cùng một connection QUIC. 0-RTT cho
 phép một client resume một phiên trước đó và gửi dữ liệu ứng dụng ngay
 trong lượt bay đầu tiên, với cái giá là rủi ro replay-attack cho các
 request không idempotent — một proxy chấp nhận dữ liệu 0-RTT phải đối xử
@@ -35,20 +35,20 @@ của QUIC, nên không có QUIC dạng cleartext. Điều này nghĩa là mọi
 deployment HTTP/3 cần cùng bộ máy cert/SNI/ALPN như [`19-tls.md`](19-tls.md), chỉ được
 mang khác đi trên đường truyền.
 
-### Một UDP socket, nhiều kết nối
+### Một UDP socket, nhiều connection
 Sự thay đổi vận hành lớn hơn "dùng UDP thay vì TCP". Với TCP, `accept()`
-đưa cho bạn một fd riêng biệt cho mỗi kết nối và kernel demux giúp bạn.
+đưa cho bạn một fd riêng biệt cho mỗi connection và kernel demux giúp bạn.
 Với QUIC bạn sở hữu **một** UDP socket duy nhất nhận datagram cho *mọi*
-kết nối, và bạn tự demultiplex ở userspace bằng cách đọc Connection ID ra
-khỏi mỗi packet và route nó tới đúng trạng thái kết nối. Không có fd riêng
-cho từng kết nối, nên giới hạn fd không còn là ràng buộc — và bảng kết nối
+connection, và bạn tự demultiplex ở userspace bằng cách đọc Connection ID ra
+khỏi mỗi packet và route nó tới đúng trạng thái connection. Không có fd riêng
+cho từng connection, nên giới hạn fd không còn là ràng buộc — và bảng connection
 của chính bạn trở thành ràng buộc đó.
 
 Hệ quả xuất hiện ngay lập tức: receive loop là một điểm nóng duy nhất
 (`quinn` giảm nhẹ bằng batching `recvmmsg` và `SO_REUSEPORT` giữa các
 worker), và không có backpressure ở `accept()` — datagram đến bất kể bạn
 đã sẵn sàng hay chưa, nên việc giới hạn accept-rate từ [`07-security/09-ddos.md`](../07-security/09-ddos.md)
-phải diễn ra sau khi đã parse đủ packet để biết đó là một nỗ lực kết nối
+phải diễn ra sau khi đã parse đủ packet để biết đó là một nỗ lực connection
 mới.
 
 Gotcha: kích thước buffer UDP quan trọng hơn hẳn so với TCP. Giá trị mặc
@@ -69,7 +69,7 @@ trên stream 4 có thể đến sau một tham chiếu tới nó trên stream 8.
 stream encoder/decoder một chiều riêng và cho phép một request block cho
 tới khi các entry nó tham chiếu đã đến.
 
-Gotcha: việc block đó là một khựng head-of-line mà bạn tái tạo lại bằng
+Gotcha: việc block đó là một stall head-of-line mà bạn tái tạo lại bằng
 cách nén quá tay. QPACK expose `SETTINGS_QPACK_BLOCKED_STREAMS` để giới
 hạn nó; đặt bảng động về 0 tắt hoàn toàn rủi ro này với cái giá là tỷ lệ
 nén, đây là một lựa chọn hợp lý cho một proxy coi trọng latency ổn định.
@@ -83,14 +83,14 @@ với TCP — khoảng cách đó là lý do chính khiến HTTP/3 không tự �
 chọn mặc định đúng đắn cho một hop proxy nội bộ.
 
 ### Triển khai nó: Alt-Svc và đường fallback
-Client không bắt đầu bằng HTTP/3. Chúng kết nối qua TCP và biết về HTTP/3
+Client không bắt đầu bằng HTTP/3. Chúng connection qua TCP và biết về HTTP/3
 từ một response header `Alt-Svc: h3=":443"; ma=86400`, rồi thử QUIC ở các
 request sau. Nên một deployment HTTP/3 *luôn luôn* cũng là một deployment
 TCP — bạn không thể bỏ HTTP/1.1/2 — và bạn phải xử lý trường hợp UDP bị
-một middlebox chặn, nơi client âm thầm fallback về TCP.
+một middlebox block, nơi client âm thầm fallback về TCP.
 
 Gotcha: chỉ quảng cáo `Alt-Svc` một khi đường UDP của bạn thực sự tiếp cận
-được. Quảng cáo nó trong khi UDP bị firewall chặn đẩy client vào một vòng
+được. Quảng cáo nó trong khi UDP bị firewall block đẩy client vào một vòng
 connect-timeout rồi retry ở mỗi request, chậm hơn cả việc chưa bao giờ
 quảng cáo nó.
 
@@ -119,7 +119,7 @@ Những gì bạn cần để [`labs/09-http3`](../../labs/09-http3) nói chuy�
   UDP port tạm. `quinn::ClientConfig::with_root_certificates(roots)` nhận
   một `rustls::RootCertStore` mà bạn đã thêm `ca.pem` vào. Cài nó bằng
   `set_default_client_config`. `endpoint.connect(addr, "localhost")?.await`
-  kết nối, và tên phải là một trong các SAN của leaf.
+  connection, và tên phải là một trong các SAN của leaf.
 - **ALPN.** Nếu một trong hai phía đặt ALPN, cả hai phải có chung một giá
   trị, nếu không handshake thất bại. Một echo lab thô có thể không đặt gì ở
   cả hai phía. HTTP/3 bắt buộc protocol `h3`, và đó là điểm xuất phát của
@@ -136,7 +136,7 @@ Những gì bạn cần để [`labs/09-http3`](../../labs/09-http3) nói chuy�
   mỗi request, không phải một cho mỗi connection.
 - **Nhìn thấy việc demultiplex.** Mỗi connection có `stable_id()` và
   `remote_address()`. Khi cài `tracing_subscriber` và đặt
-  `RUST_LOG=quinn_proto=trace`, quinn log sự kiện `new connection` kèm
+  `RUST_LOG=quinn_proto=trace`, quinn log event `new connection` kèm
   connection ID ban đầu. Hai client cho thấy hai connection ID đến trên
   cùng một socket, trong khi `ss -uanp` cho thấy chỉ có đúng một socket.
 
@@ -159,7 +159,7 @@ Gotcha: `netstat` (từ `net-tools`) không được cài trên nhiều distro h
 4. Giải thích bằng lời của bạn vì sao dữ liệu 0-RTT không bao giờ nên
    được tin tưởng cho một request không idempotent như `POST
    /transfer-funds`.
-5. Trong [`labs/09-http3`](../../labs/09-http3), chạy hai kết nối QUIC đồng thời trên cùng một
+5. Trong [`labs/09-http3`](../../labs/09-http3), chạy hai connection QUIC đồng thời trên cùng một
    UDP socket của bạn và log việc demux Connection ID — xác nhận bạn có
    thể thấy cả hai được route từ cùng một socket.
 6. Kiểm tra `net.core.rmem_max` trên máy bạn, rồi dồn tải endpoint đủ

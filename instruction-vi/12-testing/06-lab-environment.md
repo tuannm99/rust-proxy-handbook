@@ -22,7 +22,7 @@ hoặc `go install github.com/tsenart/vegeta/v12@latest` nếu bạn có Go. Doc
 chạy Prometheus và Jaeger ở phần dưới. Với Docker Engine cài ngay bên trong
 WSL, `--network host` hoạt động như trên Linux. Với Docker Desktop trên
 Windows, dùng `host.docker.internal` ở bất cứ chỗ nào một container cần
-kết nối tới một process trong WSL.
+connect tới một process trong WSL.
 
 ### Công cụ tạo tải: dùng cái nào khi nào
 - **`oha`** là lựa chọn hằng ngày. Nó in histogram latency và các

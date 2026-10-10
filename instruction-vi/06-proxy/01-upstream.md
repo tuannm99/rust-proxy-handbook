@@ -42,7 +42,7 @@ let resp = forward(&upstream, req).await;   // <-- nếu future này bị drop �
 upstream.active_conns.fetch_sub(1, Ordering::Relaxed);  // <-- ...dòng này không bao giờ chạy
 ```
 
-Trong một proxy async, một client ngắt kết nối giữa chừng sẽ drop task, và
+Trong một proxy async, một client disconnect giữa chừng sẽ drop task, và
 một future bị drop đơn giản là dừng lại ở `.await` cuối cùng — phép trừ
 sau đó không bao giờ thực thi ([`03-rust/05-async.md`](../03-rust/05-async.md): drop *chính là*
 cancel). Mỗi request bị cancel sẽ làm phồng counter lên vĩnh viễn.
@@ -67,28 +67,28 @@ công nào trong code async cũng là một leak đang chờ lần cancellation 
 tiên.
 
 ### Connection reuse tới upstream
-Mở một kết nối TCP (+ TLS) mới cho mỗi request được proxy là đắt: một RTT
+Mở một connection TCP (+ TLS) mới cho mỗi request được proxy là đắt: một RTT
 cho TCP handshake, thêm một hoặc hai RTT nữa cho TLS
 ([`01-network/19-tls.md`](../01-network/19-tls.md)), phải trả trước khi một byte request nào được
 chuyển đi. Giữ một connection pool nhỏ cho mỗi upstream và tái sử dụng các
-kết nối idle (`hyper-util`'s `client-legacy` pool làm điều này cho bạn,
+connection idle (`hyper-util`'s `client-legacy` pool làm điều này cho bạn,
 nhưng bạn nên biết vì sao nó tồn tại).
 
-Theo dõi riêng HTTP/1.1 keep-alive và HTTP/2 multiplexing: một kết nối
+Theo dõi riêng HTTP/1.1 keep-alive và HTTP/2 multiplexing: một connection
 HTTP/1.1 mang đúng một request tại một thời điểm, nên N request đồng thời
-tới một upstream cần N kết nối. Một kết nối HTTP/2 mang nhiều stream đồng
-thời, nên cùng N request đó có thể chỉ cần một kết nối — bị giới hạn bởi
+tới một upstream cần N connection. Một connection HTTP/2 mang nhiều stream đồng
+thời, nên cùng N request đó có thể chỉ cần một connection — bị giới hạn bởi
 `SETTINGS_MAX_CONCURRENT_STREAMS` mà upstream công bố
-([`01-network/17-http2.md`](../01-network/17-http2.md)), quá ngưỡng đó các stream mới sẽ xếp hàng sau
-các stream đã xong thay vì mở kết nối thứ hai, trừ khi bạn cho phép rõ
+([`01-network/17-http2.md`](../01-network/17-http2.md)), quá ngưỡng đó các stream mới sẽ queue sau
+các stream đã xong thay vì mở connection thứ hai, trừ khi bạn cho phép rõ
 ràng.
 
 ### Sizing cái pool
 Kích thước pool thực chất là một giới hạn concurrency được ngụy trang: một
-pool HTTP/1.1 giới hạn 16 kết nối idle tới một upstream nghĩa là tối đa 16
+pool HTTP/1.1 giới hạn 16 connection idle tới một upstream nghĩa là tối đa 16
 request in-flight tới nó, và request thứ 17 phải chờ. Little's law cho ra
 cận dưới — concurrency cần thiết = throughput × latency trung bình, nên
-1000 req/s ở 20ms là 20 request đồng thời, và một cap 16 kết nối sẽ âm
+1000 req/s ở 20ms là 20 request đồng thời, và một cap 16 connection sẽ âm
 thầm throttle bạn xuống dưới capacity thật.
 
 Sizing theo hướng ngược lại cũng sai không kém: một pool không giới hạn để
@@ -99,24 +99,24 @@ chứ không phải pool của bạn, mới là thứ fail.
 
 Gotcha: idle timeout phải *ngắn hơn* keep-alive timeout của chính upstream,
 nếu không bạn sẽ thua trong cuộc đua được mô tả tiếp theo. Nếu upstream
-đóng các kết nối idle sau 60s, một idle timeout 75s ở phía bạn đảm bảo bạn
-sẽ thường xuyên trao ra những kết nối mà upstream đã đóng.
+đóng các connection idle sau 60s, một idle timeout 75s ở phía bạn đảm bảo bạn
+sẽ thường xuyên trao ra những connection mà upstream đã đóng.
 
-### Kết nối chết trong pool, và khi nào retry nó là an toàn
-Một kết nối trong pool mà upstream đã đóng sẽ tạo ra một lỗi ở request kế
+### Connection chết trong pool, và khi nào retry nó là an toàn
+Một connection trong pool mà upstream đã đóng sẽ tạo ra một lỗi ở request kế
 tiếp dùng nó — thường trước khi một byte response nào tới. Đây không phải
 chuyện hiếm; nó xảy ra mỗi khi keep-alive timeout của upstream, một lần
 deploy, hoặc một idle reaper của load balancer kích hoạt giữa hai request
 của bạn.
 
-Quy tắc thông thường: một lỗi trên một kết nối *được tái sử dụng*, với
+Quy tắc thông thường: một lỗi trên một connection *được tái sử dụng*, với
 **không có** byte response nào nhận được, được coi là an toàn để retry một
-lần trên một kết nối mới ngay cả với một method không idempotent — lý do
+lần trên một connection mới ngay cả với một method không idempotent — lý do
 là request gần như chắc chắn chưa bao giờ tới được code ứng dụng của
 upstream. Chú ý chữ "gần như chắc chắn" đang làm gì ở đó: upstream trên
 thực tế có thể đã đọc request, hành động theo nó, rồi chết trước khi
 response, khi đó retry sẽ nhân đôi một side effect. Trình duyệt và hầu hết
-HTTP client chấp nhận rủi ro này cho các kết nối tái sử dụng; một proxy
+HTTP client chấp nhận rủi ro này cho các connection tái sử dụng; một proxy
 thanh toán thì không nên. Hãy quyết định có chủ đích, và xem [`05-retry.md`](05-retry.md)
 để biết quy tắc idempotency chung mà đây là một ngoại lệ của nó.
 
@@ -130,12 +130,12 @@ thường.
 "Timeout" thực ra là ít nhất ba con số khác nhau, và gộp chúng thành một
 là nguồn gốc phổ biến của cả request bị treo lẫn lỗi giả:
 - **Connect timeout** — chờ bao lâu cho TCP (+TLS) handshake. Nên ngắn
-  (vài trăm ms trên LAN); một kết nối chậm nghĩa là upstream không thể tới
+  (vài trăm ms trên LAN); một connection chậm nghĩa là upstream không thể tới
   được hoặc backlog của nó đầy, không phải nó đang hoạt động.
 - **Read/idle timeout** — chờ bao lâu cho byte *tiếp theo* từ upstream.
-  Bảo vệ trước một upstream đã accept kết nối rồi treo.
+  Bảo vệ trước một upstream đã accept connection rồi treo.
 - **Total request timeout** — giới hạn trên cho toàn bộ giao dịch. Cần
-  thiết vì một upstream độc hại hoặc hỏng có thể nhỏ giọt một byte ngay
+  thiết vì một upstream độc hại hoặc hỏng có thể slow-drip một byte ngay
   dưới read timeout mãi mãi, giữ request sống vô thời hạn (bản đối xứng
   phía upstream của tấn công Slowloris trong [`07-security/09-ddos.md`](../07-security/09-ddos.md)).
 
@@ -172,15 +172,15 @@ theo có ý nghĩa.
    để bạn thấy bug trước khi sửa nó.
 3. Nối connection reuse qua `hyper_util::client::legacy::Client`. **Xong
    khi** log (hoặc `ss -tan` nhắm vào upstream) cho thấy request thứ hai
-   tái sử dụng một kết nối thay vì mở mới.
+   tái sử dụng một connection thay vì mở mới.
 4. Đặt idle timeout của pool có chủ đích *dài hơn* keep-alive timeout của
    một upstream giả, rồi chạy traffic ngắt quãng. **Xong khi** bạn có thể
-   tái tạo lỗi kết-nối-chết-trong-pool theo yêu cầu; rồi sửa nó theo cả hai
+   tái tạo lỗi connection-chết-trong-pool theo yêu cầu; rồi sửa nó theo cả hai
    cách (idle timeout ngắn hơn, cộng với retry-một-lần-trên-kết-nối-mới) và
    xác nhận nó biến mất.
 5. Thêm ba loại timeout như các giá trị riêng biệt. **Xong khi** một
    upstream accept rồi treo mãi mãi bị fail bởi read timeout, và một
-   upstream nhỏ giọt một byte mỗi giây bị fail bởi total timeout — còn một
+   upstream slow-drip một byte mỗi giây bị fail bởi total timeout — còn một
    lượt tải streaming 100 MB hợp lệ thì *không* bị fail bởi cái nào cả.
 6. Mô phỏng một upstream bị sập (kill backend). **Xong khi** pool đánh dấu
    nó unhealthy và không thread request nào bị block trên nó — đo p99

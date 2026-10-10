@@ -47,10 +47,9 @@ Phiên bản kernel quan trọng rất nhiều: io_uring dùng được cần m�
 khá mới (5.11+ để hỗ trợ networking chắc chắn; các kernel cũ hơn có lỗ
 hổng bảo mật khiến vài distro tắt nó theo mặc định). Nó cũng từng có CVE
 thật, và một số môi trường hardened (ví dụ Docker/Kubernetes với seccomp
-profile, một số cloud sandbox) chặn nó hoàn toàn — một proxy *yêu cầu*
+profile, một số cloud sandbox) block nó hoàn toàn — một proxy *yêu cầu*
 io_uring có thể đơn giản là không khởi động được ở đó. Với một proxy L7
-mà bottleneck thường là TLS handshake, header parsing, và tái sử dụng kết
-nối upstream chứ không phải số lượng syscall thô, epoll + tokio gần như
+mà bottleneck thường là TLS handshake, header parsing, và tái sử dụng connection upstream chứ không phải số lượng syscall thô, epoll + tokio gần như
 luôn là lựa chọn thực dụng; coi io_uring là một tối ưu để với tới sau khi
 profiling cho thấy overhead syscall thực sự là bottleneck của bạn, không
 phải một mặc định.

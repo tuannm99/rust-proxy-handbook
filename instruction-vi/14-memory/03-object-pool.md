@@ -32,7 +32,7 @@ bất kể phạm vi của việc checkout kết thúc thế nào.
 
 ### Object pool vs arena: tái sử dụng qua nhiều request vs free hàng loạt trong một
 Điểm khác biệt quan trọng: nội dung của một arena đều "chết" cùng request
-đã cấp phát chúng, và bản thân arena thường sống ngắn (một arena mỗi
+đã allocate chúng, và bản thân arena thường sống ngắn (một arena mỗi
 request, hoặc tái sử dụng sau khi reset toàn bộ). Object của một pool sống
 lâu hơn bất kỳ request đơn lẻ nào — một connection struct hay buffer được
 checkout, dùng cho một request, trả lại, rồi được checkout lại bởi một

@@ -18,7 +18,7 @@ thị trong vài giờ đầu.
 
 ### External fragmentation
 Bộ nhớ trống tồn tại nhưng bị chia thành các mảnh quá nhỏ để đáp ứng một
-request. Cấp phát 10.000 × buffer 1 KB, free một nửa xen kẽ, và bạn có
+request. Allocate 10.000 × buffer 1 KB, free một nửa xen kẽ, và bạn có
 khoảng 5 MB trống không thể phục vụ dù chỉ một allocation 2 KB liên tục.
 
 Với một proxy, nguyên nhân kích hoạt là vòng đời lẫn lộn: buffer request
@@ -46,7 +46,7 @@ thái resident.
 
 Đây chính xác là vấn đề co lại của slab trong [`13-algorithms/slab.md`](../13-algorithms/slab.md),
 được tổng quát hóa: bất kỳ cấu trúc nào tăng lên đỉnh rồi giữ nguyên dung
-lượng đó sẽ ghim luôn các vùng của allocator theo nó.
+lượng đó sẽ pin luôn các vùng của allocator theo nó.
 
 Gotcha: malloc của glibc đặc biệt miễn cưỡng trong việc trả lại bộ nhớ, và
 các arena per-thread của nó nhân hiệu ứng này lên — mỗi thread có arena
@@ -56,7 +56,7 @@ mimalloc ([`02-linux/16-memory.md`](../02-linux/16-memory.md) nói về việc �
 thường giúp ích nhiều hơn bất kỳ việc tune glibc nào.
 
 ### Các cách sửa mang tính cấu trúc
-Fragmentation là vấn đề về pattern cấp phát, nên cách sửa là thay đổi
+Fragmentation là vấn đề về pattern allocate, nên cách sửa là thay đổi
 pattern chứ không phải allocator:
 
 - **Pool các object cùng kích thước.** Một buffer pool luôn trả về cùng
@@ -65,10 +65,9 @@ pattern chứ không phải allocator:
   vào một vùng và drop toàn bộ vùng đó ở cuối. Không có vòng đời đan xen,
   không có lỗ hổng.
 - **Tách vòng đời vào các allocator riêng.** Giữ connection state sống
-  lâu tách biệt khỏi dữ liệu request sống ngắn để cái trước không thể ghim
+  lâu tách biệt khỏi dữ liệu request sống ngắn để cái trước không thể pin
   giữ các vùng thuộc về cái sau.
-- **Pre-size cho đỉnh.** Nếu một cấu trúc sẽ đạt tới 100 nghìn entry, cấp
-  phát dung lượng đó một lần tốt hơn là tăng trưởng dần vào nó trong khi
+- **Pre-size cho đỉnh.** Nếu một cấu trúc sẽ đạt tới 100 nghìn entry, allocate dung lượng đó một lần tốt hơn là tăng trưởng dần vào nó trong khi
   fragment.
 
 Gotcha: pooling có failure mode riêng của nó — một pool tăng để phục vụ
@@ -85,12 +84,12 @@ không phải leak. Theo dõi nó như một gauge thay vì chẩn đoán một 
 toàn bộ vấn đề là nó phát triển qua nhiều ngày.
 
 ## Practice
-1. Tái tạo external fragmentation: cấp phát 100 nghìn × buffer 1 KB, free
-   một nửa xen kẽ, rồi thử cấp phát 10 nghìn × 2 KB. Ghi lại RSS ở mỗi
+1. Tái tạo external fragmentation: allocate 100 nghìn × buffer 1 KB, free
+   một nửa xen kẽ, rồi thử allocate 10 nghìn × 2 KB. Ghi lại RSS ở mỗi
    bước và xác nhận nó không giảm sau các lần free.
 2. Chạy cùng bài test dưới glibc malloc, rồi dưới jemalloc và mimalloc qua
    `#[global_allocator]`. So sánh mức đỉnh RSS.
-3. Đo việc làm tròn size-class: cấp phát struct 64, 65, 128, và 129 byte
+3. Đo việc làm tròn size-class: allocate struct 64, 65, 128, và 129 byte
    100 nghìn lần mỗi loại và so sánh mức tăng RSS thực tế với con số bạn
    kỳ vọng theo tính toán.
 4. Instrument [`proxy`](../../proxy) với một gauge allocated-vs-resident và chạy traffic

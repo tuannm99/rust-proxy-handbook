@@ -101,8 +101,8 @@ mode riêng; đó là ý nghĩa của "L7 proxy" ([`05-proxy-taxonomy.md`](05-pr
 | connect treo, rồi timeout | packet bị drop: firewall, sai route, host chết, PMTUD black hole | `tcpdump` (SYN, không reply), `traceroute` |
 | `Connection refused` (tức thì) | host tới được, không có gì listen (RST) | `ss -tlnp` trên server |
 | connect OK, rồi `Connection reset` | app đóng khi còn dữ liệu chưa đọc, hoặc middlebox RST | `tcpdump` tìm cờ `R` |
-| lỗi TLS / sai cert | thiếu SNI, cert hết hạn/không tin cậy, ALPN lệch | `openssl s_client -servername` |
-| response nhỏ ổn, lớn thì treo | MTU / PMTUD (ICMP bị chặn) | `ping -M do -s`, MSS clamp |
+| lỗi TLS / sai cert | thiếu SNI, cert expire/không tin cậy, ALPN lệch | `openssl s_client -servername` |
+| response nhỏ ổn, lớn thì treo | MTU / PMTUD (ICMP bị block) | `ping -M do -s`, MSS clamp |
 | thêm ~40 ms cho mọi request nhỏ | Nagle + delayed ACK | `TCP_NODELAY` |
 | đầu nhanh, truyền bulk chậm | cwnd lên tốc, loss, bufferbloat | `ss -ti`, tái hiện bằng `netem` |
 | `502` | upstream từ chối/không hợp lệ/đóng sớm | log proxy, `ss` trên upstream |
@@ -137,6 +137,6 @@ câu chuyện.
    `iptables ... -j REJECT --reject-with tcp-reset`, SNI sai, một `netem` loss/delay)
    và ghi lại `curl -v` và `ss`/`tcpdump` cho thấy gì, để mỗi triệu chứng trở thành một
    dấu vân tay nhận ra được.
-5. Viết, bằng lời của bạn và không nhìn lại, chuỗi sự kiện cho request đầu tiên tới
+5. Viết, bằng lời của bạn và không nhìn lại, chuỗi event cho request đầu tiên tới
    một site HTTPS mới qua một reverse proxy (bước 1–10), rồi đối chiếu với file này
    và ghi lại những gì bạn bỏ sót.

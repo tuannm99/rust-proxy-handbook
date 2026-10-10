@@ -8,7 +8,7 @@ tới khi bạn đã build một cái. Đây là guide, không phải notes — 
 theo project trong [`00-README.md`](00-README.md) là để bạn tự viết.
 
 Repository: `github.com/cloudflare/pingora`, một workspace gồm nhiều crate.
-Đường dẫn khớp với version tại thời điểm viết; nếu một đường dẫn đã chuyển
+Path khớp với version tại thời điểm viết; nếu một path đã chuyển
 chỗ, hãy search tên type hoặc trait được nêu.
 
 ## Các crate bạn sẽ ghé qua
@@ -25,7 +25,7 @@ chỗ, hãy search tên type hoặc trait được nêu.
 Bắt đầu trong `pingora-proxy` với trait `ProxyHttp` (file riêng của nó,
 `proxy_trait.rs`) và đọc doc comment của từng method theo thứ tự. Chúng
 được gọi ở những điểm cố định trong vòng đời một request — chọn upstream,
-filter request, filter response, logging, xử lý lỗi kết nối.
+filter request, filter response, logging, xử lý lỗi connection.
 - Vẽ thứ tự các callback này được gọi cho một request thành công. Middleware trong proxy của bạn ([`labs/14-plugin`](../../../labs/14-plugin)) lẽ ra chạy ở đâu trong thứ tự đó?
 - Callback nào có thể kết thúc request sớm, và bằng cách nào?
 - So với [`09-architecture/02-plugin.md`](../../09-architecture/02-plugin.md) và [`03-rust/18-async-traits.md`](../../03-rust/18-async-traits.md): pingora làm cho callback async hoạt động trên một trait thế nào, và cái giá là gì?
@@ -35,7 +35,7 @@ Theo một request HTTP/1 từ downstream, từ session phía server của
 `pingora-core` (`src/protocols/http/v1/server.rs`) vào `pingora-proxy`
 (đường HTTP/1, `proxy_h1.rs`), đi ra qua một connector tới upstream
 (`src/protocols/http/v1/client.rs`), rồi quay lại.
-- Body request và response được chuyển giữa hai connection thế nào — nguyên khối, hay stream từng chunk? Backpressure từ một client chậm sẽ chặn việc đọc từ upstream ở đâu?
+- Body request và response được chuyển giữa hai connection thế nào — nguyên khối, hay stream từng chunk? Backpressure từ một client chậm sẽ block việc đọc từ upstream ở đâu?
 - Connection tới upstream được trả về pool ở đâu, và trong điều kiện nào nó bị bỏ đi thay vì trả về?
 
 ### Điểm dừng 3: connection pool: `pingora-pool`
@@ -51,7 +51,7 @@ Theo một request HTTP/1 từ downstream, từ session phía server của
 ### Điểm dừng 5: chạy như một server
 Trong `pingora-core`, tìm phần bootstrap server và đường graceful upgrade
 (search việc chuyển listening socket giữa process cũ và process mới).
-- Một process pingora mới tiếp quản listening socket từ process cũ mà không làm rớt kết nối thế nào?
+- Một process pingora mới tiếp quản listening socket từ process cũ mà không làm rớt connection thế nào?
 - So với cách bạn làm [`09-architecture/04-graceful-shutdown.md`](../../09-architecture/04-graceful-shutdown.md) và [`09-architecture/05-rolling-restart.md`](../../09-architecture/05-rolling-restart.md). Cách của pingora cho bạn thứ gì mà drain-rồi-restart không cho?
 
 ### Điểm dừng 6: ước lượng rate: `pingora-limits`

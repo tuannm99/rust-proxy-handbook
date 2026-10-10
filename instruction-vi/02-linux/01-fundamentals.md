@@ -52,13 +52,13 @@ của host ([`13-containers.md`](13-containers.md)), và `uname -r` hiện phiê
    chính nó, và child `exec` `proxy` ([`04-process-lifecycle.md`](04-process-lifecycle.md)).
 2. **Kernel** đọc file thực thi, dựng một **address space** riêng mới, map code của
    chương trình vào ([`08-memory-basics.md`](08-memory-basics.md)), và làm một thread trở nên runnable.
-3. **Dynamic linker** nạp các shared library (`ldd ./proxy` liệt kê chúng); rồi
+3. **Dynamic linker** load các shared library (`ldd ./proxy` liệt kê chúng); rồi
    `main` chạy. Runtime của Rust và tokio khởi động các worker **thread**.
 4. Chương trình gọi **syscall** để làm bất cứ việc thật nào — `socket`, `bind`,
    `epoll_wait`, `read`, `write` — mỗi cái băng vào kernel rồi quay lại
    ([`05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md)); kết quả là các **file descriptor**.
 5. Khi chờ I/O, nó **block** và scheduler chạy thứ khác
-   ([`09-blocking-io-and-signals.md`](09-blocking-io-and-signals.md)); khi dữ liệu tới, một **interrupt** đánh thức nó
+   ([`09-blocking-io-and-signals.md`](09-blocking-io-and-signals.md)); khi dữ liệu tới, một **interrupt** wake up nó
    ([`02-hardware-basics.md`](02-hardware-basics.md)).
 6. Một **signal** (`SIGTERM`) yêu cầu nó dừng; nó drain và gọi `exit`
    ([`17-signals.md`](17-signals.md)). Kernel giải phóng bộ nhớ và fd của nó; parent
@@ -77,10 +77,9 @@ với hardware, quản lý memory cho mọi process, và enforce cách ly giữa
 chúng. Mọi thứ khác — proxy của bạn, shell của bạn, mọi process khác —
 chạy trong **user space**, không có quyền truy cập hardware trực tiếp và
 không thể đụng vào memory của process khác. Gần như mọi chủ đề trong
-[`02-linux/`](.) là hệ quả của đúng một ranh giới đó: cái giá phải trả khi băng
-qua nó ([`05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md)), nó cách ly cái gì
+[`02-linux/`](.) là hệ quả của đúng một ranh giới đó: cái giá phải trả khi cross nó ([`05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md)), nó cách ly cái gì
 ([`03-processes-and-threads.md`](03-processes-and-threads.md), [`13-containers.md`](13-containers.md)), và chuyện gì xảy ra
-khi kernel cần ngắt bạn thay vì chờ được hỏi
+khi kernel cần interrupt bạn thay vì chờ được hỏi
 ([`09-blocking-io-and-signals.md`](09-blocking-io-and-signals.md)).
 
 ### Mười hai mảnh, và mỗi mảnh nằm ở đâu
@@ -130,11 +129,11 @@ và netfilter ([`19-netfilter-and-linux-networking.md`](19-netfilter-and-linux-n
    ba process — với mỗi process, đoán (rồi kiểm chứng bằng `man`/docs) nó
    làm gì.
 2. Đọc mười hai file anh em theo thứ tự, rồi quay lại đây và giải thích, mỗi ý
-   một câu: vì sao thread rẻ hơn process, syscall thật ra băng qua cái gì,
+   một câu: vì sao thread rẻ hơn process, syscall thật ra cross cái gì,
    vì sao `read()` có thể block, và container cách ly cái gì mà một
    process bình thường không có.
 3. Chạy `cat /proc/version` và `cat /proc/cpuinfo | grep -c processor` —
    xác nhận bạn tìm được phiên bản kernel và số core mà không cần công cụ
    GUI.
-4. Chạy `strace -f ls 2>&1 | head -30` và, dùng danh sách "vòng đời một chương trình" ở trên, tìm `execve`, việc nạp library (`openat` các file `.so`), và công việc thật đầu tiên (`write`); rồi `ldd $(which ls)` và `cat /proc/self/maps | head` để thấy các library và address space bạn vừa đọc.
+4. Chạy `strace -f ls 2>&1 | head -30` và, dùng danh sách "vòng đời một chương trình" ở trên, tìm `execve`, việc load library (`openat` các file `.so`), và công việc thật đầu tiên (`write`); rồi `ldd $(which ls)` và `cat /proc/self/maps | head` để thấy các library và address space bạn vừa đọc.
 5. Không nhìn ghi chú, kể câu chuyện của `./proxy` từ lúc nhấn phím tới exit trong sáu bước, gọi tên syscall hoặc cơ chế kernel trong mỗi bước; đối chiếu với file này.

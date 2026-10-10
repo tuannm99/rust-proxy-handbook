@@ -10,7 +10,7 @@ bạn đã biết nó và tập trung vào những gì grammar không nói cho b
 ## What to learn
 
 ### Request/status line
-Một request line HTTP/1.1 là `METHOD SP request-target SP HTTP-version CRLF` (RFC 9112 §3, được viết rõ trong [`01-network/16-http1-wire-format.md`](../01-network/16-http1-wire-format.md)). RFC cho phép dễ dãi ở vài chỗ (tách theo khoảng trắng bất kỳ, chấp nhận `\n` trơ), và mỗi chỗ dễ dãi là một nơi parser của bạn và parser kế tiếp có thể bất đồng về cùng một chuỗi byte. Hãy coi từng chỗ là một quyết định bạn đưa ra có chủ đích và ghi lại, không phải một mặc định bạn thừa hưởng từ việc `split` làm gì.
+Một request line HTTP/1.1 là `METHOD SP request-target SP HTTP-version CRLF` (RFC 9112 §3, được viết rõ trong [`01-network/16-http1-wire-format.md`](../01-network/16-http1-wire-format.md)). RFC cho phép dễ dãi ở vài chỗ (tách theo khoảng trắng bất kỳ, chấp nhận `\n` trơ), và mỗi chỗ dễ dãi là một nơi parser của bạn và parser kế tiếp có thể bất đồng về cùng một byte sequence. Hãy coi từng chỗ là một quyết định bạn đưa ra có chủ đích và ghi lại, không phải một mặc định bạn thừa hưởng từ việc `split` làm gì.
 
 ### Parse header
 Header là các dòng `name: value CRLF` cho tới một dòng trống. Parser viết ẩu thường dính các lỗi: so khớp tên header phải case-insensitive, khoảng trắng đầu/cuối trong value, header trùng lặp (một số phải bị reject thẳng, ví dụ `Content-Length` trùng), và obsolete line folding (dòng tiếp nối bắt đầu bằng khoảng trắng) mà parser hiện đại nên đơn giản là reject.
@@ -60,7 +60,7 @@ caller sở hữu buffer. Khi gặp `Partial`, caller đọc thêm vào *cùng* 
 Gotcha: parse lại từ đầu ở mỗi lần đọc là O(n²) nếu attacker gửi từng byte
 một (n lần đọc × n byte quét lại). Với một parser để học, điều này chấp
 nhận được và đáng để đo đạc; parser production hoặc giới hạn header size đủ
-chặt để n² bị chặn trên, hoặc giữ một state machine tường minh với một
+chặt để n² bounded, hoặc giữ một state machine tường minh với một
 resume offset. Lưu ý tương tác với [`07-security/09-ddos.md`](../07-security/09-ddos.md): gửi từng byte
 một *chính là* tấn công Slowloris, nên ngưỡng tốc độ đọc dữ liệu và giới hạn
 của parser này bảo vệ cùng một lỗ hổng từ hai phía.
@@ -76,7 +76,7 @@ cụt không phải một request hợp lệ).
 Trường hợp cuối rất quan trọng: EOF khi request còn dang dở là lỗi, nhưng
 EOF ở ranh giới message sạch sẽ là một lần đóng connection bình thường. Gộp
 lẫn hai cái này hoặc là làm rò rỉ nửa request vào handler của bạn, hoặc log
-lỗi ở mọi lần client ngắt kết nối đàng hoàng.
+lỗi ở mọi lần client disconnect đàng hoàng.
 
 Gotcha: sau `Complete { consumed }`, các byte còn dư phải được dịch về đầu
 buffer (hoặc theo dõi bằng một read cursor) trước lần đọc kế tiếp. Quên điều
@@ -86,7 +86,7 @@ keep-alive ([`05-http-stack/05-keepalive.md`](05-keepalive.md)) bị parse từ 
 
 ### Giới hạn là một phần của parser, không phải một wrapper quanh nó
 Mọi đại lượng không giới hạn đều là một vector làm cạn memory, và parser là
-nơi duy nhất có đủ ngữ cảnh để chặn chúng. Tối thiểu, hãy áp: giới hạn độ
+nơi duy nhất có đủ ngữ cảnh để block chúng. Tối thiểu, hãy áp: giới hạn độ
 dài request line, số lượng header tối đa, kích thước một header tối đa,
 tổng kích thước khối header tối đa, kích thước chunk tối đa, tổng kích
 thước body tối đa. Áp chúng *trong lúc parse* — kiểm tra sau khi đã tích

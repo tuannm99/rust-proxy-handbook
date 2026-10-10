@@ -49,9 +49,9 @@ nào là cái nào vì bạn sẽ gặp cả ba:
 TCP là **connection-oriented**: trước khi bất kỳ dữ liệu nào chảy, cả hai
 bên trao đổi một handshake (xem mục tiếp theo) để đồng ý rằng cả hai đều
 sẵn sàng và đồng bộ trạng thái. Cả hai đầu sau đó theo dõi trạng thái của
-kết nối đó trong suốt vòng đời của nó — sequence number, dữ liệu chưa được
+connection đó trong suốt vòng đời của nó — sequence number, dữ liệu chưa được
 ack, kích thước buffer. Chính trạng thái này làm cho reliability và thứ tự
-trở nên khả thi, và cũng chính nó làm cho một kết nối TCP trở thành một
+trở nên khả thi, và cũng chính nó làm cho một connection TCP trở thành một
 *tài nguyên* thật, có trạng thái, trên cả hai máy (xem
 [`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md) để biết trạng thái đó tốn kém gì ở quy mô lớn,
 và [`02-addressing.md`](02-addressing.md) để biết về 4-tuple định danh nó).
@@ -67,19 +67,19 @@ TCP tạo ra head-of-line blocking mà HTTP/2 phải chịu ở tầng multiplex
 stream ([`01-network/17-http2.md`](17-http2.md)), và QUIC tái hiện thực reliability
 *theo từng stream*, ở userspace, chính là để tránh điều đó — một thứ bạn
 không thể làm trên nền TCP vì đảm bảo về thứ tự của TCP áp dụng cho cả
-kết nối, không phải cho từng logical stream.
+connection, không phải cho từng logical stream.
 
 ### Handshake: đồng ý về trạng thái trước khi trao đổi dữ liệu
 Một "handshake" là bất kỳ cuộc trao đổi nào mà cả hai bên đồng ý về trạng
 thái chung trước khi dữ liệu thật chảy — bạn sẽ gặp từ này ba lần riêng
 biệt trong thư mục này, mỗi lần là một instance khác nhau của cùng một ý
 tưởng:
-- **3-way handshake của TCP** ([`12-tcp.md`](12-tcp.md)) đồng ý về trạng thái kết nối
+- **3-way handshake của TCP** ([`12-tcp.md`](12-tcp.md)) đồng ý về trạng thái connection
   và sequence number ban đầu.
 - **Handshake của TLS** ([`19-tls.md`](19-tls.md)) đồng ý về encryption key và
   protocol version/cipher nào sẽ dùng.
 - **Handshake `Upgrade` của HTTP/1.1** ([`05-http-stack/10-websocket.md`](../05-http-stack/10-websocket.md))
-  đồng ý dừng nói HTTP và bắt đầu nói một protocol khác trên cùng kết nối.
+  đồng ý dừng nói HTTP và bắt đầu nói một protocol khác trên cùng connection.
 
 Nhận ra "đây là một handshake" cho bạn biết nên kỳ vọng gì: một cuộc trao
 đổi qua lại cố định, trạng thái mà cả hai bên giờ phải đồng ý, và một
@@ -87,7 +87,7 @@ failure mode nơi một bên nghĩ handshake đã thành công còn bên kia th�
 không (đây là nơi rất nhiều bug thật sự trú ngụ).
 
 ### Stateful vs stateless, ở tầng application
-Sự khác biệt ở tầng kết nối phía trên (TCP theo dõi trạng thái, UDP thì
+Sự khác biệt ở tầng connection phía trên (TCP theo dõi trạng thái, UDP thì
 không) có một tiếng vọng ở tầng application đáng nêu riêng: các protocol
 **stateless** (HTTP/1.1 request/response thuần túy, ở mức ngữ nghĩa — xem
 [`01-network/15-http.md`](15-http.md)) xử lý mỗi request độc lập, không nhớ gì về những
@@ -110,8 +110,8 @@ nơi dùng chung, không phải trên một instance riêng lẻ.
    resolver local, hoặc bất kỳ traffic UDP nào bạn tạo được) và một cuộc
    trao đổi TCP song song; xác định handshake trong bản capture TCP và
    xác nhận không có handshake nào trong bản UDP.
-3. Viết ra, mỗi ý một câu, trạng thái nào một kết nối TCP đang theo dõi
-   mà một "kết nối" UDP (thực ra chỉ là một 4-tuple cố định bạn chọn tái
+3. Viết ra, mỗi ý một câu, trạng thái nào một connection TCP đang theo dõi
+   mà một "connection" UDP (thực ra chỉ là một 4-tuple cố định bạn chọn tái
    sử dụng) thì không.
 4. Đọc mục 3-way handshake trong [`01-network/12-tcp.md`](12-tcp.md) và mục handshake
    trong [`01-network/19-tls.md`](19-tls.md) liền nhau; liệt kê mỗi cái đang đồng ý về

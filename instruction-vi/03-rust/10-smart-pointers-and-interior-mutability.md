@@ -3,7 +3,7 @@
 ## What to learn
 
 ### `Box<T>`: single ownership, trên heap
-`Box<T>` là một vùng cấp phát trên heap với cùng quy tắc move/borrow như
+`Box<T>` là một vùng allocate trên heap với cùng quy tắc move/borrow như
 bất kỳ giá trị owned nào, chỉ khác là được backing bởi bộ nhớ heap thay vì
 stack. Nó xuất hiện cho: các giá trị quá lớn để di chuyển rẻ, các type đệ
 quy (một type không thể chứa chính nó theo giá trị, nhưng có thể chứa một
@@ -14,18 +14,18 @@ không có kích thước biết trước tại compile time.
 struct Recursive { child: Box<Recursive> } // needs Box: without it, the type has infinite size
 ```
 
-### `Rc<T>` vs `Arc<T>`: shared ownership, đơn luồng vs. đa luồng
-`Rc<T>` là shared ownership dùng reference count cho code đơn luồng —
+### `Rc<T>` vs `Arc<T>`: shared ownership, single-threaded vs. multi-threaded
+`Rc<T>` là shared ownership dùng reference count cho code single-threaded —
 bản thân count không phải atomic, nên rẻ hơn nhưng không phải `Send`/
 `Sync`. `Arc<T>` là cùng ý tưởng đó với một count atomic, an toàn để chia
 sẻ xuyên thread. Trong một proxy async, gần như mọi thứ đều đi qua ranh
 giới thread qua `tokio::spawn`, nên `Rc` hiếm khi xuất hiện — chủ yếu bên
-trong một future đơn luồng có chủ đích trên một runtime `current_thread`
+trong một future single-threaded có chủ đích trên một runtime `current_thread`
 hoặc `LocalSet` ([`04-runtime/03-runtime-config.md`](../04-runtime/03-runtime-config.md)). Mặc định dùng `Arc`
-và chỉ hạ xuống `Rc` khi một giá trị được cố tình ghim vào một thread duy
+và chỉ hạ xuống `Rc` khi một giá trị được cố tình pin vào một thread duy
 nhất là thói quen an toàn hơn.
 
-### `Cell<T>` và `RefCell<T>`: interior mutability, đơn luồng
+### `Cell<T>` và `RefCell<T>`: interior mutability, single-threaded
 Cả hai đều cho phép bạn mutate qua một shared reference (`&T`), điều mà
 borrow checker thường cấm. `Cell<T>` hoạt động với các type `Copy` qua
 `get`/`set` — không cần sổ sách gì tại runtime, chỉ là một phép hoán đổi
@@ -47,12 +47,12 @@ thể chạy — và cũng thử borrow — trong khi task đầu tiên đang b�
 được thiết kế để làm cho không-thể-xảy-ra thay vì panic tại runtime.
 
 ### `Mutex<T>`/`RwLock<T>`: cùng một dải phổ, xuyên thread
-Nơi `RefCell` enforce aliasing tại runtime cho code đơn luồng,
-`Mutex<T>`/`RwLock<T>` enforce điều tương đương cho đa luồng, blocking
+Nơi `RefCell` enforce aliasing tại runtime cho code single-threaded,
+`Mutex<T>`/`RwLock<T>` enforce điều tương đương cho multi-threaded, blocking
 thay vì panic khi có contention — [`03-rust/04-sync.md`](04-sync.md) bao quát chúng đầy
 đủ; điểm của file này là cả bốn type đều nằm trên một dải phổ: được check
 tại compile time (`&`/`&mut` thuần túy), được check tại runtime cho đơn
-luồng (`Cell`/`RefCell`), và blocking cho đa luồng (`Mutex`/`RwLock`).
+luồng (`Cell`/`RefCell`), và blocking cho multi-threaded (`Mutex`/`RwLock`).
 
 ### `Cow<'a, T>`: tránh clone cho tới khi thực sự cần
 `Cow` ("clone on write") giữ hoặc một borrowed reference hoặc một giá trị

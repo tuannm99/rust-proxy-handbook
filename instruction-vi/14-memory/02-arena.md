@@ -1,14 +1,14 @@
 # Arena Allocation
 
-[`14-memory/01-allocator.md`](01-allocator.md) nói về cấp phát tổng quát. Arena là chiến lược
+[`14-memory/01-allocator.md`](01-allocator.md) nói về allocate tổng quát. Arena là chiến lược
 ngược lại cho một dạng workload cụ thể — thứ mà một proxy có liên tục:
 nhiều allocation nhỏ đều "chết" cùng nhau vào cuối một request.
 
 ## What to learn
 
 ### Bump allocation: một con trỏ, không free list
-Một arena cấp phát bộ nhớ bằng cách đẩy một con trỏ duy nhất tiến lên
-trong một khối đã cấp phát sẵn; không có free theo từng object — toàn bộ
+Một arena allocate bộ nhớ bằng cách đẩy một con trỏ duy nhất tiến lên
+trong một khối đã allocate sẵn; không có free theo từng object — toàn bộ
 khối được giải phóng (hoặc reset và tái sử dụng) như một thao tác duy nhất
 khi phạm vi của arena kết thúc:
 
@@ -33,9 +33,9 @@ alloc-và-free riêng của `Box`/`Vec` trở thành một allocation và một 
 giải phóng hàng loạt.
 
 ### Phù hợp với: dữ liệu theo phạm vi request
-Một HTTP request thường cấp phát nhiều mảnh dữ liệu sống ngắn — header đã
+Một HTTP request thường allocate nhiều mảnh dữ liệu sống ngắn — header đã
 parse, giá trị trung gian của quyết định routing, buffer cho việc biến
-đổi — tất cả chỉ cần tồn tại đến khi response được gửi đi. Cấp phát mỗi
+đổi — tất cả chỉ cần tồn tại đến khi response được gửi đi. Allocate mỗi
 mảnh đó vào một arena theo request và drop toàn bộ arena khi request hoàn
 tất biến hàng chục lần free riêng lẻ thành một lần. Đây cũng chính xác là
 cách sửa mà [`14-memory/06-fragmentation.md`](06-fragmentation.md) khuyến nghị cho nguyên nhân
@@ -43,19 +43,19 @@ fragmentation "vòng đời lẫn lộn": dữ liệu theo phạm vi request kh�
 giờ có cơ hội đan xen với connection state sống lâu hơn nếu nó nằm trong
 arena riêng của nó.
 
-### Gotcha: vòng đời của dữ liệu cấp phát từ arena chính là vòng đời của arena
-Giá trị cấp phát từ một arena là reference mượn từ nó — chúng không thể
+### Gotcha: vòng đời của dữ liệu allocate từ arena chính là vòng đời của arena
+Giá trị allocate từ một arena là reference mượn từ nó — chúng không thể
 sống lâu hơn arena mà không được copy ra trước. Trong một async handler,
 điều này có nghĩa là arena (hay một reference vào nó) phải sống ít nhất
 bằng mọi điểm `.await` chạm vào dữ liệu mượn từ nó — chính xác là kiểu
 tình huống self-referential-qua-await-point mà [`03-rust/06-pin.md`](../03-rust/06-pin.md) mô tả.
-Cụ thể: đừng cấp phát vào một arena là biến local rồi cố giữ một reference
+Cụ thể: đừng allocate vào một arena là biến local rồi cố giữ một reference
 vào nó qua một future bị suspend sống lâu hơn hàm — hoặc để future sở hữu
 arena trong state của nó, hoặc copy dữ liệu ra trước điểm suspend.
 
 ### Gotcha: arena không giới hạn theo request là một quả bom bộ nhớ
 Một arena tăng trưởng không giới hạn (ví dụ xử lý một request body không
-giới hạn do kẻ tấn công kiểm soát thành các mảnh cấp phát trong arena) loại
+giới hạn do kẻ tấn công kiểm soát thành các mảnh allocate trong arena) loại
 bỏ backpressure tự nhiên mà một giới hạn theo từng allocation lẽ ra đã
 cung cấp. Giới hạn tổng kích thước arena theo mỗi request và từ chối/báo
 lỗi khi vượt quá, giống cách bạn giới hạn bất kỳ tài nguyên nào khác theo

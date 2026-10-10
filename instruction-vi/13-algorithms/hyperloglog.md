@@ -13,7 +13,7 @@ mà không bao giờ phải lưu bản thân tập IP.
 Hash mỗi key đến thành một chuỗi bit ngẫu nhiên đồng đều. Vị trí của bit 1
 đầu tiên tính từ trái (tương đương, số bit 0 dẫn đầu) trong hash đó, tự
 bản thân nó, là một tín hiệu yếu về cardinality: thấy một hash có 10 bit 0
-dẫn đầu là một sự kiện `1-trên-1024`, nên việc quan sát được dù chỉ một
+dẫn đầu là một event `1-trên-1024`, nên việc quan sát được dù chỉ một
 lần gợi ý rằng khoảng một nghìn hash riêng biệt đã được thử. Một quan sát
 đơn lẻ như vậy quá nhiễu để tin một mình — đóng góp của HyperLogLog là
 lấy trung bình tín hiệu này qua nhiều bucket độc lập để kiểm soát phương

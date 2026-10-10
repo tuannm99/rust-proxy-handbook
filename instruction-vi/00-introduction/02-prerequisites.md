@@ -20,7 +20,7 @@ Trả lời mà không tra cứu gì. Mỗi câu "chưa" trỏ tới phần bên
 - Bạn đã từng viết một trait và implement nó cho hai type chưa?
 
 **Networking:**
-- Bạn có mô tả được, từng bước, chuyện gì xảy ra giữa lúc gõ `curl http://example.com` và lúc thấy HTML — tra DNS, bắt tay TCP, HTTP request, response không?
+- Bạn có mô tả được, từng bước, chuyện gì xảy ra giữa lúc gõ `curl http://example.com` và lúc thấy HTML — tra DNS, handshake TCP, HTTP request, response không?
 - Bạn có biết port là gì, và vì sao hai chương trình không thể cùng listen trên port 8080 không?
 
 **Hệ điều hành:**
@@ -59,7 +59,7 @@ và các bound `Send` tồn tại; thiếu nền tảng, câu nào đọc cũng 
 và bạn sẽ kết luận — sai — rằng mình không đủ khả năng.
 
 ### Networking và OS: dùng track người mới ở đây
-Bạn không cần một khóa học bên ngoài. [`01-network/`](../01-network) và [`02-linux/`](../02-linux) mỗi thư
+Bạn không cần một lock học bên ngoài. [`01-network/`](../01-network) và [`02-linux/`](../02-linux) mỗi thư
 mục có phần "Cách đọc thư mục này" với một track người mới: đọc mọi file
 theo thứ tự, bắt đầu từ `01-fundamentals.md`, và làm Practice trước khi đi
 tiếp. Hai nhóm fundamentals đó được viết như primer từ số 0 cho đúng tình

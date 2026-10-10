@@ -14,7 +14,7 @@ từng hop một, mà không cần biết gì về nội dung bên trong packet.
 
 ### Port định danh một process trên host đó
 Một **port** là một số 16-bit (0-65535) định danh một chương trình đang
-lắng nghe cụ thể *trên* host đó. Nó trả lời câu hỏi "chương trình nào trên
+listen cụ thể *trên* host đó. Nó trả lời câu hỏi "chương trình nào trên
 máy tính đó". Một máy có thể chạy web server trên port 443 và SSH daemon
 trên port 22 cùng lúc — IP address đưa packet tới đúng *máy*, port đưa nó
 tới đúng *chương trình*.
@@ -27,19 +27,19 @@ balancer, `iptables`, một capability grant) để đưa traffic tới nó.
 
 Các port trên khoảng 32768 (dải chính xác có thể cấu hình, xem
 `/proc/sys/net/ipv4/ip_local_port_range`) là **ephemeral**: OS tự động
-gán một port cho phía *client* của một kết nối đi ra, chọn từ pool đó và
-giải phóng khi kết nối đóng. Gotcha, và là một gotcha thật trong production:
-một proxy mở nhiều kết nối outbound ngắn hạn tới cùng một upstream có thể
+gán một port cho phía *client* của một connection đi ra, chọn từ pool đó và
+giải phóng khi connection đóng. Gotcha, và là một gotcha thật trong production:
+một proxy mở nhiều connection outbound ngắn hạn tới cùng một upstream có thể
 cạn kiệt pool ephemeral port của chính nó (mặc định khoảng 28,000 port khả
 dụng) nhanh hơn tốc độ `TIME_WAIT` giải phóng chúng — đây là lý do thực tế
 vì sao [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md) và [`01-network/12-tcp.md`](12-tcp.md) nhấn mạnh việc
-tái sử dụng kết nối thay vì dial mới cho mỗi request.
+tái sử dụng connection thay vì dial mới cho mỗi request.
 
 ### Một socket, chính xác là gì
 Một **socket** là sự kết hợp: một IP address cộng một port, đại diện cho
-một đầu của một kết nối. Một kết nối TCP thực ra được định danh bởi *bốn*
+một đầu của một connection. Một connection TCP thực ra được định danh bởi *bốn*
 giá trị cùng nhau (gọi là "4-tuple"): source IP, source port, destination
-IP, destination port. Đó là lý do một server process lắng nghe trên một
+IP, destination port. Đó là lý do một server process listen trên một
 port có thể phục vụ hàng nghìn client đồng thời — 4-tuple của mỗi client
 khác nhau dù IP và port của server là cố định. [`01-network/11-socket.md`](11-socket.md)
 nói về API thực sự tạo ra một socket.
@@ -73,7 +73,7 @@ công cộng. Hai dạng quan trọng ở đây:
 - **SNAT (source NAT)**, trường hợp phổ biến ở router gia đình/CGNAT: một
   thiết bị viết lại source address của nhiều client nội bộ thành một IP
   công cộng khi traffic đi ra, và viết lại reply theo chiều ngược lại,
-  theo dõi client nội bộ nào sở hữu kết nối outbound nào. Từ góc nhìn của
+  theo dõi client nội bộ nào sở hữu connection outbound nào. Từ góc nhìn của
   server, hàng nghìn user gia đình khác nhau đứng sau CGNAT của cùng một
   ISP có thể đều xuất hiện như cùng *một* source IP.
 - **DNAT (destination NAT)**, thứ mà một load balancer hoặc một
@@ -81,7 +81,7 @@ công cộng. Hai dạng quan trọng ở đây:
   viết lại destination thành bất kỳ backend thật nào sẽ xử lý nó, trước
   khi proxy của bạn kịp thấy nó.
 
-Vì sao điều này quan trọng với riêng một proxy: đến lúc một kết nối tới
+Vì sao điều này quan trọng với riêng một proxy: đến lúc một connection tới
 được listening socket của bạn, `peer_addr()` có thể đã cách client thật
 vài hop NAT — đây *chính xác* là vấn đề mà [`01-network/20-proxy-protocol.md`](20-proxy-protocol.md)
 và phần thảo luận `X-Forwarded-For` trong [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)
@@ -114,7 +114,7 @@ việc của application.
    trang "what's my IP" và so sánh địa chỉ nó báo với địa chỉ máy bạn ở
    bước 1 — chúng sẽ khác nhau; khoảng cách đó chính là SNAT của router
    bạn đang hoạt động.
-5. Trong [`labs/00-tcp-server`](../../labs/00-tcp-server), kết nối hai client khác nhau cùng lúc và
-   log đầy đủ 4-tuple của mỗi kết nối (`local_addr()` + `peer_addr()`) —
+5. Trong [`labs/00-tcp-server`](../../labs/00-tcp-server), connection hai client khác nhau cùng lúc và
+   log đầy đủ 4-tuple của mỗi connection (`local_addr()` + `peer_addr()`) —
    xác nhận chúng chỉ khác nhau ở source port nếu cả hai client cùng nằm
    trên một máy.

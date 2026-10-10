@@ -2,7 +2,7 @@
 
 Trải một cache qua nhiều node khi một cache single-node
 ([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md), [`13-algorithms/lru.md`](../13-algorithms/lru.md)) không còn đủ. Topic
-[`18-distributed/`](.) duy nhất kết nối trực tiếp nhất với một proxy — nhưng
+[`18-distributed/`](.) duy nhất connection trực tiếp nhất với một proxy — nhưng
 vẫn vượt ngoài deliverable single-instance của [`proxy/`](../../proxy).
 
 ## What to learn
@@ -10,7 +10,7 @@ vẫn vượt ngoài deliverable single-instance của [`proxy/`](../../proxy).
 ### Vì sao phải đi distributed
 Một cache theo từng instance trong một fleet N proxy có hai vấn đề: cùng
 một object bị cache N lần (N× bộ nhớ, N× miss origin khi cold start), và
-hit rate bị chặn bởi bộ nhớ của một instance. Một distributed cache làm
+hit rate bị cap bởi bộ nhớ của một instance. Một distributed cache làm
 cho fleet chia sẻ một cache logic duy nhất — mỗi object sống trên một
 (hoặc vài) node, nên tổng capacity là tổng của tất cả và mỗi object được
 fetch từ origin đại khái một lần. Đây chính là bài toán edge-cache của
@@ -60,7 +60,7 @@ eventual consistency ở đây — strong consistency
 nó tiết kiệm được.
 
 ### Thundering herd trên toàn fleet
-Khi một object phổ biến hết hạn, mọi proxy nhận request cho nó có thể hit
+Khi một object phổ biến expire, mọi proxy nhận request cho nó có thể hit
 origin đồng thời — một stampede toàn fleet còn tệ hơn nhiều phiên bản
 single-node (request coalescing của [`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)). Cách
 sửa distributed là chỉ node *sở hữu* fetch từ origin và các node khác
@@ -78,7 +78,7 @@ khả thi.
 3. Xây hình dạng hai tầng: một LRU local nhỏ đứng trước lượt tra
    distributed, và đo lượng traffic network mà tầng local hấp thụ được
    trên một workload object hot.
-4. Tái tạo một thundering herd toàn fleet khi hết hạn, rồi sửa nó bằng
+4. Tái tạo một thundering herd toàn fleet khi expire, rồi sửa nó bằng
    origin fetch chỉ-owner cộng single-flight coalescing trên owner.
 5. Implement purge với versioned key và một invalidation được gossip
    ([`18-distributed/02-gossip.md`](02-gossip.md)); suy luận rõ ràng về khoảng staleness

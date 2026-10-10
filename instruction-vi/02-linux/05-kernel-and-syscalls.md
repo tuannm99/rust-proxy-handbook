@@ -5,9 +5,9 @@ Một phần của chuỗi fundamentals từ-con-số-0 — xem
 
 ## What to learn
 
-### Băng qua ranh giới
+### Cross ranh giới
 Khi chương trình của bạn cần làm một việc chỉ kernel mới làm được — đọc
-file, gửi packet, cấp phát memory, tạo socket — nó thực hiện một
+file, gửi packet, allocate memory, tạo socket — nó thực hiện một
 **syscall**: một yêu cầu có kiểm soát, được định nghĩa rõ ràng, chuyển
 CPU sang kernel mode, để kernel làm công việc có đặc quyền, rồi chuyển
 lại. `bind()`, `listen()`, `accept()`, `read()`, `write()` — mọi thứ
@@ -42,7 +42,7 @@ vào — một file thường, một TCP socket, một pipe, một timer, một 
 đều được biểu diễn với process của bạn theo cùng một cách: một số nguyên
 không âm nhỏ gọi là **file descriptor (fd)**. Đó là một index vào một
 bảng mà kernel giữ *theo từng process*, và mỗi entry trỏ tới object thật
-của kernel (một file đang mở, trạng thái kết nối của một socket, v.v.)
+của kernel (một file đang mở, trạng thái connection của một socket, v.v.)
 cùng với một offset và một số flag.
 
 Sự thống nhất này là lý do [`02-linux/14-epoll.md`](14-epoll.md) có thể đăng ký một
@@ -71,7 +71,7 @@ fd (trong process này hoặc process khác, sau một `fork()`) hiện đang th
 chiếu tới nó — object chỉ thực sự được giải phóng khi tham chiếu cuối
 cùng bị đóng. Đây là nền tảng cho một gotcha bạn sẽ gặp trực tiếp trong
 [`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md): drop handle của bạn tới một
-socket không nhất thiết có nghĩa kết nối bên dưới đóng ngay lập tức nếu
+socket không nhất thiết có nghĩa connection bên dưới đóng ngay lập tức nếu
 thứ khác vẫn còn tham chiếu tới nó.
 
 ### Kernel mode vs một user có đặc quyền (root) — hai trục khác nhau
@@ -90,7 +90,7 @@ công hơn.
 1. Chạy `ls /proc/self/fd` trong shell (hoặc viết một chương trình Rust
    nhỏ, in `std::process::id()`, và kiểm tra `/proc/<pid>/fd` từ một
    terminal khác trong khi nó chạy) và xác nhận fd 0/1/2 có mặt; mở một
-   file và một kết nối TCP trong chương trình và xem các entry số mới
+   file và một connection TCP trong chương trình và xem các entry số mới
    xuất hiện.
 2. `strace -c` một lần chạy [`labs/00-tcp-server`](../../labs/00-tcp-server) xử lý vài request và đọc
    bảng tổng hợp — xác định syscall nào chiếm ưu thế về số lượng, và nối

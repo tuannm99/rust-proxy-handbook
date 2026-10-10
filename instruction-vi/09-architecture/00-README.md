@@ -9,7 +9,7 @@ reconfigure, deploy, và restart ra sao mà không rớt traffic.
 - [`01-components.md`](01-components.md) — pipeline Listener → ConnMgr → Codec → Router → Modules, và vì sao thứ tự module là một quyết định bảo mật
 - [`02-plugin.md`](02-plugin.md) — compile-time composition vs runtime plugin, sandbox một guest, fail-open vs fail-closed
 - [`03-config.md`](03-config.md) — reload kiểu validate-rồi-swap, cái gì không hot-reload được, snapshot config theo từng request
-- [`04-graceful-shutdown.md`](04-graceful-shutdown.md) — chuỗi drain, pre-stop delay, kết nối sống lâu, flush telemetry
+- [`04-graceful-shutdown.md`](04-graceful-shutdown.md) — chuỗi drain, pre-stop delay, connection sống lâu, flush telemetry
 - [`05-rolling-restart.md`](05-rolling-restart.md) — `SO_REUSEPORT`, chuyển giao fd, socket activation, và state mà một lần restart mất đi
 - [`06-canary-deploy.md`](06-canary-deploy.md) — chia traffic theo weight, sticky routing, rollback tự động và vấn đề cỡ mẫu của nó
 

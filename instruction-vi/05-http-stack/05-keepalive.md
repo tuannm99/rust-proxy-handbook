@@ -66,7 +66,7 @@ sống lâu và im lặng theo thiết kế — một WebSocket rảnh
 ([`05-http-stack/10-websocket.md`](10-websocket.md)), một cuộc gọi gRPC server-streaming
 ([`05-http-stack/11-grpc.md`](11-grpc.md)), một stream SSE. Áp một timeout "không request
 mới trong 60 giây" lên chúng giết các connection đang hoạt động theo một
-cái đồng hồ, và các báo cáo bug kết quả ("nó ngắt kết nối mỗi phút") là
+cái đồng hồ, và các báo cáo bug kết quả ("nó disconnect mỗi phút") là
 một thể loại quen thuộc. Timeout phải theo từng *chế độ* connection, không
 phải toàn cục.
 
@@ -80,7 +80,7 @@ max-lifetime cố ý:
   connection mới. Một giới hạn lifetime là thứ cuối cùng phân phối lại
   tải.
 - **State theo connection tích tụ.** Buffer lớn dần tới kích thước request
-  lớn nhất từng thấy trên connection đó, allocator arena bị phân mảnh
+  lớn nhất từng thấy trên connection đó, allocator arena bị fragmentation
   ([`14-memory/06-fragmentation.md`](../14-memory/06-fragmentation.md)). Recycle connection định kỳ giới hạn
   điều này.
 

@@ -59,7 +59,7 @@ vượt giới hạn là lý do DNS fallback sang TCP ([`14-dns.md`](14-dns.md))
 
 ### UDP và middlebox có state
 NAT và firewall theo dõi "flow" UDP bằng 4-tuple dù UDP không có flow, và cho
-hết hạn theo **timer** (thường 30–120 giây), vì không có FIN báo hiệu kết thúc.
+expire theo **timer** (thường 30–120 giây), vì không có FIN báo hiệu kết thúc.
 Một QUIC connection hoặc UDP session idle lâu có thể mất NAT mapping và ngừng
 hoạt động âm thầm, vì vậy protocol gửi keepalive định kỳ và QUIC hỗ trợ
 **connection migration** bằng connection ID thay vì dựa vào 4-tuple
@@ -74,7 +74,7 @@ minh source (QUIC làm vậy: server không được gửi quá 3x số byte đ�
 địa chỉ chưa được validate, và dùng retry token để validate — xem
 [`18-http3.md`](18-http3.md) về bản thân QUIC) hoặc không bao giờ reply nhiều hơn
 những gì nhận ([`07-security/09-ddos.md`](../07-security/09-ddos.md)). Load balancing UDP cũng cần
-affinity: balancer phải ghim một 4-tuple (hoặc QUIC connection ID) vào một
+affinity: balancer phải pin một 4-tuple (hoặc QUIC connection ID) vào một
 backend vì không có connection để neo.
 
 ## Practice
@@ -98,6 +98,6 @@ backend vì không có connection để neo.
    thích vì sao bên gửi không biết được.
 6. So sánh hình dạng của [`labs/00-tcp-server`](../../labs/00-tcp-server) (một vòng lặp `accept` spawn một
    task cho mỗi connection) với thứ một UDP service cần (một socket, một vòng
-   `recv_from`, state theo từng peer trong một map khóa bằng source address),
+   `recv_from`, state theo từng peer trong một map keyed bằng source address),
    và ghi vào notes của bạn cái gì sẽ phải đổi — đây chính là bước nhảy cấu
    trúc mà [`labs/09-http3`](../../labs/09-http3) thực hiện.

@@ -21,7 +21,7 @@ multiplex, trừu tượng hóa hay bảo vệ cái gì ở đây?* ([`01-fundam
 
 ### Bộ khung: mười lăm sự thật để giữ trong đầu
 1. **Kernel** là code duy nhất chạm vào phần cứng; mọi thứ khác chạy ở **user space** và
-   chỉ băng sang kernel qua **syscall**. [`01-fundamentals.md`](01-fundamentals.md), [`05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md)
+   chỉ cross kernel qua **syscall**. [`01-fundamentals.md`](01-fundamentals.md), [`05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md)
 2. Một syscall tốn một lần đổi mode (và thường là một context switch), nên **số lượng
    syscall quan trọng**; một **context switch** còn tốn cả CPU cache đã ấm.
    [`02-hardware-basics.md`](02-hardware-basics.md)
@@ -29,7 +29,7 @@ multiplex, trừu tượng hóa hay bảo vệ cái gì ở đây?* ([`01-fundam
    **page fault**. [`02-hardware-basics.md`](02-hardware-basics.md), [`16-memory.md`](16-memory.md)
 4. Một **process** = address space riêng + fd; một **thread** chia sẻ chúng; **task** của
    tokio không phải cả hai. [`03-processes-and-threads.md`](03-processes-and-threads.md)
-5. `fork` copy (copy-on-write), `exec` thay thế, `wait` thu dọn; một child chưa được thu
+5. `fork` copy (copy-on-write), `exec` thay thế, `wait` reap; một child chưa được thu
    là **zombie**; trong container **PID 1** đặc biệt. [`04-process-lifecycle.md`](04-process-lifecycle.md)
 6. Gần như mọi thứ là **file descriptor**: một index tới một kernel object; một **epoll**
    chờ được tất cả. [`05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md), [`14-epoll.md`](14-epoll.md)
@@ -38,10 +38,10 @@ multiplex, trừu tượng hóa hay bảo vệ cái gì ở đây?* ([`01-fundam
    [`06-filesystem-and-vfs.md`](06-filesystem-and-vfs.md)
 8. Permission được kiểm tra theo **effective UID/GID**; root bỏ qua; **capability** xẻ nhỏ
    root (`CAP_NET_BIND_SERVICE` cho port 443). [`07-users-permissions-capabilities.md`](07-users-permissions-capabilities.md)
-9. Bộ nhớ là **ảo**, **lười** (cấp phát ở lần chạm đầu) và **reclaim được**; RSS ≠ VSZ;
+9. Bộ nhớ là **ảo**, **lười** (allocate ở lần chạm đầu) và **reclaim được**; RSS ≠ VSZ;
    vượt limit của cgroup nghĩa là **OOM kill** (exit 137). [`08-memory-basics.md`](08-memory-basics.md), [`16-memory.md`](16-memory.md)
 10. Một blocking syscall đỗ thread lại; **event loop** tồn tại để một thread phục vụ nhiều
-    connection; **signal** ngắt từ bên ngoài. [`09-blocking-io-and-signals.md`](09-blocking-io-and-signals.md), [`17-signals.md`](17-signals.md)
+    connection; **signal** interrupt từ bên ngoài. [`09-blocking-io-and-signals.md`](09-blocking-io-and-signals.md), [`17-signals.md`](17-signals.md)
 11. Lựa chọn IPC: pipe, **Unix socket** (truyền được fd bằng `SCM_RIGHTS` -> hot restart),
     shared memory (nhanh, bạn tự đồng bộ), **futex** dưới mọi `Mutex`. [`10-ipc.md`](10-ipc.md)
 12. Thời gian **monotonic** cho duration, **wall-clock** cho timestamp của con người; mọi
@@ -105,9 +105,9 @@ câu mọi người hay sai nhất.
 - Một `Mutex` không tranh chấp tốn gì so với một cái bị tranh chấp, và vì sao?
 
 **11 time** ([`11-time-and-timers.md`](11-time-and-timers.md))
-- Clock nào cho timeout, clock nào cho kiểm tra hết hạn certificate, và cái gì hỏng nếu đổi chỗ? *
+- Clock nào cho timeout, clock nào cho kiểm tra expire certificate, và cái gì hỏng nếu đổi chỗ? *
 - Vì sao tokio giữ timer wheel riêng? Drop một future bị `timeout` thì xảy ra gì?
-- Idle timeout vs total deadline: mỗi cái chặn tấn công nào?
+- Idle timeout vs total deadline: mỗi cái ngăn tấn công nào?
 
 **12 CPU scheduling** ([`12-cpu-scheduling.md`](12-cpu-scheduling.md))
 - Run-queue wait là gì và vì sao code hiệu quả không loại bỏ được nó?
@@ -152,7 +152,7 @@ câu mọi người hay sai nhất.
 
 ### Vẽ từ trí nhớ
 1. Sự phân chia user/kernel với cánh cửa syscall, và nơi epoll, socket, file nằm ([`05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md)).
-2. Đường đi của một packet: NIC, DMA, IRQ/softirq, TCP, socket queue, đánh thức, `read` ([`02-hardware-basics.md`](02-hardware-basics.md)).
+2. Đường đi của một packet: NIC, DMA, IRQ/softirq, TCP, socket queue, wake up, `read` ([`02-hardware-basics.md`](02-hardware-basics.md)).
 3. fd table -> open file description -> inode, với `dup`/`fork` chia sẻ ([`06-filesystem-and-vfs.md`](06-filesystem-and-vfs.md)).
 4. Các state của process và chuyển đổi (running, runnable, sleeping, zombie) ([`12-cpu-scheduling.md`](12-cpu-scheduling.md), [`04-process-lifecycle.md`](04-process-lifecycle.md)).
 5. Một virtual address space (code, heap, stack, mmap) ánh xạ tới RAM, page cache và swap ([`16-memory.md`](16-memory.md)).

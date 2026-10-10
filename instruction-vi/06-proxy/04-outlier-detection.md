@@ -68,7 +68,7 @@ nhiều hơn một phần cấu hình của pool, bất kể tín hiệu nói g�
 nằm ở các host.
 
 ### Slow start: cuộc stampede hồi phục
-Một upstream vừa trở lại healthy có 0 kết nối active, điều làm nó trở
+Một upstream vừa trở lại healthy có 0 connection active, điều làm nó trở
 thành ứng viên hấp dẫn nhất cho least-connection balancing
 ([`06-proxy/02-load-balancer.md`](02-load-balancer.md)) và cho bất kỳ consistent-hash ring nào
 vừa thêm lại nó. Nó nhận một đợt bùng nổ traffic không cân xứng trong vài
@@ -79,7 +79,7 @@ upstream thực sự đang fail.
 
 Cách sửa là một ramp: trong `T` giây đầu sau khi một upstream trở nên
 healthy, tăng dần weight hiệu dụng của nó từ gần-0 lên weight cấu hình,
-để nó nhận một dòng nhỏ giọt tăng dần thay vì một trận lũ. nginx
+để nó nhận một dòng slow-drip tăng dần thay vì một trận lũ. nginx
 (`slow_start=`) và Envoy (`slow_start_config`) đều cài đặt chính xác điều
 này.
 

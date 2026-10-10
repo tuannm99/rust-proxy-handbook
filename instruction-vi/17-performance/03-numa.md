@@ -10,27 +10,27 @@ một máy một socket.
 ### NUMA là gì
 Trên một server nhiều socket, mỗi CPU socket có bộ điều khiển bộ nhớ riêng
 và một dải RAM riêng (một "NUMA node"). Một core có thể đọc bộ nhớ của bất
-kỳ node nào, nhưng đến một node *ở xa* phải đi qua đường kết nối liên
-socket (UPI/QPI) — thường có latency gấp 1.5–2× và băng thông thấp hơn so
+kỳ node nào, nhưng đến một node *ở xa* phải đi qua đường connection liên
+socket (UPI/QPI) — thường có latency gấp 1.5–2× và bandwidth thấp hơn so
 với bộ nhớ local. Trên một máy một socket chỉ có một node và không điều
 gì trong này áp dụng, đây là phần lớn các deployment; điều này quan trọng
 trên các máy 2 và 4 socket lớn mà một proxy lưu lượng cao thỉnh thoảng
 chạy trên đó.
 
-### Chính sách cấp phát mặc định và cái bẫy của nó
+### Chính sách allocate mặc định và cái bẫy của nó
 Linux dùng first-touch: một page được đặt lên node của core đầu tiên
-*ghi* vào nó, không phải core đã cấp phát nó. Nên nếu một thread khởi
+*ghi* vào nó, không phải core đã allocate nó. Nên nếu một thread khởi
 động khởi tạo một buffer pool lớn rồi các worker thread trên socket khác
 sau đó dùng nó, mọi truy cập đều là remote. Cái pool "thuộc về" sai node
 trong suốt vòng đời của nó. Đây là lỗi NUMA phổ biến nhất và nó vô hình
-trong code — việc cấp phát trông hoàn toàn bình thường.
+trong code — việc allocate trông hoàn toàn bình thường.
 
 ### Cách sửa: pin, và chạm cục bộ
 Chiến lược là giữ bộ nhớ của mỗi worker trên node của chính worker đó:
 
 - Pin worker thread vào các core cụ thể (`sched_setaffinity`, hoặc crate
   `core_affinity`) để một worker ở nguyên trên một socket.
-- Để mỗi worker tự cấp phát và first-touch buffer của *chính nó*, để
+- Để mỗi worker tự allocate và first-touch buffer của *chính nó*, để
   first-touch đặt chúng cục bộ, thay vì chia sẻ một pool toàn cục được
   khởi tạo ở nơi khác.
 - Điều này biến toàn bộ proxy thành một thiết kế shared-nothing, theo
@@ -59,7 +59,7 @@ affinity (và RSS/RPS, [`16-kernel/`](../16-kernel)) khớp với các worker x�
 heap của bạn nằm ở đâu.
 
 ### Đo lường nó
-`numastat` cho thấy việc cấp phát theo từng node và, quan trọng là, số
+`numastat` cho thấy việc allocate theo từng node và, quan trọng là, số
 đếm `numa_miss` / `numa_foreign` — các truy cập remote đáng lẽ muốn là
 local. `perf` có thể gán các stall do remote-memory. Như phần còn lại của
 [`17-performance/`](.), đừng tune một cách suy đoán: xác nhận bạn thực sự bị
@@ -81,5 +81,5 @@ việc này đều lãng phí công sức.
    NUMA so với hai instance pin bằng `numactl` phía sau một balancer, dưới
    tải của [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md).
 5. Căn chỉnh NIC IRQ affinity khớp với các socket của worker và đo xem chi
-   phí remote-per-packet có giảm không — kết nối điều này với RSS/RPS
+   phí remote-per-packet có giảm không — connection điều này với RSS/RPS
    trong [`16-kernel/`](../16-kernel).

@@ -37,7 +37,7 @@ thuộc loại nào trước khi giả định buffer pool giúp ích cho nó.
 
 ### Gotcha: độ mịn của tier là một tham số tuning thật sự, không phải chi tiết
 Quá ít tier lãng phí bộ nhớ (một request 5 KB làm tròn lên buffer 64 KB
-nếu đó là tier tiếp theo); quá nhiều tier lại phân mảnh chính pool thành
+nếu đó là tier tiếp theo); quá nhiều tier lại fragmentation chính pool thành
 nhiều free list nhỏ, hiếm khi được tái sử dụng, làm mất luôn lợi ích của
 việc pooling. Chọn size tier từ phân bố kích thước payload thực tế của
 traffic của bạn (đo nó — [`08-observability/02-metrics.md`](../08-observability/02-metrics.md) — chứ đừng đoán),

@@ -42,8 +42,7 @@ Gotcha: sticky-by-hash chỉ hoạt động nếu mọi instance proxy tính cù
 hash. Một seed ngẫu nhiên theo-từng-process (cảnh báo `DefaultHasher` của
 [`13-algorithms/hashmap.md`](../13-algorithms/hashmap.md)) nghĩa là instance A gửi một người dùng tới
 canary và instance B gửi cùng người dùng đó tới stable — tạo ra chính
-xác hiện tượng nảy-phiên-bản mà sự dính (stickiness) lẽ ra phải ngăn
-chặn. Dùng một hash fixed-seed, và không bao gồm gì ngoài phép so sánh
+xác hiện tượng nảy-phiên-bản mà sự dính (stickiness) lẽ ra phải ngăn. Dùng một hash fixed-seed, và không bao gồm gì ngoài phép so sánh
 ngưỡng trong các weight của pool, để một thay đổi weight di chuyển số
 lượng người dùng tối thiểu.
 
@@ -93,7 +92,7 @@ nhỏ; chờ khối lượng có ý nghĩa trước khi tin vào các so sánh t
 - **Failure phụ thuộc load.** Lock contention, cạn kiệt connection pool
   ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)), và thundering herd chỉ xuất hiện gần
   capacity — thứ mà một canary 1% còn lâu mới chạm tới.
-- **Bug phụ thuộc thời gian.** Một batch job hàng ngày, hết hạn
+- **Bug phụ thuộc thời gian.** Một batch job hàng ngày, expire
   certificate ([`01-network/19-tls.md`](../01-network/19-tls.md)), một phép tính ranh giới tháng.
 - **Bất cứ thứ gì downstream.** Nếu canary chia sẻ upstream và một
   database với stable, nó không thể tiết lộ một vấn đề trong dependency

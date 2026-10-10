@@ -93,7 +93,7 @@ chờ một body sẽ không bao giờ tới sẽ làm treo connection.
 Một response có thể mang **validator**: `ETag` (một version tag mờ đục) và/hoặc
 `Last-Modified`. Client revalidate gửi `If-None-Match: "<etag>"` hoặc
 `If-Modified-Since`; nếu không đổi, server trả `304` không có body, tiết kiệm
-việc truyền. Cơ chế tương tự bảo vệ việc ghi (`If-Match` chặn lost update).
+việc truyền. Cơ chế tương tự bảo vệ việc ghi (`If-Match` ngăn lost update).
 `Cache-Control` (`max-age`, `no-store`, `private`, ...) nói response được dùng lại
 bao lâu và bởi ai — toàn bộ luật chơi của một proxy cache
 ([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)). `Range: bytes=0-999` xin một phần của resource;

@@ -12,7 +12,7 @@ trong handbook dừng lại để định nghĩa nó.
 ### Container không phải một VM tí hon
 Một máy ảo (virtual machine) ảo hóa *hardware* — nó chạy kernel đầy đủ
 của riêng nó, tin rằng nó có CPU, memory, và thiết bị riêng, chạy trên một
-hypervisor chặn và giả lập hardware thật. Một **container** không làm bất
+hypervisor intercept và giả lập hardware thật. Một **container** không làm bất
 kỳ điều gì trong số đó: nó là một process bình thường (hoặc một nhóm
 process), chạy dưới *cùng* kernel với mọi thứ khác trên host, mà kernel
 làm cho nó *tin* nó đang một mình trên máy bằng hai cơ chế riêng biệt.
@@ -46,7 +46,7 @@ process, network stack, filesystem) bị giới hạn theo từng namespace.
 
 ### cgroup: process được phép dùng bao nhiêu
 Namespace giới hạn *tầm nhìn*; **cgroup** (control group) giới hạn *mức
-tiêu thụ* — CPU time, memory, băng thông I/O — cho một nhóm process, được
+tiêu thụ* — CPU time, memory, bandwidth I/O — cho một nhóm process, được
 kernel enforce bất kể các process đó nghĩ chúng được phép làm gì. Đây là
 cơ chế trực tiếp đứng sau gotcha về giới hạn memory theo cgroup trong
 [`02-linux/16-memory.md`](16-memory.md) và mọi sự cố "bị OOM-killed trong Kubernetes":
@@ -57,11 +57,11 @@ không phải dựa trên bao nhiêu virtual memory process của bạn chỉ đ
 thuần *reserve*.
 
 ```
-$ cat /sys/fs/cgroup/memory.max     # giới hạn, theo byte (đường dẫn cgroup v2)
+$ cat /sys/fs/cgroup/memory.max     # giới hạn, theo byte (path cgroup v2)
 $ cat /sys/fs/cgroup/memory.current # mức dùng hiện tại so với giới hạn đó
 ```
 
-Một process đã cấp phát (reserve) virtual memory nhiều hơn hẳn giới hạn
+Một process đã allocate (reserve) virtual memory nhiều hơn hẳn giới hạn
 cgroup của nó thì hoàn toàn ổn — cho tới khi nó thực sự *ghi* vào đủ số
 trang để RSS vượt giới hạn, lúc đó OOM killer của kernel kết thúc process
 một cách đột ngột, thường không có cảnh báo nào mà code của bạn có thể
@@ -77,7 +77,7 @@ khi giữ mount namespace riêng (filesystem riêng) và giới hạn cgroup
 riêng. Đây chính xác là cơ chế mà một **sidecar proxy**
 ([`01-network/05-proxy-taxonomy.md`](../01-network/05-proxy-taxonomy.md)) dựa vào: sidecar và container ứng
 dụng là các process khác nhau, cách ly nhau ở hầu hết các mặt, nhưng chia
-sẻ một network namespace, nên sidecar có thể chặn traffic của ứng dụng
+sẻ một network namespace, nên sidecar có thể intercept traffic của ứng dụng
 trên `localhost` một cách trong suốt mà không cần thủ thuật networking
 đặc biệt nào.
 
@@ -113,12 +113,12 @@ namespace/cgroup này bên dưới.
    `memory.current` — so sánh `memory.current` với con số `docker stats`
    báo cáo cho cùng container đó.
 4. Đặt giới hạn memory của một container cố tình thấp (`docker run -m
-   50m ...`) và chạy một chương trình bên trong nó cấp phát và *ghi vào*
+   50m ...`) và chạy một chương trình bên trong nó allocate và *ghi vào*
    nhiều hơn 50MB — quan sát nó bị giết, rồi kiểm tra `dmesg` trên host
    để tìm dòng log của OOM killer nêu tên process.
 5. Chạy `nproc` trên host, rồi chạy lại nó bên trong một container khởi
    động với `--cpus=1` trên cùng host đó — ghi nhận container vẫn có thể
    báo cáo đầy đủ số core của host dù cgroup của nó chỉ giới hạn nó một
    lượng thời gian CPU bằng một CPU; giải thích vì sao một tokio runtime
-   định cỡ worker pool của nó từ `nproc` có thể cấp phát dư thread bên
+   định cỡ worker pool của nó từ `nproc` có thể allocate dư thread bên
    trong một container như vậy.

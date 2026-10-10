@@ -55,7 +55,7 @@ cụ thể, không phải UID 0. Những cái bạn sẽ gặp:
 - `CAP_SYS_ADMIN` — "root mới": một mớ hàng chục thao tác; cấp nó cho container gần như tương
   đương trao root.
 - `CAP_SYS_RESOURCE`, `CAP_SYS_NICE`, `CAP_IPC_LOCK` — vượt giới hạn tài nguyên, nâng scheduling
-  priority, khóa bộ nhớ ([`20-limits-and-proc.md`](20-limits-and-proc.md), [`12-cpu-scheduling.md`](12-cpu-scheduling.md)).
+  priority, lock bộ nhớ ([`20-limits-and-proc.md`](20-limits-and-proc.md), [`12-cpu-scheduling.md`](12-cpu-scheduling.md)).
 
 `getpcaps <pid>` hoặc `grep Cap /proc/<pid>/status` hiện các tập của một process
 (`capsh --decode=<hex>` giải mã chúng). Container khởi đầu với một tập mặc định đã được cắt bớt;

@@ -32,12 +32,12 @@ gần như luôn là thứ một health checker muốn.
 ### Mỗi loại probe thực sự chứng minh điều gì
 Độ sâu của probe là một quyết định thiết kế thật sự, không phải chi tiết
 vặt vãnh:
-- **TCP connect** chứng minh kernel đã chấp nhận một kết nối. Nó *không*
+- **TCP connect** chứng minh kernel đã chấp nhận một connection. Nó *không*
   chứng minh có ứng dụng nào đứng sau socket đó — một process kẹt trong
   vòng lặp vô hạn, hoặc một process mà accept backlog chỉ được kernel một
   mình rút ra, vẫn vượt qua ([`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md)).
 - **HTTP GET `/healthz` trả 200** chứng minh vòng lặp HTTP server còn sống
-  và đang lập lịch công việc. Nó không chứng minh upstream có thể phục vụ
+  và đang scheduling công việc. Nó không chứng minh upstream có thể phục vụ
   request *thật* nếu `/healthz` là một handler tĩnh không đụng vào gì cả.
 - **Một deep check** (handler xác minh database, cache, hoặc dependency
   downstream của nó) chứng minh upstream có thể làm việc thật — và tạo ra
@@ -99,8 +99,8 @@ và mỗi probe trong số đó rơi vào cùng một thời điểm nếu mọi
 động từ một lần deploy config được rollout cùng lúc.
 
 Jitter interval theo từng upstream (một offset ngẫu nhiên ở tick đầu tiên
-là đủ) để các probe dàn trải ra trong cửa sổ thay vì dồn dập cùng nhịp —
-cùng vấn đề đồng bộ hóa như retry storm trong [`05-retry.md`](05-retry.md), với cùng cách
+là đủ) để các probe dàn trải ra trong cửa sổ thay vì burst cùng nhịp —
+cùng vấn đề synchronization như retry storm trong [`05-retry.md`](05-retry.md), với cùng cách
 sửa.
 
 ## Practice

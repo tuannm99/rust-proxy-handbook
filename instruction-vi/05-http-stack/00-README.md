@@ -17,7 +17,7 @@ một proxy khác với một HTTP server thông thường.
 - [`09-cache-stampede.md`](09-cache-stampede.md) — single-flight coalescing, stale-while-revalidate, TTL jitter
 - [`10-websocket.md`](10-websocket.md) — upgrade handshake, kiểm tra Origin, framing, backpressure
 - [`11-grpc.md`](11-grpc.md) — trailer, các dạng streaming, load balancing theo từng RPC, lỗi kiểu gRPC
-- [`12-vhost-routing.md`](12-vhost-routing.md) — routing theo Host/SNI, chứng chỉ multi-tenant, cách ly tenant
+- [`12-vhost-routing.md`](12-vhost-routing.md) — routing theo Host/SNI, certificate multi-tenant, cách ly tenant
 
 ## Thứ tự đọc
 

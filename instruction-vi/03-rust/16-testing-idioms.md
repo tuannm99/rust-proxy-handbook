@@ -121,7 +121,7 @@ quanh một loop quá nhiễu để tin được ngoài một sanity check thô.
    — xác nhận nó sẽ không compile từ ngoài crate.
 2. Viết một integration test trong `tests/` cho [`labs/03-router`](../../labs/03-router) chỉ dùng
    `pub` API của crate, và cố tình chạm vào một field private từ đó để
-   xác nhận compiler chặn bạn.
+   xác nhận compiler ngăn bạn.
 3. Viết một doctest cho một hàm public có `assert_eq!` thật trong đó, rồi
    phá hàm đó và xác nhận `cargo test` fail ở doctest.
 4. Định nghĩa một trait `Clock` (hoặc dependency non-deterministic tương

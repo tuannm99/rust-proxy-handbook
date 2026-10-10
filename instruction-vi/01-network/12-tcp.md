@@ -159,7 +159,7 @@ ranh giới byte nào ([`16-http1-wire-format.md`](16-http1-wire-format.md)).
    `ack` = `seq` của peer + độ dài payload (+1 cho SYN/FIN).
 2. Cố tình tạo CLOSE_WAIT leak: trong một tokio server scratch, `read` một
    connection cho tới khi trả về 0 rồi `std::mem::forget` stream thay vì drop
-   nó. Kết nối bằng `nc`, nhấn Ctrl-D (gửi FIN), và cho thấy socket phía server
+   nó. Connection bằng `nc`, nhấn Ctrl-D (gửi FIN), và cho thấy socket phía server
    kẹt ở `ss -tan state close-wait`; rồi bỏ `forget` và xem nó biến mất.
 3. Chạy `ss -tn state time-wait | wc -l` trong khi dội
    [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) bằng connection upstream ngắn hạn (không

@@ -39,7 +39,7 @@ Bob:   chọn b, gửi B = g^b mod p
 Alice tính: B^a mod p = g^(ba) mod p
 Bob tính:   A^b mod p = g^(ab) mod p   -- cùng giá trị, không bao giờ truyền trực tiếp
 ```
-Đây chính xác là chuyện xảy ra bên trong mỗi bắt tay TLS 1.3
+Đây chính xác là chuyện xảy ra bên trong mỗi handshake TLS 1.3
 ([`01-network/19-tls.md`](../01-network/19-tls.md)) qua elliptic-curve Diffie-Hellman (ECDHE) — cùng
 hình dạng toán học, trên điểm elliptic curve thay vì lũy thừa modular,
 cho an toàn tương đương với key nhỏ hơn nhiều.
@@ -53,7 +53,7 @@ về tính toán, dù nhân `p * q` để ra `n` là tầm thường. Sinh key c
 `m = c^d mod n` — trapdoor là việc tính `d` từ `e` cần biết `φ(n)`, cần
 biết `p` và `q`, cần phân tích `n`.
 
-Gotcha: TLS 1.3 đã loại bỏ hoàn toàn RSA key exchange — mọi bắt tay TLS
+Gotcha: TLS 1.3 đã loại bỏ hoàn toàn RSA key exchange — mọi handshake TLS
 1.3 đều dùng (EC)DHE, vì nó cho forward secrecy (lộ một key dài hạn sau
 này không lộ session key trong quá khứ, thứ static RSA key exchange của
 TLS 1.2 không cung cấp). RSA chỉ còn tồn tại trong TLS 1.3 như một giải
@@ -73,7 +73,7 @@ message-authentication code, và một hash thường không dùng được như
 tay — [`01-network/06-crypto-basics.md`](../01-network/06-crypto-basics.md) và [`01-network/19-tls.md`](../01-network/19-tls.md) đều nói
 rõ đây là việc của `rustls`, và crypto viết tay là một nguồn lỗ hổng thảm
 khốc, âm thầm đã biết rõ. Giá trị của file này thuần túy là khả năng đọc
-một trace bắt tay TLS hoặc một security advisory và hiểu *vì sao* một
+một trace handshake TLS hoặc một security advisory và hiểu *vì sao* một
 primitive hoặc mode cụ thể an toàn hay không an toàn — không bao giờ để
 tự viết một cái.
 
@@ -84,7 +84,7 @@ tự viết một cái.
 2. Bằng tay, sinh một cặp key RSA đồ chơi với hai số nguyên tố nhỏ (ví dụ
    `p=61, q=53`, ví dụ textbook), tính `n`, `φ(n)`, và một cặp `(e, d)`
    hợp lệ, rồi encrypt và decrypt một số message nhỏ.
-3. Capture một bắt tay TLS 1.3 thật (`openssl s_client -connect ... -tls1_3`
+3. Capture một handshake TLS 1.3 thật (`openssl s_client -connect ... -tls1_3`
    hoặc Wireshark) và xác định group key-exchange đang dùng (ví dụ
    `x25519`) — xác nhận nó là elliptic-curve Diffie-Hellman, không phải
    RSA key exchange.

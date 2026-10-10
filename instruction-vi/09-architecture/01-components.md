@@ -3,12 +3,12 @@ Listener -> ConnMgr -> Codec -> Router -> Modules
 
 ## What to learn
 ### Mỗi stage sở hữu gì
-- **Listener**: bind (các) socket, accept kết nối, có thể làm TLS
+- **Listener**: bind (các) socket, accept connection, có thể làm TLS
   termination (chuyển giao một stream đã giải mã). Không sở hữu gì về
   ngữ nghĩa HTTP.
-- **ConnMgr (connection manager)**: theo dõi các kết nối đang sống, áp
-  đặt giới hạn/timeout theo từng kết nối, điều khiển graceful shutdown
-  (ngừng nhận kết nối mới, để các kết nối hiện có drain — xem
+- **ConnMgr (connection manager)**: theo dõi các connection đang sống, áp
+  đặt giới hạn/timeout theo từng connection, điều khiển graceful shutdown
+  (ngừng nhận connection mới, để các connection hiện có drain — xem
   [`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)).
 - **Codec**: biến byte thành các giá trị `Request`/`Response` có kiểu và
   ngược lại (parsing HTTP/1.1, framing HTTP/2) — đây là chỗ hyper nằm nếu
@@ -28,7 +28,7 @@ mà mỗi cái trông có vẻ cục bộ và cùng nhau định nghĩa pipeline
 
 | Vị trí | Stage | Vì sao ở đây |
 | --- | --- | --- |
-| 1 | Giới hạn kết nối/accept | Reject rẻ nhất có thể, trước bất kỳ parsing nào ([`07-security/09-ddos.md`](../07-security/09-ddos.md)) |
+| 1 | Giới hạn connection/accept | Reject rẻ nhất có thể, trước bất kỳ parsing nào ([`07-security/09-ddos.md`](../07-security/09-ddos.md)) |
 | 2 | Lọc IP trên peer thật | Trước bất cứ thứ gì đắt; dùng địa chỉ socket, không phải header ([`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)) |
 | 3 | TLS termination | Reject client-cert nên xảy ra lúc handshake, không phải sau đó ([`07-security/01-auth.md`](../07-security/01-auth.md)) |
 | 4 | Codec / parse | Kiểm tra framing và reject smuggling ([`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md)) |
@@ -72,7 +72,7 @@ limiting chạy sau cái kiểm tra auth đắt đỏ mà nó lẽ ra phải b�
 Gotcha: `Service::poll_ready` là cơ chế backpressure của tower và nó
 thường xuyên bị bỏ qua. Một service trả `Poll::Pending` từ `poll_ready`
 đang nói "tôi đã đầy capacity, đừng gửi request cho tôi vội" — đó là cách
-một giới hạn concurrency lan truyền *ngược lại* qua stack thay vì xếp hàng
+một giới hạn concurrency lan truyền *ngược lại* qua stack thay vì queue
 nội bộ (lập luận shed-vs-queue của [`07-security/09-ddos.md`](../07-security/09-ddos.md)). Một module
 luôn trả `Ready` và tự buffer nội bộ đã âm thầm biến backpressure thành bộ
 nhớ không giới hạn.
@@ -100,19 +100,19 @@ hình — hệ thống type sẽ không nói cho bạn biết `UpstreamSelector`
 (một 5xx với một internal error rõ ràng) thay vì `unwrap()`, và ghi lại
 yêu cầu đó ở chỗ module được định nghĩa.
 
-### Một module không bao giờ được làm sập kết nối
+### Một module không bao giờ được làm sập connection
 Hai failure mode cần thiết kế trước:
 - **Lỗi.** Trong tower, một lỗi `Service` lan lên trên và thường giết chết
-  kết nối. Với một proxy, gần như mọi lỗi module nên trở thành một
+  connection. Với một proxy, gần như mọi lỗi module nên trở thành một
   *response* thay vào đó (401, 429, 502) — nên các module nên infallible ở
   cấp type (`Error = Infallible`) và tự chuyển các lỗi nội bộ thành
   response. Cách đó một bug trong một module không thể làm rớt một request
-  pipelined không liên quan trên cùng kết nối.
+  pipelined không liên quan trên cùng connection.
 - **Panic.** Một panic trong một task request, mặc định, chỉ unwind task
-  đó — tokio bắt nó và runtime sống sót — nhưng kết nối bị drop giữa
+  đó — tokio bắt nó và runtime sống sót — nhưng connection bị drop giữa
   chừng response và client thấy một reset. Bắt panic ở biên pipeline và
   chuyển chúng thành một 500 với một event được log, để một request tồi
-  không kéo theo cả một kết nối keep-alive đầy các request khác.
+  không kéo theo cả một connection keep-alive đầy các request khác.
 
 Gotcha: `panic = "abort"` trong release profile của bạn biến mọi panic
 thành một crash toàn process, thay đổi hoàn toàn phép tính này. Biết bạn
@@ -153,7 +153,7 @@ Xây theo thứ tự.
 
 1. Phác thảo pipeline cho [`proxy`](../../proxy) — module, thứ tự, và lý do — dựa trên
    bảng ở trên. **Xong khi** bạn có thể biện minh cho mỗi vị trí bằng một
-   failure cụ thể nó ngăn chặn, không phải từ quy ước.
+   failure cụ thể nó ngăn, không phải từ quy ước.
 2. Cài đặt Router và một module (rate limiting) như các cài đặt
    `tower::Service`/`Layer` riêng biệt với `Error = Infallible`. **Xong
    khi** mỗi cái được unit-test mà không cần mạng, và một reject rate-limit
@@ -170,10 +170,10 @@ Xây theo thứ tự.
 6. Cài đặt backpressure dựa trên `poll_ready` trong một module giới hạn
    concurrency. **Xong khi** quá tải khiến stack shed
    ([`07-security/09-ddos.md`](../07-security/09-ddos.md)) thay vì buffer — đo bộ nhớ dưới quá tải kéo
-   dài để chứng minh không có gì đang xếp hàng vô hình.
-7. Thêm việc chặn panic ở biên pipeline. **Xong khi** một module panic
+   dài để chứng minh không có gì đang queue vô hình.
+7. Thêm việc catch panic ở biên pipeline. **Xong khi** một module panic
    trên một request trả 500 cho request đó và các request pipelined
-   *khác* của kết nối vẫn hoàn thành.
+   *khác* của connection vẫn hoàn thành.
 8. Ghi lại thứ tự đường đi response. **Xong khi** compression chạy bên
    trong caching (cache lưu một biểu diễn chưa nén), và một test chứng
    minh một entry đã cache có thể phục vụ cho các client với

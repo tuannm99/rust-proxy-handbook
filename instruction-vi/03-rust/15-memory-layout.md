@@ -29,7 +29,7 @@ use std::mem::size_of;
 #[repr(C)] struct Good { b: u64, a: u8, c: u8 } // both u8s pack together after the u64
 assert!(size_of::<Good>() < size_of::<Bad>());
 ```
-Với một struct được cấp phát trên mỗi connection ở quy mô lớn — hàng chục
+Với một struct được allocate trên mỗi connection ở quy mô lớn — hàng chục
 nghìn connection còn sống trong một proxy — kiểu khác biệt padding này là
 bộ nhớ thật, không phải một micro-optimization. Xem
 [`17-performance/01-cpu-cache.md`](../17-performance/01-cpu-cache.md) và [`17-performance/04-memory-layout.md`](../17-performance/04-memory-layout.md)

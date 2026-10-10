@@ -20,7 +20,7 @@ sudo tcpdump -i lo -n -w cap.pcap port 8080  # lưu cho Wireshark; -r cap.pcap �
 sudo tcpdump -i any -n 'tcp[tcpflags] & (tcp-syn|tcp-fin|tcp-rst) != 0'
 ```
 
-Luôn dùng `-n` (nếu không tcpdump bị chặn lại để reverse DNS và làm sai lệch
+Luôn dùng `-n` (nếu không tcpdump bị block để reverse DNS và làm sai lệch
 thứ bạn đang đo), luôn có filter trên một host bận. `-i lo` cho test local,
 `-i any` để thấy mọi interface (nhưng mất link-layer header). Ngôn ngữ filter
 là **BPF**, cùng bộ máy mà eBPF phát triển lên từ đó
@@ -79,8 +79,7 @@ giữ giùm bạn.
 ### ip và nc: địa chỉ, route, và một client làm tay
 `ip addr`, `ip route`, `ip neigh`, `ip -s link` (counter) bao quát interface,
 routing và ARP ([`07-link-layer.md`](07-link-layer.md), [`08-ip-and-icmp.md`](08-ip-and-icmp.md)). `ip route get <dst>`
-hỏi kernel nó sẽ chọn route và source address nào. `nc` (netcat) mở một kết
-nối TCP hoặc UDP thô và cho bạn gõ byte —
+hỏi kernel nó sẽ chọn route và source address nào. `nc` (netcat) mở một connection TCP hoặc UDP thô và cho bạn gõ byte —
 `printf 'GET / HTTP/1.1\r\nHost: x\r\n\r\n' | nc 127.0.0.1 8080` gửi một
 request làm tay; `nc -l 9999` listen; `nc -z host 1-1024` quét port. `nc` là
 cách chứng minh một bug nằm ở byte của protocol chứ không phải ở sự "tử tế"

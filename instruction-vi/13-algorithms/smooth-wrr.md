@@ -10,8 +10,7 @@ file này nói về cách sự đan xen đó thực sự được tạo ra.
 Weighted round robin hiển nhiên nhất mở rộng các weight thành một danh
 sách (`[a,a,a,b]` cho weight 3 và 1) rồi lặp vòng qua nó. Cách này thỏa mãn
 tỷ lệ *trung bình* nhưng tạo ra một chuỗi dồn cục: `a,a,a,b,a,a,a,b`. Ba
-request liên tiếp trúng `a` trước khi `b` được một lượt nào, nên số kết
-nối của `a` tăng vọt rồi hồi phục theo chu kỳ 4 request. Với weight lớn
+request liên tiếp trúng `a` trước khi `b` được một lượt nào, nên số connection của `a` tăng vọt rồi hồi phục theo chu kỳ 4 request. Với weight lớn
 hơn (`weight=100` so với `weight=1`), cú dồn cục dài tới 100 request — đủ
 dài để ảnh hưởng tail latency và các metric kiểu least-connection được
 quan sát bởi bất cứ thứ gì ở downstream.

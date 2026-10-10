@@ -5,7 +5,7 @@
 ### `repr(C)` và vì sao layout quan trọng ở ranh giới FFI
 Layout mặc định của Rust (`repr(Rust)`) cố tình không được đặc tả —
 compiler được tự do sắp xếp lại field để đóng gói tốt hơn, và hai struct
-có cùng field không được đảm bảo cùng layout. `#[repr(C)]` ghim layout
+có cùng field không được đảm bảo cùng layout. `#[repr(C)]` pin layout
 theo quy tắc của C (field theo đúng thứ tự khai báo, alignment và padding
 tiêu chuẩn), điều này bắt buộc bất cứ khi nào một struct đi qua ranh giới
 FFI — thiếu nó, hai phía có thể âm thầm bất đồng về việc mỗi field nằm ở
@@ -85,9 +85,9 @@ một yêu cầu vận hành mong manh.
 2. Thêm `#[repr(C)]` vào một struct dùng qua một ranh giới FFI trong một
    ví dụ nhỏ, gỡ nó ra, và dùng `std::mem::size_of` để xác nhận layout
    thực sự có thể khác đi mà không có nó.
-3. Viết một wrapper dựa trên `Drop` quanh một resource được cấp phát bởi
+3. Viết một wrapper dựa trên `Drop` quanh một resource được allocate bởi
    C (một hàm "C" giả lập cũng được) và xác nhận double-free/use-after-free
-   được ngăn chặn bởi cấu trúc.
+   được ngăn bởi cấu trúc.
 4. Đọc source của crate `libc` cho một binding syscall bạn đã dùng bằng
    tay (`epoll_ctl`, từ bài tập [`02-linux/14-epoll.md`](../02-linux/14-epoll.md)) và xác định các
    định nghĩa struct `#[repr(C)]` của nó.

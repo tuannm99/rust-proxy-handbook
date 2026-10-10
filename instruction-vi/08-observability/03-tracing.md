@@ -3,7 +3,7 @@ OpenTelemetry span/trace so với metrics và logs.
 
 ## What to learn
 ### Ba trụ cột, và mỗi cái thực sự dùng để làm gì
-**Logs** trả lời "chuyện gì đã xảy ra" cho một sự kiện. **Metrics** trả
+**Logs** trả lời "chuyện gì đã xảy ra" cho một event. **Metrics** trả
 lời "xu hướng tổng hợp là gì" với chi phí rẻ ở quy mô lớn. **Traces** trả
 lời "*request cụ thể này* đã tốn thời gian ở đâu qua mọi hop nó đi qua" —
 một cây các span (proxy → auth service → upstream A → upstream B) kèm

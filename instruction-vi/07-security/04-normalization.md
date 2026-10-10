@@ -1,6 +1,6 @@
 # Input Normalization & Parser Differentials
 
-Hai component parse cùng một chuỗi byte theo hai cách khác nhau, và kẻ tấn
+Hai component parse cùng một byte sequence theo hai cách khác nhau, và kẻ tấn
 công sống trong khoảng cách đó. Đây là điểm yếu cấu trúc đứng sau các cách
 bypass WAF ([`07-security/06-waf.md`](06-waf.md)), bypass access-control dựa trên path
 ([`05-http-stack/04-router.md`](../05-http-stack/04-router.md)), và — ở dạng thuần túy nhất của nó — request
@@ -59,8 +59,7 @@ Lowercase xử lý được `<ScRiPt>`. Nó không xử lý được:
 
 Áp dụng Unicode normalization (NFKC) trước khi match nếu bất kỳ upstream
 nào trong hạ tầng của bạn làm vậy, và từ chối input không phải UTF-8 hợp lệ
-thay vì lossy-convert nó — `String::from_utf8_lossy` thay thế các chuỗi
-byte không hợp lệ bằng U+FFFD, việc này thay đổi các byte và có thể khiến
+thay vì lossy-convert nó — `String::from_utf8_lossy` thay thế các byte sequence không hợp lệ bằng U+FFFD, việc này thay đổi các byte và có thể khiến
 một payload độc hại trông vô hại.
 
 ### Charset và content-type
@@ -138,6 +137,6 @@ Làm lần lượt theo thứ tự sau.
    chuyển tiếp upstream đều đọc cùng một dạng canonical, và một bài test
    chứng minh request được chuyển tiếp mang path đã normalize thay vì byte
    gốc.
-6. Chỉ giữ bản gốc cho log. **Xong khi** dòng log của một request bị chặn
+6. Chỉ giữ bản gốc cho log. **Xong khi** dòng log của một request bị block
    cho thấy input thô như đã gửi, trong khi không có decision path nào có
    thể đọc nó.

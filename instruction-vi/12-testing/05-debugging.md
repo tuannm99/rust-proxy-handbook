@@ -37,7 +37,7 @@ network, xác nhận bằng một công cụ quan sát trên dây.
 ### Góc nhìn trên dây: `curl -v`, `nc`, `ss`, `tcpdump`
 - `curl -v` (thêm `--http2` hoặc `--http1.1` để ép version) cho thấy chính xác header request và response — việc kiểm tra đầu tiên cho mọi bug HTTP.
 - `nc` (netcat) gửi byte gõ tay hoặc byte lỗi, thứ `curl` sẽ không gửi. Không thể thiếu khi test một parser với input hỏng.
-- `ss -tanp` liệt kê mọi socket kèm trạng thái (`ESTAB`, `TIME_WAIT`, `CLOSE_WAIT`...) và process sở hữu. Một đống `CLOSE_WAIT` nghĩa là *code của bạn* không đóng những kết nối mà phía bên kia đã đóng.
+- `ss -tanp` liệt kê mọi socket kèm trạng thái (`ESTAB`, `TIME_WAIT`, `CLOSE_WAIT`...) và process sở hữu. Một đống `CLOSE_WAIT` nghĩa là *code của bạn* không đóng những connection mà phía bên kia đã đóng.
 - `tcpdump -i lo -A port 8080` (hoặc Wireshark trên bản capture) cho thấy packet thật: byte có được gửi không, theo thứ tự nào, và ai đóng trước.
 
 ```text
@@ -87,9 +87,9 @@ và aliasing sai mà phần cứng thật âm thầm bỏ qua
 ## Practice
 Làm theo thứ tự này.
 
-1. Trong [`labs/00-tcp-server`](../../labs/00-tcp-server), chạy server dưới `strace -f -e trace=network` trong khi kết nối bằng `nc`. **Xong khi** bạn chỉ ra được các syscall `accept`, `read`, và `write` cho một dòng được echo.
-2. Capture một vòng echo bằng `tcpdump -i lo -A port <port>`. **Xong khi** bạn xác định được bắt tay, các packet dữ liệu, và phía nào gửi `FIN` đầu tiên.
-3. Cố tình để một kết nối xử lý dở (ngừng đọc từ một client) và tìm nó bằng `ss -tanp`. **Xong khi** bạn giải thích được socket đang kẹt ở trạng thái nào.
-4. Thêm `tracing` với environment filter vào [`labs/00-tcp-server`](../../labs/00-tcp-server). **Xong khi** bạn bật tắt được debug log theo từng kết nối bằng `RUST_LOG` mà không cần compile lại.
+1. Trong [`labs/00-tcp-server`](../../labs/00-tcp-server), chạy server dưới `strace -f -e trace=network` trong khi connection bằng `nc`. **Xong khi** bạn chỉ ra được các syscall `accept`, `read`, và `write` cho một dòng được echo.
+2. Capture một vòng echo bằng `tcpdump -i lo -A port <port>`. **Xong khi** bạn xác định được handshake, các packet dữ liệu, và phía nào gửi `FIN` đầu tiên.
+3. Cố tình để một connection xử lý dở (ngừng đọc từ một client) và tìm nó bằng `ss -tanp`. **Xong khi** bạn giải thích được socket đang kẹt ở trạng thái nào.
+4. Thêm `tracing` với environment filter vào [`labs/00-tcp-server`](../../labs/00-tcp-server). **Xong khi** bạn bật tắt được debug log theo từng connection bằng `RUST_LOG` mà không cần compile lại.
 5. Chèn một `std::thread::sleep` vào một connection handler và tìm ra nó bằng `tokio-console`. **Xong khi** console chỉ ra task gây lỗi qua poll time của nó.
 6. Tạo flamegraph của [`labs/00-tcp-server`](../../labs/00-tcp-server) dưới tải. **Xong khi** bạn gọi tên được hàm chiếm nhiều thời gian CPU nhất và nói được điều đó có hợp lý không.

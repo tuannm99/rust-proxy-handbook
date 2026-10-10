@@ -65,7 +65,7 @@ treo ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)) giờ nổ trên 
 khỏe mạnh. Giới hạn "tổng thời gian request" giết một connection đáng lẽ
 sống nhiều giờ. **Áp request timeout lên connection đã upgrade là bug
 WebSocket-qua-proxy phổ biến nhất**, và nó biểu hiện như "app của chúng
-tôi ngắt kết nối mỗi 60 giây" — điều người dùng nhận ra và log hiếm khi
+tôi disconnect mỗi 60 giây" — điều người dùng nhận ra và log hiếm khi
 giải thích được.
 
 Một khi đã upgrade, các giới hạn áp dụng là loại khác: một idle timeout đo
@@ -78,7 +78,7 @@ Frame WebSocket có một opcode (text, binary, close, ping, pong, continuation)
 Gotcha: nếu bạn *thực sự* parse frame (để kiểm tra, lọc, hoặc áp giới hạn
 kích thước message), trường độ dài mở rộng 64-bit nằm dưới quyền kiểm
 soát của attacker. Một header frame khai một payload 2^63 byte phải bị
-reject theo một giới hạn cấu hình *trước* bất kỳ lần cấp phát nào — không
+reject theo một giới hạn cấu hình *trước* bất kỳ lần allocation nào — không
 bao giờ `Vec::with_capacity(declared_len)`. Đây là cùng loại bug với một
 decompression bomb ([`07-security/09-ddos.md`](../07-security/09-ddos.md)): tin vào một trường độ dài
 do peer chọn.
@@ -98,16 +98,16 @@ Không như request/response bình thường nơi `Content-Length` giới hạn 
 
 `tokio::io::copy_bidirectional` cho bạn điều này miễn phí ở tầng byte: nó
 đọc vào một buffer cố định và không đọc thêm cho tới khi bên viết đã
-drain, nên một reader chậm tự nhiên chặn một writer nhanh. Ngay khi bạn
+drain, nên một reader chậm tự nhiên block một writer nhanh. Ngay khi bạn
 đưa vào một channel riêng giữa hai leg (để kiểm tra hay biến đổi message),
 bạn sở hữu bài toán backpressure — dùng một channel có giới hạn, và hiểu
-rằng "có giới hạn" nghĩa là một client chậm cuối cùng sẽ chặn lần đọc
+rằng "có giới hạn" nghĩa là một client chậm cuối cùng sẽ block lần đọc
 upstream, điều đó là đúng đắn.
 
 Gotcha: một connection WebSocket là một tài nguyên *sống lâu*, nên cách
 tính toán từ [`07-security/09-ddos.md`](../07-security/09-ddos.md) thay đổi hình dạng. Mười nghìn
 WebSocket rảnh tốn mười nghìn fd, socket, và cặp buffer, vô thời hạn,
-trong khi không sinh request nào cả — nên giới hạn tốc độ request không
+trong khi không sinh request nào cả — nên rate limiting request không
 ràng buộc được chúng. Giới hạn số connection đã upgrade đồng thời tường
 minh, cả theo từng client lẫn toàn cục.
 
@@ -128,7 +128,7 @@ Làm theo thứ tự này.
 3. Chiếm lấy luồng đã upgrade thô và echo lại frame text, parse vừa đủ
    để unmask và re-frame. **Xong khi** một client round-trip được cả
    message text lẫn binary, và một frame khai một payload length phi lý
-   bị reject mà không cấp phát.
+   bị reject mà không allocate.
 4. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), thêm pass-through proxying: forward
    handshake (sinh lại header hop-by-hop), rồi relay bằng
    `tokio::io::copy_bidirectional`. **Xong khi** một WebSocket end-to-end

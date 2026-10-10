@@ -8,15 +8,15 @@ byte đó* bằng parser của riêng nó. Request smuggling xảy ra khi proxy 
 upstream bất đồng về việc một request kết thúc ở đâu và request tiếp theo
 bắt đầu ở đâu — kẻ tấn công tạo ra một request mà một parser đọc là "một
 request" còn parser kia đọc là "một request cộng với phần đầu của một
-request thứ hai, bị smuggle" và bị xử lý nhầm vào kết nối của một client
-xui xẻo tiếp theo (trên một kết nối keep-alive/pooled được tái sử dụng tới
+request thứ hai, bị smuggle" và bị xử lý nhầm vào connection của một client
+xui xẻo tiếp theo (trên một connection keep-alive/pooled được tái sử dụng tới
 upstream). Đây chính xác là loại mơ hồ mà [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) và
 [`labs/01-http-parser`](../../labs/01-http-parser) buộc bạn phải đối mặt bằng tay.
 
 Điều kiện tiên quyết đáng chú ý: cuộc tấn công này tồn tại *vì* proxy pool
-và tái sử dụng kết nối upstream ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)). Các byte bị
-smuggle nằm ở đầu buffer của một kết nối, chờ bất kỳ ai dùng nó tiếp theo.
-Một proxy mở kết nối mới cho mỗi request rồi đóng nó ngay sau đó sẽ miễn
+và tái sử dụng connection upstream ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)). Các byte bị
+smuggle nằm ở đầu buffer của một connection, chờ bất kỳ ai dùng nó tiếp theo.
+Một proxy mở connection mới cho mỗi request rồi đóng nó ngay sau đó sẽ miễn
 nhiễm — và chậm hơn nhiều, đó là lý do không ai làm vậy, và cũng là lý do
 lớp tấn công này vẫn tồn tại.
 
@@ -28,16 +28,16 @@ thức cho tới khi bạn thấy được cái giá phải trả:
   được*. Một request bị smuggle không bao giờ được proxy nhìn thấy như một
   request — nó là byte của body — nên nó tới upstream sau khi đã bỏ qua
   mọi kiểm tra. Kẻ tấn công tới được `/admin` qua một proxy được cấu hình
-  rõ ràng để chặn `/admin`.
+  rõ ràng để block `/admin`.
 - **Đánh cắp request của người dùng khác.** Phần đầu bị smuggle có thể
-  được tạo sao cho request thật *tiếp theo* trên kết nối đó bị gắn vào nó
+  được tạo sao cho request thật *tiếp theo* trên connection đó bị gắn vào nó
   như body content — và bị echo lại trong một response mà kẻ tấn công có
   thể đọc. Bao gồm cả session cookie và auth header.
 - **Đầu độc cache.** Kết hợp với một cache ([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md)),
   một response bị desync lưu vào sai key và phục vụ cho mọi người.
 
 Một kẻ tấn công, không cần credential, và thiệt hại tỷ lệ với lượng traffic
-chia sẻ kết nối bị đầu độc.
+chia sẻ connection bị đầu độc.
 
 ### CL.TE, TE.CL, TE.TE
 - **CL.TE**: request có cả `Content-Length` lẫn `Transfer-Encoding:
@@ -71,7 +71,7 @@ Proxy đọc `Content-Length: 6` và chuyển tiếp đúng sáu byte body
 (`0\r\n\r\nG`), coi request đã hoàn tất. Upstream đọc
 `Transfer-Encoding: chunked`, thấy chunk terminator độ dài 0, và coi body
 đã kết thúc *trước* `G` — thứ bị bỏ lại trong buffer của nó. Request thật
-tiếp theo trên kết nối pooled đó bị dán `G` vào đầu, trở thành
+tiếp theo trên connection pooled đó bị dán `G` vào đầu, trở thành
 `GPOST / HTTP/1.1...` — và nạn nhân đó nhận được lỗi, trong khi một phần
 đầu được chuẩn bị kỹ hơn sẽ cho kẻ tấn công thứ gì đó hữu ích hơn.
 
@@ -94,7 +94,7 @@ sắp ghi ra, không bao giờ copy chúng từ request inbound.** Và từ ch�
 request HTTP/2 inbound có `content-length` bất đồng với tổng độ dài các
 DATA frame, thay vì tin bất kỳ bên nào.
 
-### CL.0 và desync trạng thái kết nối
+### CL.0 và desync trạng thái connection
 Một nhóm ít ồn ào hơn: upstream bỏ qua hoàn toàn body cho một số request
 (nhiều server bỏ qua body trên `GET`, hoặc trên một path map tới một static
 file), coi `Content-Length` như bằng `0` một cách hiệu quả. Body mà proxy
@@ -104,7 +104,7 @@ chỉ cần một endpoint không đọc thứ nó được gửi.
 
 Gotcha: kiểu này không thể sửa bằng cách validate header, vì các header
 *hợp lệ*. Nó phụ thuộc hoàn toàn vào hành vi của upstream, đó là lý do biện
-pháp "drain hoặc đóng kết nối khi có bất kỳ anomaly nào" bên dưới vẫn quan
+pháp "drain hoặc đóng connection khi có bất kỳ anomaly nào" bên dưới vẫn quan
 trọng ngay cả khi việc validate framing của bạn hoàn hảo.
 
 ### Mitigations
@@ -125,9 +125,9 @@ trọng ngay cả khi việc validate framing của bạn hoàn hảo.
    length-prefixed của HTTP/2 không có sự mơ hồ
    `Content-Length`-so-với-`Transfer-Encoding` ngay từ đầu, đó là lý do
    "downgrade smuggling" (front-end HTTP/2, back-end HTTP/1.1) là một lớp
-   tấn công riêng cần để ý khi dịch giao thức.
-5. Ưu tiên kết nối upstream riêng cho mỗi request (hoặc drain kết nối
-   quyết liệt khi có bất kỳ anomaly parse nào) hơn là các kết nối tái sử
+   tấn công riêng cần để ý khi dịch protocol.
+5. Ưu tiên connection upstream riêng cho mỗi request (hoặc drain connection
+   quyết liệt khi có bất kỳ anomaly parse nào) hơn là các connection tái sử
    dụng sống lâu khi bạn không thể tin tưởng hoàn toàn tính nhất quán của
    parser upstream.
 6. **Nghiêm khắc về whitespace và line ending.** Chỉ chấp nhận `\r\n` như
@@ -142,9 +142,9 @@ trọng ngay cả khi việc validate framing của bạn hoàn hảo.
 Bạn không thể dựa vào việc nhận ra thiệt hại, vì nạn nhân là một client
 khác với kẻ tấn công. Các tín hiệu đáng thiết lập
 ([`08-observability/01-logging.md`](../08-observability/01-logging.md)):
-- **Lỗi parse ở upstream trên các kết nối pooled.** Một 400 từ upstream
+- **Lỗi parse ở upstream trên các connection pooled.** Một 400 từ upstream
   cho một request mà proxy của bạn coi là hợp lệ là bằng chứng rõ ràng nhất
-  cho một kết nối bị desync.
+  cho một connection bị desync.
 - **Request với tiền tố phi lý.** Log upstream cho thấy các method như
   `GPOST` hoặc path bị dán vào body trước đó.
 - **Timing.** Kỹ thuật phát hiện chuẩn (của PortSwigger) là gửi một payload
@@ -152,7 +152,7 @@ khác với kẻ tấn công. Các tín hiệu đáng thiết lập
   read timeout thay vì trả về ngay, các parser đã bất đồng. Đáng để xây
   dựng vào chính bộ test của bạn thay vì chỉ đọc về nó.
 
-Khi bạn phát hiện một anomaly, **đóng kết nối upstream** thay vì trả nó về
+Khi bạn phát hiện một anomaly, **đóng connection upstream** thay vì trả nó về
 pool — bất cứ thứ gì còn lại trong buffer của nó chính là payload.
 
 ## Practice
@@ -179,9 +179,9 @@ Làm lần lượt theo thứ tự sau.
 5. Thêm bộ phát hiện dựa trên timing như một test. **Xong khi** một payload
    đáng lẽ khiến upstream chờ một body ma bị bắt bởi validation của bạn
    thay vì treo tới read timeout.
-6. Khiến bất kỳ anomaly parse nào đầu độc kết nối. **Xong khi** một kết nối
+6. Khiến bất kỳ anomaly parse nào đầu độc connection. **Xong khi** một connection
    đã tạo ra lỗi framing bị đóng thay vì trả về pool — xác minh bằng
-   `ss -tan` rằng nó không xuất hiện lại như một kết nối pooled đang rảnh.
+   `ss -tan` rằng nó không xuất hiện lại như một connection pooled đang rảnh.
 7. (Mở rộng) Nếu [`proxy`](../../proxy) terminate HTTP/2 ([`labs/08-http2`](../../labs/08-http2)), xây một
    payload downgrade nơi `content-length` HTTP/2 bất đồng với các DATA
    frame. **Xong khi** nó bị từ chối ngay ở tầng h2 thay vì bị dịch thành

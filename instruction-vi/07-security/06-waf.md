@@ -97,7 +97,7 @@ Quyết định mà điều này buộc bạn đưa ra là **khi nào chuyển t
 lên upstream**. Nếu bạn chuyển chunk 1 ngay khi quét xong và match hoàn tất
 ở chunk 2, thì một phần của cuộc tấn công đã tới upstream. Bạn có thể giữ
 lại `max_pattern_len - 1` byte cuối của mỗi chunk cho tới khi chunk kế đến
-(độ trễ có giới hạn, memory có giới hạn), đảm bảo không bao giờ có thứ gì
+(latency có giới hạn, memory có giới hạn), đảm bảo không bao giờ có thứ gì
 khớp bị chuyển tiếp. Hoặc bạn chấp nhận chuyển tiếp một phần, và khi có
 match thì hủy request lên upstream và bỏ connection upstream đó (framing
 của nó giờ không còn xác định, xem [`07-security/05-request-smuggling.md`](05-request-smuggling.md)),
@@ -123,12 +123,12 @@ hiện nó phá vỡ traffic hợp lệ nào trong production.
 
 Gotcha: luôn log các rule ID và điểm số góp phần khi block. Một quyết định
 block mà bạn không thể giải thích sau đó là một quyết định bạn không thể
-tune, và "WAF chặn một khách hàng và không ai nói được vì sao" là cách WAF
+tune, và "WAF block một khách hàng và không ai nói được vì sao" là cách WAF
 bị tắt vĩnh viễn.
 
 ### False positive mới là rủi ro thật sự
 Threat model mà mọi người mang tới WAF là "kẻ tấn công lọt qua". Outage mà
-nó thực sự gây ra là "WAF chặn traffic hợp lệ" — một rule quá rộng khớp với
+nó thực sự gây ra là "WAF block traffic hợp lệ" — một rule quá rộng khớp với
 dữ liệu bình thường của khách hàng (một cái tên có dấu nháy đơn, một đoạn
 code trong ticket support, một blob base64 tình cờ chứa [`../`](../..)) âm thầm phá
 vỡ một tính năng, và vì việc block xảy ra ở edge, application log không

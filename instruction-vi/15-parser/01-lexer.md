@@ -8,7 +8,7 @@ dụng được y hệt cho config parser trong [`09-architecture/03-config.md`]
 ## What to learn
 
 ### Token là gì, và vì sao tách ra lại có ích
-Một lexer (scanner, tokenizer) gộp các chuỗi byte thô thành một tập nhỏ
+Một lexer (scanner, tokenizer) gộp các byte sequence thô thành một tập nhỏ
 các token có kiểu: byte `Host:` trở thành một token `HeaderName("Host")`,
 `{` trở thành `LBrace`, `3600` trở thành `Number(3600)`. Parser sau đó làm
 việc trên token thay vì ký tự, nên nó không bao giờ phải nghĩ về
@@ -89,7 +89,7 @@ tự, không phải trước đó.
    logic peek để nó pass.
 3. Thêm theo dõi byte-offset và biến một lỗi lexer thành một message có
    dòng và cột, tính lazy từ offset thay vì theo dõi từng byte.
-4. Benchmark token dạng borrowed-range so với một phiên bản cấp phát một
+4. Benchmark token dạng borrowed-range so với một phiên bản allocate một
    `String` mỗi identifier trên một config lớn; xác nhận khác biệt về số
    lượng allocation.
 5. So sánh scanner viết tay của bạn với việc scan HTTP inline của

@@ -36,8 +36,8 @@ Mọi địa chỉ chương trình dùng đều là **ảo**. **MMU** dịch t�
 mỗi lần truy cập, dùng page table do kernel duy trì, theo các **page** kích thước cố định
 (thường 4 KiB). **TLB** cache các bản dịch gần đây; miss tốn một lần duyệt bảng. Nếu một
 page không được map hoặc không được phép (ghi vào read-only, user đụng vùng nhớ kernel),
-CPU nâng một **page fault** và kernel quyết định: nạp nó, cấp phát nó, hay giết process
-bằng `SIGSEGV` ([`16-memory.md`](16-memory.md)). Cô lập, `mmap`, `fork` copy-on-write, cấp phát lười
+CPU nâng một **page fault** và kernel quyết định: load nó, allocate nó, hay giết process
+bằng `SIGSEGV` ([`16-memory.md`](16-memory.md)). Cô lập, `mmap`, `fork` copy-on-write, allocate lười
 và memory-mapped file đều là một cơ chế này.
 
 ### Interrupt: device vỗ vai CPU
@@ -49,7 +49,7 @@ vô hiệu hóa các interrupt khác ([`16-kernel/04-interrupt.md`](../16-kernel
 để preempt task đang chạy ([`12-cpu-scheduling.md`](12-cpu-scheduling.md)); không có nó một process lặp vô
 hạn sẽ chiếm core của nó mãi mãi. Interrupt và trap là cách thế giới bên ngoài và lỗi của
 chính bạn thu hút sự chú ý của kernel; **signal** ([`09-blocking-io-and-signals.md`](09-blocking-io-and-signals.md)) là kernel chuyển
-tiếp những sự kiện như vậy *lên* process của bạn.
+tiếp những event như vậy *lên* process của bạn.
 
 ### DMA và network card: byte tới nơi mà CPU không phải copy
 Một **NIC** (network interface card) có các **ring buffer** phần cứng trong RAM. Khi một
@@ -57,14 +57,14 @@ frame tới, NIC ghi nó thẳng vào một buffer bộ nhớ đã cấp sẵn b
 access — device ghi vào RAM mà CPU không phải di chuyển từng byte), đẩy ring tiến lên, và
 nâng một interrupt (hoặc kernel poll, khi tải cao — **NAPI**). Network stack của kernel
 sau đó xử lý frame ([`01-network/07-link-layer.md`](../01-network/07-link-layer.md) -> IP -> TCP), đặt payload lên receive
-queue của socket, và **đánh thức process** đang chờ trong `epoll_wait`/`read`. Chỉ khi đó
+queue của socket, và **wake up process** đang chờ trong `epoll_wait`/`read`. Chỉ khi đó
 code của bạn mới chạy, và `read()` copy byte từ buffer của kernel sang buffer của bạn. Khi
 gửi thì ngược lại: `write` của bạn copy vào socket buffer, TCP cắt thành segment, và NIC
 DMA frame ra ngoài.
 
 ```text
 dây -> NIC -> DMA vào ring buffer -> IRQ/NAPI -> softirq: xử lý IP+TCP
-    -> socket receive queue -> đánh thức epoll_wait -> read() của bạn copy sang user buffer
+    -> socket receive queue -> wake up epoll_wait -> read() của bạn copy sang user buffer
 ```
 
 Hai hệ quả: mỗi byte bạn proxy bị copy ít nhất hai lần (kernel->user khi read,

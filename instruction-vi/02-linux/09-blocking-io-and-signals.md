@@ -28,10 +28,10 @@ match nonblocking_socket.read(&mut buf) {
 ```
 
 ### Vì sao one-thread-per-connection không scale
-Một thread blocking cho mỗi kết nối là thiết kế đơn giản nhất và không
-scale — hàng ngàn kết nối keep-alive idle sẽ có nghĩa là hàng ngàn OS
+Một thread blocking cho mỗi connection là thiết kế đơn giản nhất và không
+scale — hàng ngàn connection keep-alive idle sẽ có nghĩa là hàng ngàn OS
 thread phần lớn không làm gì, mỗi thread có memory stack riêng và overhead
-lập lịch của kernel riêng ([`03-processes-and-threads.md`](03-processes-and-threads.md)). Giải pháp thay
+scheduling của kernel riêng ([`03-processes-and-threads.md`](03-processes-and-threads.md)). Giải pháp thay
 thế là non-blocking socket cộng với một cơ chế để hỏi kernel "cho tôi
 biết trong số một ngàn fd này cái nào thực sự có gì sẵn sàng" trong một
 lời gọi, thay vì tự poll từng cái — cơ chế đó là `epoll`
@@ -39,7 +39,7 @@ lời gọi, thay vì tự poll từng cái — cơ chế đó là `epoll`
 được xây trên đó ([`04-runtime/01-tokio.md`](../04-runtime/01-tokio.md)).
 
 Đây là lý do cụ thể khiến tiêu chí hoàn thành của [`labs/00-tcp-server`](../../labs/00-tcp-server)
-khăng khăng đòi xử lý 500+ kết nối mà không dùng 500+ thread: nó ép bạn
+khăng khăng đòi xử lý 500+ connection mà không dùng 500+ thread: nó ép bạn
 thực sự cảm nhận sự khác biệt mà phần này mô tả, chứ không chỉ đọc về nó.
 
 ### Mẫu event loop, một tầng cao hơn epoll
@@ -47,14 +47,14 @@ Dù bạn tự viết tay (bài tập trong [`02-linux/14-epoll.md`](14-epoll.md
 hộ, hình dạng luôn là: đăng ký quan tâm tới một tập fd, block *một lần*
 trên "cho tôi biết khi bất kỳ cái nào trong số này sẵn sàng" thay vì block
 theo từng fd, và dispatch tới bất kỳ logic nào sở hữu fd đó khi việc chờ
-trả về. Một thread (hoặc một pool nhỏ) có thể phục vụ hàng ngàn kết nối
-theo cách này vì nó không bao giờ bị block chờ bất kỳ một kết nối cụ thể
+trả về. Một thread (hoặc một pool nhỏ) có thể phục vụ hàng ngàn connection
+theo cách này vì nó không bao giờ bị block chờ bất kỳ một connection cụ thể
 nào — nó chỉ block, nhiều nhất, chờ *bất cứ thứ gì, thứ gì cũng được* trở
 nên sẵn sàng.
 
-### Signal: kernel ngắt process của bạn
+### Signal: kernel interrupt process của bạn
 Một **signal** là một thông báo kernel gửi tới một process một cách bất
-đồng bộ — nó có thể tới giữa hai instruction bất kỳ, ngắt bất cứ thứ gì
+đồng bộ — nó có thể tới giữa hai instruction bất kỳ, interrupt bất cứ thứ gì
 process đang làm, không giống một syscall mà code của bạn chủ động khởi
 xướng. `kill -TERM <pid>` và Ctrl-C đều hoạt động bằng cách gửi một
 signal. Đây là một cơ chế gửi hoàn toàn khác so với một hàm return hay
@@ -64,9 +64,9 @@ không?" — kernel đơn giản là preempt nó.
 ### Vì sao xử lý signal ngây thơ nguy hiểm
 Tính bất đồng bộ này chính xác là lý do xử lý signal mong manh nếu làm
 ngây thơ: một handler chạy "bất cứ lúc nào, bất kể process đang làm gì"
-không thể an toàn làm hầu hết các việc bình thường (cấp phát memory, khóa
-một mutex) vì nó có thể vừa ngắt đúng code đang làm chính việc đó — khóa
-một mutex mà handler bây giờ cũng cố khóa sẽ làm process tự deadlock với
+không thể an toàn làm hầu hết các việc bình thường (allocate memory, lock
+một mutex) vì nó có thể vừa interrupt đúng code đang làm chính việc đó — lock
+một mutex mà handler bây giờ cũng cố lock sẽ làm process tự deadlock với
 chính nó. Tập các thao tác an toàn để thực hiện bên trong một raw signal
 handler được gọi là **async-signal-safe**, và đó là một danh sách ngắn
 loại trừ hầu hết những gì cảm giác như "code bình thường."
@@ -75,7 +75,7 @@ Cách sửa idiomatic, và điều mọi async runtime nghiêm túc đều làm:
 handler không làm gì ngoài ghi một byte vào một pipe/eventfd (hoặc tăng
 một atomic — cả hai đều nằm trong danh sách async-signal-safe), và logic
 reload/shutdown thật sự của bạn chạy sau đó, trên một thread bình thường,
-được đánh thức bởi lần ghi đó qua cùng cơ chế event-loop mô tả ở trên.
+được wake up bởi lần ghi đó qua cùng cơ chế event-loop mô tả ở trên.
 `tokio::signal` implement chính xác mẫu này cho bạn; [`02-linux/17-signals.md`](17-signals.md)
 bao quát các signal cụ thể (`SIGHUP`, `SIGTERM`) mà một proxy quan tâm và
 API tương ứng.

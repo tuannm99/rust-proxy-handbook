@@ -4,7 +4,7 @@ Sự kiểm chứng chạy trước khi proxy xử lý một request thật nào
 formatting, và phát hiện undefined behavior cho chính workspace.
 
 ## What to learn
-### clippy + rustfmt như một cổng chặn không tùy chọn
+### clippy + rustfmt như một gate bắt buộc
 `cargo clippy --workspace --all-targets -- -D warnings` và `cargo fmt
 --check` rẻ (vài giây) và bắt được một lớp lớn bug và sự trôi dạt về style
 trước khi bất cứ thứ gì đắt hơn chạy. `-D warnings` quan trọng một cách cụ
@@ -56,7 +56,7 @@ với một `Cargo.lock` đã resolve sẵn — không có lý do gì để bỏ
 một khi workspace có dependency thật, mà nó đã có rồi (`tokio-rustls`
 trong [`proxy`](../../proxy)).
 
-### Cái gì chặn một commit so với cái gì chạy theo lịch
+### Cái gì block một commit so với cái gì chạy theo lịch
 Các kiểm tra nhanh (fmt, clippy, unit test, miri trên các crate unsafe
 nhỏ) thuộc về mỗi lần push — chúng mất vài giây tới vài phút và cho phản
 hồi tức thì. Các kiểm tra chậm (regression corpus fuzzing từ

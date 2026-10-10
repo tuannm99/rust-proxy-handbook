@@ -8,7 +8,7 @@ Nối tiếp [`15-parser/02-parser.md`](02-parser.md).
 ### AST là gì, và nó cố tình bỏ qua điều gì
 Một Abstract Syntax Tree biểu diễn *cấu trúc* của input đã parse, đã lột
 bỏ cú pháp không mang ý nghĩa: dấu ngoặc, dấu phẩy, whitespace, cách viết
-chính xác của một từ khóa. `(a + b)` và `a + b` tạo ra cùng một AST vì dấu
+chính xác của một keyword. `(a + b)` và `a + b` tạo ra cùng một AST vì dấu
 ngoặc chỉ dẫn hướng cho việc parse; cái cây đã mã hóa sẵn việc gom nhóm
 đó.
 
@@ -47,7 +47,7 @@ gì.
 
 ### Cây dạng arena: hình dạng idiomatic trong Rust
 Một cây gồm các node `Box` với con trỏ tới cha đánh nhau với borrow
-checker ([`03-rust/01-ownership.md`](../03-rust/01-ownership.md)) và làm phân mảnh heap. Câu trả lời
+checker ([`03-rust/01-ownership.md`](../03-rust/01-ownership.md)) và làm fragmentation heap. Câu trả lời
 idiomatic, giống hệt mẹo trong [`13-algorithms/lru.md`](../13-algorithms/lru.md), là lưu mọi node
 trong một `Vec` duy nhất và liên kết chúng bằng index `usize`:
 

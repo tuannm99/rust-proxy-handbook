@@ -8,14 +8,14 @@ hay toàn cục, giới hạn phân tán, khi nào nên dùng leaky bucket thay 
 
 ### Lazy refill và state bạn thực sự cần
 Công thức refill-khi-đọc trong [`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) (tokens +
-elapsed × rate, chặn trên ở capacity) là đúng: không cần timer nền cho
+elapsed × rate, bound ở capacity) là đúng: không cần timer nền cho
 mỗi key, và state chỉ là một số token cộng một timestamp. Hai chi tiết
 quyết định nó đúng hay không:
 
-**Chặn trên trước khi tiêu thụ, không phải sau.** Một bucket rảnh phải
+**Bound trước khi tiêu thụ, không phải sau.** Một bucket rảnh phải
 clamp về `capacity` khi refill, nếu không một client im lặng một giờ sẽ
 tích lũy cả giờ token và đổ toàn bộ backlog đó ra cùng lúc — đúng cú spike
-traffic mà limiter tồn tại để ngăn chặn.
+traffic mà limiter tồn tại để ngăn.
 
 **Đừng bao giờ để clamp chạy ngược.** Nếu `now` sớm hơn `last_refill`,
 `elapsed` âm và token bị *lấy đi*. Đây không phải chuyện giả định:
@@ -63,19 +63,19 @@ phải một tối ưu. Hai request cùng đọc 1 token, cùng quyết định 
 cùng ghi 0 — limiter bị rò rỉ. Token bucket không có đường đi chỉ-đọc; việc
 kiểm tra và trừ token phải là một thao tác atomic duy nhất.
 
-### Số lượng key không bị chặn trên
+### Số lượng key không bounded
 Một map theo địa chỉ IP nguồn nằm dưới quyền kiểm soát của attacker: các
 nguồn giả mạo hoặc phân tán mỗi cái tạo một entry, và cái map trở thành một
-vector làm cạn kiệt bộ nhớ ([`07-security/09-ddos.md`](../07-security/09-ddos.md)). Hãy chặn nó bằng
+vector làm cạn kiệt bộ nhớ ([`07-security/09-ddos.md`](../07-security/09-ddos.md)). Hãy cap nó bằng
 một trong các cách:
 - **Quét dọn entry rảnh.** Một bucket ở đầy capacity không mang thông tin
   gì cả — xóa nó tương đương với giữ nó. Quét bất cứ thứ gì không bị chạm
   tới trong vài khoảng refill.
-- **Chặn trên cái map** và evict LRU ([`13-algorithms/lru.md`](lru.md)) khi vượt
+- **Bound cái map** và evict LRU ([`13-algorithms/lru.md`](lru.md)) khi vượt
   giới hạn.
 - **Đếm xấp xỉ kích thước cố định.** Hash key vào một mảng bucket kích
   thước cố định và chấp nhận va chạm gộp giới hạn của hai client — bộ nhớ
-  bị chặn trên bằng cấu trúc, đổi lại là thỉnh thoảng từ chối nhầm. Một
+  bounded bằng cấu trúc, đổi lại là thỉnh thoảng từ chối nhầm. Một
   count-min sketch ([`13-algorithms/count-min-sketch.md`](count-min-sketch.md)) là phiên bản bài
   bản của cách này.
 

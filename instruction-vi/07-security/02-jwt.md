@@ -11,7 +11,7 @@ Một JWT là một cấu trúc JSON đã ký, mã hóa base64url
 minh signature với một key đã biết (shared secret HS256 hoặc public key
 RS256/ES256 — không bao giờ chấp nhận `alg: none`, và không bao giờ để
 `alg` header của chính token chọn thuật toán xác minh), sau đó kiểm tra
-claim: `exp` (đã hết hạn?), `nbf` (chưa tới lúc hợp lệ?), `aud`/`iss` (được
+claim: `exp` (đã expire?), `nbf` (chưa tới lúc hợp lệ?), `aud`/`iss` (được
 phát hành cho service này?).
 
 ```rust
@@ -48,7 +48,7 @@ gọi "HMAC-verify với key đã cấu hình", key material khớp, và token g
 được xác thực thành công. Chỉ cần đổi một header đã biến một phép kiểm tra
 signature thành một con dấu đóng cho có.
 
-Cách sửa không phải là "từ chối `alg: none`" — mà là ghim cứng thuật toán
+Cách sửa không phải là "từ chối `alg: none`" — mà là pin cứng thuật toán
 được chấp nhận trong *cấu hình của bạn* và bỏ hoàn toàn tuyên bố của token
 về chính nó. `jsonwebtoken` với
 `Validation { algorithms: vec![Algorithm::RS256], .. }` làm đúng việc này;
@@ -94,7 +94,7 @@ application developer có thể nhìn thấy.
 
 Cho phép một khoảng leeway nhỏ (30-60 giây là quy ước) trên cả `exp` lẫn
 `nbf`. Lưu ý sự bất đối xứng về rủi ro: leeway trên `nbf` không tốn gì cả,
-leeway trên `exp` kéo dài tuổi thọ của một token đã hết hạn thêm đúng
+leeway trên `exp` kéo dài tuổi thọ của một token đã expire thêm đúng
 khoảng đó — điều này ổn ở mức 60 giây và không ổn ở mức một giờ.
 
 Gotcha: leeway che giấu clock drift chứ không sửa nó. Theo dõi độ lệch thực
@@ -107,7 +107,7 @@ Một token đã ký không trạng thái là hợp lệ cho tới `exp` vì vi�
 nó không cần bất kỳ server state nào — đó chính là toàn bộ luận điểm về
 hiệu năng của JWT, và nó cũng có nghĩa là bạn không thể thu hồi một token.
 Một token bị lộ, một session đã logout, một nhân viên vừa bị sa thải: tất
-cả vẫn xác thực được cho tới khi hết hạn.
+cả vẫn xác thực được cho tới khi expire.
 
 Các câu trả lời thực tế, theo chi phí tăng dần: giữ `exp` ngắn (vài phút,
 kèm luồng refresh token để renew), duy trì một denylist các giá trị `jti`
@@ -121,7 +121,7 @@ mặc định `exp` 24 giờ nghĩa là một cửa sổ bị lộ 24 giờ.
 Làm lần lượt theo thứ tự sau.
 
 1. Trong [`proxy`](../../proxy), thêm JWT validation bằng `jsonwebtoken`: thuật toán được
-   ghim cứng, signature + `exp`/`aud`, ngược lại trả 401. **Xong khi** một
+   pin cứng, signature + `exp`/`aud`, ngược lại trả 401. **Xong khi** một
    token hợp lệ đi qua và một token có payload bị sửa thì fail.
 2. Tự dàn dựng cuộc tấn công algorithm-confusion nhắm vào chính endpoint
    của bạn: lấy public key RS256 của bạn, ký một token dùng nó như một
@@ -131,10 +131,10 @@ Làm lần lượt theo thứ tự sau.
 3. Đưa vào các giá trị `kid` chứa [`../`](../..) và một `jku` trỏ tới một URL bạn
    kiểm soát. **Xong khi** không cái nào được tin — `kid` chỉ resolve vào
    tập key cố định của bạn và không có outbound fetch nào cho `jku`.
-4. Thêm việc fetch JWKS với tra cứu theo `kid`, giới hạn tốc độ refetch, và
+4. Thêm việc fetch JWKS với tra cứu theo `kid`, rate limiting refetch, và
    fail-static khi fetch thất bại. **Xong khi** 1000 request với các giá
    trị `kid` ngẫu nhiên chỉ tạo ra tối đa một lượt fetch JWKS outbound, và
-   việc chặn (blackhole) endpoint JWKS vẫn để các key hiện có tiếp tục hoạt
+   việc block (blackhole) endpoint JWKS vẫn để các key hiện có tiếp tục hoạt
    động.
 5. Thêm leeway cho clock-skew và một metric đo skew. **Xong khi** một token
    được tạo 2 giây trong tương lai vẫn xác thực được, và metric của bạn báo

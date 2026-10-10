@@ -17,8 +17,7 @@ chunked encoding, Content-Length), và một lịch sử thật về các bug b�
 (request smuggling) đến từ chính lớp parser này khi bất đồng với một
 parser khác về input mập mờ. Bọc entry point của parser bạn trong một
 `fuzz_target!(|data: &[u8]| { let _ = parse_request(data); })` và để nó
-chạy — một parser không bao giờ được panic hay hang trên *bất kỳ* chuỗi
-byte nào, kể cả rác.
+chạy — một parser không bao giờ được panic hay hang trên *bất kỳ* byte sequence nào, kể cả rác.
 
 ### Fuzzing dựa trên corpus so với property testing
 Fuzzing (cargo-fuzz/AFL) khám phá byte thô được dẫn dắt bởi feedback
@@ -50,7 +49,7 @@ Những chi tiết cơ học hay làm người ta vấp lần đầu:
   libFuzzer: `cargo +nightly fuzz run <target> -- -max_total_time=1800`
   chạy 30 phút. `-max_len=8192` giới hạn kích thước input, và `-timeout=5`
   khiến bất kỳ input nào chạy lâu hơn 5 giây bị tính là treo, và đó cũng
-  là một phát hiện (một vòng lặp vô hạn trên một chuỗi byte nào đó).
+  là một phát hiện (một vòng lặp vô hạn trên một byte sequence nào đó).
 - **Corpus và crash.** Các input thú vị được tích lũy trong
   `fuzz/corpus/<target>/`. Đặt các file seed tự viết vào đó trước lần chạy
   đầu tiên. Một crash ghi input vào `fuzz/artifacts/<target>/`, và
@@ -65,9 +64,8 @@ Những chi tiết cơ học hay làm người ta vấp lần đầu:
 Gotcha: "không panic" là property yếu nhất mà một target có thể kiểm tra.
 Target cũng có thể `assert!` một bất biến trên mọi input, và fuzzer sẽ đi
 săn phản ví dụ. Với một parser, một bất biến mạnh là property split-point
-của [`labs/01-http-parser`](../../labs/01-http-parser): parse cả chuỗi byte một lần và parse nó thành
-hai mảnh tại bất kỳ offset nào phải cho cùng kết quả. Fuzzer chọn cả chuỗi
-byte lẫn offset.
+của [`labs/01-http-parser`](../../labs/01-http-parser): parse cả byte sequence một lần và parse nó thành
+hai mảnh tại bất kỳ offset nào phải cho cùng kết quả. Fuzzer chọn cả byte sequence lẫn offset.
 
 ## Practice
 1. Thêm một thư mục `fuzz/` vào [`labs/01-http-parser`](../../labs/01-http-parser) bằng `cargo fuzz

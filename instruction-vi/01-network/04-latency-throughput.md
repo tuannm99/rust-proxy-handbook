@@ -12,8 +12,8 @@ thứ.
 bị chi phối bởi khoảng cách vật lý (ánh sáng trong sợi quang di chuyển ở
 tốc độ khoảng 200.000 km/s, không phải 300.000, do chiết suất của thủy
 tinh) và số hop (mục routing của [`02-addressing.md`](02-addressing.md)) — không phải bởi độ
-"nhanh" của kết nối bạn theo nghĩa thông thường. Một đường truyền xuyên
-lục địa có độ trễ hàng chục mili-giây bất kể bạn đổ bao nhiêu bandwidth
+"nhanh" của connection bạn theo nghĩa thông thường. Một đường truyền xuyên
+lục địa có latency hàng chục mili-giây bất kể bạn đổ bao nhiêu bandwidth
 vào nó, vì đó là một giới hạn của tốc độ ánh sáng, không phải vấn đề
 congestion.
 
@@ -38,9 +38,8 @@ của nó quay về — xấp xỉ `2 × latency` cộng thời gian xử lý �
 Đây là con số quan trọng cho câu hỏi "chuyện này tốn bao nhiêu round
 trip": mỗi handshake ([`03-byte-streams.md`](03-byte-streams.md)) — của TCP, rồi của TLS chồng
 lên trên — là thêm một RTT chờ đợi thuần túy trước khi byte request thật
-đầu tiên di chuyển. Đó chính là toàn bộ luận điểm cho việc tái sử dụng kết
-nối trong [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md): trả giá một handshake bị giới hạn bởi
-RTT một lần và tái sử dụng kết nối tốt hơn trả giá đó ở mỗi request.
+đầu tiên di chuyển. Đó chính là toàn bộ luận điểm cho việc tái sử dụng connection trong [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md): trả giá một handshake bị giới hạn bởi
+RTT một lần và tái sử dụng connection tốt hơn trả giá đó ở mỗi request.
 
 ### Vì sao một đường truyền bandwidth cao vẫn có thể cảm giác chậm
 Một đường truyền có thể có bandwidth khổng lồ mà vẫn cảm giác ì ạch nếu
@@ -58,14 +57,14 @@ trip, không phải throughput.
 **Bandwidth-delay product** (bandwidth × RTT) là số byte có thể đang trên
 đường truyền cùng lúc, chưa được ack — congestion window của TCP
 ([`01-network/12-tcp.md`](12-tcp.md)) phải lớn lên tới xấp xỉ kích thước này trước khi
-một kết nối duy nhất có thể dùng hết bandwidth của đường truyền. Trên một
+một connection duy nhất có thể dùng hết bandwidth của đường truyền. Trên một
 đường truyền bandwidth cao, latency cao ("long fat network" — một đường
 truyền vệ tinh, hay một tuyến cáp quang xuyên lục địa), tích số này lớn,
-và một kết nối bắt đầu với congestion window nhỏ (mọi kết nối TCP mới đều
+và một connection bắt đầu với congestion window nhỏ (mọi connection TCP mới đều
 vậy, qua slow start) mất một thời gian để tăng tốc tới mức dùng hết
-bandwidth khả dụng. Đây là một lý do khác khiến một kết nối mới cho mỗi
-request kém hiệu quả hơn một kết nối được tái sử dụng, độc lập với chi phí
-handshake-RTT ở trên: congestion window của một kết nối được tái sử dụng
+bandwidth khả dụng. Đây là một lý do khác khiến một connection mới cho mỗi
+request kém hiệu quả hơn một connection được tái sử dụng, độc lập với chi phí
+handshake-RTT ở trên: congestion window của một connection được tái sử dụng
 đã "ấm" sẵn.
 
 ## Practice
@@ -80,10 +79,9 @@ handshake-RTT ở trên: congestion window của một kết nối được tái
    `time_connect` của site xa khớp xấp xỉ với latency tốc-độ-ánh-sáng bạn
    kỳ vọng cho khoảng cách đó.
 3. Tải một file lớn (vài trăm MB) từ một mirror nhanh và tính throughput
-   thực tế (`size / time`); so sánh với bandwidth được quảng cáo của kết
-   nối bạn — giải thích khoảng cách nếu có.
+   thực tế (`size / time`); so sánh với bandwidth được quảng cáo của connection bạn — giải thích khoảng cách nếu có.
 4. Tính bandwidth-delay product cho một đường truyền 100 Mbps ở RTT 150ms
    (một con số xuyên lục địa khả dĩ) theo byte; so sánh con số đó với
    initial congestion window mặc định của TCP (~10 segment, ~14KB) và
-   giải thích vì sao một kết nối mới trên đường truyền này bắt đầu chỉ
+   giải thích vì sao một connection mới trên đường truyền này bắt đầu chỉ
    dùng một phần nhỏ bandwidth khả dụng.

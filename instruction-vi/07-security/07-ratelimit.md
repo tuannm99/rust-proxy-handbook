@@ -43,8 +43,7 @@ một timer nền cho mỗi client — một timer cho mỗi key bị rate-limit
 scale được tới hàng triệu client.
 
 ### Leaky Bucket
-Mô hình hóa một hàng đợi "rò rỉ" ở một tốc độ không đổi; request được xếp
-hàng và xử lý ở tốc độ cố định đó, hoặc bị drop nếu hàng đợi đầy. Khác với
+Mô hình hóa một queue "rò rỉ" ở một tốc độ không đổi; request được queue và xử lý ở tốc độ cố định đó, hoặc bị drop nếu queue đầy. Khác với
 token bucket, nó làm phẳng output thành một tốc độ nghiêm ngặt không đổi
 thay vì cho phép burst — phù hợp khi hệ thống *downstream* thực sự không
 chịu được burst (ví dụ bảo vệ một backend legacy có capacity cố định), kém
@@ -89,7 +88,7 @@ thường.
 
 ### Không phải request nào cũng có chi phí như nhau
 Một model "1 request = 1 token" định giá một health check 2 KB giống hệt
-một report ghim CPU 400ms. Cost-based limiting tính phí token tỷ lệ với chi
+một report pin CPU 400ms. Cost-based limiting tính phí token tỷ lệ với chi
 phí thực tế: một giá trị tĩnh theo route (rẻ và thường đủ dùng), hoặc token
 bị trừ *sau khi* xong việc dựa trên thời gian upstream đo được hay số byte
 response — cho phép request tiếp theo của một client bị throttle theo
@@ -135,7 +134,7 @@ mỗi lần xảy ra.
 
 Gotcha: đảm bảo client của chính bạn không retry 429 ngay lập tức. Một cơn
 bão retry các request bị từ chối chính là loại tải mà giới hạn tồn tại để
-ngăn chặn — xem [`06-proxy/05-retry.md`](../06-proxy/05-retry.md); `Retry-After` tồn tại là để được
+ngăn — xem [`06-proxy/05-retry.md`](../06-proxy/05-retry.md); `Retry-After` tồn tại là để được
 tôn trọng.
 
 ### Rate limiting phân tán
@@ -151,7 +150,7 @@ mạng cho mỗi request — thường được giảm nhẹ bằng batching/loc
 Ba cách tiếp cận, nói thẳng về sự đánh đổi:
 - **Chia cho N.** Không tốn chi phí phối hợp, và sai bất cứ khi nào traffic
   không phân bố đều — chính xác là trường hợp dưới consistent hashing hay
-  khi kết nối của một client rơi vào cùng một replica. Một client đáng lẽ
+  khi connection của một client rơi vào cùng một replica. Một client đáng lẽ
   được 100 req/s chỉ nhận 20 vì họ tình cờ chạm vào một replica.
 - **Shared store trên mỗi request.** Chính xác, và thêm một RTT mạng cộng
   một dependency cứng vào hot path của mọi request.

@@ -3,19 +3,19 @@
 [`13-algorithms/heap.md`](heap.md) nói về binary heap backing một priority queue nhỏ
 (một entry cho mỗi upstream). File này nói về chuyện gì xảy ra khi công
 việc của priority queue là lên lịch cho các *timeout* — có thể một cho mỗi
-kết nối, ở quy mô của một proxy — nơi chi phí O(log n) mỗi thao tác và
+connection, ở quy mô của một proxy — nơi chi phí O(log n) mỗi thao tác và
 việc hủy khó xử của một heap không còn "đủ tốt" nữa.
 
 ## What to learn
 
 ### Vì sao một heap chật vật khi làm kho lưu timeout
-Một proxy lên lịch một timeout cho gần như mọi kết nối và request (idle
+Một proxy lên lịch một timeout cho gần như mọi connection và request (idle
 timeout, read timeout, retry deadline) và hủy phần lớn chúng sớm khi thao
 tác hoàn thành bình thường. Một heap xử lý điều này như
 insert-rồi-thường-hủy-trước-khi-nổ, và việc hủy một entry bất kỳ trong một
 binary heap (không chỉ root) cần cùng cơ chế decrease-key mà [`heap.md`](heap.md) mô
 tả cho việc cập nhật — một lần tìm-và-xóa O(log n) cho mỗi lần hủy, với
-tần suất "một lần mỗi request," là chi phí thật ở số lượng kết nối cao.
+tần suất "một lần mỗi request," là chi phí thật ở số lượng connection cao.
 
 ### Timer wheel: gộp theo thời điểm, không theo thứ tự chính xác
 Một timer wheel đánh đổi thứ tự chính xác để lấy insert O(1) và hủy O(1)
@@ -48,7 +48,7 @@ thiết kế mà `tokio::time` dùng bên trong cho driver đứng sau mỗi l�
 ### Đánh đổi giữa độ chính xác và chi phí
 Một timer wheel không nổ đúng tại deadline chính xác — nó nổ tại ranh giới
 tick mà deadline rơi vào, nên độ chính xác bị giới hạn bởi `tick_duration`.
-Với timeout kết nối/request (đo bằng chục mili giây tới vài giây) một tick
+Với timeout connection/request (đo bằng chục mili giây tới vài giây) một tick
 10-50ms là không cảm nhận được; với bất cứ thứ gì cần độ chính xác dưới
 mili giây, thứ tự chính xác của một heap đáng giá chi phí mỗi thao tác cao
 hơn của nó. Phần lớn các use case timeout của proxy nằm chắc chắn trong
@@ -73,6 +73,6 @@ theo hàng nghìn, không phải để thay thế nó.
    chuyển đúng vào wheel chi tiết khi deadline của nó tới gần.
 3. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), thay một pattern
    `tokio::time::sleep`-cho-mỗi-timeout-mỗi-kết-nối ngây thơ bằng một
-   thiết kế suy luận về việc hủy hàng loạt (ví dụ đóng kết nối hủy mọi
+   thiết kế suy luận về việc hủy hàng loạt (ví dụ đóng connection hủy mọi
    timer đang chờ của nó), và giải thích bằng văn bản vì sao
    `tokio::time` đã tránh được chi phí mà bạn vừa đo ở bước 1.

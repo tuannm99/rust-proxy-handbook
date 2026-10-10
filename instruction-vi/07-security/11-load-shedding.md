@@ -1,24 +1,24 @@
 # Load Shedding
 
 Phải làm gì khi công việc đến vượt capacity. Câu trả lời ngắn là "reject
-một phần ngay lập tức" — và lý do vì sao xếp hàng thay vào đó lại tệ hơn
+một phần ngay lập tức" — và lý do vì sao queue thay vào đó lại tệ hơn
 mới là điều file này nói tới.
 
 ## What to learn
-### Xếp hàng là cái bẫy
-Khi demand vượt capacity, hai lựa chọn là xếp hàng phần dư hoặc reject nó.
-Xếp hàng cảm giác tử tế hơn và lại là cái thất bại.
+### Queue là cái bẫy
+Khi demand vượt capacity, hai lựa chọn là queue phần dư hoặc reject nó.
+Queue cảm giác tử tế hơn và lại là cái thất bại.
 
-Hàng đợi lớn dần, nên latency lớn dần theo. Đến lúc một request trong hàng
+Queue lớn dần, nên latency lớn dần theo. Đến lúc một request trong hàng
 tới lượt, client đã timeout rồi và — tệ hơn — đã retry
 ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)), thứ vừa thêm *nhiều hơn* load. Giờ bạn đang tốn
 capacity còn lại để tính ra câu trả lời cho những request chẳng ai còn
-nghe nữa, làm giảm capacity hiệu dụng, làm hàng đợi dài thêm. Vòng lặp đó
+nghe nữa, làm giảm capacity hiệu dụng, làm queue dài thêm. Vòng lặp đó
 tự nuôi sống nó: throughput của công việc *hữu ích* sụp về gần 0 trong khi
 hệ thống vẫn bận rộn hoàn toàn.
 
 Tính chất hồi phục cũng quan trọng. Một hệ thống shedding trở lại bình
-thường ngay khi load giảm. Một hệ thống xếp hàng phải xử lý hết một backlog
+thường ngay khi load giảm. Một hệ thống queue phải xử lý hết một backlog
 các request đã chết từ trước, nên nó vẫn suy giảm rất lâu sau khi nguyên
 nhân đã hết.
 
@@ -48,12 +48,12 @@ Gotcha: đảm bảo logic retry của chính bạn không retry các response b
 shed. Retry một 503 nghĩa là "tôi đang overload" chính là kiểu khuếch đại
 mà shedding tồn tại để ngăn.
 
-### Chặn theo thời gian, không theo số lượng
-Một độ sâu hàng đợi cố định là giới hạn sai, vì độ sâu đúng phụ thuộc bạn
-đang drain nó nhanh thế nào — 100 request xếp hàng thì ổn ở 1ms mỗi cái và
+### Bound theo thời gian, không theo số lượng
+Một độ sâu queue cố định là giới hạn sai, vì độ sâu đúng phụ thuộc bạn
+đang drain nó nhanh thế nào — 100 request queue thì ổn ở 1ms mỗi cái và
 thảm họa ở 500ms mỗi cái.
 
-Quy tắc tốt hơn, từ CoDel, là chặn theo *sojourn time*: drop các request đã
+Quy tắc tốt hơn, từ CoDel, là bound theo *sojourn time*: drop các request đã
 chờ lâu hơn một target. Cái này tự thích ứng khi service time thay đổi, và
 nó biểu đạt trực tiếp điều bạn thực sự quan tâm — một request đã chờ 5
 giây là vô giá trị bất kể nó đứng đầu hay đứng thứ một trăm trong hàng.
@@ -117,9 +117,9 @@ Làm theo thứ tự này.
 
 1. Thêm một counter concurrency và một shed threshold tĩnh ở đầu pipeline
    của [`proxy`](../../proxy), trả 503 với `Retry-After`. **Xong khi** load vượt
-   threshold bị reject ngay thay vì xếp hàng.
-2. Chứng minh thất bại của việc xếp hàng trước, để có baseline cho cách
-   sửa. **Xong khi** bạn có thể chỉ ra, với một hàng đợi không giới hạn,
+   threshold bị reject ngay thay vì queue.
+2. Chứng minh thất bại của việc queue trước, để có baseline cho cách
+   sửa. **Xong khi** bạn có thể chỉ ra, với một queue không giới hạn,
    p99 latency tăng vô hạn và throughput hữu ích giảm trong khi process
    vẫn bận 100%.
 3. Đo chi phí của đường shed. **Xong khi** một request bị reject đo được

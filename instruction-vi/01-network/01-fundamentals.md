@@ -12,14 +12,14 @@ và các file sau điền vào địa hình.
 ### Hai process, nói chuyện qua byte
 Lột bỏ mọi từ viết tắt thì networking chỉ là: hai chương trình, có thể
 nằm trên các máy khác nhau, trao đổi byte qua dây (hoặc sóng radio). Một
-bên lắng nghe, một bên kết nối tới. Mọi thứ khác trong thư mục này — TCP,
+bên listen, một bên connect tới. Mọi thứ khác trong thư mục này — TCP,
 TLS, HTTP, DNS — là một tập luật đặt chồng lên "gửi byte, nhận byte" để
 hai chương trình được viết độc lập, trên hai máy tính khác nhau, đồng ý
 với nhau về ý nghĩa của những byte đó.
 
 Về mặt cấu trúc, [`proxy/`](../../proxy) chỉ là một chương trình đứng ở giữa: nó là
-"server" đối với bất kỳ ai kết nối tới nó, và là "client" đối với bất kỳ
-thứ gì nó kết nối tới tiếp theo. Mỗi file protocol trong thư mục này mô tả
+"server" đối với bất kỳ ai connect tới nó, và là "client" đối với bất kỳ
+thứ gì nó connect tới tiếp theo. Mỗi file protocol trong thư mục này mô tả
 hành vi từ một hoặc cả hai vai trò đó.
 
 ### Mô hình phân lớp: tấm bản đồ mà mọi thứ khác treo lên
@@ -103,7 +103,7 @@ lại từng phần riêng lẻ thay vì đọc lại cả một bức tường 
   (một stream, không phải các message), TCP vs UDP, và handshake như một
   pattern lặp lại.
 - **[`04-latency-throughput.md`](04-latency-throughput.md)** — bốn con số người ta hay lẫn lộn:
-  latency, bandwidth, throughput, RTT — và vì sao một kết nối "nhanh" vẫn
+  latency, bandwidth, throughput, RTT — và vì sao một connection "nhanh" vẫn
   có thể cảm giác chậm.
 - **[`05-proxy-taxonomy.md`](05-proxy-taxonomy.md)** — forward proxy vs reverse proxy vs NAT
   gateway vs load balancer vs L4 vs L7. Repo này xây một điểm cụ thể trong

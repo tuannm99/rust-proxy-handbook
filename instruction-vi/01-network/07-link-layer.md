@@ -108,5 +108,5 @@ không trùng — được TCP dựng lại bên trên
    `ip link add ... type veth peer name ...`, `ip link set ... netns ...`),
    gán địa chỉ, ping xuyên qua, và xem neighbor table trong mỗi namespace —
    cùng cơ chế mà container networking dùng. Sau đó chạy
-   [`labs/00-tcp-server`](../../labs/00-tcp-server) trong một namespace và kết nối tới nó từ namespace
+   [`labs/00-tcp-server`](../../labs/00-tcp-server) trong một namespace và connect tới nó từ namespace
    còn lại bằng `nc`.
