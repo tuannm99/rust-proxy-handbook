@@ -7,7 +7,7 @@ một khoảng thời gian ân hạn trước `SIGKILL` (thứ không thể bắ
 là một dừng cứng tức thì). Nếu proxy không bắt `SIGTERM` và hành động theo
 nó, nó hoặc chết ngay lập tức giữa chừng request (kết nối bị rớt) hoặc bị
 kill cứng sau khi hết thời gian ân hạn, cùng một kết quả. Xem
-[`02-linux/10-signals.md`](../02-linux/10-signals.md).
+[`02-linux/17-signals.md`](../02-linux/17-signals.md).
 
 Gotcha: là PID 1 trong một container, các disposition tín hiệu mặc định
 không áp dụng — kernel không kill PID 1 với các tín hiệu nó chưa xử lý
@@ -94,7 +94,7 @@ nên một client với các request in-flight biết chính xác cái nào đã
 chấp nhận và cái nào nó phải retry ở nơi khác. Dạng graceful là hai frame
 `GOAWAY` — một với stream ID tối đa để công bố ý định (để các stream
 in-flight hoàn thành trong khi client ngừng mở stream mới), rồi một cái
-cuối với ID đã-xử-lý-cuối-cùng thật ([`01-network/12-http2.md`](../01-network/12-http2.md)).
+cuối với ID đã-xử-lý-cuối-cùng thật ([`01-network/17-http2.md`](../01-network/17-http2.md)).
 
 Gotcha: một kết nối keep-alive đang idle là cùng race như xung đột
 close/request của [`05-http-stack/05-keepalive.md`](../05-http-stack/05-keepalive.md), giờ xảy ra trên cả

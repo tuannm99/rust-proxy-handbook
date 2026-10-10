@@ -89,7 +89,7 @@ một yêu cầu vận hành mong manh.
    C (một hàm "C" giả lập cũng được) và xác nhận double-free/use-after-free
    được ngăn chặn bởi cấu trúc.
 4. Đọc source của crate `libc` cho một binding syscall bạn đã dùng bằng
-   tay (`epoll_ctl`, từ bài tập [`02-linux/07-epoll.md`](../02-linux/07-epoll.md)) và xác định các
+   tay (`epoll_ctl`, từ bài tập [`02-linux/14-epoll.md`](../02-linux/14-epoll.md)) và xác định các
    định nghĩa struct `#[repr(C)]` của nó.
 5. Giải thích, có trích dẫn [`09-architecture/02-plugin.md`](../09-architecture/02-plugin.md), vì sao một hệ
    sinh thái ổn định ABI như C khiến plugin kiểu `dlopen` khả thi trong

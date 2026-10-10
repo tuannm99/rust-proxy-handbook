@@ -116,7 +116,7 @@ và mọi thứ khác được coi là HTTP/1.1. Đó là lý do HTTP/2 không m
 động với `curl --http2-prior-knowledge`, khi curl gửi preface ngay lập tức.
 Còn `curl --http2` thường trên kết nối không mã hóa thì xin một
 `Upgrade: h2c` của HTTP/1.1, thứ mà hyper không implement, nên nó ở lại
-HTTP/1.1. Qua TLS, protocol được chọn bằng ALPN ([`01-network/14-tls.md`](../01-network/14-tls.md)),
+HTTP/1.1. Qua TLS, protocol được chọn bằng ALPN ([`01-network/19-tls.md`](../01-network/19-tls.md)),
 và client sau đó gửi preface, nên auto builder vẫn làm đúng. Executor là
 bắt buộc vì HTTP/2 chạy các background task cho mỗi connection.
 
@@ -140,12 +140,12 @@ WebSocket ([`05-http-stack/10-websocket.md`](10-websocket.md)).
   vẫn khỏe.
 - **Mọi thứ còn lại** không có timeout: handler, đọc request body, ghi
   response, lời gọi upstream. Tự bọc chúng bằng `tokio::time::timeout`. Một
-  lời gọi upstream bị timeout là `504` ([`01-network/10-http.md`](../01-network/10-http.md)). Deadline
+  lời gọi upstream bị timeout là `504` ([`01-network/15-http.md`](../01-network/15-http.md)). Deadline
   cho từng lần đọc với sender chậm nằm ở [`07-security/10-slowloris.md`](../07-security/10-slowloris.md).
 
 ### Các cấu hình HTTP/2 bạn sẽ đụng tới
 Trên `http2()`: `max_concurrent_streams` (giới hạn concurrency mỗi
-connection từ [`01-network/12-http2.md`](../01-network/12-http2.md)), `initial_stream_window_size` và
+connection từ [`01-network/17-http2.md`](../01-network/17-http2.md)), `initial_stream_window_size` và
 `initial_connection_window_size` (flow-control window), `adaptive_window`
 (để h2 tự định cỡ window theo băng thông đo được), `max_header_list_size`
 (giới hạn header sau decode, chính là giới hạn chống HPACK bomb),

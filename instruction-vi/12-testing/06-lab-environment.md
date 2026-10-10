@@ -46,7 +46,7 @@ kết nối tới một process trong WSL.
   đã gửi gì.
 
 Gotcha: không công cụ nào ở trên gửi được HTTP/2 Rapid Reset
-([`01-network/12-http2.md`](../01-network/12-http2.md)). Với [`labs/08-http2`](../../labs/08-http2) bạn tự viết client đó, và
+([`01-network/17-http2.md`](../01-network/17-http2.md)). Với [`labs/08-http2`](../../labs/08-http2) bạn tự viết client đó, và
 hyper làm nó ngắn gọn. Với HTTP/2 client của hyper, drop một response future
 trước khi response tới khiến crate `h2` bên dưới gửi `RST_STREAM(CANCEL)`
 cho stream đó. Nên "mở một stream, drop nó, lặp lại" trong một vòng lặp
@@ -126,7 +126,7 @@ thích vì sao `sum by (le)` là bắt buộc).
 
 ### Các setup được ghi ở nơi khác
 - Toolchain và lệnh fuzzing: [`12-testing/02-fuzzing.md`](02-fuzzing.md).
-- CA local và certificate, `openssl s_client`: [`01-network/14-tls.md`](../01-network/14-tls.md).
+- CA local và certificate, `openssl s_client`: [`01-network/19-tls.md`](../01-network/19-tls.md).
 - Jaeger cho trace: [`08-observability/03-tracing.md`](../08-observability/03-tracing.md).
 - `tokio-console` (cần crate `console-subscriber` và
   `RUSTFLAGS="--cfg tokio_unstable"`): [`04-runtime/03-runtime-config.md`](../04-runtime/03-runtime-config.md).

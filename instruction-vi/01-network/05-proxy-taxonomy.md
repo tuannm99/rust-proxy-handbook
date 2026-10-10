@@ -81,7 +81,7 @@ Một **sidecar proxy** (Envoy trong một service mesh, ví dụ Istio) vẫn l
 cùng cơ chế L7 reverse-proxy, chỉ triển khai khác đi: thay vì một proxy
 dùng chung đứng trước cả một hạm đội service, mỗi instance service riêng
 lẻ có một instance proxy tí hon của riêng nó chạy cạnh nó (cùng pod, theo
-thuật ngữ Kubernetes — xem [`02-linux/06-containers.md`](../02-linux/06-containers.md)), xử lý traffic
+thuật ngữ Kubernetes — xem [`02-linux/13-containers.md`](../02-linux/13-containers.md)), xử lý traffic
 inbound và outbound của riêng instance đó. Cơ chế mà handbook này dạy —
 load balancing, retry, circuit breaking, mTLS — hoàn toàn giống nhau; chỉ
 topology triển khai là khác.

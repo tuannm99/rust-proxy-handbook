@@ -1,7 +1,7 @@
 # Crypto Basics: Encryption, Hashing, Signatures, PKI
 
 Một phần của chuỗi fundamentals từ-con-số-0 — xem [`01-network/01-fundamentals.md`](01-fundamentals.md)
-để có index đầy đủ. [`01-network/14-tls.md`](14-tls.md) mở đầu bằng "negotiate một
+để có index đầy đủ. [`01-network/19-tls.md`](19-tls.md) mở đầu bằng "negotiate một
 cipher suite, trao đổi (EC)DHE key share, derive session key" và
 [`07-security/02-jwt.md`](../07-security/02-jwt.md)/[`07-security/03-mtls.md`](../07-security/03-mtls.md)/[`07-security/01-auth.md`](../07-security/01-auth.md)
 đều dựa vào "signature," "public key," và "certificate chain" — không cái
@@ -34,7 +34,7 @@ so với symmetric encryption, quá chậm để dùng cho traffic khối lượ
 
 Các thuật toán **key exchange** (Diffie-Hellman và biến thể đường cong
 elliptic của nó, ECDHE — chính là "(EC)DHE" trong dòng mở đầu của
-[`14-tls.md`](14-tls.md)) là một mẹo khéo léo liên quan tới asymmetric: cả hai bên trao
+[`19-tls.md`](19-tls.md)) là một mẹo khéo léo liên quan tới asymmetric: cả hai bên trao
 đổi các giá trị công khai qua đường truyền mở, và mỗi bên độc lập *tính
 toán* ra cùng một secret dùng chung từ giá trị private của chính mình và
 giá trị public của bên kia — một kẻ nghe lén thấy cả hai giá trị public
@@ -48,7 +48,7 @@ cả hai, theo trình tự: key exchange **asymmetric** (ECDHE) trong lúc
 handshake để đồng ý về một secret dùng chung mà không truyền nó, rồi
 encryption **symmetric** (AES/ChaCha20) dùng secret đã derive đó cho toàn
 bộ traffic request/response thật sự. Đây là lý do tên cipher suite trong
-[`14-tls.md`](14-tls.md) có nhiều phần (ví dụ
+[`19-tls.md`](19-tls.md) có nhiều phần (ví dụ
 `TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256`) — nó đang gọi tên thuật toán key
 exchange, thuật toán signature (mục tiếp theo), và cipher symmetric, cả ba
 được negotiate cùng nhau.
@@ -105,7 +105,7 @@ truyền nó", nhưng để lại một khoảng trống: khi trình duyệt c�
 một public key từ một server, làm sao nó biết key đó thực sự thuộc về
 `example.com` chứ không phải một attacker đứng giữa? Một **certificate**
 trả lời câu này: nó là một public key cộng một identity (một hostname,
-trong trường hợp khớp SNI của [`14-tls.md`](14-tls.md)) cộng một **digital signature**
+trong trường hợp khớp SNI của [`19-tls.md`](19-tls.md)) cộng một **digital signature**
 — được ký không phải bởi chính server, mà bởi một **Certificate Authority
 (CA)**, một bên thứ ba mà trình duyệt/OS của bạn đã tin tưởng sẵn.
 
@@ -123,7 +123,7 @@ toàn nói về điều này: CA chỉ vouch cho *một identity*, không phải
 **PKI** (public key infrastructure) chỉ là thuật ngữ bao trùm cho toàn bộ
 hệ thống này: các CA, các certificate, việc xác minh chain-of-trust, và
 tooling (ACME/Let's Encrypt, được nhắc trong phần quản lý certificate của
-[`14-tls.md`](14-tls.md)) phát hành và gia hạn chúng.
+[`19-tls.md`](19-tls.md)) phát hành và gia hạn chúng.
 
 ## Practice
 1. Chạy `openssl s_client -connect example.com:443 -servername

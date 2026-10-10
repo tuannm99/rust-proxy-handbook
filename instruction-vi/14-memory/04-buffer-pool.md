@@ -26,7 +26,7 @@ hãy pool trực tiếp allocation của `BytesMut` (hoặc dùng một crate nh
 copy thêm.
 
 ### Chỗ pooling hoàn toàn không áp dụng: các đường zero-copy thật sự
-`sendfile`/`splice` của [`02-linux/11-zerocopy.md`](../02-linux/11-zerocopy.md) chuyển dữ liệu từ page
+`sendfile`/`splice` của [`02-linux/18-zerocopy.md`](../02-linux/18-zerocopy.md) chuyển dữ liệu từ page
 cache thẳng tới socket mà không bao giờ đi vào một buffer ở userspace —
 không có gì để pool trên đường đó, vì userspace không bao giờ giữ các
 byte. Buffer pooling quan trọng cho các đường *có* copy qua userspace:
@@ -53,5 +53,5 @@ kích thước allocation thực tế.
    phương pháp của [`14-memory/06-fragmentation.md`](06-fragmentation.md)) có và không có pool
    dưới tải đồng thời kéo dài.
 4. Xác định đường I/O nào của [`proxy`](../../proxy) là zero-copy thật sự
-   ([`02-linux/11-zerocopy.md`](../02-linux/11-zerocopy.md)) và xác nhận pooling không có tác dụng gì
+   ([`02-linux/18-zerocopy.md`](../02-linux/18-zerocopy.md)) và xác nhận pooling không có tác dụng gì
    trên chúng, so với các đường copy qua userspace thì được hưởng lợi.

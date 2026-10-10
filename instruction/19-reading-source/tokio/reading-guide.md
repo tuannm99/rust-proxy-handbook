@@ -15,7 +15,7 @@ function named next to it.
 
 | Read | After | Why then |
 | --- | --- | --- |
-| Stop 1-2: the I/O driver | The raw-epoll exercise in [`02-linux/07-epoll.md`](../../02-linux/07-epoll.md) | Your own `epoll_wait` loop is the thing to compare against |
+| Stop 1-2: the I/O driver | The raw-epoll exercise in [`02-linux/14-epoll.md`](../../02-linux/14-epoll.md) | Your own `epoll_wait` loop is the thing to compare against |
 | Stop 3-4: scheduler and tasks | [`04-runtime/01-tokio.md`](../../04-runtime/01-tokio.md), [`04-runtime/02-waker.md`](../../04-runtime/02-waker.md), [`labs/00-tcp-server`](../../../labs/00-tcp-server) | You've spawned tasks and seen them spread across workers |
 | Stop 5: blocking pool and coop | [`04-runtime/03-runtime-config.md`](../../04-runtime/03-runtime-config.md) | You've stalled a worker yourself and fixed it |
 | Stop 6: channels | [`03-rust/11-concurrency-patterns.md`](../../03-rust/11-concurrency-patterns.md) | You've used `mpsc`/`oneshot` in a lab |
@@ -35,7 +35,7 @@ Start at `net/tcp/stream.rs` and follow a read: `TcpStream` wraps a
 In `runtime/io/driver.rs`, find the function that blocks waiting for
 events (it goes through `mio`, see [`19-reading-source/mio/`](../mio)).
 - Compare it to your hand-written `epoll_wait` loop. What does tokio do that you didn't?
-- Is it edge-triggered or level-triggered? Where in the code do you see the answer, and how does tokio avoid the missed-wakeup bug from [`02-linux/07-epoll.md`](../../02-linux/07-epoll.md)?
+- Is it edge-triggered or level-triggered? Where in the code do you see the answer, and how does tokio avoid the missed-wakeup bug from [`02-linux/14-epoll.md`](../../02-linux/14-epoll.md)?
 
 ### Stop 3: the work-stealing scheduler
 `runtime/scheduler/multi_thread/worker.rs` is the worker loop;

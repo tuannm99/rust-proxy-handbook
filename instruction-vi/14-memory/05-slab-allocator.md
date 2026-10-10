@@ -64,7 +64,7 @@ xứng này chính là bug bạn sẽ gặp, và nó xuất hiện dưới dạn
 ### Chỗ này thực sự thuộc về đâu trong một proxy
 Gần như chắc chắn bạn không nên tự viết một slab allocator toàn cục.
 jemalloc và mimalloc đã implement cấp phát theo size-class với per-CPU
-cache, và chỉ cần đổi global allocator ([`02-linux/09-memory.md`](../02-linux/09-memory.md)) là bạn đã
+cache, và chỉ cần đổi global allocator ([`02-linux/16-memory.md`](../02-linux/16-memory.md)) là bạn đã
 có phần lớn lợi ích chỉ với một dòng code.
 
 Thứ đáng để tự viết là một **typed pool** cho số ít object được cấp phát

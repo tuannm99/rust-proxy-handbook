@@ -1,6 +1,6 @@
 # TCP Stack của Kernel
 
-[`01-network/08-tcp.md`](../01-network/08-tcp.md) nói về TCP từ phía ứng dụng (handshake, byte-stream
+[`01-network/12-tcp.md`](../01-network/12-tcp.md) nói về TCP từ phía ứng dụng (handshake, byte-stream
 framing). File này nói về những gì kernel đang làm bên dưới — state machine
 và các buffer mà số lượng kết nối cùng traffic pattern của một proxy thực
 sự gây áp lực lên.
@@ -27,7 +27,7 @@ mỗi socket lên tới một mức tối đa khi throughput yêu cầu — tố
 nối throughput cao đơn lẻ, nhưng nhân mức tối đa đó với số lượng kết nối:
 một proxy giữ 100.000 kết nối gần-như-idle, mỗi cái chỉ 64 KB buffer
 khiêm tốn, đã là 6.4 GB bộ nhớ kernel không bao giờ hiện trong RSS accounting
-của chính process bạn ([`02-linux/09-memory.md`](../02-linux/09-memory.md)). Theo dõi
+của chính process bạn ([`02-linux/16-memory.md`](../02-linux/16-memory.md)). Theo dõi
 `/proc/net/sockstat` và `ss -m`, không chỉ metric bộ nhớ của process bạn,
 khi chẩn đoán vấn đề bộ nhớ ở số lượng kết nối cao.
 

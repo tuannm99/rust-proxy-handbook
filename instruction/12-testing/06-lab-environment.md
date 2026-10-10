@@ -46,7 +46,7 @@ WSL.
   `GOAWAY`), which is the quickest way to *see* what your server sent.
 
 Gotcha: none of these can send an HTTP/2 Rapid Reset
-([`01-network/12-http2.md`](../01-network/12-http2.md)). For [`labs/08-http2`](../../labs/08-http2) you write that client
+([`01-network/17-http2.md`](../01-network/17-http2.md)). For [`labs/08-http2`](../../labs/08-http2) you write that client
 yourself, and hyper makes it short. With hyper's HTTP/2 client, dropping a
 response future before the response arrives makes the underlying `h2`
 crate send `RST_STREAM(CANCEL)` for that stream. So "open a stream, drop
@@ -127,7 +127,7 @@ why the `sum by (le)` is required).
 
 ### Setups documented elsewhere
 - Fuzzing toolchain and commands: [`12-testing/02-fuzzing.md`](02-fuzzing.md).
-- Local CA and certificates, `openssl s_client`: [`01-network/14-tls.md`](../01-network/14-tls.md).
+- Local CA and certificates, `openssl s_client`: [`01-network/19-tls.md`](../01-network/19-tls.md).
 - Jaeger for traces: [`08-observability/03-tracing.md`](../08-observability/03-tracing.md).
 - `tokio-console` (needs the `console-subscriber` crate and
   `RUSTFLAGS="--cfg tokio_unstable"`): [`04-runtime/03-runtime-config.md`](../04-runtime/03-runtime-config.md).

@@ -78,7 +78,7 @@ while a more carefully crafted prefix gets the attacker something useful.
 
 ### Downgrade smuggling (H2.CL / H2.TE)
 The modern variant, and the one most relevant to a proxy that terminates
-HTTP/2 and speaks HTTP/1.1 upstream ([`01-network/12-http2.md`](../01-network/12-http2.md)). HTTP/2 frames
+HTTP/2 and speaks HTTP/1.1 upstream ([`01-network/17-http2.md`](../01-network/17-http2.md)). HTTP/2 frames
 carry their own explicit lengths, so there is no ambiguity *in* HTTP/2 —
 but `content-length` still exists as an ordinary header, and an attacker
 can send an HTTP/2 request whose declared `content-length` disagrees with
@@ -114,7 +114,7 @@ even when your framing validation is perfect.
    one "wins". RFC 9112 §6.1 lets a server either reject this or process
    it by `Transfer-Encoding` alone (and close the connection afterwards
    either way). Rejecting is the stricter option and the one to pick
-   ([`01-network/11-http1-wire-format.md`](../01-network/11-http1-wire-format.md) has the full rule order).
+   ([`01-network/16-http1-wire-format.md`](../01-network/16-http1-wire-format.md) has the full rule order).
 2. **Normalize before forwarding**: strip/reject duplicate or malformed
    framing headers rather than passing them through unchanged. Reject
    rather than "clean up": a header you normalize into validity is one

@@ -87,7 +87,7 @@ Multiplexing thay đổi hình dạng nhưng không thay đổi nguyên lý. M�
 attacker có thể mở nhiều stream trên một kết nối và bỏ chúng chưa hoàn
 thành, hoặc điều khiển flow-control window để buộc server giữ data mà nó
 không thể gửi. `SETTINGS_MAX_CONCURRENT_STREAMS` của HTTP/2 chặn cái đầu;
-per-connection memory accounting chặn cái sau. Xem [`01-network/12-http2.md`](../01-network/12-http2.md),
+per-connection memory accounting chặn cái sau. Xem [`01-network/17-http2.md`](../01-network/17-http2.md),
 cũng bao quát Rapid Reset — cuộc tấn công nghịch, nơi stream được mở và
 hủy nhanh nhất có thể.
 

@@ -119,7 +119,7 @@ HTTP/1.1. That is why cleartext HTTP/2 works with
 `curl --http2-prior-knowledge`, where curl sends the preface immediately.
 Plain `curl --http2` over cleartext instead asks for an HTTP/1.1
 `Upgrade: h2c`, which hyper doesn't implement, so it stays on HTTP/1.1.
-Over TLS the protocol is chosen by ALPN ([`01-network/14-tls.md`](../01-network/14-tls.md)), and the
+Over TLS the protocol is chosen by ALPN ([`01-network/19-tls.md`](../01-network/19-tls.md)), and the
 client then sends the preface, so the auto builder still does the right
 thing. The executor is required because HTTP/2 runs background tasks per
 connection.
@@ -145,12 +145,12 @@ such as WebSocket ([`05-http-stack/10-websocket.md`](10-websocket.md)).
 - **Everything else** has no timeout: the handler, reading the request
   body, writing the response, the upstream call. Wrap them with
   `tokio::time::timeout` yourself. An upstream call that times out is a
-  `504` ([`01-network/10-http.md`](../01-network/10-http.md)). Per-read deadlines for slow senders are in
+  `504` ([`01-network/15-http.md`](../01-network/15-http.md)). Per-read deadlines for slow senders are in
   [`07-security/10-slowloris.md`](../07-security/10-slowloris.md).
 
 ### HTTP/2 settings you will touch
 On `http2()`: `max_concurrent_streams` (the per-connection concurrency
-bound from [`01-network/12-http2.md`](../01-network/12-http2.md)), `initial_stream_window_size` and
+bound from [`01-network/17-http2.md`](../01-network/17-http2.md)), `initial_stream_window_size` and
 `initial_connection_window_size` (flow-control windows), `adaptive_window`
 (let h2 size windows from measured bandwidth), `max_header_list_size`
 (decoded header cap, your HPACK-bomb limit), `max_send_buf_size`, and

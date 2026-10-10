@@ -3,14 +3,14 @@
 Cách biến grammar HTTP/1.1 thành một parser sống sót được trước một socket
 thật. Bản thân grammar (từng lớp byte, request line, luật header, luật độ
 dài body, toàn bộ định dạng chunked, reject thì trả status nào) nằm ở
-[`01-network/11-http1-wire-format.md`](../01-network/11-http1-wire-format.md). Đọc file đó trước. File này giả định
+[`01-network/16-http1-wire-format.md`](../01-network/16-http1-wire-format.md). Đọc file đó trước. File này giả định
 bạn đã biết nó và tập trung vào những gì grammar không nói cho bạn: input
 đến từng phần, buffer, giới hạn, và kiểu dữ liệu.
 
 ## What to learn
 
 ### Request/status line
-Một request line HTTP/1.1 là `METHOD SP request-target SP HTTP-version CRLF` (RFC 9112 §3, được viết rõ trong [`01-network/11-http1-wire-format.md`](../01-network/11-http1-wire-format.md)). RFC cho phép dễ dãi ở vài chỗ (tách theo khoảng trắng bất kỳ, chấp nhận `\n` trơ), và mỗi chỗ dễ dãi là một nơi parser của bạn và parser kế tiếp có thể bất đồng về cùng một chuỗi byte. Hãy coi từng chỗ là một quyết định bạn đưa ra có chủ đích và ghi lại, không phải một mặc định bạn thừa hưởng từ việc `split` làm gì.
+Một request line HTTP/1.1 là `METHOD SP request-target SP HTTP-version CRLF` (RFC 9112 §3, được viết rõ trong [`01-network/16-http1-wire-format.md`](../01-network/16-http1-wire-format.md)). RFC cho phép dễ dãi ở vài chỗ (tách theo khoảng trắng bất kỳ, chấp nhận `\n` trơ), và mỗi chỗ dễ dãi là một nơi parser của bạn và parser kế tiếp có thể bất đồng về cùng một chuỗi byte. Hãy coi từng chỗ là một quyết định bạn đưa ra có chủ đích và ghi lại, không phải một mặc định bạn thừa hưởng từ việc `split` làm gì.
 
 ### Parse header
 Header là các dòng `name: value CRLF` cho tới một dòng trống. Parser viết ẩu thường dính các lỗi: so khớp tên header phải case-insensitive, khoảng trắng đầu/cuối trong value, header trùng lặp (một số phải bị reject thẳng, ví dụ `Content-Length` trùng), và obsolete line folding (dòng tiếp nối bắt đầu bằng khoảng trắng) mà parser hiện đại nên đơn giản là reject.
@@ -29,13 +29,13 @@ fn parse_header_line(line: &str) -> Option<(&str, &str)> {
 Sketch này chỉ cho thấy hình dạng. Nó làm việc trên `&str` và kiểm tra dấu
 cách, trong khi luật thật là "tên là một hoặc nhiều byte `tchar`" và input
 là `&[u8]` (xem "Bytes, không phải `String`" bên dưới và bảng lớp ký tự
-trong [`01-network/11-http1-wire-format.md`](../01-network/11-http1-wire-format.md)).
+trong [`01-network/16-http1-wire-format.md`](../01-network/16-http1-wire-format.md)).
 
 ### Body framing: phần thực sự quan trọng
-Độ dài của body đến từ đúng một trong ba: `Content-Length`, `Transfer-Encoding: chunked`, hoặc "đọc tới khi connection đóng" (chỉ áp dụng cho response). Nếu một message có *cả* `Content-Length` lẫn `Transfer-Encoding`, hoặc nhiều giá trị `Content-Length` mâu thuẫn nhau, message đó là ambiguous. Với các giá trị `Content-Length` mâu thuẫn, RFC 9112 §6.3 bắt buộc reject. Với CL + TE, nó nói TE thắng, rằng message "ought to be handled as an error", và server được phép reject nhưng dù sao cũng phải đóng connection. Reject cả hai trường hợp là policy chặt hơn mà handbook này khuyến nghị, và danh sách luật đầy đủ theo thứ tự nằm ở [`01-network/11-http1-wire-format.md`](../01-network/11-http1-wire-format.md). Làm sai chỗ này chính xác là cách request smuggling xảy ra (xem [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md)).
+Độ dài của body đến từ đúng một trong ba: `Content-Length`, `Transfer-Encoding: chunked`, hoặc "đọc tới khi connection đóng" (chỉ áp dụng cho response). Nếu một message có *cả* `Content-Length` lẫn `Transfer-Encoding`, hoặc nhiều giá trị `Content-Length` mâu thuẫn nhau, message đó là ambiguous. Với các giá trị `Content-Length` mâu thuẫn, RFC 9112 §6.3 bắt buộc reject. Với CL + TE, nó nói TE thắng, rằng message "ought to be handled as an error", và server được phép reject nhưng dù sao cũng phải đóng connection. Reject cả hai trường hợp là policy chặt hơn mà handbook này khuyến nghị, và danh sách luật đầy đủ theo thứ tự nằm ở [`01-network/16-http1-wire-format.md`](../01-network/16-http1-wire-format.md). Làm sai chỗ này chính xác là cách request smuggling xảy ra (xem [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md)).
 
 ### Chunked transfer-encoding
-Mỗi chunk có dạng `<hex-size>[;extensions]CRLF<data>CRLF`, kết thúc bằng một chunk kích thước `0`, trailer tùy chọn, và một dòng trống (grammar đầy đủ và ví dụ từng byte ở [`01-network/11-http1-wire-format.md`](../01-network/11-http1-wire-format.md)). Một parser đúng phải giới hạn số chữ số của chunk-size và tổng kích thước đã decode (attacker có thể khai một chunk-size khổng lồ để làm cạn memory), và không được coi trailer header tương đương với header gửi trước body.
+Mỗi chunk có dạng `<hex-size>[;extensions]CRLF<data>CRLF`, kết thúc bằng một chunk kích thước `0`, trailer tùy chọn, và một dòng trống (grammar đầy đủ và ví dụ từng byte ở [`01-network/16-http1-wire-format.md`](../01-network/16-http1-wire-format.md)). Một parser đúng phải giới hạn số chữ số của chunk-size và tổng kích thước đã decode (attacker có thể khai một chunk-size khổng lồ để làm cạn memory), và không được coi trailer header tương đương với header gửi trước body.
 
 ### Incremental parsing: ràng buộc định hình mọi thứ
 Một parser đọc từ socket **không** nhận được một request hoàn chỉnh. Nó

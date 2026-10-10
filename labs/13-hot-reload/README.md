@@ -17,7 +17,7 @@ connections.
 
 ## Handbook references
 - [`instruction/09-architecture/03-config.md`](../../instruction/09-architecture/03-config.md)
-- [`instruction/02-linux/10-signals.md`](../../instruction/02-linux/10-signals.md) — handling `SIGHUP` in an async process
+- [`instruction/02-linux/17-signals.md`](../../instruction/02-linux/17-signals.md) — handling `SIGHUP` in an async process
 - [`instruction/05-http-stack/02-hyper.md`](../../instruction/05-http-stack/02-hyper.md) — graceful shutdown of the old listener's connections
 - [`instruction/12-testing/06-lab-environment.md`](../../instruction/12-testing/06-lab-environment.md) — installing and running the tools the checks above use
 

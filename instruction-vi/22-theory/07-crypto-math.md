@@ -40,7 +40,7 @@ Alice tính: B^a mod p = g^(ba) mod p
 Bob tính:   A^b mod p = g^(ab) mod p   -- cùng giá trị, không bao giờ truyền trực tiếp
 ```
 Đây chính xác là chuyện xảy ra bên trong mỗi bắt tay TLS 1.3
-([`01-network/14-tls.md`](../01-network/14-tls.md)) qua elliptic-curve Diffie-Hellman (ECDHE) — cùng
+([`01-network/19-tls.md`](../01-network/19-tls.md)) qua elliptic-curve Diffie-Hellman (ECDHE) — cùng
 hình dạng toán học, trên điểm elliptic curve thay vì lũy thừa modular,
 cho an toàn tương đương với key nhỏ hơn nhiều.
 
@@ -70,7 +70,7 @@ message-authentication code, và một hash thường không dùng được như
 
 ### Vì sao handbook này chỉ dừng ở "basics," và vì sao file này tồn tại
 [`proxy`](../../proxy) không nên tự implement bất kỳ primitive cryptographic nào bằng
-tay — [`01-network/06-crypto-basics.md`](../01-network/06-crypto-basics.md) và [`01-network/14-tls.md`](../01-network/14-tls.md) đều nói
+tay — [`01-network/06-crypto-basics.md`](../01-network/06-crypto-basics.md) và [`01-network/19-tls.md`](../01-network/19-tls.md) đều nói
 rõ đây là việc của `rustls`, và crypto viết tay là một nguồn lỗ hổng thảm
 khốc, âm thầm đã biết rõ. Giá trị của file này thuần túy là khả năng đọc
 một trace bắt tay TLS hoặc một security advisory và hiểu *vì sao* một

@@ -25,7 +25,7 @@ algorithms beyond basic round robin live in
 - [`instruction/06-proxy/05-retry.md`](../../instruction/06-proxy/05-retry.md) — retry budgets, idempotency, backoff, hedging
 - [`instruction/06-proxy/06-circuit-breaker.md`](../../instruction/06-proxy/06-circuit-breaker.md) — tripping on a failure rate, half-open gating
 - [`instruction/06-proxy/07-service-discovery.md`](../../instruction/06-proxy/07-service-discovery.md) — static list vs dynamic upstream membership
-- [`instruction/01-network/10-http.md`](../../instruction/01-network/10-http.md) — which headers a proxy must rewrite (`Host`, `X-Forwarded-For`, `Connection`)
+- [`instruction/01-network/15-http.md`](../../instruction/01-network/15-http.md) — which headers a proxy must rewrite (`Host`, `X-Forwarded-For`, `Connection`)
 - [`instruction/04-runtime/04-structured-concurrency.md`](../../instruction/04-runtime/04-structured-concurrency.md) — cancelling health-check tasks when the pool goes away
 - [`instruction/05-http-stack/02-hyper.md`](../../instruction/05-http-stack/02-hyper.md) — the pooled client: absolute URIs, `is_connect()`, pool settings, streaming bodies through
 - [`instruction/05-http-stack/03-hop-by-hop-headers.md`](../../instruction/05-http-stack/03-hop-by-hop-headers.md) — which headers to strip and regenerate on each hop

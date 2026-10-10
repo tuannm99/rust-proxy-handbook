@@ -3,7 +3,7 @@
 ## What to learn
 
 ### Persistent connection
-Trong HTTP/1.0, mỗi request mặc định mở một connection TCP mới — tốn kém vì TCP handshake ([`01-network/08-tcp.md`](../01-network/08-tcp.md)) và, với HTTPS, còn thêm một TLS handshake đầy đủ nữa ([`01-network/14-tls.md`](../01-network/14-tls.md)). HTTP/1.1 làm connection persistent theo mặc định: sau một response, cùng connection đó ở lại mở cho request tiếp theo trừ khi một trong hai bên gửi `Connection: close`.
+Trong HTTP/1.0, mỗi request mặc định mở một connection TCP mới — tốn kém vì TCP handshake ([`01-network/12-tcp.md`](../01-network/12-tcp.md)) và, với HTTPS, còn thêm một TLS handshake đầy đủ nữa ([`01-network/19-tls.md`](../01-network/19-tls.md)). HTTP/1.1 làm connection persistent theo mặc định: sau một response, cùng connection đó ở lại mở cho request tiếp theo trừ khi một trong hai bên gửi `Connection: close`.
 
 ### Header hop-by-hop: những gì một proxy phải strip
 Trạng thái keep-alive là theo connection, và một tập header mô tả nó cũng
@@ -19,7 +19,7 @@ nêu tên *thêm* các header để strip, và vì sao việc strip phải xảy
 khi các header đáng tin của chính bạn được áp vào.
 
 ### Pipelining (và vì sao nó gần như đã chết)
-Pipelining nghĩa là gửi nhiều request trên một connection mà không chờ từng response — được spec cho phép nhưng response vẫn phải quay về đúng thứ tự (head-of-line blocking), và một intermediary hành xử sai trên đường đi có thể làm hỏng cả luồng. Gần như không còn client HTTP/1.1 production nào pipeline nữa; các stream đa hợp của HTTP/2 ([`01-network/12-http2.md`](../01-network/12-http2.md)) giải quyết đúng cùng bài toán đó thay thế.
+Pipelining nghĩa là gửi nhiều request trên một connection mà không chờ từng response — được spec cho phép nhưng response vẫn phải quay về đúng thứ tự (head-of-line blocking), và một intermediary hành xử sai trên đường đi có thể làm hỏng cả luồng. Gần như không còn client HTTP/1.1 production nào pipeline nữa; các stream đa hợp của HTTP/2 ([`01-network/17-http2.md`](../01-network/17-http2.md)) giải quyết đúng cùng bài toán đó thay thế.
 
 Gotcha: "không client nào pipeline" không phải lý do để phía *server* của
 bạn xử lý sai nó. Nếu byte của một request thứ hai đến trong khi bạn vẫn
@@ -106,7 +106,7 @@ trên response *cuối cùng* bạn định phục vụ, để client biết đ�
 dụng connection thay vì phát hiện bằng cách thất bại. HTTP/2 giải quyết
 đúng đắn hơn bằng `GOAWAY`, nêu tên stream ID cuối cùng server sẽ xử lý,
 cho phép client retry an toàn bất cứ gì trên nó
-([`01-network/12-http2.md`](../01-network/12-http2.md)); đây cũng là cơ chế mà graceful shutdown phụ
+([`01-network/17-http2.md`](../01-network/17-http2.md)); đây cũng là cơ chế mà graceful shutdown phụ
 thuộc vào ([`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md)).
 
 Gotcha: client vẫn có thể đua, và một số không tuân theo

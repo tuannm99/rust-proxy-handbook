@@ -25,7 +25,7 @@ fn connect() -> Result<std::net::TcpStream, ProxyError> {
 ### `thiserror` vs `anyhow`
 `thiserror` derive `Display`/`Error` cho một enum cụ thể — dùng nó ở nơi
 caller cần match trên một variant cụ thể và quyết định hành vi (retry so
-với `502` so với `503`, theo [`01-network/10-http.md`](../01-network/10-http.md)). `anyhow::Error` là
+với `502` so với `503`, theo [`01-network/15-http.md`](../01-network/15-http.md)). `anyhow::Error` là
 một hộp "bất kỳ lỗi nào" bị xóa type, có context-chaining — dùng nó trong
 code glue/binary (`main.rs`, thiết lập CLI) nơi bạn chỉ muốn log hoặc bail
 mà không cần caller match một variant. Đặt `anyhow` vào public API của
@@ -84,7 +84,7 @@ khắp nơi.
 ## Practice
 1. Thiết kế các enum `ProxyError`/`UpstreamError` với `thiserror`, và
    trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) ánh xạ mỗi variant sang đúng HTTP status
-   (`502`/`503`/`504`) theo [`01-network/10-http.md`](../01-network/10-http.md).
+   (`502`/`503`/`504`) theo [`01-network/15-http.md`](../01-network/15-http.md).
 2. Viết một `main.rs` nhỏ dùng `anyhow::Result` + `.context()` cho việc
    load config, và so sánh chuỗi lỗi được in ra với một phiên bản
    `Result<_, io::Error>` thô.

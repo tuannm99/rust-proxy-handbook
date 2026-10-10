@@ -32,7 +32,7 @@ giải phóng khi kết nối đóng. Gotcha, và là một gotcha thật trong 
 một proxy mở nhiều kết nối outbound ngắn hạn tới cùng một upstream có thể
 cạn kiệt pool ephemeral port của chính nó (mặc định khoảng 28,000 port khả
 dụng) nhanh hơn tốc độ `TIME_WAIT` giải phóng chúng — đây là lý do thực tế
-vì sao [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md) và [`01-network/08-tcp.md`](08-tcp.md) nhấn mạnh việc
+vì sao [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md) và [`01-network/12-tcp.md`](12-tcp.md) nhấn mạnh việc
 tái sử dụng kết nối thay vì dial mới cho mỗi request.
 
 ### Một socket, chính xác là gì
@@ -41,7 +41,7 @@ một đầu của một kết nối. Một kết nối TCP thực ra được �
 giá trị cùng nhau (gọi là "4-tuple"): source IP, source port, destination
 IP, destination port. Đó là lý do một server process lắng nghe trên một
 port có thể phục vụ hàng nghìn client đồng thời — 4-tuple của mỗi client
-khác nhau dù IP và port của server là cố định. [`01-network/07-socket.md`](07-socket.md)
+khác nhau dù IP và port của server là cố định. [`01-network/11-socket.md`](11-socket.md)
 nói về API thực sự tạo ra một socket.
 
 ### CIDR notation: mô tả một dải địa chỉ
@@ -83,7 +83,7 @@ công cộng. Hai dạng quan trọng ở đây:
 
 Vì sao điều này quan trọng với riêng một proxy: đến lúc một kết nối tới
 được listening socket của bạn, `peer_addr()` có thể đã cách client thật
-vài hop NAT — đây *chính xác* là vấn đề mà [`01-network/15-proxy-protocol.md`](15-proxy-protocol.md)
+vài hop NAT — đây *chính xác* là vấn đề mà [`01-network/20-proxy-protocol.md`](20-proxy-protocol.md)
 và phần thảo luận `X-Forwarded-For` trong [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)
 tồn tại để giải quyết, và đó là lý do "cứ tin vào peer address của socket"
 là ngây thơ ngay khi có bất kỳ load balancer, NAT gateway, hay CDN nào ở

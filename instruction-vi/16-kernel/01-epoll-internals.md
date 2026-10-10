@@ -1,6 +1,6 @@
 # epoll Internals
 
-[`02-linux/07-epoll.md`](../02-linux/07-epoll.md) nói về việc dùng epoll từ phía ứng dụng, bao gồm cả
+[`02-linux/14-epoll.md`](../02-linux/14-epoll.md) nói về việc dùng epoll từ phía ứng dụng, bao gồm cả
 bug `EAGAIN` ở chế độ edge-triggered. File này nói về chuyện gì đang xảy ra
 bên trong kernel khiến API của epoll có hình dạng như vậy — và khiến bug đó
 có lý do để tồn tại.
@@ -39,7 +39,7 @@ gì đó để đọc". Nếu bạn không rút cạn socket tới `EAGAIN` ở 
 trước, nó vẫn sẵn sàng, nhưng không có gì kích hoạt lại), và epoll sẽ
 không bao giờ báo cho bạn nữa dù dữ liệu chưa đọc vẫn đang nằm đó. Đây
 chính xác là cơ chế đứng sau bug missed-wakeup mà bài tập ở
-[`02-linux/07-epoll.md`](../02-linux/07-epoll.md) bắt bạn tự tái hiện — giờ nhìn dưới góc độ *vì sao*
+[`02-linux/14-epoll.md`](../02-linux/14-epoll.md) bắt bạn tự tái hiện — giờ nhìn dưới góc độ *vì sao*
 kernel hành xử như vậy thay vì chỉ quan sát triệu chứng.
 
 ### `EPOLLEXCLUSIVE` và thundering herd
@@ -57,7 +57,7 @@ socket) trên cùng một địa chỉ.
    để xem các fd đã đăng ký và event mask của chúng — xác nhận nó khớp với
    những gì code bạn thực sự đã đăng ký.
 2. Tái hiện lại bug missed-wakeup ở chế độ edge-triggered từ
-   [`02-linux/07-epoll.md`](../02-linux/07-epoll.md), nhưng lần này giải thích cách fix theo cơ chế
+   [`02-linux/14-epoll.md`](../02-linux/14-epoll.md), nhưng lần này giải thích cách fix theo cơ chế
    ready-list ở trên: vì sao rút cạn tới `EAGAIN` mới là thứ tạo ra
    transition kế tiếp, chứ không chỉ là "làm đúng theo docs".
 3. Chạy nhiều accept-loop thread trên cùng một `SO_REUSEPORT` listener mà

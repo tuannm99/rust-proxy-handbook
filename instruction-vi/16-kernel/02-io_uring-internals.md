@@ -1,6 +1,6 @@
 # io_uring Internals
 
-[`02-linux/08-io_uring.md`](../02-linux/08-io_uring.md) nói về việc dùng `io_uring` từ phía ứng dụng.
+[`02-linux/15-io_uring.md`](../02-linux/15-io_uring.md) nói về việc dùng `io_uring` từ phía ứng dụng.
 File này nói về cơ chế submission/completion bên dưới khiến nó khác *về
 bản chất* so với epoll, chứ không chỉ là một phiên bản nhanh hơn.
 

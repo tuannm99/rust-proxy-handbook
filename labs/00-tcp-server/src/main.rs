@@ -1,4 +1,4 @@
-// TCP Echo Server. See instruction/01-network/07-socket.md, instruction/01-network/08-tcp.md, instruction/03-rust/05-async.md, instruction/04-runtime/01-tokio.md.
+// TCP Echo Server. See instruction/01-network/11-socket.md, instruction/01-network/12-tcp.md, instruction/03-rust/05-async.md, instruction/04-runtime/01-tokio.md.
 
 // REVIEW(medium): nothing bounds what a single client can hold. There is no
 // cap on concurrent connections and no idle/read/write timeout, so anyone can
@@ -30,7 +30,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             // REVIEW(low): Nagle's algorithm is still on for accepted sockets.
             // With many small echoes back to back, Nagle plus the client's
             // delayed ACK can add tens of milliseconds per message. Measure
-            // before and after deciding — see instruction/01-network/08-tcp.md.
+            // before and after deciding — see instruction/01-network/12-tcp.md.
             Ok((mut socket, _addr)) => {
                 tokio::spawn(async move {
                     // REVIEW(low): 1 KB means a 10 MB transfer costs ~10k reads

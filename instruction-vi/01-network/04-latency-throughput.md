@@ -50,14 +50,14 @@ về là khoảng cách vật lý thật sự). Với một cuộc trao đổi r
 nhỏ — phần lớn traffic HTTP — bản thân việc truyền dữ liệu nhanh đến mức
 RTT, chứ không phải bandwidth, chi phối tổng thời gian: bạn đang chờ round
 trip, không phải chờ byte. Đây chính xác là lý do multiplexing của HTTP/2
-([`01-network/12-http2.md`](12-http2.md)) và 0-RTT/session resumption trong TLS
-([`01-network/14-tls.md`](14-tls.md)) tồn tại — chúng tấn công vào *số lượng* round
+([`01-network/17-http2.md`](17-http2.md)) và 0-RTT/session resumption trong TLS
+([`01-network/19-tls.md`](19-tls.md)) tồn tại — chúng tấn công vào *số lượng* round
 trip, không phải throughput.
 
 ### Bandwidth-delay product: bao nhiêu có thể "đang bay"
 **Bandwidth-delay product** (bandwidth × RTT) là số byte có thể đang trên
 đường truyền cùng lúc, chưa được ack — congestion window của TCP
-([`01-network/08-tcp.md`](08-tcp.md)) phải lớn lên tới xấp xỉ kích thước này trước khi
+([`01-network/12-tcp.md`](12-tcp.md)) phải lớn lên tới xấp xỉ kích thước này trước khi
 một kết nối duy nhất có thể dùng hết bandwidth của đường truyền. Trên một
 đường truyền bandwidth cao, latency cao ("long fat network" — một đường
 truyền vệ tinh, hay một tuyến cáp quang xuyên lục địa), tích số này lớn,

@@ -5,8 +5,8 @@
 ### Bài toán: nhiều virtual page hơn physical frame
 Khi physical memory đầy và một process cần một page mới, OS phải evict
 cái gì đó — page replacement là chính sách chọn cái gì. Đây là bức tranh
-virtual memory của [`02-linux/09-memory.md`](../02-linux/09-memory.md) (xây trên primer của
-[`02-linux/04-memory-basics.md`](../02-linux/04-memory-basics.md)) với phần còn thiếu được lấp đầy: chuyện gì
+virtual memory của [`02-linux/16-memory.md`](../02-linux/16-memory.md) (xây trên primer của
+[`02-linux/08-memory-basics.md`](../02-linux/08-memory-basics.md)) với phần còn thiếu được lấp đầy: chuyện gì
 thực sự xảy ra khi page fault mà không còn frame rỗng nào.
 
 ### FIFO, và vì sao nó tệ hơn trực giác gợi ý
@@ -52,7 +52,7 @@ throughput sụp đổ dù CPU utilization trông có vẻ bận (nó bận pagi
 không phải tính toán). Mô hình working-set hình thức hóa "working set
 đang hoạt động" là các page được tham chiếu trong Δ đơn vị thời gian gần
 nhất, và là nền tảng lý thuyết cho lời khuyên thực dụng của
-[`02-linux/09-memory.md`](../02-linux/09-memory.md): biết footprint memory thật của một process trước
+[`02-linux/16-memory.md`](../02-linux/16-memory.md): biết footprint memory thật của một process trước
 khi đặt một giới hạn memory cgroup, vì một giới hạn dưới working set
 không làm process chậm lại nhẹ nhàng — nó làm process đó thrash.
 
@@ -68,7 +68,7 @@ không làm process chậm lại nhẹ nhàng — nó làm process đó thrash.
 4. Implement giải thuật optimal (offline, "ăn gian") trên cùng trace bằng
    cách biết trước toàn bộ access tương lai, và dùng nó làm baseline để
    chấm FIFO/LRU/clock gần nó đến đâu.
-5. Nối lại với [`02-linux/09-memory.md`](../02-linux/09-memory.md): chạy một process có working set
+5. Nối lại với [`02-linux/16-memory.md`](../02-linux/16-memory.md): chạy một process có working set
    lớn hơn một giới hạn memory cgroup bạn đặt, và quan sát thrashing (qua
    cột `si`/`so` của `vmstat` hoặc counter page fault của `/proc/vmstat`)
    thay vì một sự chậm lại nhẹ nhàng.

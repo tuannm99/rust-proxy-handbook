@@ -6,7 +6,7 @@ Reactor, executor, scheduler.
 
 ### Reactor
 Reactor sở hữu event source của OS (epoll trên Linux, xem
-[`02-linux/07-epoll.md`](../02-linux/07-epoll.md)) và biến readiness event thành wakeup. Mỗi
+[`02-linux/14-epoll.md`](../02-linux/14-epoll.md)) và biến readiness event thành wakeup. Mỗi
 `TcpStream`/`TcpListener` đăng ký fd của nó với reactor một lần; khi
 epoll báo fd readable, reactor tìm `Waker` gắn với task đang block trên
 fd đó và gọi `.wake()`. Reactor không chạy code của bạn — nó chỉ quyết

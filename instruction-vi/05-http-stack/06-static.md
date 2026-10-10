@@ -3,7 +3,7 @@
 ## What to learn
 
 ### Zero-copy file sending
-Serve một static file theo cách ngây thơ nghĩa là: đọc toàn bộ file vào một buffer userspace, rồi viết buffer đó ra socket — tốn thêm hai lần copy và hai lần context switch không cần thiết. `sendfile(2)` (xem [`02-linux/11-zerocopy.md`](../02-linux/11-zerocopy.md)) copy dữ liệu kernel-tới-kernel, bỏ qua userspace hoàn toàn; trên Linux, `tokio-uring`/`io_uring` ([`02-linux/08-io_uring.md`](../02-linux/08-io_uring.md)) có thể làm điều tương tự bất đồng bộ với overhead syscall thấp hơn `sendfile` dựa trên epoll.
+Serve một static file theo cách ngây thơ nghĩa là: đọc toàn bộ file vào một buffer userspace, rồi viết buffer đó ra socket — tốn thêm hai lần copy và hai lần context switch không cần thiết. `sendfile(2)` (xem [`02-linux/18-zerocopy.md`](../02-linux/18-zerocopy.md)) copy dữ liệu kernel-tới-kernel, bỏ qua userspace hoàn toàn; trên Linux, `tokio-uring`/`io_uring` ([`02-linux/15-io_uring.md`](../02-linux/15-io_uring.md)) có thể làm điều tương tự bất đồng bộ với overhead syscall thấp hơn `sendfile` dựa trên epoll.
 
 Gotcha: `sendfile` nhanh khi page cache *hit* và block khi miss
 ([`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md)). Trong một async runtime, một `sendfile`

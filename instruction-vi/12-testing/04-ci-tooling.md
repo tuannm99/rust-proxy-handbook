@@ -19,7 +19,7 @@ hệt một lỗi compile.
 undefined behavior mà phần cứng thật sẽ âm thầm bỏ qua: truy cập vượt giới
 hạn, use-after-free, data race, pointer arithmetic không hợp lệ. Hãy biết
 giới hạn của nó: miri không thể thực thi syscall thật, nên các lệnh gọi
-`epoll_wait`/`libc` thật của bài tập raw-epoll ([`02-linux/07-epoll.md`](../02-linux/07-epoll.md))
+`epoll_wait`/`libc` thật của bài tập raw-epoll ([`02-linux/14-epoll.md`](../02-linux/14-epoll.md))
 không thể chạy trực tiếp dưới nó — miri dùng để test logic unsafe thuần
 Rust (một buffer pool tự viết tay, pointer arithmetic trong parser) tách
 biệt khỏi các syscall xung quanh nó.

@@ -94,7 +94,7 @@ nhỏ; chờ khối lượng có ý nghĩa trước khi tin vào các so sánh t
   ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)), và thundering herd chỉ xuất hiện gần
   capacity — thứ mà một canary 1% còn lâu mới chạm tới.
 - **Bug phụ thuộc thời gian.** Một batch job hàng ngày, hết hạn
-  certificate ([`01-network/14-tls.md`](../01-network/14-tls.md)), một phép tính ranh giới tháng.
+  certificate ([`01-network/19-tls.md`](../01-network/19-tls.md)), một phép tính ranh giới tháng.
 - **Bất cứ thứ gì downstream.** Nếu canary chia sẻ upstream và một
   database với stable, nó không thể tiết lộ một vấn đề trong dependency
   dùng chung — và có thể *gây ra* một vấn đề gây hại cho cả traffic

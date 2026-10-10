@@ -11,7 +11,7 @@ field đó không ảnh hưởng tới request in-flight).
 
 ### SIGHUP như trigger reload
 Quy ước Unix (nginx, hầu hết daemon) là: `SIGHUP` = "reload config,"
-`SIGTERM` = "shutdown gracefully" (xem [`02-linux/10-signals.md`](../02-linux/10-signals.md),
+`SIGTERM` = "shutdown gracefully" (xem [`02-linux/17-signals.md`](../02-linux/17-signals.md),
 [`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)). Lắng nghe nó bằng
 `tokio::signal::unix::signal(SignalKind::hangup())` thay vì blocking
 signal handling — điều này giữ reload async và không gây gián đoạn I/O
@@ -58,7 +58,7 @@ là một no-op, không phải một outage.**
 "Đã validate" phải có nghĩa nhiều hơn "đã parse." Các kiểm tra thực sự bắt
 được sự cố thật là những cái thử các side effect:
 - **Certificate và key thực sự load và khớp nhau**
-  ([`01-network/14-tls.md`](../01-network/14-tls.md)) — một lỗi gõ đường dẫn hay một cặp không khớp
+  ([`01-network/19-tls.md`](../01-network/19-tls.md)) — một lỗi gõ đường dẫn hay một cặp không khớp
   là một outage toàn phần cho vhost đó.
 - **Route không xung đột** ([`05-http-stack/04-router.md`](../05-http-stack/04-router.md)) — hai rule
   không bao giờ phân biệt được nghĩa là một endpoint âm thầm biến mất.

@@ -61,10 +61,10 @@ handshake, không acknowledgment, không đảm bảo thứ tự, không tự đ
 retransmit. Nếu bạn cần những tính chất đó trên UDP, tầng ứng dụng của bạn
 phải tự xây chúng. Nghe có vẻ tệ hơn hẳn, và với một request/response
 thông thường thì đúng là vậy — nhưng đó cũng là lý do vì sao **QUIC**
-(tầng transport bên dưới HTTP/3, xem [`01-network/13-http3.md`](13-http3.md)) được xây
+(tầng transport bên dưới HTTP/3, xem [`01-network/18-http3.md`](18-http3.md)) được xây
 trên UDP thay vì TCP: reliability trong kernel, một-kích-cỡ-cho-tất-cả của
 TCP tạo ra head-of-line blocking mà HTTP/2 phải chịu ở tầng multiplexed
-stream ([`01-network/12-http2.md`](12-http2.md)), và QUIC tái hiện thực reliability
+stream ([`01-network/17-http2.md`](17-http2.md)), và QUIC tái hiện thực reliability
 *theo từng stream*, ở userspace, chính là để tránh điều đó — một thứ bạn
 không thể làm trên nền TCP vì đảm bảo về thứ tự của TCP áp dụng cho cả
 kết nối, không phải cho từng logical stream.
@@ -74,9 +74,9 @@ Một "handshake" là bất kỳ cuộc trao đổi nào mà cả hai bên đồ
 thái chung trước khi dữ liệu thật chảy — bạn sẽ gặp từ này ba lần riêng
 biệt trong thư mục này, mỗi lần là một instance khác nhau của cùng một ý
 tưởng:
-- **3-way handshake của TCP** ([`08-tcp.md`](08-tcp.md)) đồng ý về trạng thái kết nối
+- **3-way handshake của TCP** ([`12-tcp.md`](12-tcp.md)) đồng ý về trạng thái kết nối
   và sequence number ban đầu.
-- **Handshake của TLS** ([`14-tls.md`](14-tls.md)) đồng ý về encryption key và
+- **Handshake của TLS** ([`19-tls.md`](19-tls.md)) đồng ý về encryption key và
   protocol version/cipher nào sẽ dùng.
 - **Handshake `Upgrade` của HTTP/1.1** ([`05-http-stack/10-websocket.md`](../05-http-stack/10-websocket.md))
   đồng ý dừng nói HTTP và bắt đầu nói một protocol khác trên cùng kết nối.
@@ -90,7 +90,7 @@ không (đây là nơi rất nhiều bug thật sự trú ngụ).
 Sự khác biệt ở tầng kết nối phía trên (TCP theo dõi trạng thái, UDP thì
 không) có một tiếng vọng ở tầng application đáng nêu riêng: các protocol
 **stateless** (HTTP/1.1 request/response thuần túy, ở mức ngữ nghĩa — xem
-[`01-network/10-http.md`](10-http.md)) xử lý mỗi request độc lập, không nhớ gì về những
+[`01-network/15-http.md`](15-http.md)) xử lý mỗi request độc lập, không nhớ gì về những
 request trước; các tương tác **stateful** (một phiên WebSocket, một
 session đã xác thực theo dõi qua cookie) đòi hỏi server phải nhớ điều gì
 đó giữa các lần trao đổi. Một proxy load-balance các request stateless có
@@ -113,6 +113,6 @@ nơi dùng chung, không phải trên một instance riêng lẻ.
 3. Viết ra, mỗi ý một câu, trạng thái nào một kết nối TCP đang theo dõi
    mà một "kết nối" UDP (thực ra chỉ là một 4-tuple cố định bạn chọn tái
    sử dụng) thì không.
-4. Đọc mục 3-way handshake trong [`01-network/08-tcp.md`](08-tcp.md) và mục handshake
-   trong [`01-network/14-tls.md`](14-tls.md) liền nhau; liệt kê mỗi cái đang đồng ý về
+4. Đọc mục 3-way handshake trong [`01-network/12-tcp.md`](12-tcp.md) và mục handshake
+   trong [`01-network/19-tls.md`](19-tls.md) liền nhau; liệt kê mỗi cái đang đồng ý về
    điều gì, dùng cách diễn giải từ file này.

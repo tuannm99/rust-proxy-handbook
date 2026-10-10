@@ -15,7 +15,7 @@ overhead thật, dù thường nhỏ ([`17-performance/03-numa.md`](../17-perfor
 ### Giải pháp thay thế thread-per-core: `glommio`, `monoio`
 Một runtime thread-per-core ("shard-per-core") pin một thread cho mỗi
 core, cho nó event loop riêng và thường là một instance `io_uring` riêng
-([`02-linux/08-io_uring.md`](../02-linux/08-io_uring.md)), và không bao giờ di chuyển một task khỏi
+([`02-linux/15-io_uring.md`](../02-linux/15-io_uring.md)), và không bao giờ di chuyển một task khỏi
 core nó bắt đầu. Cấu trúc dữ liệu có thể là `Rc<RefCell<_>>` thay vì
 `Arc<Mutex<_>>` bên trong một shard, vì không có gì khác từng đụng vào
 memory của shard đó — không atomic, không cache-line nảy qua lại giữa
@@ -73,7 +73,7 @@ công cụ đúng.
    thực sự nằm ở đâu — xác nhận đó là overhead scheduler hay thứ khác
    (chi phí TLS handshake, chi phí accept-loop).
 3. Giải thích, bằng lời của bạn, vì sao `SO_REUSEPORT`
-   ([`01-network/07-socket.md`](../01-network/07-socket.md)) là nền tảng cho một thiết kế thread-per-core
+   ([`01-network/11-socket.md`](../01-network/11-socket.md)) là nền tảng cho một thiết kế thread-per-core
    theo cách nó không phải với mô hình work-stealing của tokio.
 4. Đọc [`16-kernel/05-rss.md`](../16-kernel/05-rss.md) và [`16-kernel/06-rps.md`](../16-kernel/06-rps.md), và nối việc điều hướng packet
    ở mức NIC với vì sao một proxy thread-per-core quan tâm packet của một
