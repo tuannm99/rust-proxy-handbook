@@ -44,15 +44,15 @@ Gotcha: giữ một borrow `RefCell` qua một điểm `.await` là một nguồ
 biến của panic "already borrowed" trong code async, vì một task khác có
 thể chạy — và cũng thử borrow — trong khi task đầu tiên đang bị suspend.
 Đây chính xác là hiểm họa mà `Mutex`/`Arc<Mutex<_>>` ([`03-rust/04-sync.md`](04-sync.md))
-được thiết kế để làm cho không-thể-xảy-ra thay vì panic tại runtime.
+được thiết kế để làm cho điều đó không thể xảy ra, thay vì panic lúc chạy.
 
 ### `Mutex<T>`/`RwLock<T>`: cùng một dải phổ, xuyên thread
 Nơi `RefCell` enforce aliasing tại runtime cho code single-threaded,
 `Mutex<T>`/`RwLock<T>` enforce điều tương đương cho multi-threaded, blocking
 thay vì panic khi có contention — [`03-rust/04-sync.md`](04-sync.md) bao quát chúng đầy
 đủ; điểm của file này là cả bốn type đều nằm trên một dải phổ: được check
-tại compile time (`&`/`&mut` thuần túy), được check tại runtime cho đơn
-luồng (`Cell`/`RefCell`), và blocking cho multi-threaded (`Mutex`/`RwLock`).
+lúc compile (`&`/`&mut` thuần túy), được check lúc chạy cho
+single-threaded (`Cell`/`RefCell`), và blocking cho multi-threaded (`Mutex`/`RwLock`).
 
 ### `Cow<'a, T>`: tránh clone cho tới khi thực sự cần
 `Cow` ("clone on write") giữ hoặc một borrowed reference hoặc một giá trị

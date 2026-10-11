@@ -107,23 +107,23 @@ rõ điều đó với các team đứng sau nó.
 ## Practice
 Làm lần lượt theo thứ tự sau.
 
-1. Biến route auth policy thành một enum non-optional. **Xong khi** thêm
+1. Biến route auth policy thành một enum non-optional. **Done when** thêm
    một route mới mà không chỉ định policy khiến compile lỗi thay vì mặc
    định thành public.
 2. Thêm việc loại bỏ identity header ở cùng điểm sớm với loại bỏ
-   hop-by-hop, và inject sau khi xác thực thành công. **Xong khi** một
+   hop-by-hop, và inject sau khi xác thực thành công. **Done when** một
    request mang `X-User-Id: admin` và không có token bị từ chối với 401 và
    upstream không nhận được `X-User-Id` nào cả — viết phiên bản passthrough
    trước và xác nhận upstream thấy `admin`, để bạn đã tận mắt thấy lỗ hổng.
-3. Xác minh việc loại bỏ trên các path bỏ qua auth. **Xong khi** một route
+3. Xác minh việc loại bỏ trên các path bỏ qua auth. **Done when** một route
    cấu hình `Public` vẫn loại bỏ identity header giả mạo, và path 404 cũng
    vậy.
 4. Implement các cơ chế: [`07-security/02-jwt.md`](02-jwt.md) cho bearer token,
-   [`07-security/03-mtls.md`](03-mtls.md) cho client cert. **Xong khi** một route cấu
+   [`07-security/03-mtls.md`](03-mtls.md) cho client cert. **Done when** một route cấu
    hình `Both` yêu cầu cả cert hợp lệ *lẫn* token hợp lệ.
 5. Thêm constant-time comparison vào bất kỳ path nào dùng static-secret.
-   **Xong khi** một bài test timing qua nhiều mẫu không thể phân biệt một
+   **Done when** một bài test timing qua nhiều mẫu không thể phân biệt một
    key sai-byte-đầu với một key sai-byte-cuối.
-6. Thêm một test về thứ tự trong pipeline. **Xong khi** nó chứng minh một
+6. Thêm một test về thứ tự trong pipeline. **Done when** nó chứng minh một
    JWT không hợp lệ bị từ chối trước khi chọn upstream *và* trước khi WAF
    body inspection chạy.

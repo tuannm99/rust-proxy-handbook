@@ -10,7 +10,7 @@ bạn đã biết nó và tập trung vào những gì grammar không nói cho b
 ## What to learn
 
 ### Request/status line
-Một request line HTTP/1.1 là `METHOD SP request-target SP HTTP-version CRLF` (RFC 9112 §3, được viết rõ trong [`01-network/16-http1-wire-format.md`](../01-network/16-http1-wire-format.md)). RFC cho phép dễ dãi ở vài chỗ (tách theo khoảng trắng bất kỳ, chấp nhận `\n` trơ), và mỗi chỗ dễ dãi là một nơi parser của bạn và parser kế tiếp có thể bất đồng về cùng một byte sequence. Hãy coi từng chỗ là một quyết định bạn đưa ra có chủ đích và ghi lại, không phải một mặc định bạn thừa hưởng từ việc `split` làm gì.
+Một request line HTTP/1.1 là `METHOD SP request-target SP HTTP-version CRLF` (RFC 9112 §3, được viết rõ trong [`01-network/16-http1-wire-format.md`](../01-network/16-http1-wire-format.md)). RFC cho phép dễ dãi ở vài chỗ (tách theo khoảng trắng bất kỳ, chấp nhận bare LF (`\n` đứng riêng)), và mỗi chỗ dễ dãi là một nơi parser của bạn và parser kế tiếp có thể bất đồng về cùng một byte sequence. Hãy coi từng chỗ là một quyết định bạn đưa ra có chủ đích và ghi lại, không phải một mặc định bạn thừa hưởng từ việc `split` làm gì.
 
 ### Parse header
 Header là các dòng `name: value CRLF` cho tới một dòng trống. Parser viết ẩu thường dính các lỗi: so khớp tên header phải case-insensitive, khoảng trắng đầu/cuối trong value, header trùng lặp (một số phải bị reject thẳng, ví dụ `Content-Length` trùng), và obsolete line folding (dòng tiếp nối bắt đầu bằng khoảng trắng) mà parser hiện đại nên đơn giản là reject.
@@ -124,6 +124,6 @@ Codec HTTP/1 (`h1`) của `hyper` đã hấp thụ nhiều năm sửa lỗi tư�
 3. Thêm body framing: hỗ trợ `Content-Length`, rồi `Transfer-Encoding: chunked`, và reject tường minh một request khai cả hai.
 4. Viết vòng lặp buffer xung quanh nó: xử lý byte dư sau một message hoàn chỉnh, và chứng minh pipelining hoạt động bằng cách parse hai request từ một buffer trong một lần đọc. Sau đó assert EOF giữa request là lỗi còn EOF ở ranh giới message thì không.
 5. Áp các giới hạn ở trên (số header, kích thước, chunk size) và viết một test reject cho mỗi giới hạn, assert đúng status code chứ không chỉ "có lỗi".
-6. Feed parser của bạn các input mang tính đối kháng (`Content-Length` trùng với giá trị khác nhau, header bị fold, một `\n` trơ, chunk size `0x` theo sau bởi rác, tên header có khoảng trắng thừa cuối) và xác nhận nó reject từng cái thay vì parse "ra được gì đó".
+6. Feed parser của bạn các input do kẻ tấn công tạo ra (`Content-Length` trùng với giá trị khác nhau, header bị fold, một bare LF (`\n` đứng riêng), chunk size `0x` theo sau bởi rác, tên header có khoảng trắng thừa cuối) và xác nhận nó reject từng cái thay vì parse "ra được gì đó".
 7. Fuzz [`labs/01-http-parser`](../../labs/01-http-parser) (xem [`12-testing/02-fuzzing.md`](../12-testing/02-fuzzing.md)) với một corpus các bản capture traffic HTTP/1.1 thật và fix mọi panic.
 8. Sau khi tự tay làm xong, đọc API của `httparse` và codec `h1` của `hyper` cho cùng các trường hợp, và ghi lại chúng làm khác implementation của bạn ở điểm nào.

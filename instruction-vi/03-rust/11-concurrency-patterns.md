@@ -11,7 +11,7 @@ ownership của Rust khiến message passing dễ suy luận một cách bất t
 gửi một giá trị vào một channel là một move thật sự, nên sender mất khả
 năng chạm vào nó sau đó do cấu trúc, không phải do quy ước.
 
-### Vườn thú channel của tokio, và khi nào nên dùng cái nào
+### Các loại channel của tokio, và khi nào nên dùng cái nào
 - `mpsc` — nhiều sender, một receiver; queue công việc mặc định (nhiều
   connection handler đổ vào một task tổng hợp).
 - `oneshot` — đúng một giá trị, đúng một lần; cách chuẩn để lấy một

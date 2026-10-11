@@ -43,7 +43,7 @@ phía nhận.
 ### Mô hình poll-driven vs push-driven
 Nghĩ về `poll` như "hỏi, đừng báo" sẽ hữu ích: executor hỏi một future
 "xong chưa?", và cách duy nhất future có thể nói "chưa, nhưng tôi sẽ báo
-khi xong" là cất giữ waker. Nhiều lời gọi `.poll()` với các waker khác
+khi xong" là lưu waker. Nhiều lời gọi `.poll()` với các waker khác
 nhau (ví dụ giữa các nhánh `select!`) luôn phải wake up waker *mới nhất*
 đã đăng ký, không phải một cái cũ — đây là một bug kinh điển trong các
 future tự viết tay.

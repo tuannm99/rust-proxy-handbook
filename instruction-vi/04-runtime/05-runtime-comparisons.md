@@ -4,7 +4,7 @@
 
 ### Mô hình của tokio, nhìn lại như một lựa chọn thiết kế
 Runtime multi-threaded của tokio là work-stealing: bất kỳ task nào cũng
-có thể chạy trên bất kỳ worker thread nào, và worker rảnh ăn cắp từ worker
+có thể chạy trên bất kỳ worker thread nào, và worker rảnh sẽ steal task từ worker
 bận ([`04-runtime/01-tokio.md`](01-tokio.md)). Điều này tối ưu cho load balancing giữa các
 core với ít tinh chỉnh thủ công nhất — bạn không phải nghĩ về việc connection
 nào rơi vào core nào. Cái giá: một task di chuyển giữa các core nghĩa là
@@ -22,7 +22,7 @@ memory của shard đó — không atomic, không cache-line nảy qua lại gi�
 các core. Cái giá chuyển sang chỗ khác: mất load balancing giữa các shard
 phải được giải quyết ở tầng kiến trúc (`SO_REUSEPORT` cộng với việc phân
 phối connection của kernel, [`16-kernel/05-rss.md`](../16-kernel/05-rss.md)/[`16-kernel/06-rps.md`](../16-kernel/06-rps.md)) thay vì để
-một scheduler tự động ăn cắp việc.
+một scheduler tự động steal task.
 
 ```rust
 // Hình dạng khái niệm, không phải tokio: mỗi shard sở hữu độc quyền connection của nó.

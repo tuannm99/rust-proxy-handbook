@@ -34,7 +34,7 @@ let record_hit = || counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed); 
 ```
 Gotcha: một closure phải chạy nhiều hơn một lần (một handler trên mỗi
 connection được map qua nhiều connection) cần `Fn`/`FnMut`, nhưng nếu nó
-*move* một resource không `Clone` vào bên trong, nó suy biến thành
+*move* một resource không `Clone` vào bên trong, nó chuyển thành
 `FnOnce` và sẽ không compile ở chỗ yêu cầu `Fn` — cách sửa thông thường là
 clone một `Arc` vào closure thay vì move giá trị gốc.
 

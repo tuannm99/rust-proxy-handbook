@@ -3,12 +3,12 @@
 ## What to learn
 
 ### Lifetime elision và annotation tường minh
-Lifetime là các nhãn chỉ tồn tại tại compile time mà borrow checker dùng
+Lifetime là các nhãn chỉ tồn tại lúc compile mà borrow checker dùng
 để chứng minh một reference không bao giờ sống lâu hơn thứ nó trỏ tới —
 chúng không thêm bất kỳ biểu diễn nào tại runtime. Các quy tắc elision
 bao phủ các trường hợp phổ biến (một input reference -> output borrow từ
 nó; method `&self` -> output borrow từ `self`), nên phần lớn bạn chỉ viết
-`'a` tường minh khi một hàm hoặc struct gắn kết *nhiều* borrow độc lập với
+`'a` tường minh khi một hàm hoặc struct liên hệ *nhiều* borrow độc lập với
 nhau.
 
 ```rust

@@ -161,34 +161,32 @@ Xây theo thứ tự.
 
 1. Làm bước 1-5 trong [`labs/13-hot-reload`](../../labs/13-hot-reload), rồi lặp lại trong [`proxy`](../../proxy).
    Định nghĩa một struct `Config` với `serde` + `toml` (upstream, route,
-   rate limit, path TLS). **Xong khi** nó load lúc khởi động đứng sau
+   rate limit, path TLS). **Done when** nó load lúc khởi động đứng sau
    một `ArcSwap` và các handler đọc qua `.load()`.
 2. Load config đúng một lần mỗi request và truyền `Arc` xuống pipeline.
-   **Xong khi** một test reload liên tục dưới load đồng thời không thể
+   **Done when** một test reload liên tục dưới load đồng thời không thể
    tạo ra một request thấy hai phiên bản config khác nhau — đưa version
    vào span của request để chứng minh điều đó.
 3. Thêm một handler `SIGHUP` với prepare/commit hai giai đoạn: parse,
    validate xung đột route, load và khớp cert/key, bind mọi listener mới
-   — tất cả trước khi swap. **Xong khi** mỗi failure mode để lại config cũ
+   — tất cả trước khi swap. **Done when** mỗi failure mode để lại config cũ
    đang phục vụ.
-4. Viết các test âm tính. **Xong khi** một route trùng, một cặp cert/key
+4. Viết các test âm tính. **Done when** một route trùng, một cặp cert/key
    không khớp, một route tham chiếu một upstream pool chưa định nghĩa, và
    một port đã bị dùng đều tạo ra một rejection được log và zero thay đổi
    hành vi.
-5. Thêm theo dõi file như một trigger thứ hai, xử lý race ghi-dở. **Xong
-   khi** một `cp` ghi tại chỗ không kích hoạt một rejection giả, và một
+5. Thêm theo dõi file như một trigger thứ hai, xử lý race ghi-dở. **Done when** một `cp` ghi tại chỗ không kích hoạt một rejection giả, và một
    atomic rename có kích hoạt một reload.
 6. Phân loại mọi field là reload-được hay không, và reject thay đổi với
-   các field không-reload-được kèm một thông báo nêu tên field. **Xong
-   khi** sửa listen port tạo ra một failure rõ ràng thay vì một thành
+   các field không-reload-được kèm một thông báo nêu tên field. **Done when** sửa listen port tạo ra một failure rõ ràng thay vì một thành
    công gây hiểu lầm.
 7. Chuyển bí mật ra khỏi file và bọc chúng trong một newtype tự redact.
-   **Xong khi** `{:?}` trên config đã load không in ra bí mật nào và dòng
+   **Done when** `{:?}` trên config đã load không in ra bí mật nào và dòng
    log reload chứa một hash config cộng một diff không-bí-mật.
 8. Phát ra version config như một metric và alert trên reload thất bại.
-   **Xong khi** một dashboard có thể tương quan một thay đổi tỷ lệ lỗi với
+   **Done when** một dashboard có thể tương quan một thay đổi tỷ lệ lỗi với
    đúng lần reload gây ra nó, và các lần reload thất bại thầm lặng lặp lại
    tạo ra một ticket.
-9. Giữ N config hợp lệ gần nhất với một đường rollback. **Xong khi** một
+9. Giữ N config hợp lệ gần nhất với một đường rollback. **Done when** một
    lệnh operator revert về phiên bản trước mà không cần restart và không
    rớt request in-flight.

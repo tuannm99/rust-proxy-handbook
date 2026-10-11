@@ -121,25 +121,25 @@ mặc định `exp` 24 giờ nghĩa là một cửa sổ bị lộ 24 giờ.
 Làm lần lượt theo thứ tự sau.
 
 1. Trong [`proxy`](../../proxy), thêm JWT validation bằng `jsonwebtoken`: thuật toán được
-   pin cứng, signature + `exp`/`aud`, ngược lại trả 401. **Xong khi** một
+   pin cứng, signature + `exp`/`aud`, ngược lại trả 401. **Done when** một
    token hợp lệ đi qua và một token có payload bị sửa thì fail.
 2. Tự dàn dựng cuộc tấn công algorithm-confusion nhắm vào chính endpoint
    của bạn: lấy public key RS256 của bạn, ký một token dùng nó như một
-   HS256 secret, và gửi đi. **Xong khi** nó bị từ chối — và, để chứng minh
+   HS256 secret, và gửi đi. **Done when** nó bị từ chối — và, để chứng minh
    bài test là thật, tạm thời cấu hình validator để chấp nhận `alg` của
    chính token và xem token giả mạo thành công.
 3. Đưa vào các giá trị `kid` chứa [`../`](../..) và một `jku` trỏ tới một URL bạn
-   kiểm soát. **Xong khi** không cái nào được tin — `kid` chỉ resolve vào
+   kiểm soát. **Done when** không cái nào được tin — `kid` chỉ resolve vào
    tập key cố định của bạn và không có outbound fetch nào cho `jku`.
 4. Thêm việc fetch JWKS với tra cứu theo `kid`, rate limiting refetch, và
-   fail-static khi fetch thất bại. **Xong khi** 1000 request với các giá
+   fail-static khi fetch thất bại. **Done when** 1000 request với các giá
    trị `kid` ngẫu nhiên chỉ tạo ra tối đa một lượt fetch JWKS outbound, và
    việc block (blackhole) endpoint JWKS vẫn để các key hiện có tiếp tục hoạt
    động.
-5. Thêm leeway cho clock-skew và một metric đo skew. **Xong khi** một token
+5. Thêm leeway cho clock-skew và một metric đo skew. **Done when** một token
    được tạo 2 giây trong tương lai vẫn xác thực được, và metric của bạn báo
    cáo đúng độ lệch thực tế so với issuer.
-6. Quyết định và ghi lại chiến lược revocation của bạn. **Xong khi** hoặc
+6. Quyết định và ghi lại chiến lược revocation của bạn. **Done when** hoặc
    `exp` đủ ngắn để bạn có thể nói rõ cửa sổ bị lộ tính bằng phút, hoặc một
    denylist `jti` được thực thi — và lựa chọn đó được ghi lại ở nơi config
    sống.

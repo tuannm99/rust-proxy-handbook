@@ -62,6 +62,10 @@ Gotcha: đo thời gian chờ từ lúc request *đến*, không phải từ lú
 đầu xử lý nó. Toàn bộ điểm mấu chốt là nhận ra thời gian đã chờ, và một
 timer bắt đầu lúc dequeue không thấy được gì trong đó.
 
+Về lý thuyết hàng đợi (queueing theory) đằng sau việc này (Little's Law, vì sao thời gian chờ của một queue M/M/1
+tăng vọt khi utilization tiến gần 1, và vì sao "80% CPU" không có nghĩa là "còn dư 20%"), xem
+[`22-theory/06-queueing-theory.md`](../22-theory/06-queueing-theory.md).
+
 ### Shed đúng request
 Khi đã chấp nhận là phải drop cái gì đó, chọn cái nào là một quyết định
 thiết kế:
@@ -116,29 +120,28 @@ nào đang xảy ra. Sự phân biệt này cũng quan trọng cho SLI của b�
 Làm theo thứ tự này.
 
 1. Thêm một counter concurrency và một shed threshold tĩnh ở đầu pipeline
-   của [`proxy`](../../proxy), trả 503 với `Retry-After`. **Xong khi** load vượt
+   của [`proxy`](../../proxy), trả 503 với `Retry-After`. **Done when** load vượt
    threshold bị reject ngay thay vì queue.
 2. Chứng minh thất bại của việc queue trước, để có baseline cho cách
-   sửa. **Xong khi** bạn có thể chỉ ra, với một queue không giới hạn,
+   sửa. **Done when** bạn có thể chỉ ra, với một queue không giới hạn,
    p99 latency tăng vô hạn và throughput hữu ích giảm trong khi process
    vẫn bận 100%.
-3. Đo chi phí của đường shed. **Xong khi** một request bị reject đo được
+3. Đo chi phí của đường shed. **Done when** một request bị reject đo được
    là rẻ hơn một request được serve — nếu không, tìm ra thứ gì đang
    allocate.
 4. Thay giới hạn theo độ sâu bằng giới hạn theo sojourn-time đo từ lúc
-   đến. **Xong khi** threshold thích ứng đúng qua hai workload có service
+   đến. **Done when** threshold thích ứng đúng qua hai workload có service
    time rất khác nhau, mà không cần tune lại.
-5. Thêm giới hạn concurrency theo route. **Xong khi** làm bão hòa một
+5. Thêm giới hạn concurrency theo route. **Done when** làm bão hòa một
    route đắt đỏ để các route khác vẫn serve bình thường.
-6. Miễn trừ health check và thêm các lớp priority. **Xong khi** proxy dưới
+6. Miễn trừ health check và thêm các lớp priority. **Done when** proxy dưới
    shedding nặng vẫn trả lời được probe health của chính nó và vẫn cho qua
    traffic priority cao.
-7. Ngừng retry các response bị shed. **Xong khi** một load test ở 3x
+7. Ngừng retry các response bị shed. **Done when** một load test ở 3x
    capacity cho thấy số request upstream giữ nguyên thay vì nhân lên.
 8. Tách 503 do shed khỏi 503 do upstream trong metrics, và gán đúng chúng
-   vào SLI của bạn. **Xong khi** một dashboard phân biệt được "chúng ta
+   vào SLI của bạn. **Done when** một dashboard phân biệt được "chúng ta
    đang overload" với "upstream đang hỏng."
-9. (Stretch) Thay giới hạn tĩnh bằng giới hạn thích ứng và so sánh. **Xong
-   khi** giới hạn thích ứng tìm ra một threshold gần capacity đo được của
+9. (Stretch) Thay giới hạn tĩnh bằng giới hạn thích ứng và so sánh. **Done when** giới hạn thích ứng tìm ra một threshold gần capacity đo được của
    bạn mà không cần ai nói cho nó biết, và tìm lại được nó sau khi bạn
    inject một cú chậm 3x ở upstream.

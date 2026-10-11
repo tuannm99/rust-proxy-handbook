@@ -23,9 +23,8 @@ Two ways to use it, depending on where you're starting from:
 ## Files
 
 **Fundamentals** (start here if "syscall," "file descriptor," "kernel
-space," "inode," or "container" don't already have a precise meaning — the
-group in this directory written as a from-scratch primer; every file
-below assumes what these cover):
+space," "inode," or "container" don't already have a precise meaning — every
+file below builds on what these cover):
 - [`01-fundamentals.md`](01-fundamentals.md) — what the kernel/user-space split is for, and an index to the twelve files below
 - [`02-hardware-basics.md`](02-hardware-basics.md) — CPU privilege levels, MMU, interrupts, DMA, and how a packet reaches your `read()`
 - [`03-processes-and-threads.md`](03-processes-and-threads.md) — process vs thread, why threads are cheaper, the two stacked schedulers (kernel + tokio)

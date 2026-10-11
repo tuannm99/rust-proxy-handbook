@@ -130,30 +130,30 @@ on-call khác nhau.
 ## Practice
 Xây dựng theo thứ tự sau.
 
-1. Làm qua [`08-observability/05-slo.md`](05-slo.md) trước. **Xong khi** hai SLI và
+1. Làm qua [`08-observability/05-slo.md`](05-slo.md) trước. **Done when** hai SLI và
    target của chúng tồn tại dưới dạng recording rule, và bạn có thể nói
    mỗi cái page team nào.
 2. Viết thang burn-rate (14.4x/1h, 6x/6h, 1x/3ngày) với window ngắn tương
-   ứng, tham chiếu target SLO từ một recording rule duy nhất. **Xong khi**
+   ứng, tham chiếu target SLO từ một recording rule duy nhất. **Done when**
    thay đổi target ở một chỗ di chuyển mọi ngưỡng.
-3. Thêm sàn số-lượng-request. **Xong khi** một mô phỏng 3 giờ sáng với 5
+3. Thêm sàn số-lượng-request. **Done when** một mô phỏng 3 giờ sáng với 5
    request và 1 lỗi không page.
-4. Thêm alert dữ liệu-thiếu và một probe synthetic bên ngoài. **Xong khi**
+4. Thêm alert dữ liệu-thiếu và một probe synthetic bên ngoài. **Done when**
    kill hẳn [`proxy`](../../proxy) page trong khoảng thời gian mục tiêu của bạn — hãy
    test điều này, vì "alert bắn khi mọi thứ đã chết" là cái dễ bị hỏng
    nhất.
-5. Kiểm chứng tính độc lập của đường đi alert. **Xong khi** bạn có thể nói
+5. Kiểm chứng tính độc lập của đường đi alert. **Done when** bạn có thể nói
    việc gửi thông báo của bạn phụ thuộc vào cái gì, và xác nhận không cái
    nào đi qua proxy đang được giám sát.
 6. Thêm alert mức ticket cho certificate expire, config reload thất bại, và
-   độ bão hòa fd/pool. **Xong khi** một certificate còn 7 ngày là expire và
+   độ bão hòa fd/pool. **Done when** một certificate còn 7 ngày là expire và
    một config reload bị cố tình làm hỏng mỗi cái tạo ra một ticket mà
    không page ai.
 7. Chạy một chaos test ([`12-testing/03-chaos.md`](../12-testing/03-chaos.md)) dưới tải
-   ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)). **Xong khi** page burn-rate bắn
+   ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)). **Done when** page burn-rate bắn
    trong khoảng thời gian mong đợi, đúng SLI di chuyển (proxy hay
    end-to-end, tùy fault nào bạn tiêm vào), và mọi thứ hết cảnh báo sau
    khi fault được gỡ bỏ.
 8. Viết runbook cho mỗi page: nó nghĩa là gì, ba bước kiểm tra đầu tiên,
-   và cách giảm nhẹ. **Xong khi** link runbook nằm ngay trong định nghĩa
+   và cách giảm nhẹ. **Done when** link runbook nằm ngay trong định nghĩa
    alert và một người không quen hệ thống có thể làm theo nó.

@@ -90,4 +90,7 @@ hãy biết rằng `RwLock` và `watch` là hai lối thoát đầu tiên nên t
    qua một channel `tokio::sync::watch` — implement một trong hai, và viết
    một câu giải thích vì sao bạn không chọn cái còn lại.
 5. Cố tình tạo ra một deadlock hai-lock (task A lock X rồi Y, task B lock
-   Y rồi X) rồi sửa nó bằng cách thiết lập một thứ tự lock nhất quán.
+   Y rồi X) rồi sửa nó bằng cách thiết lập một thứ tự lock nhất quán. Về lý thuyết hình thức
+   đằng sau vì sao cách này hiệu quả (và các bài toán kinh điển producer-consumer, readers-writers
+   mà `Mutex`/`RwLock`/channel đang giải), xem [`22-theory/01-deadlock.md`](../22-theory/01-deadlock.md)
+   và [`22-theory/02-sync-classics.md`](../22-theory/02-sync-classics.md).

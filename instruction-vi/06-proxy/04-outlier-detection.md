@@ -23,7 +23,7 @@ nó đã hồi phục.
 Gotcha: đừng tính các lỗi do client gây ra là failure của upstream. Một
 404 hay 400 nghĩa là upstream hoạt động đúng và *request* mới là cái sai;
 tính 4xx vào ngưỡng failure cho phép một client với một URL scheme hỏng
-đánh dấu toàn bộ hạm đội của bạn unhealthy. Chỉ tính connection error,
+đánh dấu toàn bộ fleet của bạn unhealthy. Chỉ tính connection error,
 timeout, và 5xx — và hãy có chủ đích với 503, thứ thường có nghĩa là
 "upstream này đang chủ động shed load"
 ([`07-security/11-load-shedding.md`](../07-security/11-load-shedding.md)) chứ không phải "hỏng".
@@ -37,7 +37,7 @@ tạo ra các quyết định routing mâu thuẫn.
 Đừng bao giờ lật health state chỉ vì một probe fail — dùng một ngưỡng (ví
 dụ 3 lần fail liên tiếp để down, 2 lần thành công liên tiếp để lên lại).
 Nếu không có điều này, một upstream gần giới hạn capacity của nó sẽ flap
-lên/xuống mỗi vài giây, điều tệ hơn cho hạm đội so với việc cứ giữ nó
+lên/xuống mỗi vài giây, điều tệ hơn cho fleet so với việc cứ giữ nó
 down. "Flap damping" này chính xác là thứ `max_fails`/`fail_timeout` của
 nginx và outlier detection của Envoy cài đặt.
 
@@ -105,28 +105,27 @@ ngay bây giờ.
 Xây theo thứ tự.
 
 1. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), thêm passive health checking trên các
-   lỗi request thật, chỉ đếm connection error, timeout, và 5xx. **Xong
-   khi** một load test nhắm vào một upstream đã bị kill đánh dấu nó down
+   lỗi request thật, chỉ đếm connection error, timeout, và 5xx. **Done when** một load test nhắm vào một upstream đã bị kill đánh dấu nó down
    trong dưới một active probe interval, và một test gửi 1000 request tới
    một path không tồn tại (toàn bộ là 404) để nó vẫn healthy.
 2. Thêm ngưỡng fail-liên-tiếp/thành-công-liên-tiếp (3 xuống, 2 lên) với
    một thời gian tối thiểu ở trạng thái down, và log mọi chuyển trạng
-   thái. **Xong khi** kill và restart một upstream cho thấy đúng hai lần
+   thái. **Done when** kill và restart một upstream cho thấy đúng hai lần
    chuyển trạng thái — không phải một loạt — và hồi phục mất ít nhất thời
    gian down tối thiểu của bạn.
-3. Làm cho counter và chuyển trạng thái nguyên tử. **Xong khi** các kết
+3. Làm cho counter và chuyển trạng thái nguyên tử. **Done when** các kết
    quả probe đồng thời không thể đếm trùng một lần fail duy nhất — test
    với nhiều thread báo cáo fail đồng thời.
-4. Thêm một tỷ lệ ejection tối đa. **Xong khi** một fault khiến mọi
+4. Thêm một tỷ lệ ejection tối đa. **Done when** một fault khiến mọi
    upstream fail đồng thời chỉ eject tối đa phần đã cấu hình của bạn, để
    phần còn lại tiếp tục phục vụ.
 5. Model health như một effective weight thay vì một boolean, và thêm slow
-   start. **Xong khi** bạn có thể vẽ biểu đồ request-mỗi-giây tới một
+   start. **Done when** bạn có thể vẽ biểu đồ request-mỗi-giây tới một
    upstream đang hồi phục trong 30s đầu và thấy một ramp thay vì một bước
    nhảy.
-6. Xác minh flap đã biến mất. **Xong khi** flap hồi phục từ bước 2 biến
+6. Xác minh flap đã biến mất. **Done when** flap hồi phục từ bước 2 biến
    mất dưới một load test đẩy upstream gần giới hạn capacity của nó.
 7. Áp dụng ramp cho các upstream mới được phát hiện nữa
-   ([`06-proxy/07-service-discovery.md`](07-service-discovery.md)). **Xong khi** thêm một instance
+   ([`06-proxy/07-service-discovery.md`](07-service-discovery.md)). **Done when** thêm một instance
    giữa lúc load test cho nó một ramp thay vì một phần đầy đủ ngay lập
    tức.

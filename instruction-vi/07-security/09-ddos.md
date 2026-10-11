@@ -173,27 +173,27 @@ quyết định ở proxy và enforcement càng thấp càng tốt.
 ## Practice
 Làm theo thứ tự này.
 
-1. Tính trần của bạn trước. **Xong khi** bạn đã viết ra, cho config của
+1. Tính trần của bạn trước. **Done when** bạn đã viết ra, cho config của
    [`proxy`](../../proxy): `ulimit -n`, kích thước kernel socket buffer mỗi connection,
    allocation buffer của riêng bạn mỗi connection, và số connection tối đa suy
    ra — và đã xác minh con số đó bằng cách thực sự giữ mở đúng số connection
    idle đó.
 2. Thêm bộ giới hạn accept-rate/concurrency, với metrics riêng khỏi 429 ở
-   tầng application ([`07-ratelimit.md`](07-ratelimit.md)). **Xong khi** vượt cap đóng connection
+   tầng application ([`07-ratelimit.md`](07-ratelimit.md)). **Done when** vượt cap đóng connection
    mới ngay và số lượng reject hiển thị như một metric riêng.
-3. Xử lý `EMFILE` đúng cách trong accept loop. **Xong khi** hạ `ulimit -n`
+3. Xử lý `EMFILE` đúng cách trong accept loop. **Done when** hạ `ulimit -n`
    xuống một số nhỏ và làm ngập connection tạo ra backoff và reject sạch sẽ
    thay vì một cú spin 100% CPU — xem `top` để xác nhận.
-4. Làm các bài tập trong [`07-security/10-slowloris.md`](10-slowloris.md). **Xong khi** cả ba
+4. Làm các bài tập trong [`07-security/10-slowloris.md`](10-slowloris.md). **Done when** cả ba
    biến thể slow-client bị shed và một client chậm nhưng hợp lệ thì không.
 5. Thêm một giới hạn decompression trên request body với cả cap tuyệt đối
-   và cap tỷ lệ. **Xong khi** một gzip bomb bị reject mà chỉ allocate tới
+   và cap tỷ lệ. **Done when** một gzip bomb bị reject mà chỉ allocate tới
    cap của bạn (đo RSS trong lúc test để chứng minh), và một body 50 MB
    compress hợp lệ vẫn hoạt động.
-6. Làm các bài tập trong [`07-security/11-load-shedding.md`](11-load-shedding.md). **Xong khi**
+6. Làm các bài tập trong [`07-security/11-load-shedding.md`](11-load-shedding.md). **Done when**
    overload một route đắt đỏ trả 503 nhanh thay vì queue, và các route
    khác vẫn serve bình thường.
 7. Viết ra, trong README của [`proxy`](../../proxy), những nhóm tấn công nào [`proxy`](../../proxy) tự
-   giảm thiểu so với những nhóm cần hạ tầng đứng trước nó. **Xong khi**
+   giảm thiểu so với những nhóm cần hạ tầng đứng trước nó. **Done when**
    ranh giới đó rõ ràng — đây là quyết định thiết kế thật sự, không phải
    một chi tiết để bỏ qua.

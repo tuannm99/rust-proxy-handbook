@@ -50,7 +50,7 @@ quyết định fail hay thử tự fetch.
 
 Gotcha: khi fetch **thất bại**, mọi bên chờ phải được wake up kèm lỗi.
 Một leader trả về sớm — một panic, một nhánh chưa xử lý, một future bị
-drop do client hủy — để lại các bên chờ bounded một kết quả sẽ không
+drop do client hủy — để các bên chờ phải đợi mãi một kết quả sẽ không
 bao giờ đến. Cấu trúc leader sao cho việc thông báo xảy ra trong một
 `Drop` guard, cùng kỷ luật với connection counter của
 [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md).
@@ -82,7 +82,7 @@ một giờ sau — một stampede tự gây ra, lặp lại với chu kỳ bằ
 bạn.
 
 Thêm jitter vào TTL lúc lưu (±10% là đủ) để việc expire dàn trải ra trên
-một cửa sổ thay vì rơi đồng loạt. Đây là cùng vấn đề synchronization như chu
+một cửa sổ thay vì rơi đồng loạt. Đây là cùng vấn đề đồng bộ (synchronization) như chu
 kỳ probe ([`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)) và retry storm
 ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)), với cùng cách sửa.
 
@@ -101,28 +101,28 @@ dung.
 Làm theo thứ tự này.
 
 1. Trong [`labs/10-cache`](../../labs/10-cache), tái tạo stampede: cache một response origin cố
-   tình chậm, làm nó expire, và bắn 500 request đồng thời. **Xong khi**
+   tình chậm, làm nó expire, và bắn 500 request đồng thời. **Done when**
    bạn có thể chỉ ra khoảng 500 lần chạm origin bằng một counter phía
    origin.
 2. Thêm single-flight coalescing với một phép check-and-insert atomic.
-   **Xong khi** cùng test đó tạo ra đúng một lần chạm origin và cả 500
+   **Done when** cùng test đó tạo ra đúng một lần chạm origin và cả 500
    client nhận một response đúng.
-3. Thêm timeout cho bên chờ và lan truyền lỗi. **Xong khi** một origin bị
+3. Thêm timeout cho bên chờ và lan truyền lỗi. **Done when** một origin bị
    treo mãi mãi để các bên chờ fail theo deadline riêng thay vì bị block
    vô thời hạn, và một origin trả lỗi wake up mọi bên chờ kèm lỗi đó.
 4. Giết leader giữa lúc fetch (hủy future của nó, mô phỏng client disconnect
-   connection). **Xong khi** các bên chờ vẫn nhận được một kết quả hoặc một
+   connection). **Done when** các bên chờ vẫn nhận được một kết quả hoặc một
    lỗi sạch, thay vì bị treo — viết nó trước khi có `Drop` guard và xem
    chúng bị treo.
-5. Thêm `stale-while-revalidate` lên trên. **Xong khi** cùng test 500
+5. Thêm `stale-while-revalidate` lên trên. **Done when** cùng test 500
    request đó trả về ngay từ cache stale với một lần refresh nền, và chỉ
    một key thực sự nguội mới khiến ai đó phải chờ.
-6. Giới hạn số lần refresh nền đồng thời. **Xong khi** một lần origin sập
+6. Giới hạn số lần refresh nền đồng thời. **Done when** một lần origin sập
    tạo ra một số lượng task refresh in-flight có giới hạn thay vì một
    đống ngày càng lớn.
-7. Thêm jitter cho TTL. **Xong khi** một cache được điền trong một đợt
+7. Thêm jitter cho TTL. **Done when** một cache được điền trong một đợt
    cho thấy việc expire dàn trải trên một cửa sổ thay vì một đợt spike —
    vẽ biểu đồ tốc độ request origin qua một chu kỳ TTL đầy đủ để thấy nó.
-8. Thêm negative caching ngắn. **Xong khi** một 404 nóng chỉ tốn một
+8. Thêm negative caching ngắn. **Done when** một 404 nóng chỉ tốn một
    request origin mỗi khoảng negative-TTL, và một resource được tạo ngay
    sau một 404 đã cache trở nên thấy được trong vài giây.

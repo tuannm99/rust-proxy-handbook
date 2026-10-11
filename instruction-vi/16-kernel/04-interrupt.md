@@ -14,7 +14,7 @@ queue công việc tiếp theo) rồi trả về ngay. Bất cứ thứ gì ch�
 block *toàn bộ* việc xử lý interrupt trên core đó, kể cả timer interrupt mà
 scheduler phụ thuộc vào.
 
-### Softirq: nửa còn lại, hoãn lại và có thể scheduling
+### Softirq: nửa còn lại, hoãn lại và có thể được schedule
 Việc xử lý packet thực sự — đi ngược lên network stack, demux socket,
 cuối cùng chạm tới đường wakeup của epoll
 ([`16-kernel/01-epoll-internals.md`](01-epoll-internals.md)) — xảy ra trong một **softirq**, được

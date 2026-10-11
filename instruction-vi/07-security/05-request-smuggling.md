@@ -159,30 +159,30 @@ pool — bất cứ thứ gì còn lại trong buffer của nó chính là paylo
 Làm lần lượt theo thứ tự sau.
 
 1. Trong [`labs/01-http-parser`](../../labs/01-http-parser), thêm một test với cả `Content-Length` lẫn
-   `Transfer-Encoding: chunked`. **Xong khi** parser trả về lỗi thay vì
+   `Transfer-Encoding: chunked`. **Done when** parser trả về lỗi thay vì
    chọn một trong hai.
 2. Thêm các test cho các biến thể obfuscation: khoảng trắng ở cuối sau
    `chunked`, header `Transfer-Encoding` trùng lặp, `Content-Length: 6 `
    với khoảng trắng ở cuối, một `\n` trần làm line ending, và khoảng trắng
-   trước dấu hai chấm. **Xong khi** mỗi cái đều bị từ chối, và bạn có thể
+   trước dấu hai chấm. **Done when** mỗi cái đều bị từ chối, và bạn có thể
    nói rõ cho từng trường hợp một upstream có thể đã làm gì khác đi với nó.
 3. Xây payload CL.TE ở trên và gửi nó qua [`proxy`](../../proxy) tới một upstream đồ chơi
    dùng một parser *khác* (một dòng Python hay Node là lý tưởng — parser
-   khác, bug khác). **Xong khi** bạn quan sát thấy một desync thật sự:
+   khác, bug khác). **Done when** bạn quan sát thấy một desync thật sự:
    upstream đồ chơi thấy một request thứ hai bị làm hỏng. Bạn cần tận mắt
    thấy nó hoạt động trước khi tin rằng bản sửa của bạn ngăn được nó.
 4. Thêm một tầng framing-validation trong [`proxy`](../../proxy) trước khi gọi upstream,
-   và tự tạo lại framing header khi chuyển tiếp. **Xong khi** payload ở
+   và tự tạo lại framing header khi chuyển tiếp. **Done when** payload ở
    bước 3 bị từ chối với 400, một security event được log, và request mà
    proxy của bạn phát ra lên upstream mang framing header do chính nó
    tính toán.
-5. Thêm bộ phát hiện dựa trên timing như một test. **Xong khi** một payload
+5. Thêm bộ phát hiện dựa trên timing như một test. **Done when** một payload
    đáng lẽ khiến upstream chờ một body ma bị bắt bởi validation của bạn
    thay vì treo tới read timeout.
-6. Khiến bất kỳ anomaly parse nào đầu độc connection. **Xong khi** một connection
+6. Khiến bất kỳ anomaly parse nào đầu độc connection. **Done when** một connection
    đã tạo ra lỗi framing bị đóng thay vì trả về pool — xác minh bằng
    `ss -tan` rằng nó không xuất hiện lại như một connection pooled đang rảnh.
 7. (Mở rộng) Nếu [`proxy`](../../proxy) terminate HTTP/2 ([`labs/08-http2`](../../labs/08-http2)), xây một
    payload downgrade nơi `content-length` HTTP/2 bất đồng với các DATA
-   frame. **Xong khi** nó bị từ chối ngay ở tầng h2 thay vì bị dịch thành
+   frame. **Done when** nó bị từ chối ngay ở tầng h2 thay vì bị dịch thành
    một request HTTP/1.1 sai định dạng.

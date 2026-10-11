@@ -8,7 +8,7 @@ Serve một static file theo cách ngây thơ nghĩa là: đọc toàn bộ file
 Gotcha: `sendfile` nhanh khi page cache *hit* và block khi miss
 ([`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md)). Trong một async runtime, một `sendfile`
 block trên một file nguội làm đứng toàn bộ worker thread và mọi connection
-khác nó đang đa hợp — nên "tối ưu hiển nhiên" đó biến một lần đọc file
+khác nó đang multiplex — nên "tối ưu hiển nhiên" đó biến một lần đọc file
 chậm thành một đợt latency spike trên các request không liên quan. Đây
 chính xác là lý do `tokio::fs` dispatch tới một blocking thread pool thay
 vào đó: nó tốn một lần copy nhưng giữ reactor phản hồi được.
@@ -146,33 +146,33 @@ origin bạn. Serve nội dung người dùng từ một origin riêng, hoặc b
 Làm theo thứ tự này.
 
 1. Trong [`labs/04-static-server`](../../labs/04-static-server), serve file từ một thư mục root bằng
-   `tokio::fs::read` cộng một response body. **Xong khi** một file đã biết
+   `tokio::fs::read` cộng một response body. **Done when** một file đã biết
    được trả về với đúng `Content-Type` từ một bảng extension.
 2. Viết các test traversal trước khi hardening: `../../../etc/passwd`,
    các biến thể `%2e%2e%2f`, một biến thể double-encode, và một symlink
-   trỏ ra ngoài root. **Xong khi** ít nhất một cái thoát được — rồi thêm
-   containment và **xong lần nữa khi** không cái nào thoát được.
+   trỏ ra ngoài root. **Done when** ít nhất một cái thoát được — rồi thêm
+   containment và và **Done when** lại đúng khi không cái nào thoát được.
 3. Thay canonicalize-rồi-open bằng `cap-std` (hoặc `openat2` với
-   `RESOLVE_BENEATH`). **Xong khi** một test đổi symlink giữa lúc kiểm tra
+   `RESOLVE_BENEATH`). **Done when** một test đổi symlink giữa lúc kiểm tra
    và lúc open không thể thoát khỏi root.
-4. Từ chối dotfile và tắt listing. **Xong khi** `GET /.git/config` và
+4. Từ chối dotfile và tắt listing. **Done when** `GET /.git/config` và
    `GET /` đều trả 404 thay vì lộ ra bất cứ gì.
 5. Thêm `ETag` từ `(inode, size, mtime-với-nano)` và xử lý
-   `If-None-Match`/`If-Modified-Since`. **Xong khi** một request lặp lại
+   `If-None-Match`/`If-Modified-Since`. **Done when** một request lặp lại
    nhận `304` với body rỗng, và sửa một file hai lần trong cùng một giây
    vẫn tạo ra ETag đã thay đổi.
 6. Thêm `Range` với `206`/`416`/`Content-Range`, `If-Range`, và một giới
-   hạn số lượng multi-range. **Xong khi** một video player có thể tua,
+   hạn số lượng multi-range. **Done when** một video player có thể tua,
    một range không hợp lệ nhận 416, và một request 500-range bị từ chối
    thay vì được lắp ráp.
 7. Thêm `nosniff` và caching `immutable` sống lâu chỉ cho tên file có
-   content hash. **Xong khi** asset đã hash nhận TTL một năm và asset chưa
+   content hash. **Done when** asset đã hash nhận TTL một năm và asset chưa
    hash thì không.
 8. Thêm một cache open-file/metadata key theo device+inode với LRU
-   eviction. **Xong khi** request lặp lại cho một file nóng không tạo ra
+   eviction. **Done when** request lặp lại cho một file nóng không tạo ra
    syscall `stat` nào (xác minh bằng `strace -c`), và thay file trên đĩa
    được nhận ra thay vì serve nội dung cũ.
-9. Thay đọc+viết ngây thơ bằng `sendfile` hoặc `io_uring`. **Xong khi**
+9. Thay đọc+viết ngây thơ bằng `sendfile` hoặc `io_uring`. **Done when**
    throughput cải thiện trên một working set nóng, và bạn đã đo cả trường
    hợp *nguội* — nếu p99 tệ đi khi working set vượt RAM, bạn đã tìm ra
    gotcha ở trên và nên ghi lại điều đó trong ghi chú của mình.

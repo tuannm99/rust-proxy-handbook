@@ -152,32 +152,31 @@ cách await toàn bộ body.
 Xây theo thứ tự.
 
 1. Phác thảo pipeline cho [`proxy`](../../proxy) — module, thứ tự, và lý do — dựa trên
-   bảng ở trên. **Xong khi** bạn có thể biện minh cho mỗi vị trí bằng một
+   bảng ở trên. **Done when** bạn có thể biện minh cho mỗi vị trí bằng một
    failure cụ thể nó ngăn, không phải từ quy ước.
 2. Cài đặt Router và một module (rate limiting) như các cài đặt
-   `tower::Service`/`Layer` riêng biệt với `Error = Infallible`. **Xong
-   khi** mỗi cái được unit-test mà không cần mạng, và một reject rate-limit
+   `tower::Service`/`Layer` riêng biệt với `Error = Infallible`. **Done when** mỗi cái được unit-test mà không cần mạng, và một reject rate-limit
    là một response 429 thay vì một lỗi service.
 3. Nối Listener → ConnMgr → Codec → Router → Modules end-to-end cho một
-   upstream. **Xong khi** một request thật chảy qua và quay lại.
-4. Thêm auth và xác minh thứ tự. **Xong khi** một test chứng minh một
+   upstream. **Done when** một request thật chảy qua và quay lại.
+4. Thêm auth và xác minh thứ tự. **Done when** một test chứng minh một
    request bị rate-limit không bao giờ tới được auth, và một request với
    một `X-User-Id` giả mạo bị strip nó trước khi bất kỳ module nào đọc
    được nó.
-5. Truyền state qua các extension có kiểu. **Xong khi** auth chèn một
+5. Truyền state qua các extension có kiểu. **Done when** auth chèn một
    newtype `UserId` mà module logging đọc, và xóa `AuthLayer` khỏi stack
    tạo ra một 500 rõ ràng với một giải thích được log thay vì một panic.
 6. Cài đặt backpressure dựa trên `poll_ready` trong một module giới hạn
-   concurrency. **Xong khi** quá tải khiến stack shed
+   concurrency. **Done when** quá tải khiến stack shed
    ([`07-security/09-ddos.md`](../07-security/09-ddos.md)) thay vì buffer — đo bộ nhớ dưới quá tải kéo
    dài để chứng minh không có gì đang queue vô hình.
-7. Thêm việc catch panic ở biên pipeline. **Xong khi** một module panic
+7. Thêm việc catch panic ở biên pipeline. **Done when** một module panic
    trên một request trả 500 cho request đó và các request pipelined
    *khác* của connection vẫn hoàn thành.
-8. Ghi lại thứ tự đường đi response. **Xong khi** compression chạy bên
+8. Ghi lại thứ tự đường đi response. **Done when** compression chạy bên
    trong caching (cache lưu một biểu diễn chưa nén), và một test chứng
    minh một entry đã cache có thể phục vụ cho các client với
    `Accept-Encoding` khác nhau.
 9. Thêm graceful shutdown ở lớp ConnMgr
-   ([`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)). **Xong khi** các request
+   ([`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)). **Done when** các request
    in-flight hoàn thành trước khi thoát.

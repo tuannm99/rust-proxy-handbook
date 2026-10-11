@@ -124,31 +124,31 @@ Xây theo thứ tự.
 
 1. Mở rộng [`labs/06-load-balancer`](../../labs/06-load-balancer) (hoặc [`proxy`](../../proxy)) để hỗ trợ hai pool có
    tên với weight cấu hình được, lấy từ config
-   ([`09-architecture/03-config.md`](03-config.md)). **Xong khi** weight có thể thay đổi
+   ([`09-architecture/03-config.md`](03-config.md)). **Done when** weight có thể thay đổi
    mà không cần restart.
-2. Cài đặt weighted-random selection. **Xong khi** một test trên 100k
+2. Cài đặt weighted-random selection. **Done when** một test trên 100k
    request cho thấy sự chia tách trong phạm vi một phần trăm của weight
    đã cấu hình.
-3. Thêm sticky-by-hash selection với một hash fixed-seed. **Xong khi**
+3. Thêm sticky-by-hash selection với một hash fixed-seed. **Done when**
    cùng một client ID rơi vào cùng một pool qua một lần restart process
    *và* qua ba instance proxy chạy đồng thời — test tường minh trường hợp
    nhiều instance, vì đó là chỗ bug seed ẩn náu.
-4. Thêm RED metrics theo từng pool với pool như một label. **Xong khi** tỷ
+4. Thêm RED metrics theo từng pool với pool như một label. **Done when** tỷ
    lệ lỗi và latency của stable và canary có thể so sánh trực tiếp trên
    một dashboard.
-5. Cài đặt rollback tự động với một sàn số mẫu tối thiểu. **Xong khi** một
+5. Cài đặt rollback tự động với một sàn số mẫu tối thiểu. **Done when** một
    canary ở weight 1% với 3 lỗi trong một phút *không* rollback, và một
    canary thực sự trả 50% lỗi thì có — trường hợp đầu là cái chứng minh
    guard hoạt động.
 6. Mô phỏng một canary tồi dưới load ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md))
-   với một upstream trả 500. **Xong khi** rollback tự động kích hoạt
+   với một upstream trả 500. **Done when** rollback tự động kích hoạt
    trong cửa sổ mục tiêu của bạn và tổng số lỗi thấy được ở client bị
    giới hạn bởi weight canary, không phải bởi thời gian một con người
    phản ứng.
-7. Đánh giá health theo từng pool. **Xong khi** instance canary duy nhất
+7. Đánh giá health theo từng pool. **Done when** instance canary duy nhất
    trở nên unhealthy đưa pool canary về weight zero mà không kích hoạt
    panic-mode route traffic stable vào nó.
 8. Ghi lại những gì quy trình canary của bạn không thể bắt được, và bạn
-   làm gì thay vào đó. **Xong khi** runbook triển khai nêu tên một
+   làm gì thay vào đó. **Done when** runbook triển khai nêu tên một
    khoảng thời gian giữ ở một phần trăm có ý nghĩa và một khoảng theo
    dõi sau-rollout, kèm lý luận đi cùng.

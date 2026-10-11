@@ -157,30 +157,29 @@ có context ứng dụng) và đẩy quyết định đó xuống, chính là fe
 Làm theo thứ tự này.
 
 1. Trong [`proxy`](../../proxy), implement CIDR allow/deny trên địa chỉ TCP peer thật,
-   dùng `ipnet`, cho cả v4 và v6. **Xong khi** một rule `/0` không panic và
+   dùng `ipnet`, cho cả v4 và v6. **Done when** một rule `/0` không panic và
    các rule theo family match đúng.
-2. Bind một listener dual-stack và connect qua IPv4. **Xong khi** bạn đã
+2. Bind một listener dual-stack và connect qua IPv4. **Done when** bạn đã
    thấy địa chỉ peer đến dưới dạng `::ffff:...` và xác nhận rule v4 của bạn
    âm thầm không match — rồi thêm normalization `canonical()` và xác nhận
    chúng match.
-3. Thêm `trusted_proxies` và thuật toán XFF rightmost-untrusted. **Xong
-   khi** một request từ peer không được tin mang
+3. Thêm `trusted_proxies` và thuật toán XFF rightmost-untrusted. **Done when** một request từ peer không được tin mang
    `X-Forwarded-For: 127.0.0.1` bị filter theo địa chỉ thật của nó, và một
    request qua trusted proxy với `1.2.3.4, <trusted>` resolve ra `1.2.3.4`.
 4. Fuzz parser XFF với input malformed (không phải IP, v6 kèm port trong
-   ngoặc, 10k entry, whitespace nhúng vào). **Xong khi** không cái nào
+   ngoặc, 10k entry, whitespace nhúng vào). **Done when** không cái nào
    panic, allocate không giới hạn, hoặc cho ra verdict được tin — xem
    [`12-testing/02-fuzzing.md`](../12-testing/02-fuzzing.md).
 5. Đổi CIDR matching tuyến tính thành prefix trie và load một danh sách
-   100k entry. **Xong khi** latency match trên mỗi request bằng nhau giữa
+   100k entry. **Done when** latency match trên mỗi request bằng nhau giữa
    danh sách 10 entry và 100k entry, và một config reload swap bảng mà
    không block các read trên request-path.
 6. Thêm ban động có TTL, được kích hoạt bởi vi phạm rate-limit, với một
-   bảng bounded. **Xong khi** một client bị ban bị reject trước
+   bảng bounded. **Done when** một client bị ban bị reject trước
    khi rate limiter chạy, ban expire đúng lịch, và lấp bảng với 1M địa chỉ
    giả plateau về bộ nhớ thay vì tăng mãi.
 7. (Stretch) Nối parsing PROXY protocol v2
    ([`01-network/20-proxy-protocol.md`](../01-network/20-proxy-protocol.md)) như một lựa chọn thay thế có cấu
-   trúc cho XFF. **Xong khi** IP client thật được lấy lại từ header binary
+   trúc cho XFF. **Done when** IP client thật được lấy lại từ header binary
    và một connection *không có* header mong đợi trên một listener PROXY
    protocol bị reject thay vì bị parse như HTTP.

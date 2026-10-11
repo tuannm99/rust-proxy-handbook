@@ -173,33 +173,32 @@ nó trong một sự cố là cách "rate limiter bị sập" biến thành "sit
 Làm lần lượt theo thứ tự sau.
 
 1. Trong [`labs/11-rate-limit`](../../labs/11-rate-limit), implement `TokenBucket` ở trên, key theo
-   source IP với một `dashmap`. **Xong khi** một client vượt tốc độ bị từ
+   source IP với một `dashmap`. **Done when** một client vượt tốc độ bị từ
    chối và một client trong giới hạn thì không bao giờ.
-2. Sửa key. **Xong khi** client IPv6 được key theo prefix /64 — chứng minh
+2. Sửa key. **Done when** client IPv6 được key theo prefix /64 — chứng minh
    bằng một test gửi từ 10.000 địa chỉ riêng biệt trong một /64 và xác
    nhận chúng chia sẻ một bucket, sau khi trước tiên đã thấy phiên bản
    /128 để cho cả 10.000 lọt qua.
-3. Thêm route vào key và giới hạn theo từng route từ config. **Xong khi**
+3. Thêm route vào key và giới hạn theo từng route từ config. **Done when**
    một burst trên `/health` không tiêu tốn ngân sách của `/search`.
-4. Trả về đúng 429 kèm `Retry-After` và các header `RateLimit-*`. **Xong
-   khi** `Retry-After` chính xác trong khoảng một giây so với thời điểm
+4. Trả về đúng 429 kèm `Retry-After` và các header `RateLimit-*`. **Done when** `Retry-After` chính xác trong khoảng một giây so với thời điểm
    capacity thực sự quay lại — xác minh bằng cách sleep đúng khoảng đó và
    xác nhận request tiếp theo thành công.
-5. Thêm eviction cho bucket rảnh và một map có giới hạn. **Xong khi** lấp
+5. Thêm eviction cho bucket rảnh và một map có giới hạn. **Done when** lấp
    đầy map với 1 triệu key tổng hợp làm memory phẳng ra thay vì tăng
    trưởng, và bucket của các client đang hoạt động không bao giờ bị evict
    giữa chừng.
 6. Thêm một giới hạn toàn cục bên cạnh các giới hạn theo client, định cỡ từ
-   một load test thật. **Xong khi** 10.000 client tuân thủ riêng lẻ bị giới
+   một load test thật. **Done when** 10.000 client tuân thủ riêng lẻ bị giới
    hạn tập thể ở capacity upstream đo được của bạn.
-7. Thêm tính phí theo cost cho một route đắt đỏ. **Xong khi** một client
+7. Thêm tính phí theo cost cho một route đắt đỏ. **Done when** một client
    gọi endpoint đắt đỏ tiêu hết ngân sách của họ nhanh hơn tỷ lệ so với một
    client gọi endpoint rẻ.
-8. Chạy hai instance và chứng minh sự nhân lên. **Xong khi** bạn có thể
+8. Chạy hai instance và chứng minh sự nhân lên. **Done when** bạn có thể
    cho thấy một client nhận gấp 2 lần giới hạn của họ; rồi implement bucket
    cục bộ với đồng bộ định kỳ tới một shared store và cho thấy nó hội tụ
    gần 1x.
-9. Kill shared store giữa lúc test. **Xong khi** proxy vẫn phục vụ traffic
+9. Kill shared store giữa lúc test. **Done when** proxy vẫn phục vụ traffic
    với thực thi cục bộ vẫn hoạt động — không phải vô hạn cũng không phải
    từ chối tất cả — và một metric ghi lại rằng nó đang chạy ở chế độ suy
    giảm.

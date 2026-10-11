@@ -5,7 +5,7 @@
 [`01-upstream.md`](01-upstream.md) giả định một danh sách upstream cố định. Các deployment
 thật thay đổi tập upstream liên tục (autoscaling, rolling deploy, node
 fail). Config tĩnh (một danh sách trong file config, reload theo
-[`09-architecture/03-config.md`](../09-architecture/03-config.md)) đơn giản nhất và ổn cho các hạm đội
+[`09-architecture/03-config.md`](../09-architecture/03-config.md)) đơn giản nhất và ổn cho các fleet
 nhỏ/ổn định. Discovery động — bản ghi DNS SRV, Consul, hay Kubernetes
 Endpoints/EndpointSlices — cần thiết khi membership của upstream thay đổi
 nhanh hơn bạn muốn tự tay sửa config.
@@ -81,7 +81,7 @@ if discovered.is_empty() {
 pool.store(Arc::new(discovered));
 ```
 
-Một hạm đội thật scale xuống zero là hiếm; một control plane trả về không
+Một fleet thật scale xuống zero là hiếm; một control plane trả về không
 gì cả trong lúc chính nó gặp outage thì phổ biến. Giữ lại tập biết-là-tốt
 gần nhất nghĩa là một outage của discovery hạ bạn xuống "routing cũ" thay
 vì "không routing" — và routing cũ vẫn phục vụ người dùng, trong khi một
@@ -124,7 +124,7 @@ bao giờ một danh sách nửa-cập-nhật.
 Chú ý `Arc<Upstream>` bên trong `Vec` mang lại gì ngoài tính nguyên tử:
 một request đã nắm lấy một `Arc<Upstream>` trước lần swap giữ nó sống qua
 cả quá trình hoàn thành của chính nó, dù `Vec` mới không còn tham chiếu nó
-nữa. Việc xóa trở thành dẫn dắt bởi refcount — `Upstream` bị drop khi
+nữa. Việc xóa trở thành do refcount quyết định — `Upstream` bị drop khi
 request in-flight cuối cùng dùng nó hoàn thành — đó chính xác là ngữ nghĩa
 drain bạn muốn, miễn phí, thay vì một kiểm tra thủ công "còn ai đang dùng
 cái này không".
@@ -150,30 +150,30 @@ là cùng một logic drain ở các phạm vi khác nhau. Viết nó một lầ
 Xây theo thứ tự.
 
 1. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), chuyển danh sách upstream hardcode đứng
-   sau một trait `Discovery` với một cài đặt tĩnh. **Xong khi** proxy hành
+   sau một trait `Discovery` với một cài đặt tĩnh. **Done when** proxy hành
    xử giống hệt như trước và không gì bên ngoài trait biết danh sách đến
    từ đâu.
 2. Thêm một cài đặt DNS-poll dùng một resolver re-resolve mỗi tick, diff
-   với tập hiện tại và log các phần thêm/xóa. **Xong khi** thay đổi một
+   với tập hiện tại và log các phần thêm/xóa. **Done when** thay đổi một
    entry `/etc/hosts` cục bộ (hoặc zone của một DNS server cục bộ) được
    nhận ra trong vòng một poll interval — và viết phiên bản
    resolve-một-lần-lúc-khởi-động trước để bạn thấy nó *không* nhận ra.
 3. Chuyển pool storage sang `arc_swap::ArcSwap<Vec<Arc<Upstream>>>`.
-   **Xong khi** một load test đồng thời chạy trong lúc pool swap lặp lại
+   **Done when** một load test đồng thời chạy trong lúc pool swap lặp lại
    tạo ra zero lỗi và zero torn read.
-4. Thêm guard kết-quả-rỗng và guard churn tối đa. **Xong khi** trỏ
+4. Thêm guard kết-quả-rỗng và guard churn tối đa. **Done when** trỏ
    discovery vào một tên resolve ra không gì cả để pool trước đó tiếp tục
    phục vụ traffic, phát ra một cảnh báo, và tăng một metric — với zero
    503 thấy được ở client.
-5. Cài đặt drain ba bước. **Xong khi** xóa một upstream giữa lúc load test
+5. Cài đặt drain ba bước. **Done when** xóa một upstream giữa lúc load test
    hoàn thành mọi request in-flight tới nó (không reset), và `ss -tan` cho
    thấy các connection idle trong pool của nó đã đóng sau đó thay vì còn
    lại.
-6. Xác minh fail-static. **Xong khi** nguồn discovery bị làm cho không tới
+6. Xác minh fail-static. **Done when** nguồn discovery bị làm cho không tới
    được vĩnh viễn và proxy tiếp tục route đúng trên tập biết-là-tốt gần
    nhất trong bao lâu bạn muốn để nó chạy.
 7. (Stretch) Thêm một cài đặt dựa trên watch của Consul hoặc Kubernetes
-   đứng sau cùng trait. **Xong khi** latency phát hiện thay đổi đo được
+   đứng sau cùng trait. **Done when** latency phát hiện thay đổi đo được
    thấp hơn của DNS poller, *và* kill connection watch giữa lúc test kích
    hoạt một reconnect-và-relist đối chiếu đúng thay vì nhân đôi hoặc xóa
    mất upstream.

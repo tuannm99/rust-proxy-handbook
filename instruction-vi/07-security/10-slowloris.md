@@ -94,22 +94,21 @@ hủy nhanh nhất có thể.
 Làm theo thứ tự này.
 
 1. Viết ba attacker dưới dạng test client nhắm vào [`proxy`](../../proxy): slow header,
-   slow body, slow read. **Xong khi** cả ba đều giữ được một connection mở
+   slow body, slow read. **Done when** cả ba đều giữ được một connection mở
    nhiều phút chống lại config hiện tại của bạn — bạn cần cuộc tấn công
    hoạt động trước khi biện pháp phòng thủ có ý nghĩa.
-2. Thêm một deadline phase-header cùng một rate floor theo byte. **Xong
-   khi** client slow-headers bị disconnect trong deadline và một client
+2. Thêm một deadline phase-header cùng một rate floor theo byte. **Done when** client slow-headers bị disconnect trong deadline và một client
    bình thường không bị ảnh hưởng.
-3. Mở rộng floor sang phase body. **Xong khi** client slow-body bị disconnect
+3. Mở rộng floor sang phase body. **Done when** client slow-body bị disconnect
    connection, và một upload lớn hợp lệ ở vài trăm KB/s hoàn thành được.
-4. Thêm một deadline tiến độ write. **Xong khi** client slow-read bị disconnect
+4. Thêm một deadline tiến độ write. **Done when** client slow-read bị disconnect
    connection và một download streaming lớn tới một client bình thường vẫn
    hoạt động.
 5. Xác minh với một client chậm-nhưng-hợp-lệ giả lập (throttle xuống vài
-   KB/s bằng `tc` hoặc một proxy rate-limit). **Xong khi** nó *không* bị
+   KB/s bằng `tc` hoặc một proxy rate-limit). **Done when** nó *không* bị
    disconnect — nếu bị, floor của bạn đang đặt theo giả định datacenter.
 6. Chạy cả ba cuộc tấn công đồng thời với một load test bình thường
-   ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)). **Xong khi** p99 latency hợp lệ
+   ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)). **Done when** p99 latency hợp lệ
    không đổi và số connection vẫn bounded.
-7. Xác nhận các miễn trừ. **Xong khi** một WebSocket idle sống sót vô hạn
+7. Xác nhận các miễn trừ. **Done when** một WebSocket idle sống sót vô hạn
    trong khi một cái không phản hồi (không pong) bị đóng.

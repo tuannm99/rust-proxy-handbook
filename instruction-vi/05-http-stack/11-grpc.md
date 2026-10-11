@@ -66,7 +66,7 @@ không khách hàng bidi-streaming đầu tiên của bạn sẽ tự phát hi�
 đó cho bạn.
 
 ### Load balancing gRPC không phải cùng bài toán với load balancing HTTP/1.1
-Một client gRPC thường mở một connection HTTP/2 sống lâu và đa hợp nhiều RPC độc lập trên đó (xem phần multiplexing của [`01-network/17-http2.md`](../01-network/17-http2.md)). Một load balancer chọn một upstream *theo từng connection* (như một balancer L4/TCP thuần, hay một implementation [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md) ngây thơ viết theo tư duy một-request-mỗi-connection của HTTP/1.1) gửi mọi RPC trên connection đó tới cùng một upstream mãi mãi, đánh bại hoàn toàn load balancing một khi client đã connection. Load balancing gRPC đúng đắn phải nhận biết từng stream HTTP/2 riêng và chọn một upstream theo từng RPC, không phải theo từng connection.
+Một client gRPC thường mở một connection HTTP/2 sống lâu và multiplex nhiều RPC độc lập trên đó (xem phần multiplexing của [`01-network/17-http2.md`](../01-network/17-http2.md)). Một load balancer chọn một upstream *theo từng connection* (như một balancer L4/TCP thuần, hay một implementation [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md) ngây thơ viết theo tư duy một-request-mỗi-connection của HTTP/1.1) gửi mọi RPC trên connection đó tới cùng một upstream mãi mãi, đánh bại hoàn toàn load balancing một khi client đã connect. Load balancing gRPC đúng đắn phải nhận biết từng stream HTTP/2 riêng và chọn một upstream theo từng RPC, không phải theo từng connection.
 
 Gotcha: điều này tương tác xấu với các event scaling. Connection sống
 lâu bị gắn vào một tập con upstream nghĩa là upstream mới được thêm bởi
@@ -89,34 +89,34 @@ duy nhất ([`08-observability/02-metrics.md`](../08-observability/02-metrics.md
 Làm theo thứ tự này.
 
 1. Dựng một upstream gRPC thật với `tonic`, bao gồm một method trả về
-   status không-OK và một method server-streaming. **Xong khi** một
+   status không-OK và một method server-streaming. **Done when** một
    client `grpcurl` nói chuyện trực tiếp với nó và thấy cả hai hành vi.
-2. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), proxy nó end-to-end. **Xong khi** một
+2. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), proxy nó end-to-end. **Done when** một
    cuộc gọi unary thành công qua proxy và `grpc-status` không-OK tới
    được client như một status đúng đắn — không phải lỗi transport và
    không phải một thành công giả.
-3. Thêm trường hợp trailers-only. **Xong khi** một RPC fail ngay lập tức
+3. Thêm trường hợp trailers-only. **Done when** một RPC fail ngay lập tức
    (không có frame DATA nào) được proxy đúng thay vì bị treo.
-4. Làm cho lỗi của chính proxy có hình dạng gRPC. **Xong khi** giết mọi
+4. Làm cho lỗi của chính proxy có hình dạng gRPC. **Done when** giết mọi
    upstream tạo ra `grpc-status: 14 UNAVAILABLE` ở client thay vì một
    body HTTP 503, và một cuộc gọi bị rate-limit tạo ra
    `8 RESOURCE_EXHAUSTED`.
-5. Test client-streaming và bidi. **Xong khi** upstream nhận frame đúng
+5. Test client-streaming và bidi. **Done when** upstream nhận frame đúng
    lúc client gửi chúng (xác minh bằng timestamp phía upstream) thay vì
    tất cả cùng lúc ở cuối stream.
 6. Tôn trọng `grpc-timeout`, trừ đi thời gian đã tiêu, và loại trừ RPC
-   đã upgrade/streaming khỏi timeout kiểu request. **Xong khi** một RPC
+   đã upgrade/streaming khỏi timeout kiểu request. **Done when** một RPC
    server-streaming phát một message mỗi 30 giây sống vô thời hạn, và
    một deadline 100ms client đặt được upstream enforce thay vì bị một
    mặc định của proxy ghi đè.
-7. Loại trừ `application/grpc` khỏi response compression. **Xong khi**
+7. Loại trừ `application/grpc` khỏi response compression. **Done when**
    một response gRPC đi qua giống hệt byte-gốc trong khi một response
    HTML trên cùng proxy vẫn bị nén.
-8. Xác minh load balancing theo từng RPC. **Xong khi** một connection
+8. Xác minh load balancing theo từng RPC. **Done when** một connection
    client phát ra nhiều RPC phân phối chúng trên nhiều upstream — nếu
    tất cả rơi vào một cái, balancer của bạn đang chọn theo connection và
    cần sửa.
 9. Thêm health checking gRPC (`Check`, rồi `Watch`) và `grpc-status` như
-   một chiều metric gắn nhãn theo `/package.Service/Method`. **Xong khi**
+   một chiều metric gắn nhãn theo `/package.Service/Method`. **Done when**
    một dashboard cho thấy một upstream trả toàn INTERNAL là không khỏe
    mạnh, dù mọi HTTP status đều là 200.

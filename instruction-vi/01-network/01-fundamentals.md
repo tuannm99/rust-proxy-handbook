@@ -1,57 +1,65 @@
 # Networking Fundamentals
 
-Bài học đầu tiên của lộ trình networking, và là bài mà mọi file sau đều dựa
-vào. Nó không giả định gì: nếu bạn đã biết mô hình phân lớp, lướt qua trong
-hai mươi phút; nếu chưa, hãy đọc hai lần và làm Practice trước khi đi tiếp.
-Networking là một chồng các ý tưởng nhỏ, tách biệt — cách nhanh nhất để quên
-chúng là học như một đống từ viết tắt, nên file này cho bạn *bản đồ* trước
-và các file sau điền vào địa hình.
+Đây là bài đầu tiên của lộ trình networking, và mọi file sau đều dựa vào nó. Bài
+không giả định bạn biết gì trước. Nếu bạn đã quen với mô hình phân layer, chỉ cần
+lướt qua trong khoảng hai mươi phút. Nếu chưa, hãy đọc hai lần rồi làm Practice
+trước khi đi tiếp.
+
+Networking là một chồng nhiều ý tưởng nhỏ, tách biệt nhau. Cách nhanh nhất để quên
+chúng là học như một đống từ viết tắt. Vì vậy file này đưa cho bạn *bản đồ* trước,
+và các file sau sẽ điền chi tiết vào bản đồ đó.
 
 ## What to learn
 
-### Hai process, nói chuyện qua byte
-Lột bỏ mọi từ viết tắt thì networking chỉ là: hai chương trình, có thể
-nằm trên các máy khác nhau, trao đổi byte qua dây (hoặc sóng radio). Một
-bên listen, một bên connect tới. Mọi thứ khác trong thư mục này — TCP,
-TLS, HTTP, DNS — là một tập luật đặt chồng lên "gửi byte, nhận byte" để
-hai chương trình được viết độc lập, trên hai máy tính khác nhau, đồng ý
-với nhau về ý nghĩa của những byte đó.
+### Hai process nói chuyện với nhau bằng byte
+Bỏ hết các từ viết tắt đi, networking chỉ là: hai chương trình, có thể nằm trên hai
+máy khác nhau, trao đổi byte qua dây (hoặc sóng radio). Một bên listen, bên kia
+connect tới. Mọi thứ khác trong thư mục này (TCP, TLS, HTTP, DNS) là một bộ luật đặt
+lên trên việc "gửi byte, nhận byte". Bộ luật này giúp hai chương trình được viết độc
+lập, chạy trên hai máy khác nhau, hiểu byte của nhau theo cùng một nghĩa.
 
-Về mặt cấu trúc, [`proxy/`](../../proxy) chỉ là một chương trình đứng ở giữa: nó là
-"server" đối với bất kỳ ai connect tới nó, và là "client" đối với bất kỳ
-thứ gì nó connect tới tiếp theo. Mỗi file protocol trong thư mục này mô tả
-hành vi từ một hoặc cả hai vai trò đó.
+Về cấu trúc, [`proxy/`](../../proxy) chỉ là một chương trình nằm ở giữa. Với bất kỳ
+ai connect tới nó, nó là "server". Với bất kỳ thứ gì nó connect tới tiếp theo, nó là
+"client". Mỗi file protocol trong thư mục này mô tả hành vi của một trong hai vai trò
+đó, hoặc cả hai.
 
-### Mô hình phân lớp: tấm bản đồ mà mọi thứ khác treo lên
-Gửi byte qua nửa vòng trái đất là bài toán quá lớn để giải một lần, nên nó được
-chia thành các **layer**. Mỗi layer giải đúng một vấn đề *cho layer phía trên
-nó*, chỉ dùng layer phía dưới, và nói chuyện với **layer đồng cấp ở máy bên kia**
-qua một header nhỏ — header đó là toàn bộ hợp đồng của layer. Hai mô hình đặt
-tên các layer:
+### Mô hình phân layer: tấm bản đồ để gắn mọi thứ khác vào
+Gửi byte đi nửa vòng trái đất là một bài toán quá lớn để giải một lần. Vì vậy người
+ta chia nó thành các **layer**. Mỗi layer chỉ giải đúng một vấn đề, và giải *cho layer
+phía trên nó*. Layer chỉ dùng dịch vụ của layer phía dưới. Nó nói chuyện với **layer
+cùng cấp ở máy bên kia** thông qua một header nhỏ. Header này chính là toàn bộ "hợp
+đồng" của layer đó.
 
-| OSI # | Layer TCP/IP | Vấn đề duy nhất nó giải | Đơn vị | Định địa chỉ bằng | Ví dụ | Thiết bị làm việc ở đây |
+Có hai mô hình đặt tên cho các layer:
+
+| OSI # | Layer TCP/IP | Vấn đề duy nhất nó giải | Đơn vị | Định địa chỉ bằng | Ví dụ | Thiết bị làm việc ở layer này |
 |---|---|---|---|---|---|---|
-| 7 (cùng 6, 5) | **Application** | byte *mang nghĩa* gì | message | tên / URL | HTTP, DNS, TLS, gRPC | proxy, API gateway |
-| 4 | **Transport** | *process* nào, và (TCP) tin cậy, đúng thứ tự | segment (TCP), datagram (UDP) | port | TCP, UDP, QUIC | L4 load balancer, firewall |
-| 3 | **Internet** | *host* nào, qua nhiều mạng | packet | IP address | IP, ICMP | router |
-| 2 | **Link** | *hàng xóm* kế tiếp trên một mạng cục bộ | frame | MAC address | Ethernet, Wi-Fi, ARP | switch |
-| 1 | (Link) | bit trên dây, cáp quang hay sóng radio | bit | — | cáp, radio | cáp, hub |
+| 7 (cùng 6, 5) | **Application** | byte có *nghĩa* là gì | message | tên / URL | HTTP, DNS, TLS, gRPC | proxy, API gateway |
+| 4 | **Transport** | giao cho *process* nào, và (với TCP) giao tin cậy, đúng thứ tự | segment (TCP), datagram (UDP) | port | TCP, UDP, QUIC | L4 load balancer, firewall |
+| 3 | **Internet** | tới *host* nào, đi qua nhiều mạng | packet | IP address | IP, ICMP | router |
+| 2 | **Link** | tới *hàng xóm* kế tiếp trong một mạng cục bộ | frame | MAC address | Ethernet, Wi-Fi, ARP | switch |
+| 1 | (Link) | bit chạy trên dây, cáp quang hay sóng radio | bit | — | cáp, radio | cáp, hub |
 
-Hãy nhớ nó như một chiếc thang có phạm vi rộng dần: **frame -> hop kế tiếp,
-packet -> đúng host, segment -> đúng process, message -> đúng ý nghĩa.** Mô hình
-OSI (7 layer) là *từ vựng* mọi người dùng — "L4 load balancer", "L7 proxy" —
-còn TCP/IP (4 layer) là thứ thực sự được cài đặt; layer 5 và 6 của OSI không tồn
-tại như phần mềm riêng trong thực tế. Hãy coi mô hình là bản đồ, không phải
-định luật: **TLS** nằm gượng gạo giữa 4 và 7, **QUIC** làm transport và hơn thế
-trên UDP ([`18-http3.md`](18-http3.md)), và **NAT** sửa port của transport-layer từ một box
-network-layer ([`02-addressing.md`](02-addressing.md)). Khi một protocol "không vừa một layer", đó là
-mô hình gần đúng, không phải bạn hiểu sai.
+Có thể nhớ nó như một chiếc thang, mỗi nấc có phạm vi rộng hơn nấc dưới:
+**frame → tới hop kế tiếp, packet → tới đúng host, segment → tới đúng process,
+message → tới đúng ý nghĩa.**
 
-### Encapsulation: một request, bọc như các phong bì lồng nhau
-Proxy của bạn gọi `write(fd, b"GET / HTTP/1.1...")`. Đi **xuống** stack, mỗi layer
-bọc thứ nó nhận từ trên bằng header của riêng nó (bên gửi *encapsulate*); đi
-**lên** ở bên nhận, mỗi layer bóc header của mình và đưa payload lên (nó
-*decapsulate*).
+Mô hình OSI (7 layer) là *từ vựng* mà mọi người dùng, ví dụ "L4 load balancer" hay
+"L7 proxy". TCP/IP (4 layer) mới là thứ thực sự được cài đặt. Layer 5 và 6 của OSI
+không tồn tại như phần mềm riêng trong thực tế.
+
+Hãy xem mô hình này là bản đồ, không phải định luật. **TLS** nằm gượng gạo giữa layer
+4 và 7. **QUIC** làm việc của transport và hơn thế nữa, ngay trên UDP
+([`18-http3.md`](18-http3.md)). **NAT** sửa port của transport layer, nhưng lại chạy
+trên một thiết bị ở network layer ([`02-addressing.md`](02-addressing.md)). Khi một
+protocol "không vừa vào layer nào", đó là vì mô hình chỉ gần đúng, không phải bạn hiểu
+sai.
+
+### Encapsulation: request được bọc như những phong bì lồng nhau
+Proxy của bạn gọi `write(fd, b"GET / HTTP/1.1...")`. Khi dữ liệu đi **xuống** stack,
+mỗi layer bọc thứ nó nhận từ layer trên bằng header của riêng nó. Bên gửi gọi việc này
+là *encapsulate*. Khi dữ liệu đi **lên** ở bên nhận, mỗi layer gỡ header của mình ra
+và đưa payload lên layer trên. Việc này gọi là *decapsulate*.
 
 ```text
 application   [ HTTP: GET / HTTP/1.1 ... ]
@@ -61,80 +69,94 @@ link          [ Eth hdr | IP hdr | TCP hdr | HTTP ... | FCS ]  <- thêm MAC; đ�
 wire          0101101...
 ```
 
-Mỗi thiết bị chỉ đọc sâu tới mức công việc của nó cần: **switch** đọc Ethernet
-header; **router** đọc tới IP header, rồi *vứt Ethernet header đi và dựng cái
-mới* cho link kế tiếp; **L4 load balancer** đọc tới TCP; **L7 proxy** đọc hết.
-"Thiết bị này nhìn sâu bao nhiêu vào các phong bì lồng nhau?" chính là toàn bộ
-khác biệt giữa thiết bị L2, L3, L4 và L7 ([`05-proxy-taxonomy.md`](05-proxy-taxonomy.md)).
+Mỗi thiết bị chỉ đọc sâu đến mức công việc của nó cần:
 
-### Hop-by-hop vs end-to-end
-Layer 1–3 làm việc **từng hop**: MAC address đổi ở mỗi router, và mỗi router tự
-đưa ra lựa chọn forward ([`07-link-layer.md`](07-link-layer.md), [`08-ip-and-icmp.md`](08-ip-and-icmp.md)). Layer 4 trở lên làm việc
-**đầu-cuối**: sequence number và retransmission của một TCP connection chỉ giữa
-hai endpoint, và router ở giữa không bao giờ nhìn chúng. Proxy thay đổi điều đó
-một cách có chủ đích: nó *kết thúc* một transport connection và mở một cái thứ
-hai, nên nó trở thành một "đầu" mới — TCP/TLS session của client kết thúc ở
-proxy, và của upstream bắt đầu từ đó. Ý tưởng duy nhất này giải thích vì sao
-proxy thêm được TLS, pool connection, retry, và vì sao chúng cũng phải gửi lại
-IP của client trong một header ([`15-http.md`](15-http.md)).
+- **Switch** chỉ đọc Ethernet header.
+- **Router** đọc đến IP header. Sau đó nó *bỏ Ethernet header cũ đi và tạo một cái mới*
+  cho link kế tiếp.
+- **L4 load balancer** đọc đến TCP header.
+- **L7 proxy** đọc hết, kể cả HTTP.
 
-### Debug từ dưới lên: là layer nào?
-Vì mỗi layer phụ thuộc layer bên dưới, hãy chẩn đoán từ dưới lên:
+Câu hỏi "thiết bị này nhìn sâu bao nhiêu vào các phong bì lồng nhau?" chính là điểm
+khác nhau giữa thiết bị L2, L3, L4 và L7
+([`05-proxy-taxonomy.md`](05-proxy-taxonomy.md)).
 
-1. **Link/IP** — tôi có với tới host không? (`ping`, `ip route`, ARP)
-2. **Transport** — port có trả lời không? (`connection refused` = host ổn, không
-   có gì listen; treo = packet bị drop) (`ss`, `tcpdump`)
-3. **Application** — nó có nói đúng protocol không? (một `403`, một TLS alert,
-   một header sai định dạng)
+### Hop-by-hop và end-to-end
+Layer 1–3 làm việc **theo từng hop**. MAC address đổi ở mỗi router, và mỗi router tự
+chọn đường forward ([`07-link-layer.md`](07-link-layer.md),
+[`08-ip-and-icmp.md`](08-ip-and-icmp.md)).
 
-Một `403` không bao giờ là vấn đề routing và một timeout hiếm khi là vấn đề
-HTTP header. [`10-packet-capture-and-tools.md`](10-packet-capture-and-tools.md) dạy các công cụ và
-[`21-life-of-a-request.md`](21-life-of-a-request.md) kết thúc bằng một bảng triệu chứng-sang-layer.
+Layer 4 trở lên làm việc **đầu-cuối** (end-to-end). Sequence number và
+retransmission của một TCP connection chỉ có nghĩa giữa hai endpoint. Các router ở
+giữa không bao giờ nhìn vào chúng.
 
-### Sáu mảnh ghép, và mỗi mảnh nằm ở đâu
-Phần tiếp theo của primer này được chia thành các file ngắn thay vì một file dài,
-vì mỗi mảnh thực sự là một ý tưởng tách biệt và sau này bạn sẽ muốn quay
-lại từng phần riêng lẻ thay vì đọc lại cả một bức tường chữ:
+Proxy cố ý thay đổi điều này. Nó *kết thúc* một transport connection và mở một
+connection thứ hai, nên nó trở thành một "đầu" mới. TCP/TLS session của client kết
+thúc tại proxy. Session của upstream bắt đầu từ proxy. Chỉ một ý này đã giải thích vì
+sao proxy có thể: thêm TLS, pool connection, retry. Nó cũng giải thích vì sao proxy
+phải chuyển IP của client tiếp đi trong một header ([`15-http.md`](15-http.md)).
 
-- **[`02-addressing.md`](02-addressing.md)** — cách một host và một process trên đó được định
-  danh: IP address, port, CIDR notation, và NAT (vì sao địa chỉ mà một
-  packet đến với thường không phải địa chỉ nó được gửi từ).
-- **[`03-byte-streams.md`](03-byte-streams.md)** — thứ TCP thực sự đưa cho chương trình của bạn
-  (một stream, không phải các message), TCP vs UDP, và handshake như một
-  pattern lặp lại.
-- **[`04-latency-throughput.md`](04-latency-throughput.md)** — bốn con số người ta hay lẫn lộn:
-  latency, bandwidth, throughput, RTT — và vì sao một connection "nhanh" vẫn
+### Debug từ dưới lên: lỗi ở layer nào?
+Mỗi layer phụ thuộc vào layer bên dưới, nên hãy chẩn đoán từ dưới lên:
+
+1. **Link/IP**: tôi có với tới được host không? (`ping`, `ip route`, ARP)
+2. **Transport**: port có trả lời không? `connection refused` nghĩa là host ổn nhưng
+   không có gì đang listen. Treo nghĩa là packet bị drop. (`ss`, `tcpdump`)
+3. **Application**: nó có nói đúng protocol không? (một `403`, một TLS alert, một
+   header sai định dạng)
+
+Một lỗi `403` không bao giờ là vấn đề routing, và một lỗi timeout hiếm khi do HTTP
+header. [`10-packet-capture-and-tools.md`](10-packet-capture-and-tools.md) dạy các
+công cụ để làm việc này. [`21-life-of-a-request.md`](21-life-of-a-request.md) kết thúc
+bằng một bảng "triệu chứng → layer".
+
+### Năm mảnh ghép, và mỗi mảnh nằm ở đâu
+Phần còn lại của primer này được chia thành các file ngắn thay vì một file dài. Lý do
+là mỗi mảnh là một ý tưởng riêng, và sau này bạn sẽ muốn quay lại đúng từng phần, thay
+vì đọc lại cả một bức tường chữ.
+
+- **[`02-addressing.md`](02-addressing.md)**: cách định danh một host và một process
+  trên host đó. Gồm IP address, port, CIDR notation, và NAT (vì sao địa chỉ mà packet
+  tới nơi thường không phải địa chỉ nó được gửi đi).
+- **[`03-byte-streams.md`](03-byte-streams.md)**: thứ TCP thực sự đưa cho chương trình
+  của bạn (một stream, không phải các message), TCP so với UDP, và handshake như một
+  pattern lặp đi lặp lại.
+- **[`04-latency-throughput.md`](04-latency-throughput.md)**: bốn con số hay bị nhầm
+  với nhau: latency, bandwidth, throughput, RTT. Và vì sao một connection "nhanh" vẫn
   có thể cảm giác chậm.
-- **[`05-proxy-taxonomy.md`](05-proxy-taxonomy.md)** — forward proxy vs reverse proxy vs NAT
-  gateway vs load balancer vs L4 vs L7. Repo này xây một điểm cụ thể trong
-  không gian đó, và file này trả lời thẳng "cái nào, và vì sao".
-- **[`06-crypto-basics.md`](06-crypto-basics.md)** — mã hóa symmetric vs asymmetric, hashing,
-  HMAC, digital signature, certificate/PKI. Không phải cryptography như
-  một ngành học — chỉ đủ để handshake trong [`19-tls.md`](19-tls.md) và chữ ký trong
-  [`07-security/02-jwt.md`](../07-security/02-jwt.md) không còn là phép màu.
+- **[`05-proxy-taxonomy.md`](05-proxy-taxonomy.md)**: forward proxy, reverse proxy, NAT
+  gateway, load balancer, L4 và L7 khác nhau thế nào. Repo này xây một điểm cụ thể
+  trong không gian đó, và file này trả lời thẳng "là loại nào, và vì sao".
+- **[`06-crypto-basics.md`](06-crypto-basics.md)**: mã hóa symmetric và asymmetric,
+  hashing, HMAC, digital signature, certificate/PKI. Đây không phải cryptography như
+  một môn học. Nó chỉ đủ để handshake trong [`19-tls.md`](19-tls.md) và chữ ký trong
+  [`07-security/02-jwt.md`](../07-security/02-jwt.md) không còn là chuyện thần bí.
 
-Đọc chúng theo thứ tự đó một lần; sau đó, coi mỗi file là một điểm tra cứu
-độc lập.
+Hãy đọc theo đúng thứ tự trên một lần. Sau đó, coi mỗi file là một chỗ tra cứu độc
+lập.
 
-Sáu file này giải thích connection và packet *là gì*. Nhóm kế tiếp
-([`07-link-layer.md`](07-link-layer.md) đến [`10-packet-capture-and-tools.md`](10-packet-capture-and-tools.md)) đi xuống một tầng — packet
-di chuyển về mặt vật lý ra sao, và cách nhìn vào nó — còn
-[`21-life-of-a-request.md`](21-life-of-a-request.md) ở cuối thư mục kể lại toàn bộ stack như một request.
+Năm file này giải thích connection và packet *là gì*. Nhóm kế tiếp
+([`07-link-layer.md`](07-link-layer.md) đến
+[`10-packet-capture-and-tools.md`](10-packet-capture-and-tools.md)) đi xuống một tầng:
+packet di chuyển về mặt vật lý như thế nào, và làm sao để quan sát nó. Còn
+[`21-life-of-a-request.md`](21-life-of-a-request.md) ở cuối thư mục kể lại toàn bộ
+stack như hành trình của một request.
 
 ## Practice
-1. Chạy `ss -tlnp` (hoặc `netstat -tlnp`) trên máy của bạn và xác định mọi
-   listening port cùng process nào sở hữu nó — xác nhận bạn giải thích
-   được, với ít nhất ba trong số đó, vì sao chương trình đó chọn port đó.
-2. Chạy `curl -v http://example.com` và xác định, trong output, chỗ nào
-   TCP handshake diễn ra, chỗ nào HTTP request được gửi, và chỗ nào là
-   response header vs body — curl gắn nhãn từng giai đoạn.
-3. Đọc file 02–06 theo thứ tự, rồi quay lại đây và giải thích, mỗi
-   ý một câu: một socket là gì, vì sao TCP cảm giác giống một file, NAT
-   làm gì với source address, và [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) thuộc loại proxy
-   nào.
-4. Từ trí nhớ, vẽ stack năm layer và, với mỗi thứ sau, liệt kê header của layer nào
-   có mặt và thiết bị nào đọc sâu tới đâu: một ARP request, một `ping`, một DNS
-   query qua UDP, `curl http://example.com`. Đối chiếu với bảng ở trên.
-5. Bắt một lần `curl http://example.com` bằng `sudo tcpdump -i any -n -e -X port 80`
-   ([`10-packet-capture-and-tools.md`](10-packet-capture-and-tools.md) giải thích các flag) và chỉ ra Ethernet, IP và TCP
-   header cùng text HTTP trong hex dump, gọi tên layer của từng cái.
+1. Chạy `ss -tlnp` (hoặc `netstat -tlnp`) trên máy của bạn. Xác định từng listening
+   port và process sở hữu nó. Với ít nhất ba port, giải thích được vì sao chương
+   trình đó chọn port đó.
+2. Chạy `curl -v http://example.com`. Trong output, chỉ ra: chỗ nào TCP handshake diễn
+   ra, chỗ nào HTTP request được gửi, chỗ nào là response header và chỗ nào là body.
+   curl có gắn nhãn cho từng giai đoạn.
+3. Đọc các file 02–06 theo thứ tự, rồi quay lại đây. Giải thích mỗi ý bằng một câu:
+   socket là gì, vì sao TCP giống như đọc ghi một file, NAT làm gì với source address,
+   và [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) thuộc loại proxy nào.
+4. Không nhìn tài liệu, vẽ lại stack năm layer. Với mỗi trường hợp sau, liệt kê header
+   của layer nào có mặt, và thiết bị nào đọc sâu đến đâu: một ARP request, một `ping`,
+   một DNS query qua UDP, `curl http://example.com`. Sau đó đối chiếu với bảng ở trên.
+5. Bắt packet của một lần `curl http://example.com` bằng
+   `sudo tcpdump -i any -n -e -X port 80`
+   ([`10-packet-capture-and-tools.md`](10-packet-capture-and-tools.md) giải thích các
+   flag). Trong hex dump, chỉ ra Ethernet header, IP header, TCP header và phần text
+   HTTP, và gọi tên layer của từng phần.

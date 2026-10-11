@@ -64,9 +64,9 @@ Nhóm ngôn ngữ cốt lõi là nền cho [`04-runtime/`](../04-runtime). Ngữ
 [`05-async.md`](05-async.md) đặc biệt quay lại như một bug thật trong
 [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md) (một future bị drop làm bỏ qua một bước giảm
 counter) và trong [`08-observability/03-tracing.md`](../08-observability/03-tracing.md) (một span guard bị giữ
-qua `.await`); [`04-runtime/04-structured-concurrency.md`](../04-runtime/04-structured-concurrency.md) cho ý tưởng đó
-các API tokio thật (`JoinSet`, tính cancellation-safety của `select!`).
-Nhóm type-system và nhóm kỹ năng kỹ thuật systems feed trực tiếp vào
+qua `.await`); [`04-runtime/04-structured-concurrency.md`](../04-runtime/04-structured-concurrency.md) đưa ý tưởng đó
+vào các API tokio thật (`JoinSet`, tính cancellation-safety của `select!`).
+Nhóm type-system và nhóm kỹ năng kỹ thuật systems là đầu vào trực tiếp cho
 [`05-http-stack/`](../05-http-stack), [`06-proxy/`](../06-proxy), và [`09-architecture/`](../09-architecture) — [`07-traits-and-generics.md`](07-traits-and-generics.md)
 là nền cho mọi thiết kế pluggable-strategy (load balancer, plugin system),
 [`11-concurrency-patterns.md`](11-concurrency-patterns.md) là nền cho connection pool trong

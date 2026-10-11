@@ -7,8 +7,8 @@ Một `async fn` là cú pháp đường (sugar) cho một hàm trả về
 `impl Future<Output = T>`. `Future` có một method bắt buộc,
 `poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<T>`, trả về
 `Poll::Ready(value)` hoặc `Poll::Pending`. Không có gì chạy cho tới khi
-thứ gì đó gọi `poll` — một `Future` tự thân là một state machine trơ,
-không phải một đơn vị công việc đã được lên lịch. Đây là lý do vì sao thân
+thứ gì đó gọi `poll` — một `Future` tự thân là một state machine thụ động,
+không phải một đơn vị công việc đã được schedule. Đây là lý do vì sao thân
 của một hàm async không chạy chút nào cho tới khi nó được `.await` hoặc
 spawn.
 
@@ -34,8 +34,8 @@ Executor của tokio là cooperative: một task chạy cho tới khi nó trả 
 `Poll::Pending` (thường vì đang chờ I/O) hoặc hoàn tất — nó không bao giờ
 bị preempt giữa chừng một lần poll. Gọi một hàm *blocking* thật sự
 (`std::thread::sleep`, sync file I/O, một vòng lặp nặng CPU) bên trong một
-async fn làm nghẽn toàn bộ worker thread, starve mọi task khác được lên
-lịch trên nó. Đây là một trong những bug tokio thực tế phổ biến nhất trong
+async fn làm nghẽn toàn bộ worker thread, starve mọi task khác được schedule
+trên nó. Đây là một trong những bug tokio thực tế phổ biến nhất trong
 một proxy: một connection làm DNS hoặc disk I/O đồng bộ âm thầm làm nghẽn
 các connection không liên quan đang chia sẻ thread đó.
 

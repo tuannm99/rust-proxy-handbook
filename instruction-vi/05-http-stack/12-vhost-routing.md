@@ -122,30 +122,29 @@ Làm theo thứ tự này.
 
 1. Trong [`proxy`](../../proxy), thêm một vhost map key theo `Host` đã normalize (viết
    thường, bỏ dấu chấm cuối, bỏ port với IPv6 được xử lý riêng), load từ
-   config. **Xong khi** `EXAMPLE.com.`, `example.com:443`, và
+   config. **Done when** `EXAMPLE.com.`, `example.com:443`, và
    `example.com` đều resolve về cùng một tenant.
-2. Reject các host không khớp một cách tường minh. **Xong khi** một
+2. Reject các host không khớp một cách tường minh. **Done when** một
    request với `Host` không xác định nhận một response 404 hoặc
    catch-all và không bao giờ chạm tới backend của một tenant thật —
    xác minh bằng logging phía upstream, không chỉ góc nhìn của client.
-3. Thêm validate tính nhất quán `Host`/SNI. **Xong khi** một connection
+3. Thêm validate tính nhất quán `Host`/SNI. **Done when** một connection
    với `SNI: a.example.com` mang `Host: b.example.com` bị reject; dùng
    `openssl s_client -servername` để dựng nó.
 4. Thêm chọn certificate theo từng hostname qua một resolver rustls dựa
-   trên một map trong memory. **Xong khi** hai hostname trình bày certificate khác nhau trên cùng một listener, match chính xác thắng wildcard,
+   trên một map trong memory. **Done when** hai hostname trình bày certificate khác nhau trên cùng một listener, match chính xác thắng wildcard,
    và resolver không truy cập filesystem nào mỗi lần handshake.
 5. Export thời gian-tới-khi-hết-hạn theo từng certificate như một metric.
-   **Xong khi** một certificate expire trong 7 ngày thấy được mà không ai
+   **Done when** một certificate expire trong 7 ngày thấy được mà không ai
    phải tự kiểm tra.
 6. Thêm một test config-reload cho vhost map ([`labs/13-hot-reload`](../../labs/13-hot-reload)).
-   **Xong khi** swap map dưới tải đồng thời thay đổi routing cho request
+   **Done when** swap map dưới tải đồng thời thay đổi routing cho request
    mới mà không ảnh hưởng bất kỳ request nào đang bay.
 7. Thêm giới hạn concurrency và rate limit theo từng tenant, với tenant
-   là một nhãn trên metric và một thành phần của cache key. **Xong khi**
+   là một nhãn trên metric và một thành phần của cache key. **Done when**
    một tenant đẩy một load test tới bão hòa để lại p99 của tenant khác
    không đổi — đo cả hai, vì đó chính là mục đích.
 8. (Stretch) Implement passthrough nhìn-trộm-SNI: buffer ClientHello,
-   trích SNI, forward byte thô bao gồm cả những gì bạn đã buffer. **Xong
-   khi** một connection TLS terminate ở đúng backend mà proxy không bao
+   trích SNI, forward byte thô bao gồm cả những gì bạn đã buffer. **Done when** một connection TLS terminate ở đúng backend mà proxy không bao
    giờ giữ private key của nó, và một client bị treo giữa ClientHello bị
    timeout thay vì bị giữ mãi.

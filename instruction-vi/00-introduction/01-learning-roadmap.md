@@ -15,9 +15,7 @@ theo. Cách làm từng phase — và thực tế mất bao lâu — nằm trong
    trong Wireshark và giải thích chuyện gì đang xảy ra; giải thích được vì
    sao HTTP/2 chỉ cần một connection TCP trong khi HTTP/1.1 cần tới sáu. Nếu
    các thuật ngữ như "port," "packet," "handshake," hay "certificate" chưa
-   có nghĩa chính xác với bạn, bắt đầu từ [`01-network/01-fundamentals.md`](../01-network/01-fundamentals.md)
-   — đây là nhóm file duy nhất trong handbook được viết như một primer từ
-   con số 0, thay vì giả định một baseline có sẵn.
+   có nghĩa chính xác với bạn, bắt đầu từ [`01-network/01-fundamentals.md`](../01-network/01-fundamentals.md).
 2. **Linux** ([`02-linux/`](../02-linux)) — giải thích được sự khác nhau giữa
    level-triggered và edge-triggered epoll từ việc chính bạn đã tự dính bug
    EAGAIN ở chế độ edge-triggered trong bài tập raw-epoll ở

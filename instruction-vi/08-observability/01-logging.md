@@ -154,33 +154,33 @@ phần nhỏ xác định của phần còn lại.
 Xây dựng theo thứ tự sau.
 
 1. Trong [`proxy`](../../proxy), nối `tracing` + `tracing-subscriber` với formatter JSON
-   cấu hình được qua `RUST_LOG`. **Xong khi** một request phát ra một dòng
+   cấu hình được qua `RUST_LOG`. **Done when** một request phát ra một dòng
    JSON parse được chứa method, path, status, và latency.
 2. Thêm một span cho mỗi request mang `request_id`, gắn bằng
-   `.instrument()` thay vì `enter()`. **Xong khi** một load test với
+   `.instrument()` thay vì `enter()`. **Done when** một load test với
    request đồng thời cho thấy mọi dòng log mang *đúng* request ID — hãy
    xây dựng phiên bản `enter()`-xuyên-`await` trước và quan sát các ID lẫn
    lộn nhau dưới điều kiện đồng thời.
 3. Chấp nhận hoặc tự sinh `X-Request-Id`, validate giá trị do client cung
-   cấp. **Xong khi** một `X-Request-Id` 10 KB hoặc chứa newline bị từ chối
+   cấp. **Done when** một `X-Request-Id` 10 KB hoặc chứa newline bị từ chối
    hoặc thay thế, và một giá trị hợp lệ được forward nguyên vẹn lên
    upstream.
 4. Chuyển sang log field theo allowlist và bọc secret trong config bằng
-   một newtype redact. **Xong khi** một request có `Authorization`,
+   một newtype redact. **Done when** một request có `Authorization`,
    `Cookie`, và `?api_key=` tạo ra các dòng log không chứa bất kỳ cái nào
    trong số đó, và `{:?}` trên config in ra `[redacted]` cho các field bí
    mật.
 5. Thử log injection: gửi một `User-Agent` chứa newline và JSON giả mạo.
-   **Xong khi** output vẫn là đúng một bản ghi log hợp khuôn dạng cho mỗi
+   **Done when** output vẫn là đúng một bản ghi log hợp khuôn dạng cho mỗi
    request, với payload nằm gọn trong một string field.
 6. Chuyển sang `tracing_appender::non_blocking` và đếm số dòng bị drop.
-   **Xong khi** một load test nhắm vào một writer cố tình chậm cho thấy
+   **Done when** một load test nhắm vào một writer cố tình chậm cho thấy
    latency request không bị ảnh hưởng và bộ đếm drop khác 0, *nhìn thấy
    được*.
-7. Đo chi phí của chính việc logging. **Xong khi** bạn có p50/p99 latency
+7. Đo chi phí của chính việc logging. **Done when** bạn có p50/p99 latency
    request với logging bật hoàn toàn, sample, và tắt, theo
    [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md) — khoảng chênh lệch chính là ngân sách
    logging của bạn.
 8. Thêm sampling xác định cùng các quy tắc luôn-log cho mã 5xx và request
-   chậm. **Xong khi** cùng một request hoặc được log ở mọi hop hoặc không
+   chậm. **Done when** cùng một request hoặc được log ở mọi hop hoặc không
    ở đâu cả, và mọi lỗi trong một load test đều xuất hiện đầy đủ.

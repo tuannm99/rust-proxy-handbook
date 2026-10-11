@@ -153,36 +153,36 @@ drain hoàn thành, để các event của chính shutdown được bao gồm.
 Xây theo thứ tự.
 
 1. Đăng ký handler `SIGTERM` và `SIGINT` trong [`proxy`](../../proxy), với một tín hiệu
-   thứ hai ép thoát ngay lập tức. **Xong khi** `docker stop` kích hoạt
+   thứ hai ép thoát ngay lập tức. **Done when** `docker stop` kích hoạt
    dòng log drain — xác minh trong khi chạy như PID 1, vì đó là chỗ cái
    bẫy default-disposition sống.
 2. Cài đặt broadcast shutdown: dừng accept loop, rồi báo cho các task
    theo-từng-kết-nối ngừng tái sử dụng keep-alive và gửi
-   `Connection: close` / `GOAWAY`. **Xong khi** một client keep-alive
+   `Connection: close` / `GOAWAY`. **Done when** một client keep-alive
    đang idle được báo dừng thay vì phát hiện qua một reset.
 3. Thêm drain deadline có giới hạn với log các request bị cưỡng chế hủy.
-   **Xong khi** một upstream cố ý treo không ngăn cản việc thoát, và các
+   **Done when** một upstream cố ý treo không ngăn cản việc thoát, và các
    request bị hủy được nêu tên trong log.
 4. Load test trong khi gửi `SIGTERM` giữa test
-   ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)). **Xong khi** các request in-flight
+   ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)). **Done when** các request in-flight
    thấy zero connection reset. Vẫn kỳ vọng thấy lỗi từ các request *mới
    đến* ở giai đoạn này — đó là bước 5.
 5. Thêm pre-stop delay và chạy lại bước 4 đứng sau một load balancer (hoặc
-   một proxy thứ hai đóng vai một cái). **Xong khi** các lỗi
+   một proxy thứ hai đóng vai một cái). **Done when** các lỗi
    connection-refused còn sót từ bước 4 biến mất — đo cả hai lần chạy, vì
    đó chính là mấu chốt của khoảng chờ này.
-6. Xác minh phép tính. **Xong khi** pre-stop delay + drain deadline chứng
+6. Xác minh phép tính. **Done when** pre-stop delay + drain deadline chứng
    minh được là dưới grace period của orchestrator, và bạn đã test điều
    gì xảy ra khi *không phải vậy* (đặt grace period thấp và xem
    `SIGKILL` rơi vào giữa lúc drain) để bạn nhận ra failure đó.
-7. Thêm các chính sách close tường minh cho connection sống lâu. **Xong khi**
+7. Thêm các chính sách close tường minh cho connection sống lâu. **Done when**
    một WebSocket nhận một close frame 1001 và một lệnh gọi gRPC streaming
    nhận `UNAVAILABLE`, và cả hai client reconnect tới một instance khác
    mà không có lỗi hiển thị cho người dùng.
-8. Flush telemetry sau khi drain. **Xong khi** các dòng log và span từ
+8. Flush telemetry sau khi drain. **Done when** các dòng log và span từ
    các request hoàn thành trong lúc shutdown vẫn tới được backend của
    chúng, và các connection upstream trong pool được đóng sạch thay vì bị
    reset.
 9. Nếu bạn đã xây service discovery ([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)),
-   hủy đăng ký như bước drain đầu tiên. **Xong khi** metrics cho thấy tỷ
+   hủy đăng ký như bước drain đầu tiên. **Done when** metrics cho thấy tỷ
    lệ request vào giảm về không *trước khi* listener đóng.

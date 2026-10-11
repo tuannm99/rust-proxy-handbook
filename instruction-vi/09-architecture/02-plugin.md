@@ -161,32 +161,31 @@ plugin cụ thể mà không cần chia đôi config để tìm.
 Xây theo thứ tự.
 
 1. Trong [`labs/14-plugin`](../../labs/14-plugin), định nghĩa một trait `Module` và cài đặt hai
-   module (logging + rate limiting) đứng sau nó. **Xong khi** mỗi cái
+   module (logging + rate limiting) đứng sau nó. **Done when** mỗi cái
    được unit-test độc lập và không cái nào biết cái kia tồn tại.
-2. Xây stack từ config thay vì từ một type. **Xong khi** thay đổi thứ tự
+2. Xây stack từ config thay vì từ một type. **Done when** thay đổi thứ tự
    module trong một file TOML thay đổi thứ tự thực thi mà không cần
    rebuild, và các quy tắc thứ tự từ
    [`09-architecture/01-components.md`](01-components.md) được validate lúc load (từ chối một
    config đặt auth sau WAF).
-3. Đo chi phí của dynamic dispatch. **Xong khi** bạn có các con số chi phí
+3. Đo chi phí của dynamic dispatch. **Done when** bạn có các con số chi phí
    theo từng request cho một stack monomorphize so với
    `Vec<Arc<dyn Module>>` với `#[async_trait]` — và có thể nói liệu nó có
    quan trọng ở request rate mục tiêu của bạn không.
-4. Định nghĩa và ghi lại fail-open vs fail-closed theo từng module. **Xong
-   khi** một module WAF panic reject request và một module metrics panic
+4. Định nghĩa và ghi lại fail-open vs fail-closed theo từng module. **Done when** một module WAF panic reject request và một module metrics panic
    thì không — xác minh bằng các test cố ý panic từng cái.
-5. Cho plugin một view chỉ-đọc của context tin cậy. **Xong khi** một
+5. Cho plugin một view chỉ-đọc của context tin cậy. **Done when** một
    plugin cố ghi đè header identity đã thiết lập bởi auth không thể, và
    một test chứng minh điều đó.
-6. Thêm metrics và span đo thời gian theo từng plugin. **Xong khi** một
+6. Thêm metrics và span đo thời gian theo từng plugin. **Done when** một
    plugin cố ý chậm có thể nhận diện được theo tên chỉ từ dashboard.
 7. (Stretch) Load một module như một WASM guest với `wasmtime` — bắt đầu
-   với việc mutate header. **Xong khi** nó chạy được end-to-end và bạn đã
+   với việc mutate header. **Done when** nó chạy được end-to-end và bạn đã
    đo được latency thêm vào theo từng request so với phiên bản đã compile.
 8. Thêm fuel hoặc epoch interruption cộng với giới hạn bộ nhớ vào WASM
-   host. **Xong khi** một guest chứa `loop {}` trap và trả về response
+   host. **Done when** một guest chứa `loop {}` trap và trả về response
    thất bại đã cấu hình của bạn, trong khi các request đồng thời khác
    không thấy ảnh hưởng latency — đây là test chứng minh sandbox là thật.
-9. So sánh phần plumbing. **Xong khi** bạn có thể nói ra bao nhiêu dòng
+9. So sánh phần plumbing. **Done when** bạn có thể nói ra bao nhiêu dòng
    host function và serialization phiên bản WASM cần so với `Module` đã
    compile, cho cùng một hành vi.

@@ -30,9 +30,8 @@ Two ways to use it, depending on where you're starting from:
 ## Files
 
 **Fundamentals** (start here if "port," "packet," "handshake," "NAT," or
-"certificate" don't already have a precise meaning — the one group in
-this directory written as a from-scratch primer rather than assuming a
-baseline; every file below assumes what these cover):
+"certificate" don't already have a precise meaning — every file below builds
+on what these cover):
 - [`01-fundamentals.md`](01-fundamentals.md) — the client-server model, and an index to the five files below
 - [`02-addressing.md`](02-addressing.md) — IP addresses, ports, CIDR notation, NAT (SNAT/DNAT/CGNAT), routing basics
 - [`03-byte-streams.md`](03-byte-streams.md) — the byte-stream illusion, packets/segments/datagrams, TCP vs UDP, handshakes as a pattern

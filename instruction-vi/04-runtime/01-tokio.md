@@ -14,11 +14,10 @@ fd đó và gọi `.wake()`. Reactor không chạy code của bạn — nó ch�
 
 ### Executor & work-stealing scheduler
 Executor multi-threaded của tokio chạy N worker thread, mỗi thread có
-một run queue cục bộ, cộng một global injection queue. Worker rảnh rỗi ăn
-cắp task từ queue của worker bận thay vì block, giữ CPU bận rộn mà không
+một run queue cục bộ, cộng một global injection queue. Worker rảnh sẽ steal task từ queue của worker bận thay vì block, giữ CPU bận rộn mà không
 cần một lock trung tâm cho mỗi lần schedule. `tokio::spawn` đặt một task
 vào local queue của worker hiện tại; rẻ, nhưng nghĩa là một đợt spawn dồn
-dập từ một connection có thể làm đói các worker khác cho tới lần ăn cắp tiếp
+dập từ một connection có thể làm đói các worker khác cho tới lần steal kế tiếp
 theo.
 
 ```rust

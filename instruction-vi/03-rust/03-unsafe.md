@@ -2,9 +2,9 @@
 
 ## What to learn
 
-### `unsafe` thực sự unlock cái gì
-`unsafe` không tắt borrow checker hay type checker — nó unlock đúng năm
-khả năng bổ sung: dereference raw pointer, gọi các `unsafe` fn (bao gồm
+### `unsafe` thực sự mở ra những gì
+`unsafe` không tắt borrow checker hay type checker — nó chỉ mở thêm đúng năm
+khả năng: dereference raw pointer, gọi các `unsafe` fn (bao gồm
 FFI), implement các `unsafe` trait, mutate một `static`, và truy cập field
 của union. Mọi quy tắc khác của Rust vẫn áp dụng bên trong một block
 `unsafe`. Viết `unsafe` là một lời hứa với compiler rằng *chính bạn* đã tự

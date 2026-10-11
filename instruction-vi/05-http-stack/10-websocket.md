@@ -119,30 +119,30 @@ Làm theo thứ tự này.
 
 1. Trong [`labs/02-http-server`](../../labs/02-http-server), implement upgrade handshake bằng tay —
    validate `Sec-WebSocket-Version`, tính `Sec-WebSocket-Accept`, không
-   dùng crate WebSocket nào. **Xong khi** một browser thật hoặc client
+   dùng crate WebSocket nào. **Done when** một browser thật hoặc client
    `websocat` hoàn thành handshake với nó.
 2. Thêm validate `Origin` với một allowlist, cùng một chính sách tường
-   minh cho `Origin` bị thiếu. **Xong khi** một handshake từ một origin
+   minh cho `Origin` bị thiếu. **Done when** một handshake từ một origin
    không được phép bị reject ngay lúc `101` — viết một trang HTML ở một
    origin khác mở một socket tới server của bạn và xác nhận nó fail.
 3. Chiếm lấy luồng đã upgrade thô và echo lại frame text, parse vừa đủ
-   để unmask và re-frame. **Xong khi** một client round-trip được cả
+   để unmask và re-frame. **Done when** một client round-trip được cả
    message text lẫn binary, và một frame khai một payload length phi lý
    bị reject mà không allocate.
 4. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), thêm pass-through proxying: forward
    handshake (sinh lại header hop-by-hop), rồi relay bằng
-   `tokio::io::copy_bidirectional`. **Xong khi** một WebSocket end-to-end
+   `tokio::io::copy_bidirectional`. **Done when** một WebSocket end-to-end
    hoạt động qua proxy.
-5. Audit timeout của bạn. **Xong khi** một WebSocket rảnh sống lâu hơn
+5. Audit timeout của bạn. **Done when** một WebSocket rảnh sống lâu hơn
    hẳn read timeout của request và tổng request timeout — set cả hai
    thành 10 giây có chủ đích và xác nhận một socket rảnh 5 phút vẫn sống,
    sau khi trước đó đã xác nhận nó *chết* khi chưa sửa.
 6. Thêm ping/pong với một deadline cho pong và một metric pong-bị-lỡ.
-   **Xong khi** một peer ngừng trả lời ping bị đóng trong deadline và lần
+   **Done when** một peer ngừng trả lời ping bị đóng trong deadline và lần
    đóng đó được đếm.
 7. Thêm một test backpressure: writer upstream nhanh, reader client cố
-   tình chậm. **Xong khi** memory của proxy phẳng suốt thời gian đó thay
+   tình chậm. **Done when** memory của proxy phẳng suốt thời gian đó thay
    vì tăng theo backlog.
 8. Giới hạn số connection đã upgrade đồng thời, cả toàn cục lẫn theo từng
-   client. **Xong khi** một client mở connection trong vòng lặp bị từ
+   client. **Done when** một client mở connection trong vòng lặp bị từ
    chối khi vượt giới hạn và traffic HTTP bình thường không bị ảnh hưởng.

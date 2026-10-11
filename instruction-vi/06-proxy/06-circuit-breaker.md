@@ -110,24 +110,24 @@ chọn upstream của retry phải bỏ qua các host có circuit mở thay vì 
 Xây theo thứ tự.
 
 1. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), cài đặt `CircuitState` theo từng
-   upstream với một trigger fail-liên-tiếp. **Xong khi** log cho thấy
+   upstream với một trigger fail-liên-tiếp. **Done when** log cho thấy
    `Closed -> Open -> HalfOpen -> Closed` với một upstream bạn kill rồi
    restart.
-2. Chỉ ra cú trip sai ở traffic thấp. **Xong khi** một upstream nhận một
+2. Chỉ ra cú trip sai ở traffic thấp. **Done when** một upstream nhận một
    request mỗi phút mở circuit ở ba lần fail rải rác — rồi chuyển sang
    một trigger dựa trên tỷ lệ với một số request tối thiểu và xác nhận nó
    không còn xảy ra.
-3. Loại 4xx khỏi số đếm failure và bao gồm timeout. **Xong khi** 1000
+3. Loại 4xx khỏi số đếm failure và bao gồm timeout. **Done when** 1000
    request tới một path không tồn tại để circuit đóng, và một upstream
    chấp nhận connection nhưng không bao giờ phản hồi mở nó.
-4. Gate `HalfOpen` chỉ một lệnh gọi thử nghiệm. **Xong khi** một load test
+4. Gate `HalfOpen` chỉ một lệnh gọi thử nghiệm. **Done when** một load test
    đồng thời tại thời điểm circuit half-open cho thấy đúng một request
    chạm tới upstream.
 5. Yêu cầu vài lần thành công liên tiếp để đóng, và backoff thời lượng
-   open trên các lần fail lặp lại. **Xong khi** một upstream hỏng 50% ổn
+   open trên các lần fail lặp lại. **Done when** một upstream hỏng 50% ổn
    định ở trạng thái open thay vì flap.
-6. Làm cho retry nhận biết circuit. **Xong khi** một retry bỏ qua các
+6. Làm cho retry nhận biết circuit. **Done when** một retry bỏ qua các
    host có circuit mở thay vì đếm chúng là một failure khác.
-7. Quyết định và cài đặt chính sách tất-cả-circuit-mở. **Xong khi** kill
+7. Quyết định và cài đặt chính sách tất-cả-circuit-mở. **Done when** kill
    mọi upstream tạo ra hành vi bạn đã chọn có chủ đích — fail fast, hoặc
    cứ thử dù sao — thay vì bất cứ điều gì rơi ra tình cờ.

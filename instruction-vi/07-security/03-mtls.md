@@ -71,17 +71,16 @@ set nó.
 Làm lần lượt theo thứ tự sau.
 
 1. Cấu hình TLS listener của [`proxy`](../../proxy) ([`01-network/19-tls.md`](../01-network/19-tls.md)) để yêu cầu và
-   xác minh client certificate cho một route, dùng `tokio-rustls`. **Xong
-   khi** một client không có cert bị từ chối ngay tại handshake, trước khi
+   xác minh client certificate cho một route, dùng `tokio-rustls`. **Done when** một client không có cert bị từ chối ngay tại handshake, trước khi
    bất kỳ request nào được parse.
-2. Pin vào một SAN cụ thể. **Xong khi** một certificate do đúng CA phát
+2. Pin vào một SAN cụ thể. **Done when** một certificate do đúng CA phát
    hành nhưng mang sai SAN bị từ chối — bài test chứng minh rằng chỉ tin
    CA thôi là chưa bao giờ đủ.
 3. Export thời gian còn lại tới khi expire của từng certificate như một
-   metric. **Xong khi** một cert còn 7 ngày là expire hiện rõ trên
+   metric. **Done when** một cert còn 7 ngày là expire hiện rõ trên
    dashboard mà không cần ai kiểm tra thủ công.
 4. Set identity của client cert thành một header sau khi loại bỏ bất kỳ
-   bản sao inbound nào. **Xong khi** một client gửi một identity header giả
+   bản sao inbound nào. **Done when** một client gửi một identity header giả
    mạo kèm theo một cert hợp lệ chỉ khiến upstream nhận được giá trị lấy từ
    cert.
 5. (Mở rộng) Phát hành cert sống ngắn (1 giờ) với renew tự động và xác nhận

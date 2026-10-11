@@ -14,9 +14,7 @@ How to work each phase — and how long it realistically takes — is in
    Wireshark and explain what's happening; explain why HTTP/2 needs one TCP
    connection where HTTP/1.1 needed six. If terms like "port," "packet,"
    "handshake," or "certificate" don't already have a precise meaning,
-   start with [`01-network/01-fundamentals.md`](../01-network/01-fundamentals.md) — it's the one group of
-   files in this handbook written as a from-scratch primer rather than
-   assuming a baseline.
+   start with [`01-network/01-fundamentals.md`](../01-network/01-fundamentals.md).
 2. **Linux** ([`02-linux/`](../02-linux)) — explain the difference between level-triggered
    and edge-triggered epoll from having hit the edge-triggered EAGAIN bug
    yourself in the raw-epoll exercise in [`02-linux/14-epoll.md`](../02-linux/14-epoll.md). Same note

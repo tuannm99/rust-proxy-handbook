@@ -141,7 +141,7 @@ không có một flamegraph ([`08-observability/04-profiling.md`](04-profiling.m
 Prometheus pull (scrape `/metrics` theo chu kỳ); metrics của OTel có thể
 push tới một collector, sau đó collector export sang Prometheus/Datadog/v.v.
 Một proxy thường expose một endpoint `/metrics` để scrape — đơn giản,
-không thêm phụ thuộc mạng, và nó sống sót khi proxy tạm thời không connection
+không thêm phụ thuộc mạng, và nó sống sót khi proxy tạm thời không connect
 được từ collector (dữ liệu chỉ bị bỏ lỡ, không bị queue rồi mất).
 
 Gotcha: expose `/metrics` trên một **listener riêng** tách khỏi traffic
@@ -162,31 +162,31 @@ metrics. Hãy theo dõi thời gian scrape như một metric riêng của nó.
 Xây dựng theo thứ tự sau.
 
 1. Trong [`labs/15-prometheus`](../../labs/15-prometheus), expose `/metrics` bằng `TextEncoder` của
-   crate `prometheus` và tự tay scrape nó. **Xong khi** `curl` trả về một
+   crate `prometheus` và tự tay scrape nó. **Done when** `curl` trả về một
    response đúng định dạng exposition.
 2. Thêm metrics RED phía client vào [`proxy`](../../proxy) trên một listener nội bộ
-   riêng. **Xong khi** `/metrics` không truy cập được từ listener công
+   riêng. **Done when** `/metrics` không truy cập được từ listener công
    khai và vẫn được phục vụ khi listener chính đang bão hòa.
 3. Thêm RED theo từng upstream, keyed theo *tên* upstream, cộng với các tín
    hiệu đặc thù của proxy (độ bão hòa pool, tỉ lệ retry, số lượng healthy,
-   tỉ lệ cache hit, số lượng bị shed). **Xong khi** bạn có thể trả lời
+   tỉ lệ cache hit, số lượng bị shed). **Done when** bạn có thể trả lời
    "latency này là của mình hay của upstream" chỉ từ dashboard.
 4. Chọn bucket histogram cho khoảng latency thực tế của bạn với một ranh
-   giới ngay ngưỡng SLO. **Xong khi** p50/p99 tính từ bucket khớp với một
+   giới ngay ngưỡng SLO. **Done when** p50/p99 tính từ bucket khớp với một
    phép đo trực tiếp (so với latency ghi lại bởi load generator của bạn)
    trong phạm vi một độ rộng bucket — với bucket mặc định trước, để bạn
    thấy chúng lệch nhau.
-5. Aggregate đúng cách qua nhiều instance. **Xong khi** chạy ba instance
+5. Aggregate đúng cách qua nhiều instance. **Done when** chạy ba instance
    proxy và tính p99 của cả fleet bằng `histogram_quantile(sum by (le)
    ...)` cho ra một con số bảo vệ được — và bạn cũng đã tính trung bình
    của các p99 từng instance và có thể nói nó lệch bao xa.
 6. Cố tình thêm một label raw-path, chạy load test, và quan sát số lượng
-   series tăng lên. **Xong khi** bạn đã thấy nó leo lên hàng nghìn, rồi sửa
+   series tăng lên. **Done when** bạn đã thấy nó leo lên hàng nghìn, rồi sửa
    nó bằng route templating và xác nhận nó bị giới hạn bởi kích thước
    route table.
 7. Pre-resolve các handle label trên hot path và profile
-   ([`08-observability/04-profiling.md`](04-profiling.md)). **Xong khi** bạn có thể nói chi
+   ([`08-observability/04-profiling.md`](04-profiling.md)). **Done when** bạn có thể nói chi
    phí CPU của metrics dưới dạng phần trăm, trước và sau.
 8. Theo dõi thời gian render `/metrics` như một metric riêng của nó.
-   **Xong khi** bạn biết một lần scrape mất bao lâu ở số lượng series hiện
+   **Done when** bạn biết một lần scrape mất bao lâu ở số lượng series hiện
    tại và điều đó so với chu kỳ scrape của bạn thế nào.

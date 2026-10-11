@@ -142,35 +142,35 @@ khẳng định cả ba đều bằng không xuyên suốt quá trình chuyển 
 Xây theo thứ tự.
 
 1. Cài đặt helper bind `SO_REUSEPORT` trong [`proxy`](../../proxy) và chạy hai instance
-   trên một port. **Xong khi** log theo-từng-instance cho thấy kernel
+   trên một port. **Done when** log theo-từng-instance cho thấy kernel
    phân phối connection mới trên cả hai.
 2. Thêm một kiểm tra readiness process mới phải vượt qua — config đã
    parse, cert đã load, một chu kỳ health-check đầy đủ hoàn thành, vài
-   connection upstream trong pool đã mở. **Xong khi** một process với config
+   connection upstream trong pool đã mở. **Done when** một process với config
    hỏng hoặc upstream không tới được không bao giờ báo cáo sẵn sàng.
 3. Viết script restart: khởi động cái mới, chờ readiness, `SIGTERM` cái
    cũ (tái sử dụng drain từ [`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)),
-   xác nhận nó thoát sau khi drain. **Xong khi** một binary mới tồi để
+   xác nhận nó thoát sau khi drain. **Done when** một binary mới tồi để
    lại cái cũ vẫn phục vụ, không bị đụng tới.
 4. Làm cho process đang drain tiếp tục accept các connection đã queue sẵn
-   trước khi đóng listener. **Xong khi** một load test ở connection rate
+   trước khi đóng listener. **Done when** một load test ở connection rate
    cao xuyên qua quá trình chuyển giao cho thấy zero reset — chạy nó
    không có bước này trước và đếm chúng, vì chúng vô hình trừ khi bạn tìm.
 5. Load test xuyên qua một lần restart, đo lỗi ở cấp connection riêng biệt
-   ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)). **Xong khi** connection refusal,
+   ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)). **Done when** connection refusal,
    reset, và non-2xx đều bằng không xuyên suốt quá trình chuyển giao.
-6. Đo chi phí mất state. **Xong khi** bạn có một biểu đồ tỷ lệ request tới
+6. Đo chi phí mất state. **Done when** bạn có một biểu đồ tỷ lệ request tới
    origin (cache miss), p99 latency (pool nguội), và tỷ lệ lỗi upstream
    (circuit breaker reset) xuyên qua một lần restart — và đã quyết định
    cái nào bạn sẽ giảm nhẹ.
 7. (Stretch) Cài đặt chuyển giao fd qua `SCM_RIGHTS` hoặc thừa kế `exec`,
-   bao gồm xóa `FD_CLOEXEC`. **Xong khi** process mới accept trên đúng
+   bao gồm xóa `FD_CLOEXEC`. **Done when** process mới accept trên đúng
    socket đó với không cửa sổ chồng lấn nào — xác minh bằng `ss -tlnp`
    rằng chỉ một process sở hữu listener tại bất kỳ thời điểm nào.
 8. (Stretch) Thêm đường rollback: nếu process mới fail readiness sau khi
-   tiếp quản, tín hiệu nó thoát và để cái cũ tiếp tục. **Xong khi** một
+   tiếp quản, tín hiệu nó thoát và để cái cũ tiếp tục. **Done when** một
    lần nâng cấp cố ý hỏng tự động rollback với zero connection bị rớt.
 9. Tùy chọn: viết một cặp `.socket` + `.service` của systemd và so sánh.
-   **Xong khi** `systemctl restart` đạt cùng kết quả zero-dropped mà
+   **Done when** `systemctl restart` đạt cùng kết quả zero-dropped mà
    không cần bất kỳ code nào ở trên — và bạn đã đo thời gian khởi động
    của mình so với độ sâu backlog để biết giới hạn của cách tiếp cận đó.

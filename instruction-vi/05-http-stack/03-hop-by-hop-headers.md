@@ -101,21 +101,20 @@ Làm theo thứ tự này.
 
 1. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), implement việc strip hop-by-hop bao gồm
    cả các header được `Connection` nêu tên, như một stage ở đầu pipeline.
-   **Xong khi** một request với `Connection: X-Secret` và một header
+   **Done when** một request với `Connection: X-Secret` và một header
    `X-Secret` tới upstream mà không còn cả hai.
-2. Sinh lại framing khi forward. **Xong khi** request mà proxy của bạn
+2. Sinh lại framing khi forward. **Done when** request mà proxy của bạn
    phát ra mang `Content-Length`/`Transfer-Encoding` mà nó tự tính từ body
    nó thực sự đang gửi — xác minh bằng cách kiểm tra raw byte, không phải
    đọc code.
-3. Thử cuộc tấn công strip. **Xong khi** `Connection: Authorization` từ
+3. Thử cuộc tấn công strip. **Done when** `Connection: Authorization` từ
    một client không xóa được header identity mà proxy của bạn thêm vào,
    vì header của bạn được áp sau khi strip.
-4. Thêm việc strip identity và forwarded-for vào cùng một stage. **Xong
-   khi** một `X-User-Id` giả mạo biến mất trên mọi đường đi — bao gồm cả
+4. Thêm việc strip identity và forwarded-for vào cùng một stage. **Done when** một `X-User-Id` giả mạo biến mất trên mọi đường đi — bao gồm cả
    route `Public` và đường 404.
-5. Thêm lại header upgrade cho leg upstream. **Xong khi** một WebSocket
+5. Thêm lại header upgrade cho leg upstream. **Done when** một WebSocket
    vẫn hoạt động end-to-end sau bước 1 — đây là regression mà việc strip
    hop-by-hop kinh điển gây ra.
 6. Fuzz header `Connection` ([`12-testing/02-fuzzing.md`](../12-testing/02-fuzzing.md)) với nhiều entry,
-   entry rỗng, và tên dị dạng. **Xong khi** không có cái nào panic hay gây
+   entry rỗng, và tên dị dạng. **Done when** không có cái nào panic hay gây
    ra khối lượng công việc không giới hạn.

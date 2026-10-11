@@ -213,31 +213,30 @@ Xây dựng theo thứ tự sau.
 
 1. Trong [`labs/16-opentelemetry`](../../labs/16-opentelemetry), ghép `tracing-opentelemetry` cùng một
    OTLP exporter phát ra một span tới một collector local (Jaeger là đủ).
-   **Xong khi** span đó xuất hiện trong UI.
+   **Done when** span đó xuất hiện trong UI.
 2. Cố tình tái tạo bug `enter()`-xuyên-`.await` trong [`proxy`](../../proxy): instrument
    một request handler với một guard được giữ và chạy các request đồng
-   thời. **Xong khi** bạn thấy được các span lồng dưới sai parent — rồi
+   thời. **Done when** bạn thấy được các span lồng dưới sai parent — rồi
    chuyển sang `.instrument()` / `#[instrument]`, bật
    `clippy::await_holding_span_guard`, và xác nhận cây trace đúng.
-3. Trích xuất và propagate `traceparent` với validate nghiêm ngặt. **Xong
-   khi** một header sai định dạng (sai số field, không phải hex, trace ID
+3. Trích xuất và propagate `traceparent` với validate nghiêm ngặt. **Done when** một header sai định dạng (sai số field, không phải hex, trace ID
    toàn 0) bị từ chối và thay thế thay vì panic hay được propagate, và một
    cái hợp lệ tạo ra đúng quan hệ parent/child.
 4. Chạy proxy trước hai instance nối tiếp của [`labs/02-http-server`](../../labs/02-http-server) và
-   kiểm chứng end-to-end. **Xong khi** một trace ID duy nhất nối các span
+   kiểm chứng end-to-end. **Done when** một trace ID duy nhất nối các span
    từ cả ba process trong UI.
 5. Thêm attribute quyết định của proxy và các span con theo giai đoạn.
-   **Xong khi** một trace duy nhất cho thấy thời gian lấy connection tách
+   **Done when** một trace duy nhất cho thấy thời gian lấy connection tách
    biệt với thời gian phản hồi upstream, cộng với tên upstream, số lần
    retry, và kết quả cache.
-6. Thêm head-based sampling tôn trọng flag sampled đến. **Xong khi** quyết
+6. Thêm head-based sampling tôn trọng flag sampled đến. **Done when** quyết
    định propagate qua cả ba hop — xác nhận trace không bao giờ bị sample
    một phần — và một client không đáng tin không thể ép 100% sampling.
-7. Cố tình phá vỡ việc propagate ở một hop. **Xong khi** bạn đã thấy trace
+7. Cố tình phá vỡ việc propagate ở một hop. **Done when** bạn đã thấy trace
    bị vỡ vụn trong UI, vì đó chính là hình dạng của bug này trong
    production.
-8. Kill collector giữa lúc load test. **Xong khi** proxy vẫn phục vụ với
+8. Kill collector giữa lúc load test. **Done when** proxy vẫn phục vụ với
    latency không đổi, bộ nhớ giữ nguyên, và một bộ đếm span-bị-drop tăng
    lên — rồi khởi động lại nó và xác nhận việc export tiếp tục.
-9. Nối flush của exporter vào shutdown. **Xong khi** các span từ những
+9. Nối flush của exporter vào shutdown. **Done when** các span từ những
    request hoàn tất ngay trước `SIGTERM` vẫn tới được collector.

@@ -39,9 +39,9 @@ tiên quyết.
 ### Niche optimization: vì sao `Option<&T>` cùng kích thước với `&T`
 Compiler tận dụng các bit pattern không hợp lệ của một type — một
 reference không bao giờ có thể null — để biểu diễn `None` bằng chính bit
-pattern-không-thể-có đó, nên `Option<&T>`, `Option<Box<T>>`, và
+pattern không thể có đó, nên `Option<&T>`, `Option<Box<T>>`, và
 `Option<NonZeroU32>` đều không tốn thêm byte nào so với type không-Option.
-Đây là một tối ưu hóa có tính load-bearing, không phải một điều thú vị:
+Đây là một tối ưu hóa có tác dụng thật, không phải chuyện vặt:
 đó là lý do cụ thể vì sao Rust idiomatic dùng `Option<NonZeroU32>` thay vì
 `Option<u32>` cho một id không bao giờ hợp lệ là số không.
 

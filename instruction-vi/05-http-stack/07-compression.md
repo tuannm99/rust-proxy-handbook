@@ -102,31 +102,30 @@ kiểm tra WAF ([`07-security/06-waf.md`](../07-security/06-waf.md)).
 Làm theo thứ tự này.
 
 1. Trong [`labs/02-http-server`](../../labs/02-http-server), thêm nén response gzip có điều kiện theo
-   `Accept-Encoding`, set `Content-Encoding` và `Vary`. **Xong khi** một
+   `Accept-Encoding`, set `Content-Encoding` và `Vary`. **Done when** một
    client gửi `Accept-Encoding: gzip` nhận một body đã nén mà
    `curl --compressed` decode đúng, và một client gửi không có gì nhận
    plaintext.
-2. Làm nó streaming và bỏ `Content-Length` để chuyển sang chunked. **Xong
-   khi** memory phẳng khi serve một body 1 GB, và response không mang
+2. Làm nó streaming và bỏ `Content-Length` để chuyển sang chunked. **Done when** memory phẳng khi serve một body 1 GB, và response không mang
    `Content-Length` đã cũ — kiểm tra raw byte bằng `curl --raw` để xác
    nhận, vì đây là nơi smuggling vô tình bắt nguồn.
-3. Thêm gate theo content-type và kích thước tối thiểu. **Xong khi** một
+3. Thêm gate theo content-type và kích thước tối thiểu. **Done when** một
    response JSON 50 byte và một JPEG đều trả về không nén trong khi HTML
    thì có, và bạn đã đo được rằng nén JPEG chỉ lợi dưới 1%.
 4. Thêm brotli và zstd với negotiation q-value đầy đủ, bao gồm `q=0` và
-   `*`. **Xong khi** `gzip;q=0, br` chọn brotli, `*;q=0` được xử lý có chủ
+   `*`. **Done when** `gzip;q=0, br` chọn brotli, `*;q=0` được xử lý có chủ
    đích, và logic chọn của bạn có một test cho mỗi trường hợp biên.
-5. Đo chi phí CPU. **Xong khi** bạn có số throughput ở brotli quality 4 so
+5. Đo chi phí CPU. **Done when** bạn có số throughput ở brotli quality 4 so
    với 11 dưới tải ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)) và có thể nói rõ tỉ
    lệ đạt được so với CPU bỏ ra.
 6. Cache byte đã nén cho response cacheable
-   ([`05-http-stack/08-cache.md`](08-cache.md)). **Xong khi** request lặp lại cho cùng
+   ([`05-http-stack/08-cache.md`](08-cache.md)). **Done when** request lặp lại cho cùng
    resource nén zero lần.
 7. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), xử lý một response upstream đã nén sẵn.
-   **Xong khi** một body upstream gzip được pass qua nguyên vẹn cho một
+   **Done when** một body upstream gzip được pass qua nguyên vẹn cho một
    client chấp nhận gzip, và được transcode đúng một lần cho một client
    chỉ chấp nhận brotli — với một bước giải nén có giới hạn.
 8. (Stretch) Chứng minh BREACH trên một endpoint đồ chơi phản chiếu một
-   query parameter cạnh một bí mật, đã nén. **Xong khi** bạn có thể khôi
+   query parameter cạnh một bí mật, đã nén. **Done when** bạn có thể khôi
    phục bí mật chỉ từ độ dài response — rồi thêm việc tắt compression
    theo route và xác nhận tín hiệu biến mất.

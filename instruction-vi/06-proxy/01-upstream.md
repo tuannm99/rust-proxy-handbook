@@ -163,26 +163,25 @@ Xây theo thứ tự — tiêu chí hoàn thành của mỗi bước là thứ l
 theo có ý nghĩa.
 
 1. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), định nghĩa `Upstream`/`UpstreamPool` như
-   trên với 2-3 địa chỉ tĩnh hardcode. **Xong khi** một request được
+   trên với 2-3 địa chỉ tĩnh hardcode. **Done when** một request được
    forward tới một trong số chúng và response tới client không đổi.
-2. Thêm `active_conns` với một `ConnGuard` kiểu RAII. **Xong khi** một test
+2. Thêm `active_conns` với một `ConnGuard` kiểu RAII. **Done when** một test
    cancel 1000 request giữa chừng (drop future của client, hoặc kill
    client) để lại `active_conns` đúng bằng 0 sau đó — viết phiên bản
    `fetch_sub`-sau-await ngây thơ trước và xem nó kết thúc ở một số khác 0,
    để bạn thấy bug trước khi sửa nó.
-3. Nối connection reuse qua `hyper_util::client::legacy::Client`. **Xong
-   khi** log (hoặc `ss -tan` nhắm vào upstream) cho thấy request thứ hai
+3. Nối connection reuse qua `hyper_util::client::legacy::Client`. **Done when** log (hoặc `ss -tan` nhắm vào upstream) cho thấy request thứ hai
    tái sử dụng một connection thay vì mở mới.
 4. Đặt idle timeout của pool có chủ đích *dài hơn* keep-alive timeout của
-   một upstream giả, rồi chạy traffic ngắt quãng. **Xong khi** bạn có thể
+   một upstream giả, rồi chạy traffic ngắt quãng. **Done when** bạn có thể
    tái tạo lỗi connection-chết-trong-pool theo yêu cầu; rồi sửa nó theo cả hai
    cách (idle timeout ngắn hơn, cộng với retry-một-lần-trên-kết-nối-mới) và
    xác nhận nó biến mất.
-5. Thêm ba loại timeout như các giá trị riêng biệt. **Xong khi** một
+5. Thêm ba loại timeout như các giá trị riêng biệt. **Done when** một
    upstream accept rồi treo mãi mãi bị fail bởi read timeout, và một
    upstream slow-drip một byte mỗi giây bị fail bởi total timeout — còn một
    lượt tải streaming 100 MB hợp lệ thì *không* bị fail bởi cái nào cả.
-6. Mô phỏng một upstream bị sập (kill backend). **Xong khi** pool đánh dấu
+6. Mô phỏng một upstream bị sập (kill backend). **Done when** pool đánh dấu
    nó unhealthy và không thread request nào bị block trên nó — đo p99
    latency trong lúc kill và xác nhận nó không tăng vọt quá connect
    timeout của bạn.
