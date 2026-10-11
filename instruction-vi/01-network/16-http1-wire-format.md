@@ -78,8 +78,8 @@ HTTP-version = "HTTP" "/" DIGIT "." DIGIT
   `get` không phải `GET`, nó là một method lạ. Server không implement một
   method thì trả `501 Not Implemented`.
 - **Phân cách** là đúng một `SP` mỗi chỗ. RFC 9112 §3 cho phép bên nhận
-  *tùy chọn* tách theo bất kỳ chuỗi khoảng trắng nào (SP, HTAB, VT, FF, CR
-  trơ), và ngay trong đoạn đó cảnh báo rằng sự dễ dãi này gây ra
+  *tùy chọn* tách theo bất kỳ chuỗi khoảng trắng nào (SP, HTAB, VT, FF, bare CR),
+  và ngay trong đoạn đó cảnh báo rằng sự dễ dãi này gây ra
   smuggling. Làm chặt chỗ này không làm bạn mất gì với client thật.
 - **Version** đúng nguyên văn là `HTTP/`, một chữ số, `.`, một chữ số, và
   `HTTP` phân biệt hoa thường. `HTTP/1.1` và `HTTP/1.0` là thứ bạn sẽ gặp.
@@ -134,7 +134,7 @@ Các luật, tất cả từ RFC 9112 §5 và RFC 9110 §5:
   phải reject hoặc thay từng byte đó bằng `SP` (RFC 9110 §5.5). Reject là
   lựa chọn an toàn: một CR lạc chỗ là đường cho response splitting và
   header injection lọt vào.
-- **Một CR trơ** ở bất kỳ đâu ngoài body (CR không có LF theo sau) là
+- **Một bare CR** ở bất kỳ đâu ngoài body (CR không có LF theo sau) là
   không hợp lệ, cùng luật reject-hoặc-thay (§2.2).
 - **Tên không phân biệt hoa thường, và chỉ là ASCII.** `content-length`,
   `Content-Length` và `CONTENT-LENGTH` là cùng một field.
@@ -159,7 +159,7 @@ quyết định framing hay routing chính là những field bạn phải làm c
 phẩy được, vì ngày tháng trong cookie có chứa dấu phẩy. Field này chỉ xuất
 hiện trong response.
 
-### Obsolete line folding và LF trơ: hai quyết định của bạn
+### Obsolete line folding và bare LF: hai quyết định của bạn
 Hai dạng cũ vẫn còn trong grammar vì lý do tương thích, và lab yêu cầu bạn
 quyết định cho từng cái và ghi lại lý do:
 
@@ -168,9 +168,9 @@ quyết định cho từng cái và ghi lại lý do:
   vì các parser bất đồng về nó. Server nhận nó trong một request phải hoặc
   reject với `400`, hoặc thay phần fold (CRLF cộng khoảng trắng đầu dòng)
   bằng SP trước khi diễn giải value.
-- **LF trơ** (§2.2): bên nhận *được phép* chấp nhận một `\n` đơn lẻ làm
+- **bare LF** (§2.2): bên nhận *được phép* chấp nhận một `\n` đơn lẻ làm
   ký tự kết thúc dòng. Hai parser mà một cái chấp nhận `\n` còn cái kia chỉ
-  nhận `\r\n` sẽ thấy ranh giới header khác nhau trên cùng một chuỗi byte.
+  nhận `\r\n` sẽ thấy ranh giới header khác nhau trên cùng một byte sequence.
 
 Một MUST liên quan từ §2.2: một dòng khoảng trắng nằm giữa request line và
 header đầu tiên phải bị reject, hoặc toàn bộ dòng bắt đầu bằng khoảng
@@ -313,4 +313,9 @@ sau start line (field, dòng trống, độ dài body) dùng các luật ở tr�
 3. Tự decode bằng tay `4\r\nWiki\r\n5;x="a;b"\r\npedia\r\n0\r\nX-T: 1\r\n\r\n`: liệt kê size, extension, data của từng chunk, và trailer. Sau đó tìm lỗi trong `4\r\nWikiXX\r\n0\r\n\r\n`.
 4. Gửi các request sai ở bài 2 tới hai server thật khác nhau (ví dụ nginx và một server dựa trên hyper) bằng `printf ... | nc`, và ghi lại chỗ câu trả lời của chúng khác nhau. Mỗi khác biệt là một chỗ mà proxy đứng trước một trong hai server có thể bị smuggle qua.
 5. Trong [`labs/01-http-parser`](../../labs/01-http-parser), biến bài 2 và 3 thành một bảng test: byte đầu vào → kết quả parse mong đợi hoặc status code mong đợi. Viết bảng này *trước* khi viết parser.
-6. Ghi quyết định của bạn về obs-fold và LF trơ vào README của [`labs/01-http-parser`](../../labs/01-http-parser), mỗi cái kèm luật từ file này và rủi ro smuggling mà nó tránh được hoặc chấp nhận.
+6. Ghi quyết định của bạn về obs-fold và bare LF vào README của [`labs/01-http-parser`](../../labs/01-http-parser), mỗi cái kèm luật từ file này và rủi ro smuggling mà nó tránh được hoặc chấp nhận.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/15-http.md`](15-http.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/17-http2.md`](17-http2.md) →

@@ -26,3 +26,8 @@ và đọc riêng lẻ cũng ổn khi tới lab đó).
 - [`04-interrupt.md`](04-interrupt.md) — hardware interrupt vs softirq, vì sao chúng quan trọng với workload nặng về network
 - [`05-rss.md`](05-rss.md) — Receive Side Scaling, dàn interrupt của NIC ra nhiều core ở tầng hardware
 - [`06-rps.md`](06-rps.md) — Receive Packet Steering, phương án phần mềm khi hardware queue không đủ
+
+---
+
+<!-- nav -->
+Tiếp theo: [`16-kernel/01-epoll-internals.md`](01-epoll-internals.md) →

@@ -35,3 +35,8 @@ It helps to think of `poll` as "ask, don't tell": the executor asks a future "ar
 2. Write a `Delay` future by hand (store a `Instant` deadline) that spawns a background `std::thread` to sleep then call `.wake()`, and drive it to completion on your mini executor.
 3. Deliberately implement a buggy future that drops the waker instead of storing it, run it, and observe the task never wakes — confirm you understand why.
 4. Compare your hand-rolled waker to tokio's real one by running the same future under `#[tokio::main]` and under your own executor.
+
+---
+
+<!-- nav -->
+← Previous: [`04-runtime/01-tokio.md`](01-tokio.md) · [Index](00-README.md) · Next: [`04-runtime/03-runtime-config.md`](03-runtime-config.md) →

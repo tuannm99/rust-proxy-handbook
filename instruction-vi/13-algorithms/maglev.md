@@ -95,5 +95,5 @@ upstream và tốc độ request cao.
 5. Xây cùng một bảng hai lần từ cùng tập upstream với thứ tự input bị xáo
    trộn; xác nhận các bảng chỉ giống hệt nhau khi bạn sắp xếp theo id ổn
    định trước.
-6. Benchmark độ trễ lookup của Maglev so với ring so với HRW ở 1000
+6. Benchmark latency lookup của Maglev so với ring so với HRW ở 1000
    upstream.

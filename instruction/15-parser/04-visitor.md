@@ -79,3 +79,8 @@ requires.
 5. For a two-node toy AST, write the same lowering as a plain recursive
    `match` and compare; decide at what number of node kinds and passes the
    visitor stops being over-engineering.
+
+---
+
+<!-- nav -->
+← Previous: [`15-parser/03-ast.md`](03-ast.md) · [Index](00-README.md) · Next: [`15-parser/05-config-parser.md`](05-config-parser.md) →

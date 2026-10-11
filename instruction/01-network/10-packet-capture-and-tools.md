@@ -159,3 +159,8 @@ timestamps and ports yourself — which is exactly what a trace ID
    multi-tenant host, and compare the certificates returned. Finally set
    `SSLKEYLOGFILE=$PWD/keys.log`, run `curl https://example.com/` under
    `tcpdump -w`, and read the decrypted HTTP in Wireshark.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/09-udp.md`](09-udp.md) · [Index](00-README.md) · Next: [`01-network/11-socket.md`](11-socket.md) →

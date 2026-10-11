@@ -186,3 +186,8 @@ Build these in order.
    downgrade payload where the HTTP/2 `content-length` disagrees with the
    DATA frames. **Done when** it is rejected at the h2 layer rather than
    translated into a malformed HTTP/1.1 request.
+
+---
+
+<!-- nav -->
+← Previous: [`07-security/04-normalization.md`](04-normalization.md) · [Index](00-README.md) · Next: [`07-security/06-waf.md`](06-waf.md) →

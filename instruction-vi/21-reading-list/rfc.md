@@ -13,7 +13,7 @@
 - RFC 7541 — nén header HPACK, được tham chiếu bởi RFC 7540/9113.
 - RFC 8446 — TLS 1.3 (handshake, 0-RTT, session resumption). Đọc song
   song với [`01-network/19-tls.md`](../01-network/19-tls.md).
-- RFC 6455 — Giao thức WebSocket. Đọc song song với
+- RFC 6455 — Protocol WebSocket. Đọc song song với
   [`05-http-stack/10-websocket.md`](../05-http-stack/10-websocket.md).
 - RFC 9111 — HTTP Caching (thay thế phần caching của 7234). Đọc song song
   với [`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md).
@@ -22,6 +22,6 @@
 - RFC 6520 / RFC 5077 — các cơ chế session resumption của TLS được tham
   chiếu từ [`01-network/19-tls.md`](../01-network/19-tls.md).
 
-Lưu ý: giao thức PROXY dùng trong [`01-network/20-proxy-protocol.md`](../01-network/20-proxy-protocol.md)
+Lưu ý: protocol PROXY dùng trong [`01-network/20-proxy-protocol.md`](../01-network/20-proxy-protocol.md)
 **không phải** một RFC — đó là một spec de facto do HAProxy công bố và
 duy trì (xem `proxy-protocol.txt` của họ).

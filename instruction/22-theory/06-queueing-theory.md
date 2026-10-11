@@ -34,3 +34,8 @@ An M/M/c queue (c parallel servers, e.g. c worker threads) delays the same blow-
 3. Repeat the simulation with a fixed (non-exponential) service time instead of exponential, holding the same mean, and compare wait times against the M/M/1 case at the same `ρ` — connect the difference to the Pollaczek-Khinchine intuition about variance.
 4. Load-test [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) at increasing request rates and plot observed p50/p99 latency against measured utilization; identify where the curve starts bending toward the theoretical asymptote.
 5. Revisit [`07-security/11-load-shedding.md`](../07-security/11-load-shedding.md)'s adaptive concurrency limiting section and explain, using this file's formulas, why targeting a fixed utilization set-point (rather than a fixed request count) is the theoretically grounded choice.
+
+---
+
+<!-- nav -->
+← Previous: [`22-theory/05-congestion-control-math.md`](05-congestion-control-math.md) · [Index](00-README.md) · Next: [`22-theory/07-crypto-math.md`](07-crypto-math.md) →

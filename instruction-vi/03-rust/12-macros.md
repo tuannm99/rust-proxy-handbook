@@ -71,3 +71,8 @@ chính bạn sau này — lần theo hơn so với một lời gọi hàm có t�
 5. Viết ra, bằng lời của bạn, vì sao bạn sẽ không dùng một proc-macro để
    giải quyết một vấn đề boilerplate trong [`proxy`](../../proxy) trước khi loại trừ một
    giải pháp bằng `macro_rules!`, generic, hoặc trait.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/11-concurrency-patterns.md`](11-concurrency-patterns.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/13-api-design-and-modules.md`](13-api-design-and-modules.md) →

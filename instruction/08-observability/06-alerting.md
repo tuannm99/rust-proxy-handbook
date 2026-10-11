@@ -129,3 +129,8 @@ Build these in order.
    and how to mitigate. **Done when** the runbook link is in the alert
    definition itself and someone unfamiliar with the system could follow
    it.
+
+---
+
+<!-- nav -->
+← Previous: [`08-observability/05-slo.md`](05-slo.md) · [Index](00-README.md)

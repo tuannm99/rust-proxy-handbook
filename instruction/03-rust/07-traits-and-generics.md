@@ -56,3 +56,8 @@ Not every trait can be `dyn`-dispatched: a method with a generic type parameter,
 3. In [`labs/06-load-balancer`](../../labs/06-load-balancer), define a `LoadBalancer` trait and implement it for round-robin, least-conn, and consistent-hash strategies; select the concrete strategy at runtime from a config string via `Box<dyn LoadBalancer>`.
 4. Write an extension trait for a type you don't own (e.g. `http::HeaderMap`) and explain why the orphan rule would have blocked implementing a foreign trait directly on it instead.
 5. Add a generic method to a trait and try to use it as `dyn Trait`; read the object-safety error and identify exactly which rule it violates.
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/06-pin.md`](06-pin.md) · [Index](00-README.md) · Next: [`03-rust/08-error-handling.md`](08-error-handling.md) →

@@ -86,3 +86,8 @@ giờ có thể construct hoặc match đầy đủ nó trực tiếp.
 5. Chọn một item `pub` trong một crate [`labs/`](../../labs) và viết ra việc thay đổi
    hình dạng của nó sẽ làm hỏng gì cho một downstream user giả định —
    quyết định xem nó có thực sự nên là `pub` không.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/12-macros.md`](12-macros.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/14-ffi-and-abi.md`](14-ffi-and-abi.md) →

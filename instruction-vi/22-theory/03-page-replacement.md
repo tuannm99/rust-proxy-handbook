@@ -72,3 +72,8 @@ không làm process chậm lại nhẹ nhàng — nó làm process đó thrash.
    lớn hơn một giới hạn memory cgroup bạn đặt, và quan sát thrashing (qua
    cột `si`/`so` của `vmstat` hoặc counter page fault của `/proc/vmstat`)
    thay vì một sự chậm lại nhẹ nhàng.
+
+---
+
+<!-- nav -->
+← Trước: [`22-theory/02-sync-classics.md`](02-sync-classics.md) · [Mục lục](00-README.md) · Tiếp theo: [`22-theory/04-cpu-scheduling.md`](04-cpu-scheduling.md) →

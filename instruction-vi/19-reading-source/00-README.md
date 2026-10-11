@@ -17,7 +17,7 @@ là stub; chúng ít ưu tiên hơn với lộ trình của handbook này.
 [`contributing-upstream.md`](contributing-upstream.md) nói về bước sau khi đọc: biến những gì đã
 học thành đóng góp cho các dự án này.
 
-Việc sắp xếp thứ tự bên dưới vẫn là điểm mấu chốt.
+Thứ tự đọc vẫn là điểm mấu chốt.
 
 Đọc connection pool của [`pingora`](pingora) trước khi bạn tự viết một cái gần như
 chẳng dạy bạn được gì: bạn không có thiết kế nào của riêng mình để so
@@ -44,7 +44,7 @@ Mỗi subfolder dự án được dự kiến sẽ chứa:
 - `request-flow.md` — trace một request từ đầu tới cuối qua source
 - `memory.md` — dự án quản lý bộ nhớ/buffer trên hot path thế nào
 - `interesting-code.md` — các hàm/file cụ thể đáng đọc kỹ, kèm lý do
-- `what-to-learn.md` — các topic trong handbook (theo đường dẫn) mà dự án
+- `what-to-learn.md` — các topic trong handbook (theo path) mà dự án
   này là ví dụ thực tế tốt nhất
 
 ## Các dự án

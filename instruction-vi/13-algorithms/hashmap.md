@@ -16,7 +16,7 @@ lần đuổi theo con trỏ — không thân thiện với cache.
 **Open addressing**: mọi entry nằm trực tiếp trong mảng backing; khi va
 chạm, dò tới một slot khác (linear, quadratic, hoặc qua một hash thứ hai)
 cho tới khi tìm được slot trống. Không đuổi theo con trỏ, hành vi cache
-tốt hơn nhiều — toàn bộ bảng là một vùng cấp phát liền mạch — nhưng cần
+tốt hơn nhiều — toàn bộ bảng là một vùng allocate liền mạch — nhưng cần
 tombstone hoặc dịch chuyển ngược (backward-shifting) để xử lý việc xóa mà
 không phá vỡ chuỗi dò của các entry được insert sau một va chạm.
 

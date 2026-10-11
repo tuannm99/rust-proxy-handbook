@@ -127,3 +127,8 @@ Build these in order.
    flap damping, and slow start. **Done when** an upstream that fails real
    requests is ejected before the next probe fires, and a recovered one
    ramps back rather than being stampeded.
+
+---
+
+<!-- nav -->
+← Previous: [`06-proxy/02-load-balancer.md`](02-load-balancer.md) · [Index](00-README.md) · Next: [`06-proxy/04-outlier-detection.md`](04-outlier-detection.md) →

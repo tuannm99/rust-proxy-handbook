@@ -8,7 +8,7 @@ chúng trong code chính là bài tập.
 
 Repository: `github.com/tokio-rs/tokio`, thư mục crate `tokio/src/`. Đường
 dẫn file bên dưới khớp với tokio 1.x tại thời điểm viết; code di chuyển
-giữa các release, nên nếu một đường dẫn biến mất, hãy search trong
+giữa các release, nên nếu một path biến mất, hãy search trong
 repository tên type hoặc function được nêu bên cạnh.
 
 ## Khi nào đọc phần nào
@@ -60,8 +60,8 @@ Blocking pool nằm dưới `runtime/blocking/`. Cooperative budget là module
 
 ### Điểm dừng 6: một channel từ đầu tới cuối
 `sync/mpsc/` — `bounded.rs`, `chan.rs`, và danh sách liên kết theo block mà nó dùng.
-- Vì sao hàng đợi là một danh sách liên kết các block kích thước cố định thay vì ring buffer hay `VecDeque`?
-- Trên một bounded channel, một `send().await` khi channel đầy park ở đâu, và cái gì đánh thức nó?
+- Vì sao queue là một danh sách liên kết các block kích thước cố định thay vì ring buffer hay `VecDeque`?
+- Trên một bounded channel, một `send().await` khi channel đầy park ở đâu, và cái gì wake up nó?
 
 ## Viết gì vào notes
 Sau lộ trình, viết các file theo project trong [`00-README.md`](00-README.md). Tối thiểu,

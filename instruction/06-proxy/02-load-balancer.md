@@ -191,3 +191,8 @@ be judged against.
 8. Add bounded loads to the ring. **Done when** a test where 90% of
    requests share one key spreads that traffic across multiple upstreams
    instead of melting one, while low-volume keys keep perfect affinity.
+
+---
+
+<!-- nav -->
+← Previous: [`06-proxy/01-upstream.md`](01-upstream.md) · [Index](00-README.md) · Next: [`06-proxy/03-healthcheck.md`](03-healthcheck.md) →

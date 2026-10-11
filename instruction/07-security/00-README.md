@@ -36,3 +36,8 @@ the mechanisms are for. [`09-ddos.md`](09-ddos.md) before [`10-slowloris.md`](10
 These back [`labs/11-rate-limit`](../../labs/11-rate-limit), [`labs/12-waf`](../../labs/12-waf), and [`labs/17-ebpf`](../../labs/17-ebpf), and
 [`proxy/README.md`](../../proxy/README.md) lists most of this directory as required reading for the
 final build.
+
+---
+
+<!-- nav -->
+Next: [`07-security/01-auth.md`](01-auth.md) →

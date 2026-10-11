@@ -77,3 +77,8 @@ synthetic single-thread loop, before picking one.
 4. Re-run [`14-memory/06-fragmentation.md`](06-fragmentation.md)'s RSS-over-time experiment with
    your chosen allocator and compare the plateau height against the
    system allocator's.
+
+---
+
+<!-- nav -->
+← Previous: [`14-memory/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`14-memory/02-arena.md`](02-arena.md) →

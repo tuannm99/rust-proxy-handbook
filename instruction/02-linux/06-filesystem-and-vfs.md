@@ -124,3 +124,8 @@ letting the supervisor handle files.
 6. In [`labs/04-static-server`](../../labs/04-static-server), serve a symlink pointing outside the
    served root and confirm your server refuses it, then explain the TOCTOU race that opening
    by path then checking would leave.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md) · [Index](00-README.md) · Next: [`02-linux/07-users-permissions-capabilities.md`](07-users-permissions-capabilities.md) →

@@ -32,12 +32,12 @@ gần như luôn là thứ một health checker muốn.
 ### Mỗi loại probe thực sự chứng minh điều gì
 Độ sâu của probe là một quyết định thiết kế thật sự, không phải chi tiết
 vặt vãnh:
-- **TCP connect** chứng minh kernel đã chấp nhận một kết nối. Nó *không*
+- **TCP connect** chứng minh kernel đã chấp nhận một connection. Nó *không*
   chứng minh có ứng dụng nào đứng sau socket đó — một process kẹt trong
   vòng lặp vô hạn, hoặc một process mà accept backlog chỉ được kernel một
   mình rút ra, vẫn vượt qua ([`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md)).
 - **HTTP GET `/healthz` trả 200** chứng minh vòng lặp HTTP server còn sống
-  và đang lập lịch công việc. Nó không chứng minh upstream có thể phục vụ
+  và đang schedule công việc. Nó không chứng minh upstream có thể phục vụ
   request *thật* nếu `/healthz` là một handler tĩnh không đụng vào gì cả.
 - **Một deep check** (handler xác minh database, cache, hoặc dependency
   downstream của nó) chứng minh upstream có thể làm việc thật — và tạo ra
@@ -52,14 +52,14 @@ health check — hãy biết bạn đã xây cái nào.
 ### Deep check và correlated failure
 Một deep check khiến health của mỗi upstream phụ thuộc vào một dependency
 *dùng chung*, nên khi dependency đó có sự cố thoáng qua, mọi upstream
-trong hạm đội fail probe của nó cùng một thời điểm. Proxy mẫn cán đánh dấu
+trong fleet fail probe của nó cùng một thời điểm. Proxy mẫn cán đánh dấu
 tất cả chúng unhealthy và giờ không còn ứng viên nào — biến một database
 bị suy giảm thành một outage toàn phần, với proxy là cơ chế gây ra nó.
 
 Mọi proxy nghiêm túc đều có một guard cho việc này. Envoy gọi nó là
 **panic threshold**: nếu tỷ lệ host khỏe mạnh rơi xuống dưới một ngưỡng
 (50% mặc định), Envoy *bỏ qua hoàn toàn health status* và load balance
-trên tất cả host, với lý luận rằng nếu phần lớn hạm đội trông như đã chết,
+trên tất cả host, với lý luận rằng nếu phần lớn fleet trông như đã chết,
 lời giải thích khả dĩ hơn là tín hiệu health đang sai. Cài đặt cái tương
 đương trước khi bạn ship deep check:
 
@@ -91,16 +91,16 @@ Cả ba nằm trong [`06-proxy/04-outlier-detection.md`](04-outlier-detection.md
 là "chúng ta đã chủ động đi hỏi"; file kia là "chúng ta nhận ra từ traffic
 đang gửi sẵn, và chúng ta giảm nhẹ phản ứng của mình."
 
-### Chi phí probe ở quy mô hạm đội
+### Chi phí probe ở quy mô fleet
 Traffic probe là `số proxy × số upstream × (1 / interval)` request mỗi
 giây, và nó phải trả dù có traffic thật hay không. Hai mươi instance proxy
-probe 100 upstream mỗi giây là 2000 req/s chi phí thuần đập vào hạm đội,
+probe 100 upstream mỗi giây là 2000 req/s chi phí thuần đập vào fleet,
 và mỗi probe trong số đó rơi vào cùng một thời điểm nếu mọi proxy khởi
 động từ một lần deploy config được rollout cùng lúc.
 
 Jitter interval theo từng upstream (một offset ngẫu nhiên ở tick đầu tiên
-là đủ) để các probe dàn trải ra trong cửa sổ thay vì dồn dập cùng nhịp —
-cùng vấn đề đồng bộ hóa như retry storm trong [`05-retry.md`](05-retry.md), với cùng cách
+là đủ) để các probe dàn trải ra trong cửa sổ thay vì burst cùng nhịp —
+cùng vấn đề các client bị đồng bộ (synchronized) như retry storm trong [`05-retry.md`](05-retry.md), với cùng cách
 sửa.
 
 ## Practice
@@ -108,23 +108,28 @@ Xây theo thứ tự.
 
 1. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), thêm một vòng lặp active TCP-connect
    probe cho mỗi upstream với `tokio::time::interval`, giới hạn bởi
-   `tokio::time::timeout` và dùng `MissedTickBehavior::Delay`. **Xong khi**
+   `tokio::time::timeout` và dùng `MissedTickBehavior::Delay`. **Done when**
    một upstream giả bạn `kill -STOP` (không kill — dừng lại, để socket vẫn
    mở) vẫn được báo cáo là healthy, và bạn có thể giải thích tại sao từ
    phần probe-depth ở trên.
-2. Thay nó bằng một probe HTTP `/healthz`. **Xong khi** trường hợp
+2. Thay nó bằng một probe HTTP `/healthz`. **Done when** trường hợp
    `kill -STOP` giờ báo cáo đúng là unhealthy.
-3. Thêm fallback panic-threshold. **Xong khi** một test khiến *mọi*
+3. Thêm fallback panic-threshold. **Done when** một test khiến *mọi*
    upstream fail probe của nó vẫn route traffic (thay vì trả 503 cho tất
    cả), và một test chỉ làm fail một upstream vẫn chỉ loại trừ đúng cái
    đó.
-4. Thêm jitter theo từng upstream vào lịch probe. **Xong khi** timestamp
+4. Thêm jitter theo từng upstream vào lịch probe. **Done when** timestamp
    probe đến tại một upstream, từ 3 instance proxy chạy đồng thời, dàn
    trải khắp interval thay vì dồn cục.
-5. Đo chi phí probe. **Xong khi** bạn có thể nói ra số request mỗi giây
-   các probe của bạn tạo ra ở quy mô hạm đội của bạn, và đó là một con số
+5. Đo chi phí probe. **Done when** bạn có thể nói ra số request mỗi giây
+   các probe của bạn tạo ra ở quy mô fleet của bạn, và đó là một con số
    bạn sẵn sàng trả.
 6. Đi qua [`06-proxy/04-outlier-detection.md`](04-outlier-detection.md) để học passive detection,
-   flap damping, và slow start. **Xong khi** một upstream fail các request
+   flap damping, và slow start. **Done when** một upstream fail các request
    thật bị loại bỏ trước khi probe tiếp theo bắn, và một upstream đã hồi
    phục ramp trở lại thay vì bị stampede.
+
+---
+
+<!-- nav -->
+← Trước: [`06-proxy/02-load-balancer.md`](02-load-balancer.md) · [Mục lục](00-README.md) · Tiếp theo: [`06-proxy/04-outlier-detection.md`](04-outlier-detection.md) →

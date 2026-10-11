@@ -151,3 +151,8 @@ Build these in order.
    when** a TLS connection terminates at the correct backend with the
    proxy never holding its private key, and a client that stalls
    mid-ClientHello is timed out rather than held.
+
+---
+
+<!-- nav -->
+← Previous: [`05-http-stack/11-grpc.md`](11-grpc.md) · [Index](00-README.md)

@@ -39,8 +39,7 @@ nhiều lần chỉ đơn giản vì không fetch các field nó không đọc.
 ### Prefetching thưởng cho truy cập có thể đoán trước
 Bộ prefetch phần cứng theo dõi pattern truy cập của bạn và kéo các line
 tiếp theo *trước khi* bạn hỏi, nhưng chỉ khi pattern đó có thể đoán trước
-— tuần tự hoặc stride cố định. Duyệt array tuần tự chạy gần tới băng
-thông bộ nhớ; đuổi theo con trỏ ngẫu nhiên đánh bại hoàn toàn prefetcher
+— tuần tự hoặc stride cố định. Duyệt array tuần tự chạy gần tới bandwidth bộ nhớ; đuổi theo con trỏ ngẫu nhiên đánh bại hoàn toàn prefetcher
 và trả giá miss đầy đủ ở mỗi bước nhảy. Đây là lý do cụ thể, đo được, vì
 sao "mảng phẳng thắng cấu trúc liên kết" cứ liên tục xuất hiện.
 
@@ -83,3 +82,8 @@ này.
 5. Đọc `L1-dcache-load-misses` trước và sau một thay đổi layout và ghi lại
    xem thay đổi đó có đáng với độ phức tạp của nó không — luyện tập việc
    từ chối những thay đổi không làm dịch chuyển con số.
+
+---
+
+<!-- nav -->
+← Trước: [`17-performance/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`17-performance/02-false-sharing.md`](02-false-sharing.md) →

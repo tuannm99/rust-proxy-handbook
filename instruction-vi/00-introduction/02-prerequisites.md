@@ -20,7 +20,7 @@ Trả lời mà không tra cứu gì. Mỗi câu "chưa" trỏ tới phần bên
 - Bạn đã từng viết một trait và implement nó cho hai type chưa?
 
 **Networking:**
-- Bạn có mô tả được, từng bước, chuyện gì xảy ra giữa lúc gõ `curl http://example.com` và lúc thấy HTML — tra DNS, bắt tay TCP, HTTP request, response không?
+- Bạn có mô tả được, từng bước, chuyện gì xảy ra giữa lúc gõ `curl http://example.com` và lúc thấy HTML — tra DNS, handshake TCP, HTTP request, response không?
 - Bạn có biết port là gì, và vì sao hai chương trình không thể cùng listen trên port 8080 không?
 
 **Hệ điều hành:**
@@ -89,7 +89,12 @@ tháng với người bắt đầu từ số 0; track người mới của [`01-
 
 ## Practice
 1. Trả lời phần tự kiểm tra ở trên bằng văn bản, trung thực. Giữ lại câu trả lời — bạn sẽ làm lại sau phase 0 và so sánh.
-2. Hoàn thành dự án multithreaded web server của the Book. **Xong khi** nó phục vụ request đồng thời qua thread pool của chính bạn và shutdown sạch khi drop.
-3. Làm xong Rustlings. **Xong khi** mọi bài pass và bạn giải thích được cách sửa của bất kỳ mười bài nào cho người khác.
-4. Hoàn thành mini-Redis của Tokio tutorial. **Xong khi** hai client set và get key đồng thời được trên server của bạn.
-5. Đọc [`01-network/01-fundamentals.md`](../01-network/01-fundamentals.md) và [`02-linux/01-fundamentals.md`](../02-linux/01-fundamentals.md), làm phần Practice của chúng, rồi làm lại phần tự kiểm tra. **Xong khi** mọi câu trả lời đều là "có".
+2. Hoàn thành dự án multithreaded web server của the Book. **Done when** nó phục vụ request đồng thời qua thread pool của chính bạn và shutdown sạch khi drop.
+3. Làm xong Rustlings. **Done when** mọi bài pass và bạn giải thích được cách sửa của bất kỳ mười bài nào cho người khác.
+4. Hoàn thành mini-Redis của Tokio tutorial. **Done when** hai client set và get key đồng thời được trên server của bạn.
+5. Đọc [`01-network/01-fundamentals.md`](../01-network/01-fundamentals.md) và [`02-linux/01-fundamentals.md`](../02-linux/01-fundamentals.md), làm phần Practice của chúng, rồi làm lại phần tự kiểm tra. **Done when** mọi câu trả lời đều là "có".
+
+---
+
+<!-- nav -->
+← Trước: [`00-introduction/01-learning-roadmap.md`](01-learning-roadmap.md) · [Mục lục](00-README.md) · Tiếp theo: [`00-introduction/03-study-loop.md`](03-study-loop.md) →

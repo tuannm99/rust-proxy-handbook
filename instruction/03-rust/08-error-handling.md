@@ -52,3 +52,8 @@ A `std::sync::Mutex` becomes "poisoned" if a thread panics while holding the loc
 3. Deliberately panic inside a `tokio::spawn`ed task, confirm the process keeps running, then add code that awaits the `JoinHandle` and logs the panic instead of letting it disappear silently.
 4. Swap a `std::sync::Mutex` for `parking_lot::Mutex` in a small example; panic while holding the lock in the std version and observe the poisoned-lock `Err`, then note `parking_lot` has no equivalent mechanism at all.
 5. Find one `.unwrap()` in your own [`labs/01-http-parser`](../../labs/01-http-parser) code that runs on attacker-controlled input, and convert it to a `Result` path that returns a parse error instead of panicking.
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/07-traits-and-generics.md`](07-traits-and-generics.md) · [Index](00-README.md) · Next: [`03-rust/09-iterators-and-closures.md`](09-iterators-and-closures.md) →

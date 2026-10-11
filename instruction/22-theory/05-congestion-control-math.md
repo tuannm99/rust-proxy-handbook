@@ -39,3 +39,8 @@ This is entirely the kernel's TCP stack's job ([`01-network/12-tcp.md`](../01-ne
 3. Capture a real file transfer with `tcpdump` or `ss -i` and identify the slow-start phase (exponential `cwnd` growth) transitioning into congestion avoidance (linear growth) from the observed throughput curve.
 4. Check `sysctl net.ipv4.tcp_congestion_control` on a Linux machine you control, switch between `cubic` and `bbr` (if available), and compare throughput/latency on a deliberately lossy or high-RTT simulated link (`tc netem`).
 5. Write one paragraph connecting this file's math to [`01-network/12-tcp.md`](../01-network/12-tcp.md)'s claim that connection reuse matters for throughput "not just latency" — show the quantitative reason a fresh connection's slow start actually costs you.
+
+---
+
+<!-- nav -->
+← Previous: [`22-theory/04-cpu-scheduling.md`](04-cpu-scheduling.md) · [Index](00-README.md) · Next: [`22-theory/06-queueing-theory.md`](06-queueing-theory.md) →

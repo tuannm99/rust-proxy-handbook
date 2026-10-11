@@ -21,7 +21,7 @@ fn pick<'a>(key: &str, upstreams: &'a [Upstream]) -> &'a Upstream {
 
 Vì điểm số chỉ phụ thuộc vào `(key, upstream_id)`, mọi instance proxy tự
 tính ra cùng một đáp án một cách độc lập mà không cần phối hợp gì, và
-không có cấu trúc dữ liệu nào cần xây, xây lại, hay khóa.
+không có cấu trúc dữ liệu nào cần xây, xây lại, hay lock.
 
 ### Vì sao nó remap tối thiểu
 Xóa một upstream: chỉ những key có *người thắng* là upstream đó mới di

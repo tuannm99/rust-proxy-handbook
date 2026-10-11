@@ -86,3 +86,8 @@ the trigger is a measurement, not a hunch — see
 5. Demonstrate the non-problem: pack read-mostly routing data tightly, show
    concurrent readers do not suffer, and articulate why padding it would
    only waste memory.
+
+---
+
+<!-- nav -->
+← Previous: [`17-performance/01-cpu-cache.md`](01-cpu-cache.md) · [Index](00-README.md) · Next: [`17-performance/03-numa.md`](03-numa.md) →

@@ -186,3 +186,8 @@ one meaningful.
    pool marks it unhealthy and no request thread blocks on it — measure
    p99 latency during the kill and confirm it doesn't spike past your
    connect timeout.
+
+---
+
+<!-- nav -->
+← Previous: [`06-proxy/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`06-proxy/02-load-balancer.md`](02-load-balancer.md) →

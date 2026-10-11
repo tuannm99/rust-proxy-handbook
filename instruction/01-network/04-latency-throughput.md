@@ -84,3 +84,8 @@ a reused connection's congestion window is already warm.
    against TCP's default initial congestion window (~10 segments,
    ~14KB) and explain why a fresh connection on this link starts out
    using a small fraction of the available bandwidth.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/03-byte-streams.md`](03-byte-streams.md) · [Index](00-README.md) · Next: [`01-network/05-proxy-taxonomy.md`](05-proxy-taxonomy.md) →

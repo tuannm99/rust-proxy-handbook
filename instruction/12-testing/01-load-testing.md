@@ -48,3 +48,8 @@ than "how fast can this go end to end."
    for how you'd alert on this in production.
 5. Watch `top`/`htop` on the load generator itself during a high-rate run
    and confirm it isn't CPU-saturated (which would invalidate the results).
+
+---
+
+<!-- nav -->
+← Previous: [`12-testing/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`12-testing/02-fuzzing.md`](02-fuzzing.md) →

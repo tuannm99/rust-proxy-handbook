@@ -143,3 +143,8 @@ Build these in order.
    **Done when** `systemctl restart` achieves the same zero-dropped result
    with none of the above code — and you've measured your startup time
    against your backlog depth to know the limits of that approach.
+
+---
+
+<!-- nav -->
+← Previous: [`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md) · [Index](00-README.md) · Next: [`09-architecture/06-canary-deploy.md`](06-canary-deploy.md) →

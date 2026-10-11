@@ -13,7 +13,7 @@ bottleneck cơ bản.
 
 ### Throughput so với percentile latency
 Chỉ riêng requests/sec che giấu mất tail latency — một proxy có thể đạt
-RPS cao trong khi p99 rất tệ vì một vài lệnh gọi upstream chậm xếp hàng
+RPS cao trong khi p99 rất tệ vì một vài lệnh gọi upstream chậm queue
 đằng sau các lệnh gọi nhanh. Luôn báo cáo p50/p90/p99/p999, không chỉ mean
 hay RPS. Một bug load balancer (ví dụ một upstream nhận gấp 10 lần
 traffic) thường hiện ra như một cái đuôi p99 béo từ rất lâu trước khi nó
@@ -51,3 +51,8 @@ req/s" thay vì "cái này có thể nhanh tới đâu end to end."
 5. Theo dõi `top`/`htop` trên chính load generator trong một lần chạy tốc
    độ cao và xác nhận nó không bị bão hòa CPU (điều này sẽ làm vô hiệu kết
    quả).
+
+---
+
+<!-- nav -->
+← Trước: [`12-testing/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`12-testing/02-fuzzing.md`](02-fuzzing.md) →

@@ -163,3 +163,8 @@ mechanisms (autotuning, queues) are in [`16-kernel/03-tcp-stack.md`](../16-kerne
    if `modprobe tcp_bbr` works on your kernel) on a delayed, lossy `netem`
    loopback; record throughput for each and explain the difference in
    terms of what each uses as its congestion signal.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/12-tcp.md`](12-tcp.md) · [Index](00-README.md) · Next: [`01-network/14-dns.md`](14-dns.md) →

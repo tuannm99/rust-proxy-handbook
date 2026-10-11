@@ -151,3 +151,8 @@ Build these in order.
 8. Cap concurrent upgraded connections, globally and per client. **Done
    when** a client opening connections in a loop is refused past its cap
    and normal HTTP traffic is unaffected.
+
+---
+
+<!-- nav -->
+← Previous: [`05-http-stack/09-cache-stampede.md`](09-cache-stampede.md) · [Index](00-README.md) · Next: [`05-http-stack/11-grpc.md`](11-grpc.md) →

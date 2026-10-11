@@ -144,3 +144,8 @@ and netfilter ([`19-netfilter-and-linux-networking.md`](19-netfilter-and-linux-n
    tool.
 4. Run `strace -f ls 2>&1 | head -30` and, using the "life of a program" list above, find the `execve`, the library loading (`openat` of `.so` files), and the first real work (`write`); then `ldd $(which ls)` and `cat /proc/self/maps | head` to see the libraries and address space you just read about.
 5. Without notes, tell the story of `./proxy` from keypress to exit in six steps, naming the syscall or kernel mechanism in each; check it against this file.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`02-linux/02-hardware-basics.md`](02-hardware-basics.md) →

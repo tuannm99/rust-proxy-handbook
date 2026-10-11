@@ -3,7 +3,7 @@
 ## What to learn
 ### Vì sao "cứ restart process đi" là chưa đủ
 Một L7 proxy production đang phục vụ traffic thật; một thay đổi config
-(upstream mới, rate limit cập nhật) đòi hỏi restart nghĩa là rớt kết nối
+(upstream mới, rate limit cập nhật) đòi hỏi restart nghĩa là rớt connection
 cho mọi request in-flight. Hot reload nghĩa là: load config mới, validate
 nó, swap nó vào nguyên tử cho các request mới, trong khi các request hiện
 có tiếp tục chạy với config chúng đã bắt đầu (hoặc với config mới, nếu
@@ -12,7 +12,7 @@ field đó không ảnh hưởng tới request in-flight).
 ### SIGHUP như trigger reload
 Quy ước Unix (nginx, hầu hết daemon) là: `SIGHUP` = "reload config,"
 `SIGTERM` = "shutdown gracefully" (xem [`02-linux/17-signals.md`](../02-linux/17-signals.md),
-[`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)). Lắng nghe nó bằng
+[`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)). Listen nó bằng
 `tokio::signal::unix::signal(SignalKind::hangup())` thay vì blocking
 signal handling — điều này giữ reload async và không gây gián đoạn I/O
 in-flight.
@@ -58,7 +58,7 @@ là một no-op, không phải một outage.**
 "Đã validate" phải có nghĩa nhiều hơn "đã parse." Các kiểm tra thực sự bắt
 được sự cố thật là những cái thử các side effect:
 - **Certificate và key thực sự load và khớp nhau**
-  ([`01-network/19-tls.md`](../01-network/19-tls.md)) — một lỗi gõ đường dẫn hay một cặp không khớp
+  ([`01-network/19-tls.md`](../01-network/19-tls.md)) — một lỗi gõ path hay một cặp không khớp
   là một outage toàn phần cho vhost đó.
 - **Route không xung đột** ([`05-http-stack/04-router.md`](../05-http-stack/04-router.md)) — hai rule
   không bao giờ phân biệt được nghĩa là một endpoint âm thầm biến mất.
@@ -74,7 +74,7 @@ thứ có thể fail (parse, load cert, bind socket mới) vào một object dà
 dựng, và chỉ sau đó *commit* bằng cách swap con trỏ. Bất cứ thứ gì fail
 trong lúc prepare để lại config đang chạy hoàn toàn không bị đụng tới.
 
-Gotcha: validation chạm vào mạng (resolve DNS upstream, kết nối để kiểm
+Gotcha: validation chạm vào mạng (resolve DNS upstream, connection để kiểm
 tra liveness) khiến reload fail khi một *dependency* down, đó là vấn đề
 fail-static từ [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md) mặc bộ đồ khác. Validate
 cú pháp và tính nhất quán nội bộ một cách nghiêm ngặt; coi một upstream
@@ -124,9 +124,8 @@ suốt thời gian sống của nó, và truyền nó xuống pipeline (các ext
 
 Gotcha: giữ `Arc` đó cho suốt thời gian sống của request cũng là thứ giữ
 config cũ sống trong khi các request in-flight dùng nó — bộ nhớ được giải
-phóng khi request cuối cùng giữ nó hoàn thành, đó chính xác là drain dẫn
-dắt bởi refcount từ [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md). Một request
-streaming sống lâu ghim một phiên bản config; điều đó đúng, và đáng biết
+phóng khi request cuối cùng giữ nó hoàn thành, đó chính xác là drain do refcount quyết định từ [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md). Một request
+streaming sống lâu pin một phiên bản config; điều đó đúng, và đáng biết
 khi bạn thắc mắc vì sao một config cũ chưa bị drop.
 
 ### Bí mật không thuộc về file config
@@ -161,34 +160,37 @@ Xây theo thứ tự.
 
 1. Làm bước 1-5 trong [`labs/13-hot-reload`](../../labs/13-hot-reload), rồi lặp lại trong [`proxy`](../../proxy).
    Định nghĩa một struct `Config` với `serde` + `toml` (upstream, route,
-   rate limit, đường dẫn TLS). **Xong khi** nó load lúc khởi động đứng sau
+   rate limit, path TLS). **Done when** nó load lúc khởi động đứng sau
    một `ArcSwap` và các handler đọc qua `.load()`.
 2. Load config đúng một lần mỗi request và truyền `Arc` xuống pipeline.
-   **Xong khi** một test reload liên tục dưới load đồng thời không thể
+   **Done when** một test reload liên tục dưới load đồng thời không thể
    tạo ra một request thấy hai phiên bản config khác nhau — đưa version
    vào span của request để chứng minh điều đó.
 3. Thêm một handler `SIGHUP` với prepare/commit hai giai đoạn: parse,
    validate xung đột route, load và khớp cert/key, bind mọi listener mới
-   — tất cả trước khi swap. **Xong khi** mỗi failure mode để lại config cũ
+   — tất cả trước khi swap. **Done when** mỗi failure mode để lại config cũ
    đang phục vụ.
-4. Viết các test âm tính. **Xong khi** một route trùng, một cặp cert/key
+4. Viết các test âm tính. **Done when** một route trùng, một cặp cert/key
    không khớp, một route tham chiếu một upstream pool chưa định nghĩa, và
    một port đã bị dùng đều tạo ra một rejection được log và zero thay đổi
    hành vi.
-5. Thêm theo dõi file như một trigger thứ hai, xử lý race ghi-dở. **Xong
-   khi** một `cp` ghi tại chỗ không kích hoạt một rejection giả, và một
+5. Thêm theo dõi file như một trigger thứ hai, xử lý race ghi-dở. **Done when** một `cp` ghi tại chỗ không kích hoạt một rejection giả, và một
    atomic rename có kích hoạt một reload.
 6. Phân loại mọi field là reload-được hay không, và reject thay đổi với
-   các field không-reload-được kèm một thông báo nêu tên field. **Xong
-   khi** sửa listen port tạo ra một failure rõ ràng thay vì một thành
+   các field không-reload-được kèm một thông báo nêu tên field. **Done when** sửa listen port tạo ra một failure rõ ràng thay vì một thành
    công gây hiểu lầm.
 7. Chuyển bí mật ra khỏi file và bọc chúng trong một newtype tự redact.
-   **Xong khi** `{:?}` trên config đã load không in ra bí mật nào và dòng
+   **Done when** `{:?}` trên config đã load không in ra bí mật nào và dòng
    log reload chứa một hash config cộng một diff không-bí-mật.
 8. Phát ra version config như một metric và alert trên reload thất bại.
-   **Xong khi** một dashboard có thể tương quan một thay đổi tỷ lệ lỗi với
+   **Done when** một dashboard có thể tương quan một thay đổi tỷ lệ lỗi với
    đúng lần reload gây ra nó, và các lần reload thất bại thầm lặng lặp lại
    tạo ra một ticket.
-9. Giữ N config hợp lệ gần nhất với một đường rollback. **Xong khi** một
+9. Giữ N config hợp lệ gần nhất với một đường rollback. **Done when** một
    lệnh operator revert về phiên bản trước mà không cần restart và không
    rớt request in-flight.
+
+---
+
+<!-- nav -->
+← Trước: [`09-architecture/02-plugin.md`](02-plugin.md) · [Mục lục](00-README.md) · Tiếp theo: [`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md) →

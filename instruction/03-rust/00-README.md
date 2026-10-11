@@ -79,3 +79,8 @@ backs [`05-http-stack/11-grpc.md`](../05-http-stack/11-grpc.md)'s `build.rs` cod
 is the concrete gotcha behind [`09-architecture/02-plugin.md`](../09-architecture/02-plugin.md)'s middleware trait and
 [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md)'s strategy trait the moment either needs to be both
 async and `dyn`-dispatched.
+
+---
+
+<!-- nav -->
+Next: [`03-rust/01-ownership.md`](01-ownership.md) →

@@ -75,3 +75,8 @@ write these often, but recognize the syntax when a compiler error mentions
 4. Write a struct that intentionally cannot compile because it tries to hold
    a buffer and a `&[u8]` slice of itself as sibling fields; read the error
    and connect it to [`03-rust/06-pin.md`](06-pin.md).
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/01-ownership.md`](01-ownership.md) · [Index](00-README.md) · Next: [`03-rust/03-unsafe.md`](03-unsafe.md) →

@@ -17,7 +17,7 @@ một proxy khác với một HTTP server thông thường.
 - [`09-cache-stampede.md`](09-cache-stampede.md) — single-flight coalescing, stale-while-revalidate, TTL jitter
 - [`10-websocket.md`](10-websocket.md) — upgrade handshake, kiểm tra Origin, framing, backpressure
 - [`11-grpc.md`](11-grpc.md) — trailer, các dạng streaming, load balancing theo từng RPC, lỗi kiểu gRPC
-- [`12-vhost-routing.md`](12-vhost-routing.md) — routing theo Host/SNI, chứng chỉ multi-tenant, cách ly tenant
+- [`12-vhost-routing.md`](12-vhost-routing.md) — routing theo Host/SNI, certificate multi-tenant, cách ly tenant
 
 ## Thứ tự đọc
 
@@ -32,3 +32,8 @@ xạ tới lab riêng của chúng: [`06-static.md`](06-static.md) → [`labs/04
 Các thuật toán eviction nằm ở [`13-algorithms/`](../13-algorithms); kỷ luật normalization mà
 [`04-router.md`](04-router.md) và [`07-security/06-waf.md`](../07-security/06-waf.md) cùng chia sẻ nằm ở
 [`07-security/04-normalization.md`](../07-security/04-normalization.md).
+
+---
+
+<!-- nav -->
+Tiếp theo: [`05-http-stack/01-parser.md`](01-parser.md) →

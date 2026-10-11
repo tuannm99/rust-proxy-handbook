@@ -23,16 +23,16 @@ fn init_logging() {
 // per-request:
 tracing::info!(method = %req.method(), path = %req.uri().path(), status = 200, latency_ms = 4, "request completed");
 ```
-Gotcha: layer JSON của `tracing` cấp phát bộ nhớ cho mỗi field trong mỗi
+Gotcha: layer JSON của `tracing` allocate bộ nhớ cho mỗi field trong mỗi
 event — dưới tải thật, chi phí này trở nên đo được rõ ràng trên CPU. Hãy
 sample hoặc batch log ở QPS cao thay vì log vô điều kiện mọi request.
 
 ### Log level và cái gì thuộc về đâu
 `ERROR` = bản thân proxy thất bại trong việc làm nhiệm vụ của nó (upstream
-không kết nối được, panic bị bắt lại, config không hợp lệ). `WARN` =
+không connection được, panic bị bắt lại, config không hợp lệ). `WARN` =
 xuống cấp nhưng đã được xử lý (retry thành công ở lần thử thứ 2, circuit
 breaker mở ra). `INFO` = một dòng cho mỗi request trong production, hoặc
-cho mỗi sự kiện lifecycle đáng chú ý (config được reload, listener đã
+cho mỗi event lifecycle đáng chú ý (config được reload, listener đã
 bind). `DEBUG`/`TRACE` = dump header, nội tình connection pool — được
 compile vào nhưng bị lọc bỏ mặc định qua `RUST_LOG`/`EnvFilter`, vì ngay cả
 việc *đánh giá* có nên log hay không cũng có chi phí nếu argument không
@@ -42,7 +42,7 @@ Authorization ở mức INFO — đó là cách các proxy làm rò rỉ credent
 các hệ thống log aggregator mà một team rộng hơn có thể đọc được.
 
 Gotcha: bài test hữu ích cho `ERROR` là "mình có muốn bị page vì cái này
-không?" Một proxy log mọi lần kết nối upstream thất bại ở mức `ERROR` sẽ
+không?" Một proxy log mọi lần connection upstream thất bại ở mức `ERROR` sẽ
 tạo ra hàng nghìn dòng trong một lần restart upstream thông thường, và
 level đó không còn mang thông tin gì nữa — nghĩa là lỗi thực sự mới lạ duy
 nhất trở nên vô hình. Những thất bại mà proxy đã *xử lý được* (một retry
@@ -90,7 +90,7 @@ field (một `User-Agent` 1 MB là cách rẻ tiền để lấp đầy ổ đĩ
 
 Gotcha: điều này cũng áp dụng ở downstream. Một dòng log là JSON hợp lệ
 vẫn có thể mang một payload tấn công bất cứ thứ gì *đọc* nó — một dashboard
-render field log ra HTML có một lỗ hổng XSS được nạp bởi chính traffic đi
+render field log ra HTML có một lỗ hổng XSS được feed bởi chính traffic đi
 qua proxy của bạn.
 
 ### Correlation ID / request ID
@@ -106,7 +106,7 @@ let _enter = span.enter(); // mọi log bên trong kế thừa request_id
 ```
 
 Gotcha: đoạn code trên đúng trong một hàm đồng bộ và **sai trong một hàm
-async**. — giữ một guard `Entered` xuyên qua một `.await` gắn span đó vào
+async**: giữ một guard `Entered` xuyên qua một `.await` gắn span đó vào
 bất kỳ task nào executor chạy tiếp theo trên thread đó. Hãy dùng
 `.instrument(span)` trên future thay vì thế;
 [`08-observability/03-tracing.md`](03-tracing.md) giải thích chi tiết vì sao. Đây là bug
@@ -128,8 +128,8 @@ từ ngày đầu.
 
 Gotcha: ghi đồng bộ vào một file log là một syscall blocking trên request
 path. Khi ổ đĩa chậm — hoặc chính log volume đã lấp đầy page cache bằng
-các trang dirty ([`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md)) — write đó chặn một tokio
-worker thread và làm khựng mọi connection multiplex trên nó.
+các trang dirty ([`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md)) — write đó block một tokio
+worker thread và làm stall mọi connection multiplex trên nó.
 `tracing_appender::non_blocking` chuyển việc ghi sang một thread riêng
 đứng sau một queue có giới hạn; queue đó là một ring buffer
 ([`13-algorithms/ring-buffer.md`](../13-algorithms/ring-buffer.md)), và bạn phải biết nó làm gì khi đầy.
@@ -154,33 +154,38 @@ phần nhỏ xác định của phần còn lại.
 Xây dựng theo thứ tự sau.
 
 1. Trong [`proxy`](../../proxy), nối `tracing` + `tracing-subscriber` với formatter JSON
-   cấu hình được qua `RUST_LOG`. **Xong khi** một request phát ra một dòng
+   cấu hình được qua `RUST_LOG`. **Done when** một request phát ra một dòng
    JSON parse được chứa method, path, status, và latency.
 2. Thêm một span cho mỗi request mang `request_id`, gắn bằng
-   `.instrument()` thay vì `enter()`. **Xong khi** một load test với
+   `.instrument()` thay vì `enter()`. **Done when** một load test với
    request đồng thời cho thấy mọi dòng log mang *đúng* request ID — hãy
    xây dựng phiên bản `enter()`-xuyên-`await` trước và quan sát các ID lẫn
    lộn nhau dưới điều kiện đồng thời.
 3. Chấp nhận hoặc tự sinh `X-Request-Id`, validate giá trị do client cung
-   cấp. **Xong khi** một `X-Request-Id` 10 KB hoặc chứa newline bị từ chối
+   cấp. **Done when** một `X-Request-Id` 10 KB hoặc chứa newline bị từ chối
    hoặc thay thế, và một giá trị hợp lệ được forward nguyên vẹn lên
    upstream.
 4. Chuyển sang log field theo allowlist và bọc secret trong config bằng
-   một newtype redact. **Xong khi** một request có `Authorization`,
+   một newtype redact. **Done when** một request có `Authorization`,
    `Cookie`, và `?api_key=` tạo ra các dòng log không chứa bất kỳ cái nào
    trong số đó, và `{:?}` trên config in ra `[redacted]` cho các field bí
    mật.
 5. Thử log injection: gửi một `User-Agent` chứa newline và JSON giả mạo.
-   **Xong khi** output vẫn là đúng một bản ghi log hợp khuôn dạng cho mỗi
+   **Done when** output vẫn là đúng một bản ghi log hợp khuôn dạng cho mỗi
    request, với payload nằm gọn trong một string field.
 6. Chuyển sang `tracing_appender::non_blocking` và đếm số dòng bị drop.
-   **Xong khi** một load test nhắm vào một writer cố tình chậm cho thấy
+   **Done when** một load test nhắm vào một writer cố tình chậm cho thấy
    latency request không bị ảnh hưởng và bộ đếm drop khác 0, *nhìn thấy
    được*.
-7. Đo chi phí của chính việc logging. **Xong khi** bạn có p50/p99 latency
+7. Đo chi phí của chính việc logging. **Done when** bạn có p50/p99 latency
    request với logging bật hoàn toàn, sample, và tắt, theo
    [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md) — khoảng chênh lệch chính là ngân sách
    logging của bạn.
 8. Thêm sampling xác định cùng các quy tắc luôn-log cho mã 5xx và request
-   chậm. **Xong khi** cùng một request hoặc được log ở mọi hop hoặc không
+   chậm. **Done when** cùng một request hoặc được log ở mọi hop hoặc không
    ở đâu cả, và mọi lỗi trong một load test đều xuất hiện đầy đủ.
+
+---
+
+<!-- nav -->
+← Trước: [`08-observability/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`08-observability/02-metrics.md`](02-metrics.md) →

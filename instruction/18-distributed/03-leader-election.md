@@ -73,3 +73,8 @@ one removes it. Prefer that when the job allows.
    to elect a leader or make it idempotent/sharded
    ([`13-algorithms/consistent-hash.md`](../13-algorithms/consistent-hash.md)) instead, and justify which is
    simpler for [`proxy`](../../proxy)'s actual needs.
+
+---
+
+<!-- nav -->
+← Previous: [`18-distributed/02-gossip.md`](02-gossip.md) · [Index](00-README.md) · Next: [`18-distributed/04-distributed-cache.md`](04-distributed-cache.md) →

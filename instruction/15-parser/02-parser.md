@@ -86,3 +86,8 @@ show at once.
 5. Re-implement one rule with `nom` or `winnow` and compare it against your
    hand-written version on readability and error-message quality; decide
    which idiom fits config parsing versus binary framing.
+
+---
+
+<!-- nav -->
+← Previous: [`15-parser/01-lexer.md`](01-lexer.md) · [Index](00-README.md) · Next: [`15-parser/03-ast.md`](03-ast.md) →

@@ -35,3 +35,8 @@ The classic offenders: a single-threaded logger or metrics aggregator every requ
 3. Replace that `Mutex` with `RwLock` or a sharded/lock-free structure, re-measure, and quantify how much of the ceiling was recovered.
 4. Using `tokio::runtime::Handle::metrics()` ([`04-runtime/03-runtime-config.md`](../04-runtime/03-runtime-config.md)), find one component of [`proxy`](../../proxy) (or a [`labs/`](../../labs) crate) that serializes all requests through one point, and estimate its contribution to the overall serial fraction.
 5. Write one paragraph explaining, in Gustafson's terms rather than Amdahl's, why adding cores to a proxy host is expected to raise sustainable concurrent-connection count more reliably than it lowers any single request's latency.
+
+---
+
+<!-- nav -->
+← Previous: [`22-theory/07-crypto-math.md`](07-crypto-math.md) · [Index](00-README.md) · Next: [`22-theory/09-cap-flp.md`](09-cap-flp.md) →

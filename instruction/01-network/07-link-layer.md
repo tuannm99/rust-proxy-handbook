@@ -119,3 +119,8 @@ loaded proxy host loses packets before your code ever sees them.
    neighbor table inside each namespace — the same machinery container
    networking uses. Then run [`labs/00-tcp-server`](../../labs/00-tcp-server) in one namespace
    and connect to it from the other with `nc`.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/06-crypto-basics.md`](06-crypto-basics.md) · [Index](00-README.md) · Next: [`01-network/08-ip-and-icmp.md`](08-ip-and-icmp.md) →

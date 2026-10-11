@@ -8,8 +8,8 @@ project liệt kê trong [`00-README.md`](00-README.md) là để bạn tự vi�
 
 Repository: `github.com/hyperium/hyper` (1.x), thư mục `src/`. hyper giao
 việc tách token header thô cho crate riêng `httparse`
-(`github.com/seanmonstar/httparse`), bạn cũng sẽ ghé qua. Đường dẫn khớp
-với version tại thời điểm viết; nếu một đường dẫn đã chuyển chỗ, hãy
+(`github.com/seanmonstar/httparse`), bạn cũng sẽ ghé qua. Path khớp
+với version tại thời điểm viết; nếu một path đã chuyển chỗ, hãy
 search tên type được nêu.
 
 ## Khi nào đọc phần nào

@@ -58,7 +58,7 @@ toàn.
 Gossip đổi latency và consistency để lấy scalability và resilience: không
 có single point of failure, load trải đều, nhưng convergence tốn vài round
 và các node tạm thời inconsistent. Tune fanout (số peer mỗi round) và
-period theo kích thước fleet — quá aggressive lãng phí băng thông, quá lười
+period theo kích thước fleet — quá aggressive lãng phí bandwidth, quá lười
 làm chậm convergence và failure detection.
 
 ### Không tự viết tay
@@ -85,3 +85,8 @@ polling tập trung — mà với một fleet proxy nhỏ, thường là không.
 5. Chỉ nếu bạn chạy một fleet đa instance: nối một library SWIM vào
    [`proxy`](../../proxy) cho membership của instance và quan sát một instance bị kill
    được phát hiện và loại bỏ — không tự implement protocol.
+
+---
+
+<!-- nav -->
+← Trước: [`18-distributed/01-raft.md`](01-raft.md) · [Mục lục](00-README.md) · Tiếp theo: [`18-distributed/03-leader-election.md`](03-leader-election.md) →

@@ -78,3 +78,8 @@ wasted effort.
    [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md) load.
 5. Align NIC IRQ affinity with your worker sockets and measure whether
    per-packet remote cost drops — connect this to RSS/RPS in [`16-kernel/`](../16-kernel).
+
+---
+
+<!-- nav -->
+← Previous: [`17-performance/02-false-sharing.md`](02-false-sharing.md) · [Index](00-README.md) · Next: [`17-performance/04-memory-layout.md`](04-memory-layout.md) →

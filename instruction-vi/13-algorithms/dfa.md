@@ -30,7 +30,7 @@ fn run(dfa: &Dfa, input: &[u8]) -> bool {
 
 Đây là lý do một DFA là cấu trúc matching nhanh nhất hiện có: O(n) với một
 hằng số nhỏ, dễ đoán — một lần index mảng cho mỗi byte input, không đệ
-quy, không cấp phát.
+quy, không allocate.
 
 ### DFA đến từ đâu: subset construction
 DFA hiếm khi được viết tay; chúng được suy ra từ một NFA (xây bằng
@@ -45,7 +45,7 @@ theo yêu cầu; không lặp lại thảo luận đó ở đây, hãy đọc �
 Nhiều state của DFA giống hệt nhau về hành vi — chúng chấp nhận đúng cùng
 một tập input tương lai — và có thể được gộp lại mà không thay đổi những
 gì automaton match. Thuật toán Hopcroft tìm và gộp các state này trong
-O(n log n), điều này quan trọng cho các DFA parser giao thức được xây tay
+O(n log n), điều này quan trọng cho các DFA parser protocol được xây tay
 (không phải các DFA sinh từ regex) nơi một cách xây ngây thơ tạo ra nhiều
 state hơn cần thiết: ít state hơn nghĩa là bảng nhỏ hơn và hành vi cache
 tốt hơn trên hot path.

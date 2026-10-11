@@ -32,3 +32,8 @@ When the sum of processes' active working sets exceeds physical memory, the syst
 3. Implement clock/second-chance over the same trace and compare its fault count against true LRU — confirm it's close but not identical.
 4. Implement the (offline, cheating) optimal algorithm on the same trace using full knowledge of future accesses, and use it as your baseline to score how close FIFO/LRU/clock get.
 5. Connect it back to [`02-linux/16-memory.md`](../02-linux/16-memory.md): run a process with a working set larger than a cgroup memory limit you set, and observe thrashing (via `vmstat`'s `si`/`so` columns or `/proc/vmstat` page-fault counters) rather than a graceful slowdown.
+
+---
+
+<!-- nav -->
+← Previous: [`22-theory/02-sync-classics.md`](02-sync-classics.md) · [Index](00-README.md) · Next: [`22-theory/04-cpu-scheduling.md`](04-cpu-scheduling.md) →

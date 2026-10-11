@@ -2,9 +2,9 @@
 
 ## What to learn
 
-### `unsafe` thực sự mở khóa cái gì
-`unsafe` không tắt borrow checker hay type checker — nó mở khóa đúng năm
-khả năng bổ sung: dereference raw pointer, gọi các `unsafe` fn (bao gồm
+### `unsafe` thực sự mở ra những gì
+`unsafe` không tắt borrow checker hay type checker — nó chỉ mở thêm đúng năm
+khả năng: dereference raw pointer, gọi các `unsafe` fn (bao gồm
 FFI), implement các `unsafe` trait, mutate một `static`, và truy cập field
 của union. Mọi quy tắc khác của Rust vẫn áp dụng bên trong một block
 `unsafe`. Viết `unsafe` là một lời hứa với compiler rằng *chính bạn* đã tự
@@ -50,7 +50,7 @@ unsafe { buf.set_len(len); }
 Gotcha: một `unsafe impl Send` không sound trên một type thực ra không an
 toàn để di chuyển giữa các thread vẫn compile được bình thường và chỉ sinh
 ra data race hoặc UB dưới một timing cụ thể — đúng kiểu bug sẽ không xuất
-hiện trong một test đơn luồng nhưng sẽ xuất hiện dưới tải trong production.
+hiện trong một test single-threaded nhưng sẽ xuất hiện dưới tải trong production.
 
 ### Giữ unsafe tối thiểu và sound
 Bọc mỗi thao tác `unsafe` trong một hàm safe nhỏ nhất có thể với một tên
@@ -75,3 +75,8 @@ vẫn compile và "chạy được" dưới `cargo test` bình thường.
 4. Tìm (qua docs.rs hoặc source) một `unsafe impl Send` thật trong một
    crate bạn đang phụ thuộc (tokio hoặc hyper) và giải thích bằng lời của
    bạn vì sao nó sound.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/02-lifetimes.md`](02-lifetimes.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/04-sync.md`](04-sync.md) →

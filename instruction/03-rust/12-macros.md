@@ -35,3 +35,8 @@ If a generic function, a trait, or a builder ([`03-rust/13-api-design-and-module
 3. Deliberately shadow a variable name inside a `macro_rules!` expansion and confirm, via `cargo expand` or a quick test, that it does not collide with a same-named variable at the call site — hygiene in action.
 4. Find an attribute macro already in this workspace (`#[tokio::main]` in any `labs/*/src/main.rs`) and run `cargo expand --bin <name>` to see the runtime bootstrap it generates.
 5. Write down, in your own words, why you would not reach for a proc-macro to solve a boilerplate problem in [`proxy`](../../proxy) before ruling out a `macro_rules!`, generic, or trait-based solution.
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/11-concurrency-patterns.md`](11-concurrency-patterns.md) · [Index](00-README.md) · Next: [`03-rust/13-api-design-and-modules.md`](13-api-design-and-modules.md) →

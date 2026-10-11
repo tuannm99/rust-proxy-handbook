@@ -63,3 +63,8 @@ default — don't treat losing zero-copy under TLS as a bug.
 3. `mmap` a file, read from the mapping, then truncate the file from another process and observe the `SIGBUS`.
 4. Use vectored writes (`IoSlice`) in [`labs/04-static-server`](../../labs/04-static-server) to write a response header and body in one syscall instead of concatenating buffers.
 5. Read up on kTLS support in `rustls`/the `ktls` crate and write a short note on whether it's worth pursuing for [`proxy`](../../proxy).
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/17-signals.md`](17-signals.md) · [Index](00-README.md) · Next: [`02-linux/19-netfilter-and-linux-networking.md`](19-netfilter-and-linux-networking.md) →

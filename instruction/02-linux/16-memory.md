@@ -109,3 +109,8 @@ throughput, not a micro-optimization.
 4. Swap [`proxy`](../../proxy)'s allocator to `mimalloc` via `#[global_allocator]` and benchmark allocation-heavy request handling before/after.
 5. If you have access to a multi-socket machine, run `numactl --hardware` and explain what a "remote" memory access would cost relative to local.
 6. Watch faults and the OOM killer: run a scratch program that touches 1 GiB page by page and read `minflt` from `/proc/<pid>/stat` (or `perf stat -e minor-faults`); then run it in a container with `--memory=256m` (and `--memory-swap=256m`) allocating until killed, and confirm exit code 137, `dmesg -T | grep -i oom`, and the `oom_kill` counter in the cgroup's `memory.events`.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/15-io_uring.md`](15-io_uring.md) · [Index](00-README.md) · Next: [`02-linux/17-signals.md`](17-signals.md) →

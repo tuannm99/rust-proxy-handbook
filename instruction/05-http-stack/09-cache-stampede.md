@@ -126,3 +126,8 @@ Build these in order.
 8. Add short negative caching. **Done when** a hot 404 costs one origin
    request per negative-TTL interval, and a resource created immediately
    after a cached 404 becomes visible within seconds.
+
+---
+
+<!-- nav -->
+← Previous: [`05-http-stack/08-cache.md`](08-cache.md) · [Index](00-README.md) · Next: [`05-http-stack/10-websocket.md`](10-websocket.md) →

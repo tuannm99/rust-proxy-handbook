@@ -2,7 +2,7 @@
 
 [`13-algorithms/dfa.md`](dfa.md) nói về lý thuyết automaton accept/reject. File này
 nói về finite state machine như một thứ bạn cố tình dùng đến khi *viết*
-Rust — protocol parser và vòng đời kết nối là state machine dù bạn có mô
+Rust — protocol parser và vòng đời connection là state machine dù bạn có mô
 hình hóa chúng như vậy hay không, và việc mô hình hóa chúng một cách tường
 minh chính là thứ ngăn các bug trạng-thái-không-hợp-lệ xuất hiện khi bạn
 không làm vậy.
@@ -12,7 +12,7 @@ không làm vậy.
 ### Vượt ra ngoài accept/reject: máy có hành động
 Một DFA chỉ trả lời "accept hay reject." Một **máy Mealy** (hành động ở
 mỗi transition) hay **máy Moore** (hành động ở mỗi state) gắn hành vi vào
-chính các transition — đây chính xác là bản chất của một kết nối HTTP/1.1:
+chính các transition — đây chính xác là bản chất của một connection HTTP/1.1:
 `Idle -> ReadingRequestLine -> ReadingHeaders -> ReadingBody -> Idle`
 (keep-alive) hoặc `-> Closed`, với công việc thật xảy ra ở mỗi cạnh, chứ
 không chỉ một câu trả lời có/không ở cuối. Xem [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md)
@@ -79,7 +79,7 @@ request đã được đọc đầy đủ).
    một enum tường minh *trước khi* viết logic parsing; dùng tính đầy đủ
    của `match` để xác nhận mọi state đều có transition được định nghĩa
    cho mọi lớp byte nó có thể thấy.
-2. Viết lại vòng đời kết nối keep-alive từ
+2. Viết lại vòng đời connection keep-alive từ
    [`05-http-stack/05-keepalive.md`](../05-http-stack/05-keepalive.md) (idle → reading → responding →
    idle/closed) thành một chuỗi typestate; thử gọi một method sai thứ tự
    và xác nhận nó không compile được.

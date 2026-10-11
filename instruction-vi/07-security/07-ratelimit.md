@@ -43,8 +43,7 @@ một timer nền cho mỗi client — một timer cho mỗi key bị rate-limit
 scale được tới hàng triệu client.
 
 ### Leaky Bucket
-Mô hình hóa một hàng đợi "rò rỉ" ở một tốc độ không đổi; request được xếp
-hàng và xử lý ở tốc độ cố định đó, hoặc bị drop nếu hàng đợi đầy. Khác với
+Mô hình hóa một queue "rò rỉ" ở một tốc độ không đổi; request được queue và xử lý ở tốc độ cố định đó, hoặc bị drop nếu queue đầy. Khác với
 token bucket, nó làm phẳng output thành một tốc độ nghiêm ngặt không đổi
 thay vì cho phép burst — phù hợp khi hệ thống *downstream* thực sự không
 chịu được burst (ví dụ bảo vệ một backend legacy có capacity cố định), kém
@@ -89,7 +88,7 @@ thường.
 
 ### Không phải request nào cũng có chi phí như nhau
 Một model "1 request = 1 token" định giá một health check 2 KB giống hệt
-một report ghim CPU 400ms. Cost-based limiting tính phí token tỷ lệ với chi
+một report pin CPU 400ms. Cost-based limiting tính phí token tỷ lệ với chi
 phí thực tế: một giá trị tĩnh theo route (rẻ và thường đủ dùng), hoặc token
 bị trừ *sau khi* xong việc dựa trên thời gian upstream đo được hay số byte
 response — cho phép request tiếp theo của một client bị throttle theo
@@ -135,7 +134,7 @@ mỗi lần xảy ra.
 
 Gotcha: đảm bảo client của chính bạn không retry 429 ngay lập tức. Một cơn
 bão retry các request bị từ chối chính là loại tải mà giới hạn tồn tại để
-ngăn chặn — xem [`06-proxy/05-retry.md`](../06-proxy/05-retry.md); `Retry-After` tồn tại là để được
+ngăn — xem [`06-proxy/05-retry.md`](../06-proxy/05-retry.md); `Retry-After` tồn tại là để được
 tôn trọng.
 
 ### Rate limiting phân tán
@@ -151,13 +150,13 @@ mạng cho mỗi request — thường được giảm nhẹ bằng batching/loc
 Ba cách tiếp cận, nói thẳng về sự đánh đổi:
 - **Chia cho N.** Không tốn chi phí phối hợp, và sai bất cứ khi nào traffic
   không phân bố đều — chính xác là trường hợp dưới consistent hashing hay
-  khi kết nối của một client rơi vào cùng một replica. Một client đáng lẽ
+  khi connection của một client rơi vào cùng một replica. Một client đáng lẽ
   được 100 req/s chỉ nhận 20 vì họ tình cờ chạm vào một replica.
 - **Shared store trên mỗi request.** Chính xác, và thêm một RTT mạng cộng
   một dependency cứng vào hot path của mọi request.
 - **Bucket cục bộ với đồng bộ bất đồng bộ định kỳ.** Mỗi replica thực thi
   cục bộ và đối soát bộ đếm của nó với shared store mỗi vài trăm mili giây.
-  Hơi thoáng trong cửa sổ đồng bộ, không tốn latency trên đường request, và
+  Hơi lỏng trong cửa sổ đồng bộ, không tốn latency trên đường request, và
   đây là những gì hầu hết hệ thống production thực sự làm.
 
 Gotcha: shared store giờ là một dependency có thể fail, và bạn phải quyết
@@ -174,33 +173,37 @@ nó trong một sự cố là cách "rate limiter bị sập" biến thành "sit
 Làm lần lượt theo thứ tự sau.
 
 1. Trong [`labs/11-rate-limit`](../../labs/11-rate-limit), implement `TokenBucket` ở trên, key theo
-   source IP với một `dashmap`. **Xong khi** một client vượt tốc độ bị từ
+   source IP với một `dashmap`. **Done when** một client vượt tốc độ bị từ
    chối và một client trong giới hạn thì không bao giờ.
-2. Sửa key. **Xong khi** client IPv6 được key theo prefix /64 — chứng minh
+2. Sửa key. **Done when** client IPv6 được key theo prefix /64 — chứng minh
    bằng một test gửi từ 10.000 địa chỉ riêng biệt trong một /64 và xác
    nhận chúng chia sẻ một bucket, sau khi trước tiên đã thấy phiên bản
    /128 để cho cả 10.000 lọt qua.
-3. Thêm route vào key và giới hạn theo từng route từ config. **Xong khi**
+3. Thêm route vào key và giới hạn theo từng route từ config. **Done when**
    một burst trên `/health` không tiêu tốn ngân sách của `/search`.
-4. Trả về đúng 429 kèm `Retry-After` và các header `RateLimit-*`. **Xong
-   khi** `Retry-After` chính xác trong khoảng một giây so với thời điểm
+4. Trả về đúng 429 kèm `Retry-After` và các header `RateLimit-*`. **Done when** `Retry-After` chính xác trong khoảng một giây so với thời điểm
    capacity thực sự quay lại — xác minh bằng cách sleep đúng khoảng đó và
    xác nhận request tiếp theo thành công.
-5. Thêm eviction cho bucket rảnh và một map có giới hạn. **Xong khi** lấp
+5. Thêm eviction cho bucket rảnh và một map có giới hạn. **Done when** lấp
    đầy map với 1 triệu key tổng hợp làm memory phẳng ra thay vì tăng
    trưởng, và bucket của các client đang hoạt động không bao giờ bị evict
    giữa chừng.
 6. Thêm một giới hạn toàn cục bên cạnh các giới hạn theo client, định cỡ từ
-   một load test thật. **Xong khi** 10.000 client tuân thủ riêng lẻ bị giới
+   một load test thật. **Done when** 10.000 client tuân thủ riêng lẻ bị giới
    hạn tập thể ở capacity upstream đo được của bạn.
-7. Thêm tính phí theo cost cho một route đắt đỏ. **Xong khi** một client
+7. Thêm tính phí theo cost cho một route đắt đỏ. **Done when** một client
    gọi endpoint đắt đỏ tiêu hết ngân sách của họ nhanh hơn tỷ lệ so với một
    client gọi endpoint rẻ.
-8. Chạy hai instance và chứng minh sự nhân lên. **Xong khi** bạn có thể
+8. Chạy hai instance và chứng minh sự nhân lên. **Done when** bạn có thể
    cho thấy một client nhận gấp 2 lần giới hạn của họ; rồi implement bucket
    cục bộ với đồng bộ định kỳ tới một shared store và cho thấy nó hội tụ
    gần 1x.
-9. Kill shared store giữa lúc test. **Xong khi** proxy vẫn phục vụ traffic
+9. Kill shared store giữa lúc test. **Done when** proxy vẫn phục vụ traffic
    với thực thi cục bộ vẫn hoạt động — không phải vô hạn cũng không phải
    từ chối tất cả — và một metric ghi lại rằng nó đang chạy ở chế độ suy
    giảm.
+
+---
+
+<!-- nav -->
+← Trước: [`07-security/06-waf.md`](06-waf.md) · [Mục lục](00-README.md) · Tiếp theo: [`07-security/08-ip-filtering.md`](08-ip-filtering.md) →

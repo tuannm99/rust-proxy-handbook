@@ -1,24 +1,24 @@
 # Load Shedding
 
 Phải làm gì khi công việc đến vượt capacity. Câu trả lời ngắn là "reject
-một phần ngay lập tức" — và lý do vì sao xếp hàng thay vào đó lại tệ hơn
+một phần ngay lập tức" — và lý do vì sao queue thay vào đó lại tệ hơn
 mới là điều file này nói tới.
 
 ## What to learn
-### Xếp hàng là cái bẫy
-Khi demand vượt capacity, hai lựa chọn là xếp hàng phần dư hoặc reject nó.
-Xếp hàng cảm giác tử tế hơn và lại là cái thất bại.
+### Queue là cái bẫy
+Khi demand vượt capacity, hai lựa chọn là queue phần dư hoặc reject nó.
+Queue cảm giác tử tế hơn và lại là cái thất bại.
 
-Hàng đợi lớn dần, nên latency lớn dần theo. Đến lúc một request trong hàng
+Queue lớn dần, nên latency lớn dần theo. Đến lúc một request trong hàng
 tới lượt, client đã timeout rồi và — tệ hơn — đã retry
 ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)), thứ vừa thêm *nhiều hơn* load. Giờ bạn đang tốn
 capacity còn lại để tính ra câu trả lời cho những request chẳng ai còn
-nghe nữa, làm giảm capacity hiệu dụng, làm hàng đợi dài thêm. Vòng lặp đó
+nghe nữa, làm giảm capacity hiệu dụng, làm queue dài thêm. Vòng lặp đó
 tự nuôi sống nó: throughput của công việc *hữu ích* sụp về gần 0 trong khi
 hệ thống vẫn bận rộn hoàn toàn.
 
 Tính chất hồi phục cũng quan trọng. Một hệ thống shedding trở lại bình
-thường ngay khi load giảm. Một hệ thống xếp hàng phải xử lý hết một backlog
+thường ngay khi load giảm. Một hệ thống queue phải xử lý hết một backlog
 các request đã chết từ trước, nên nó vẫn suy giảm rất lâu sau khi nguyên
 nhân đã hết.
 
@@ -48,12 +48,12 @@ Gotcha: đảm bảo logic retry của chính bạn không retry các response b
 shed. Retry một 503 nghĩa là "tôi đang overload" chính là kiểu khuếch đại
 mà shedding tồn tại để ngăn.
 
-### Chặn theo thời gian, không theo số lượng
-Một độ sâu hàng đợi cố định là giới hạn sai, vì độ sâu đúng phụ thuộc bạn
-đang drain nó nhanh thế nào — 100 request xếp hàng thì ổn ở 1ms mỗi cái và
+### Bound theo thời gian, không theo số lượng
+Một độ sâu queue cố định là giới hạn sai, vì độ sâu đúng phụ thuộc bạn
+đang drain nó nhanh thế nào — 100 request queue thì ổn ở 1ms mỗi cái và
 thảm họa ở 500ms mỗi cái.
 
-Quy tắc tốt hơn, từ CoDel, là chặn theo *sojourn time*: drop các request đã
+Quy tắc tốt hơn, từ CoDel, là bound theo *sojourn time*: drop các request đã
 chờ lâu hơn một target. Cái này tự thích ứng khi service time thay đổi, và
 nó biểu đạt trực tiếp điều bạn thực sự quan tâm — một request đã chờ 5
 giây là vô giá trị bất kể nó đứng đầu hay đứng thứ một trăm trong hàng.
@@ -61,6 +61,10 @@ giây là vô giá trị bất kể nó đứng đầu hay đứng thứ một t
 Gotcha: đo thời gian chờ từ lúc request *đến*, không phải từ lúc bạn bắt
 đầu xử lý nó. Toàn bộ điểm mấu chốt là nhận ra thời gian đã chờ, và một
 timer bắt đầu lúc dequeue không thấy được gì trong đó.
+
+Về lý thuyết hàng đợi (queueing theory) đằng sau việc này (Little's Law, vì sao thời gian chờ của một queue M/M/1
+tăng vọt khi utilization tiến gần 1, và vì sao "80% CPU" không có nghĩa là "còn dư 20%"), xem
+[`22-theory/06-queueing-theory.md`](../22-theory/06-queueing-theory.md).
 
 ### Shed đúng request
 Khi đã chấp nhận là phải drop cái gì đó, chọn cái nào là một quyết định
@@ -116,29 +120,33 @@ nào đang xảy ra. Sự phân biệt này cũng quan trọng cho SLI của b�
 Làm theo thứ tự này.
 
 1. Thêm một counter concurrency và một shed threshold tĩnh ở đầu pipeline
-   của [`proxy`](../../proxy), trả 503 với `Retry-After`. **Xong khi** load vượt
-   threshold bị reject ngay thay vì xếp hàng.
-2. Chứng minh thất bại của việc xếp hàng trước, để có baseline cho cách
-   sửa. **Xong khi** bạn có thể chỉ ra, với một hàng đợi không giới hạn,
+   của [`proxy`](../../proxy), trả 503 với `Retry-After`. **Done when** load vượt
+   threshold bị reject ngay thay vì queue.
+2. Chứng minh thất bại của việc queue trước, để có baseline cho cách
+   sửa. **Done when** bạn có thể chỉ ra, với một queue không giới hạn,
    p99 latency tăng vô hạn và throughput hữu ích giảm trong khi process
    vẫn bận 100%.
-3. Đo chi phí của đường shed. **Xong khi** một request bị reject đo được
+3. Đo chi phí của đường shed. **Done when** một request bị reject đo được
    là rẻ hơn một request được serve — nếu không, tìm ra thứ gì đang
    allocate.
 4. Thay giới hạn theo độ sâu bằng giới hạn theo sojourn-time đo từ lúc
-   đến. **Xong khi** threshold thích ứng đúng qua hai workload có service
+   đến. **Done when** threshold thích ứng đúng qua hai workload có service
    time rất khác nhau, mà không cần tune lại.
-5. Thêm giới hạn concurrency theo route. **Xong khi** làm bão hòa một
+5. Thêm giới hạn concurrency theo route. **Done when** làm bão hòa một
    route đắt đỏ để các route khác vẫn serve bình thường.
-6. Miễn trừ health check và thêm các lớp priority. **Xong khi** proxy dưới
+6. Miễn trừ health check và thêm các lớp priority. **Done when** proxy dưới
    shedding nặng vẫn trả lời được probe health của chính nó và vẫn cho qua
    traffic priority cao.
-7. Ngừng retry các response bị shed. **Xong khi** một load test ở 3x
+7. Ngừng retry các response bị shed. **Done when** một load test ở 3x
    capacity cho thấy số request upstream giữ nguyên thay vì nhân lên.
 8. Tách 503 do shed khỏi 503 do upstream trong metrics, và gán đúng chúng
-   vào SLI của bạn. **Xong khi** một dashboard phân biệt được "chúng ta
+   vào SLI của bạn. **Done when** một dashboard phân biệt được "chúng ta
    đang overload" với "upstream đang hỏng."
-9. (Stretch) Thay giới hạn tĩnh bằng giới hạn thích ứng và so sánh. **Xong
-   khi** giới hạn thích ứng tìm ra một threshold gần capacity đo được của
+9. (Stretch) Thay giới hạn tĩnh bằng giới hạn thích ứng và so sánh. **Done when** giới hạn thích ứng tìm ra một threshold gần capacity đo được của
    bạn mà không cần ai nói cho nó biết, và tìm lại được nó sau khi bạn
    inject một cú chậm 3x ở upstream.
+
+---
+
+<!-- nav -->
+← Trước: [`07-security/10-slowloris.md`](10-slowloris.md) · [Mục lục](00-README.md)

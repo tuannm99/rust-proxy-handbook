@@ -188,3 +188,8 @@ Build these in order.
    itself vs which require infrastructure in front of it. **Done when**
    the boundary is explicit — this is the actual design decision, not a
    detail to skip.
+
+---
+
+<!-- nav -->
+← Previous: [`07-security/08-ip-filtering.md`](08-ip-filtering.md) · [Index](00-README.md) · Next: [`07-security/10-slowloris.md`](10-slowloris.md) →

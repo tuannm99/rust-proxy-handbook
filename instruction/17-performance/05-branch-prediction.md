@@ -84,3 +84,8 @@ and only on genuinely lopsided branches.
    hot path's code got denser, and verify with a benchmark that you did not
    make things worse — then decide whether the next step is
    [`17-performance/06-simd.md`](06-simd.md).
+
+---
+
+<!-- nav -->
+← Previous: [`17-performance/04-memory-layout.md`](04-memory-layout.md) · [Index](00-README.md) · Next: [`17-performance/06-simd.md`](06-simd.md) →

@@ -165,3 +165,8 @@ distros. The same UDP counters are in `nstat -az | grep -i udp` or
    between your QUIC endpoint and a plain TCP+TLS transfer of the same
    data — quantify the gap for yourself rather than taking the claim on
    faith.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/17-http2.md`](17-http2.md) · [Index](00-README.md) · Next: [`01-network/19-tls.md`](19-tls.md) →

@@ -65,7 +65,7 @@ treo ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)) giờ nổ trên 
 khỏe mạnh. Giới hạn "tổng thời gian request" giết một connection đáng lẽ
 sống nhiều giờ. **Áp request timeout lên connection đã upgrade là bug
 WebSocket-qua-proxy phổ biến nhất**, và nó biểu hiện như "app của chúng
-tôi ngắt kết nối mỗi 60 giây" — điều người dùng nhận ra và log hiếm khi
+tôi disconnect mỗi 60 giây" — điều người dùng nhận ra và log hiếm khi
 giải thích được.
 
 Một khi đã upgrade, các giới hạn áp dụng là loại khác: một idle timeout đo
@@ -78,7 +78,7 @@ Frame WebSocket có một opcode (text, binary, close, ping, pong, continuation)
 Gotcha: nếu bạn *thực sự* parse frame (để kiểm tra, lọc, hoặc áp giới hạn
 kích thước message), trường độ dài mở rộng 64-bit nằm dưới quyền kiểm
 soát của attacker. Một header frame khai một payload 2^63 byte phải bị
-reject theo một giới hạn cấu hình *trước* bất kỳ lần cấp phát nào — không
+reject theo một giới hạn cấu hình *trước* bất kỳ lần allocation nào — không
 bao giờ `Vec::with_capacity(declared_len)`. Đây là cùng loại bug với một
 decompression bomb ([`07-security/09-ddos.md`](../07-security/09-ddos.md)): tin vào một trường độ dài
 do peer chọn.
@@ -98,16 +98,16 @@ Không như request/response bình thường nơi `Content-Length` giới hạn 
 
 `tokio::io::copy_bidirectional` cho bạn điều này miễn phí ở tầng byte: nó
 đọc vào một buffer cố định và không đọc thêm cho tới khi bên viết đã
-drain, nên một reader chậm tự nhiên chặn một writer nhanh. Ngay khi bạn
+drain, nên một reader chậm tự nhiên block một writer nhanh. Ngay khi bạn
 đưa vào một channel riêng giữa hai leg (để kiểm tra hay biến đổi message),
 bạn sở hữu bài toán backpressure — dùng một channel có giới hạn, và hiểu
-rằng "có giới hạn" nghĩa là một client chậm cuối cùng sẽ chặn lần đọc
+rằng "có giới hạn" nghĩa là một client chậm cuối cùng sẽ block lần đọc
 upstream, điều đó là đúng đắn.
 
 Gotcha: một connection WebSocket là một tài nguyên *sống lâu*, nên cách
 tính toán từ [`07-security/09-ddos.md`](../07-security/09-ddos.md) thay đổi hình dạng. Mười nghìn
 WebSocket rảnh tốn mười nghìn fd, socket, và cặp buffer, vô thời hạn,
-trong khi không sinh request nào cả — nên giới hạn tốc độ request không
+trong khi không sinh request nào cả — nên rate limiting request không
 ràng buộc được chúng. Giới hạn số connection đã upgrade đồng thời tường
 minh, cả theo từng client lẫn toàn cục.
 
@@ -119,30 +119,35 @@ Làm theo thứ tự này.
 
 1. Trong [`labs/02-http-server`](../../labs/02-http-server), implement upgrade handshake bằng tay —
    validate `Sec-WebSocket-Version`, tính `Sec-WebSocket-Accept`, không
-   dùng crate WebSocket nào. **Xong khi** một browser thật hoặc client
+   dùng crate WebSocket nào. **Done when** một browser thật hoặc client
    `websocat` hoàn thành handshake với nó.
 2. Thêm validate `Origin` với một allowlist, cùng một chính sách tường
-   minh cho `Origin` bị thiếu. **Xong khi** một handshake từ một origin
+   minh cho `Origin` bị thiếu. **Done when** một handshake từ một origin
    không được phép bị reject ngay lúc `101` — viết một trang HTML ở một
    origin khác mở một socket tới server của bạn và xác nhận nó fail.
 3. Chiếm lấy luồng đã upgrade thô và echo lại frame text, parse vừa đủ
-   để unmask và re-frame. **Xong khi** một client round-trip được cả
+   để unmask và re-frame. **Done when** một client round-trip được cả
    message text lẫn binary, và một frame khai một payload length phi lý
-   bị reject mà không cấp phát.
+   bị reject mà không allocate.
 4. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), thêm pass-through proxying: forward
    handshake (sinh lại header hop-by-hop), rồi relay bằng
-   `tokio::io::copy_bidirectional`. **Xong khi** một WebSocket end-to-end
+   `tokio::io::copy_bidirectional`. **Done when** một WebSocket end-to-end
    hoạt động qua proxy.
-5. Audit timeout của bạn. **Xong khi** một WebSocket rảnh sống lâu hơn
+5. Audit timeout của bạn. **Done when** một WebSocket rảnh sống lâu hơn
    hẳn read timeout của request và tổng request timeout — set cả hai
    thành 10 giây có chủ đích và xác nhận một socket rảnh 5 phút vẫn sống,
    sau khi trước đó đã xác nhận nó *chết* khi chưa sửa.
 6. Thêm ping/pong với một deadline cho pong và một metric pong-bị-lỡ.
-   **Xong khi** một peer ngừng trả lời ping bị đóng trong deadline và lần
+   **Done when** một peer ngừng trả lời ping bị đóng trong deadline và lần
    đóng đó được đếm.
 7. Thêm một test backpressure: writer upstream nhanh, reader client cố
-   tình chậm. **Xong khi** memory của proxy phẳng suốt thời gian đó thay
+   tình chậm. **Done when** memory của proxy phẳng suốt thời gian đó thay
    vì tăng theo backlog.
 8. Giới hạn số connection đã upgrade đồng thời, cả toàn cục lẫn theo từng
-   client. **Xong khi** một client mở connection trong vòng lặp bị từ
+   client. **Done when** một client mở connection trong vòng lặp bị từ
    chối khi vượt giới hạn và traffic HTTP bình thường không bị ảnh hưởng.
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/09-cache-stampede.md`](09-cache-stampede.md) · [Mục lục](00-README.md) · Tiếp theo: [`05-http-stack/11-grpc.md`](11-grpc.md) →

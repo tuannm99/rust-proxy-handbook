@@ -62,3 +62,8 @@ Gotcha: the dependency itself must be declared `tokio-rustls = { version = "..."
 3. Deliberately observe feature unification: enable a feature only in a dev-dependency of one crate, build the whole workspace, and confirm (via `cargo tree -e features` or similar) that a sibling crate using the same dependency also gets that feature turned on.
 4. Wire up `build.rs` with `tonic-build` in whichever crate handles [`05-http-stack/11-grpc.md`](../05-http-stack/11-grpc.md)'s exercise, to compile a `.proto` file, and inspect the generated code under `target/*/build/*/out/`.
 5. Time a clean build before and after adding schema compilation to `build.rs`, and decide whether checking in the generated code would be worth it for this workspace's size.
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/16-testing-idioms.md`](16-testing-idioms.md) · [Index](00-README.md) · Next: [`03-rust/18-async-traits.md`](18-async-traits.md) →

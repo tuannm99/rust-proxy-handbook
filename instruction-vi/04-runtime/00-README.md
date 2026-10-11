@@ -15,7 +15,7 @@ hoạt động — và điều đó có nghĩa gì cho code bạn viết trên n
 ## Đi tiếp theo đâu
 
 Mọi thứ từ [`05-http-stack/`](../05-http-stack) trở đi chạy trên nền này. Hai failure mode
-cần mang theo: block một worker thread làm nghẽn mọi kết nối multiplex
+cần mang theo: block một worker thread làm nghẽn mọi connection multiplex
 trên nó (xem [`08-observability/04-profiling.md`](../08-observability/04-profiling.md) và `tokio-console` để
 tìm ra nó), và một future bị drop là một thao tác bị hủy, thứ mà
 [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md) biến thành một bug cụ thể —
@@ -25,3 +25,8 @@ trên `JoinSet` thay vì chỉ là một lời cảnh báo mang tính khái ni�
 cancellation của [`04-structured-concurrency.md`](04-structured-concurrency.md), và
 [`05-runtime-comparisons.md`](05-runtime-comparisons.md) là điểm để quay lại nếu một hot path cụ thể
 có vẻ vượt quá mô hình mặc định của tokio.
+
+---
+
+<!-- nav -->
+Tiếp theo: [`04-runtime/01-tokio.md`](01-tokio.md) →

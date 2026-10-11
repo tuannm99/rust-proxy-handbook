@@ -114,3 +114,8 @@ Build these in order.
    with any `EACCES` you caused explained via `strace`.
 7. Add `Type=notify` (the `sd-notify` crate) and `READY=1` after the listener is bound. **Done when** `systemctl start` blocks until the port is truly listening, and a dependent unit with `After=proxy.service`
    can rely on it.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/20-limits-and-proc.md`](20-limits-and-proc.md) · [Index](00-README.md) · Next: [`02-linux/22-recall-and-review.md`](22-recall-and-review.md) →

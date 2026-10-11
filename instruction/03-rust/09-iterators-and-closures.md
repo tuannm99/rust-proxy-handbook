@@ -40,3 +40,8 @@ fn make_key_extractor(header: &'static str) -> impl Fn(&Request) -> Option<&str>
 3. Implement `Iterator` by hand for a custom type (e.g. a struct walking chunks of a `Bytes` buffer) and drive it with a plain `for` loop to confirm the `IntoIterator` wiring works.
 4. In [`labs/03-router`](../../labs/03-router), store route handlers as `Box<dyn Fn(&Request) -> Response + Send + Sync>` in a `Vec`, and explain why `impl Fn` could not be used for that field's type instead.
 5. Compare a `.filter().map().collect()` chain against a hand-rolled loop doing the same work by inspecting `--release` codegen (`cargo asm`, or just timing both under load) and confirm they're close.
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/08-error-handling.md`](08-error-handling.md) · [Index](00-README.md) · Next: [`03-rust/10-smart-pointers-and-interior-mutability.md`](10-smart-pointers-and-interior-mutability.md) →

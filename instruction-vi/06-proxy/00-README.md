@@ -27,3 +27,8 @@ trước đó giả định là cố định.
 Cùng nhau, các file này hỗ trợ [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) và
 [`labs/06-load-balancer`](../../labs/06-load-balancer). Các thuật toán đứng sau balancer — smooth WRR,
 Maglev, rendezvous hashing — có bài deep dive riêng trong [`13-algorithms/`](../13-algorithms).
+
+---
+
+<!-- nav -->
+Tiếp theo: [`06-proxy/01-upstream.md`](01-upstream.md) →

@@ -28,3 +28,8 @@ bottleneck. The natural trigger is [`proxy`](../../proxy) under
 
 Zero-copy I/O (`sendfile`/`splice`/`mmap`) is covered in
 [`02-linux/18-zerocopy.md`](../02-linux/18-zerocopy.md), not duplicated here.
+
+---
+
+<!-- nav -->
+Next: [`17-performance/01-cpu-cache.md`](01-cpu-cache.md) →

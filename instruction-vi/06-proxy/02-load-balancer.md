@@ -30,7 +30,7 @@ impl RoundRobin {
 }
 ```
 Gotcha: round robin thuần bỏ qua load — nếu một upstream chậm, nó vẫn nhận
-một phần bằng nhau trong các request mới và hàng đợi của nó chất đống.
+một phần bằng nhau trong các request mới và queue của nó chất đống.
 
 Gotcha: `fetch_add` trên một counter dùng chung là một cache line bị tranh
 chấp trên mọi worker thread ở mọi request ([`17-performance/02-false-sharing.md`](../17-performance/02-false-sharing.md))
@@ -55,15 +55,15 @@ upstream, không ổn với hàng nghìn (dùng một heap,
 [`13-algorithms/heap.md`](../13-algorithms/heap.md), nếu bạn cần scale xa hơn).
 
 Gotcha: least-connection có thể gây thundering herd lên một upstream vừa
-hồi phục (0 kết nối trông hấp dẫn nhất) — kết hợp với slow start / ramp-up
-kết nối ([`03-healthcheck.md`](03-healthcheck.md)).
+hồi phục (0 connection trông hấp dẫn nhất) — kết hợp với slow start / ramp-up
+connection ([`03-healthcheck.md`](03-healthcheck.md)).
 
-Gotcha, và cái này mang tính cấu trúc: **số đếm kết nối của bạn là cục
-bộ.** Với M instance proxy, mỗi instance chỉ biết những kết nối *chính nó*
+Gotcha, và cái này mang tính cấu trúc: **số đếm connection của bạn là cục
+bộ.** Với M instance proxy, mỗi instance chỉ biết những connection *chính nó*
 đã mở. Mỗi instance độc lập tính toán "upstream 7 đang ít tải nhất" từ góc
 nhìn một phần của riêng nó, và tất cả chúng đồng thời gửi request tiếp
-theo tới đó. Thuật toán được kỳ vọng dàn đều tải đã đồng bộ hóa M proxy
-vào một host. Chất lượng của least-connection giảm khi số lượng proxy
+theo tới đó. Thuật toán được kỳ vọng dàn đều tải lại khiến M proxy đồng loạt
+dồn vào một host. Chất lượng của least-connection giảm khi số lượng proxy
 tăng, chính xác là điều ngược lại với những gì bạn muốn từ một câu chuyện
 scaling — và đó là lý do cho phần tiếp theo.
 
@@ -95,7 +95,7 @@ leak làm một host khỏe mạnh trở nên vĩnh viễn kém hấp dẫn); v�
 thừa hưởng vấn đề host-nguội bên dưới.
 
 ### Latency-aware: peak EWMA
-Số lượng kết nối là một proxy cho load, không phải bản thân load — một
+Số lượng connection là một proxy cho load, không phải bản thân load — một
 upstream với 4 request nhanh ít tải hơn một upstream với 3 request chậm.
 Peak EWMA chấm điểm mỗi upstream bằng một exponentially-weighted moving
 average của latency phản hồi quan sát được, nhân với số request đang chờ,
@@ -162,33 +162,38 @@ xuống viết [`proxy/`](../../proxy):
 ## Practice
 Xây theo thứ tự — mỗi bước cần các phép đo của bước trước để đánh giá.
 
-1. Trong [`labs/06-load-balancer`](../../labs/06-load-balancer), cài đặt round robin. **Xong khi** một
+1. Trong [`labs/06-load-balancer`](../../labs/06-load-balancer), cài đặt round robin. **Done when** một
    load test cho thấy request được phân phối trong ±1% giữa 3 upstream giả
    bằng nhau.
 2. Thêm một upstream cố ý chậm (inject 200ms vào một backend) và chạy lại
-   cùng test. **Xong khi** bạn có thể chỉ ra round robin vẫn gửi một phần
+   cùng test. **Done when** bạn có thể chỉ ra round robin vẫn gửi một phần
    ba traffic cho nó và p99 của bạn tan nát — đây là baseline mà mọi thuật
    toán sau phải vượt qua.
-3. Thêm least connection. **Xong khi** test upstream-chậm cho thấy traffic
+3. Thêm least connection. **Done when** test upstream-chậm cho thấy traffic
    tới host chậm giảm rõ rệt và p99 tốt hơn bước 2, với số liệu ghi lại cho
    cả hai.
 4. Tái tạo hiện tượng herd phân tán: chạy 3 instance của balancer nhắm vào
    cùng một pool, tất cả dùng least-connection chính xác, và log upstream
-   nào mỗi instance chọn cho mỗi request. **Xong khi** bạn có thể chỉ ra
+   nào mỗi instance chọn cho mỗi request. **Done when** bạn có thể chỉ ra
    các instance hội tụ vào cùng một upstream đồng thời.
-5. Cài đặt P2C trên cùng counter đó. **Xong khi** chạy lại bước 4 cho thấy
+5. Cài đặt P2C trên cùng counter đó. **Done when** chạy lại bước 4 cho thấy
    sự hội tụ biến mất, và chạy lại bước 3 cho thấy p99 ít nhất tốt bằng
    least-connection chính xác — với chi phí O(1) thay vì O(n) mỗi lượt
    chọn.
 6. Cài đặt chấm điểm peak EWMA đứng sau cùng một trait và kết hợp với P2C.
-   **Xong khi** một test với một upstream *chậm nhưng khỏe mạnh* route
-   traffic tránh xa nó nhanh hơn cách chấm điểm dựa trên số kết nối, và
+   **Done when** một test với một upstream *chậm nhưng khỏe mạnh* route
+   traffic tránh xa nó nhanh hơn cách chấm điểm dựa trên số connection, và
    một test với một upstream đang idle cho thấy nó không nhận một đợt
    bùng nổ khi lần đầu có traffic.
-7. Cài đặt consistent hash theo key từ một header. **Xong khi** cùng một
+7. Cài đặt consistent hash theo key từ một header. **Done when** cùng một
    key rơi vào cùng một upstream qua một lần restart toàn bộ process
    (chứng minh hash của bạn ổn định), và bỏ một upstream khỏi ring 5-host
    remap gần đúng 20% số key — hãy đo, đừng giả định.
-8. Thêm bounded loads vào ring. **Xong khi** một test nơi 90% request chia
+8. Thêm bounded loads vào ring. **Done when** một test nơi 90% request chia
    sẻ một key phân tán traffic đó ra nhiều upstream thay vì làm tan chảy
    một cái, trong khi các key ít lưu lượng vẫn giữ affinity hoàn hảo.
+
+---
+
+<!-- nav -->
+← Trước: [`06-proxy/01-upstream.md`](01-upstream.md) · [Mục lục](00-README.md) · Tiếp theo: [`06-proxy/03-healthcheck.md`](03-healthcheck.md) →

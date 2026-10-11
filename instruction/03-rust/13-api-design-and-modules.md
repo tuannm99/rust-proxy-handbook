@@ -49,3 +49,8 @@ Adding a `pub` field, a new variant to a `pub` enum without `#[non_exhaustive]`,
 3. Mark an enum you own with `#[non_exhaustive]`, add a variant, and confirm existing exhaustive `match`es outside the defining module now fail to compile — then fix them with a wildcard arm.
 4. Write a sealed trait for a small `Middleware`-style abstraction, and confirm from a separate module that outside code cannot implement it.
 5. Pick one `pub` item in a [`labs/`](../../labs) crate and write down what changing its shape would break for a hypothetical downstream user — decide whether it should really be `pub`.
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/12-macros.md`](12-macros.md) · [Index](00-README.md) · Next: [`03-rust/14-ffi-and-abi.md`](14-ffi-and-abi.md) →

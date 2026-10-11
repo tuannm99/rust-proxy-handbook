@@ -19,8 +19,8 @@ lại khi node đó chết.
 Thất bại làm việc này khó là hai node đều tin mình là leader — split-brain
 — xảy ra dưới một network partition khi mỗi bên không thấy được bên kia
 và cho rằng nó đã chết. Hai leader viết vào shared state chính là sự hỏng
-hóc bạn đang cố ngăn chặn. Mọi giải pháp thật đều về bản chất là ngăn hoặc
-chặn giới hạn split-brain, và câu trả lời luôn là một *đa số*: một node
+hóc bạn đang cố ngăn. Mọi giải pháp thật đều về bản chất là ngăn hoặc
+bound split-brain, và câu trả lời luôn là một *đa số*: một node
 chỉ có thể là leader nếu đa số đồng ý, và một partition chỉ có thể có
 nhiều nhất một bên là đa số.
 
@@ -31,7 +31,7 @@ một lease (lock) sống ngắn trong một store tự nó đã giải quyết 
 ```text
 leader = ai giữ key "leader" với một TTL;
   người giữ renew nó mỗi TTL/3;
-  nếu người giữ chết, TTL hết hạn và một node khác chiếm lấy nó.
+  nếu người giữ chết, TTL expire và một node khác chiếm lấy nó.
 ```
 
 etcd, Consul, và ZooKeeper expose chính xác cái này; `leader-election` của
@@ -73,3 +73,8 @@ loại bỏ nó. Ưu tiên cách đó khi công việc cho phép.
    chọn một leader hay làm nó idempotent/sharded
    ([`13-algorithms/consistent-hash.md`](../13-algorithms/consistent-hash.md)) thay vào đó, và giải thích cái nào
    đơn giản hơn cho nhu cầu thật của [`proxy`](../../proxy).
+
+---
+
+<!-- nav -->
+← Trước: [`18-distributed/02-gossip.md`](02-gossip.md) · [Mục lục](00-README.md) · Tiếp theo: [`18-distributed/04-distributed-cache.md`](04-distributed-cache.md) →

@@ -197,3 +197,8 @@ assume "read request, then write response".
    incoming one, and read [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) and
    [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md) to connect the framing discussion
    to how a parser must enforce it.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/14-dns.md`](14-dns.md) · [Index](00-README.md) · Next: [`01-network/16-http1-wire-format.md`](16-http1-wire-format.md) →

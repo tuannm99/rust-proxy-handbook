@@ -120,3 +120,8 @@ kernel/router's job, never an application's.
    and log each connection's full 4-tuple (`local_addr()` +
    `peer_addr()`) — confirm they differ only in source port if both
    clients are on the same machine.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/01-fundamentals.md`](01-fundamentals.md) · [Index](00-README.md) · Next: [`01-network/03-byte-streams.md`](03-byte-streams.md) →

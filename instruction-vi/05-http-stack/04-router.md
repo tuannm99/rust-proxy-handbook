@@ -126,36 +126,41 @@ route thay vì ngầm định.
 Làm theo thứ tự này.
 
 1. Trong [`labs/03-router`](../../labs/03-router), implement một route matcher tuyến tính
-   (method + path chính xác) nối vào hyper handler. **Xong khi** hai path
+   (method + path chính xác) nối vào hyper handler. **Done when** hai path
    khác nhau route tới hai handler khác nhau.
 2. Viết các test path-confusion trước khi thêm normalization: request
    `/public/../admin`, `//admin`, `/admin/`, `/%2e%2e/admin`, và
    `/pub%2f../admin` nhắm vào một router cho phép `/public/*` và block
-   `/admin`. **Xong khi** bạn xác nhận ít nhất một trong số đó chạm tới
+   `/admin`. **Done when** bạn xác nhận ít nhất một trong số đó chạm tới
    route bị block — bạn cần một baseline đang fail.
 3. Thêm path normalization (resolve dot-segment, gộp slash, độ sâu decode
    có ghi rõ, trailing slash canonical) áp trước khi match *và* dùng cho
-   path được forward. **Xong khi** mọi test ở bước 2 đều bị block, và
+   path được forward. **Done when** mọi test ở bước 2 đều bị block, và
    upstream nhận được path đã normalize.
 4. Thêm path parameter và wildcard với precedence tường minh, và phát
-   hiện xung đột lúc đăng ký. **Xong khi** `/users/me` thắng
+   hiện xung đột lúc đăng ký. **Done when** `/users/me` thắng
    `/users/:id` bất kể thứ tự đăng ký, và đăng ký một cặp thật sự mơ hồ
    fail ngay lúc khởi động.
 5. Thêm method dispatch với 404 và 405 đúng cùng header `Allow`, cộng với
-   `HEAD` fallback về route `GET` và `OPTIONS` bỏ qua auth. **Xong khi**
+   `HEAD` fallback về route `GET` và `OPTIONS` bỏ qua auth. **Done when**
    `HEAD` trên một route chỉ có `GET` trả về 200 không body, và một CORS
    preflight thành công mà không cần credential.
 6. Thay router tuyến tính bằng radix tree từ [`13-algorithms/radix-tree.md`](../13-algorithms/radix-tree.md).
-   **Xong khi** toàn bộ test suite pass không đổi và latency lookup phẳng
+   **Done when** toàn bộ test suite pass không đổi và latency lookup phẳng
    từ 10 tới 1000 route.
 7. Refactor handler đứng sau một trait kiểu `Service` và thêm middleware
-   logging. **Xong khi** cùng một middleware bọc được cả một handler nội
+   logging. **Done when** cùng một middleware bọc được cả một handler nội
    bộ và (về sau) một route proxy mà không cần sửa đổi.
-8. Thêm validate tính nhất quán `Host`/`:authority`/SNI. **Xong khi** một
+8. Thêm validate tính nhất quán `Host`/`:authority`/SNI. **Done when** một
    request có `Host` bất đồng với SNI bị reject, và bạn có thể nói rõ
    nguồn nào router của bạn coi là authoritative.
 9. Khi tới [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), làm cho một route đã match resolve
    tới một tên upstream pool, với việc rewrite prefix theo từng route
-   tường minh, và swap bảng atomic khi reload. **Xong khi** một lần reload
+   tường minh, và swap bảng atomic khi reload. **Done when** một lần reload
    bảng route dưới tải đồng thời tạo ra zero request bị rớt hoặc route
    sai.
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/03-hop-by-hop-headers.md`](03-hop-by-hop-headers.md) · [Mục lục](00-README.md) · Tiếp theo: [`05-http-stack/05-keepalive.md`](05-keepalive.md) →

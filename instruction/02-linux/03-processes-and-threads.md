@@ -102,3 +102,8 @@ thing).
    to `tokio::time::sleep` for 100ms concurrently — measure how late the
    sleep actually fires, and explain why using the stacked-scheduler
    model above.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/02-hardware-basics.md`](02-hardware-basics.md) · [Index](00-README.md) · Next: [`02-linux/04-process-lifecycle.md`](04-process-lifecycle.md) →

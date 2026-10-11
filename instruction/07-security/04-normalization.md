@@ -137,3 +137,8 @@ Build these in order.
    the original bytes.
 6. Keep the original for logs only. **Done when** a blocked request's log
    line shows the raw input as sent, while no decision path can read it.
+
+---
+
+<!-- nav -->
+← Previous: [`07-security/03-mtls.md`](03-mtls.md) · [Index](00-README.md) · Next: [`07-security/05-request-smuggling.md`](05-request-smuggling.md) →

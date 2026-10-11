@@ -103,3 +103,8 @@ well-known-ports note) let more of those syscalls succeed.
    `Vec<u8>` against `writev` (vectored write, `IoSlice`) of the same
    three buffers unconcatenated — confirm the syscall count differs by
    exactly the amount the text above predicts.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/04-process-lifecycle.md`](04-process-lifecycle.md) · [Index](00-README.md) · Next: [`02-linux/06-filesystem-and-vfs.md`](06-filesystem-and-vfs.md) →

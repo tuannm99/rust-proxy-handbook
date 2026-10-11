@@ -125,3 +125,8 @@ Build these in order.
 7. Use `iptables -t nat -A OUTPUT -p tcp --dport 80 -j REDIRECT --to-ports <port>` with a scratch program that reads
    `SO_ORIGINAL_DST` via `getsockopt` (`libc`/`nix`). **Done when** it prints the real destination of a redirected `curl`,
    and you have exempted the proxy's own UID so it does not redirect to itself.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/18-zerocopy.md`](18-zerocopy.md) · [Index](00-README.md) · Next: [`02-linux/20-limits-and-proc.md`](20-limits-and-proc.md) →

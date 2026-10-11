@@ -24,3 +24,8 @@ ordering table collects constraints scattered through [`05-http-stack/`](../05-h
 
 This is the phase where [`proxy/`](../../proxy) stops being a collection of labs and
 becomes something you could run.
+
+---
+
+<!-- nav -->
+Next: [`09-architecture/01-components.md`](01-components.md) →

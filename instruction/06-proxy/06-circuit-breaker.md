@@ -132,3 +132,8 @@ Build these in order.
 7. Decide and implement the all-circuits-open policy. **Done when**
    killing every upstream produces your chosen behavior deliberately —
    fail fast, or try anyway — rather than whatever falls out.
+
+---
+
+<!-- nav -->
+← Previous: [`06-proxy/05-retry.md`](05-retry.md) · [Index](00-README.md) · Next: [`06-proxy/07-service-discovery.md`](07-service-discovery.md) →

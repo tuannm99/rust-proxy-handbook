@@ -95,3 +95,8 @@ months for someone starting from zero; the beginner tracks of
 3. Finish Rustlings. **Done when** every exercise passes and you could explain the fix for any ten of them to someone else.
 4. Complete the Tokio tutorial's mini-Redis. **Done when** two clients can set and get keys concurrently against your server.
 5. Read [`01-network/01-fundamentals.md`](../01-network/01-fundamentals.md) and [`02-linux/01-fundamentals.md`](../02-linux/01-fundamentals.md) and do their Practice sections, then re-take the self-check. **Done when** every answer is yes.
+
+---
+
+<!-- nav -->
+← Previous: [`00-introduction/01-learning-roadmap.md`](01-learning-roadmap.md) · [Index](00-README.md) · Next: [`00-introduction/03-study-loop.md`](03-study-loop.md) →

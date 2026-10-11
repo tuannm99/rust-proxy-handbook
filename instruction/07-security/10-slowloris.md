@@ -121,3 +121,8 @@ Build these in order.
    unchanged and connection count stays bounded.
 7. Confirm exemptions. **Done when** an idle WebSocket survives
    indefinitely while an unresponsive one (no pong) is closed.
+
+---
+
+<!-- nav -->
+← Previous: [`07-security/09-ddos.md`](09-ddos.md) · [Index](00-README.md) · Next: [`07-security/11-load-shedding.md`](11-load-shedding.md) →

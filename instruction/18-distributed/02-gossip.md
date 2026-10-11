@@ -88,3 +88,8 @@ does not.
 5. Only if you run a multi-instance fleet: wire a SWIM library into [`proxy`](../../proxy)
    for instance membership and observe a killed instance being detected and
    removed — do not implement the protocol yourself.
+
+---
+
+<!-- nav -->
+← Previous: [`18-distributed/01-raft.md`](01-raft.md) · [Index](00-README.md) · Next: [`18-distributed/03-leader-election.md`](03-leader-election.md) →

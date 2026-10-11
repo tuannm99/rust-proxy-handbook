@@ -71,3 +71,8 @@ normal `cargo test`.
    comment for each before running the code.
 4. Find (via docs.rs or source) one real `unsafe impl Send` in a crate you
    depend on (tokio or hyper) and explain in your own words why it's sound.
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/02-lifetimes.md`](02-lifetimes.md) · [Index](00-README.md) · Next: [`03-rust/04-sync.md`](04-sync.md) →

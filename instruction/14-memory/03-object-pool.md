@@ -71,3 +71,8 @@ decide which, deliberately, rather than growing without bound by default.
 4. Cap the pool size and add a load test that drives more concurrent
    checkouts than the cap; confirm your chosen overflow behavior (block,
    fall back to fresh allocation, or reject) is what actually happens.
+
+---
+
+<!-- nav -->
+← Previous: [`14-memory/02-arena.md`](02-arena.md) · [Index](00-README.md) · Next: [`14-memory/04-buffer-pool.md`](04-buffer-pool.md) →

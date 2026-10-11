@@ -1,19 +1,27 @@
-# Vòng đời Process: fork, exec, wait, Zombie, và PID 1
+# Vòng đời Process: fork, exec, wait, Zombie và PID 1
 
-Một process được sinh ra, bị thay thế, được giám sát và được thu dọn như thế nào — và vì
-sao hành vi của proxy khi là con của một shell, systemd hay container runtime lại phụ
-thuộc vào nó. Xây trên [`03-processes-and-threads.md`](03-processes-and-threads.md).
+File này nói về cách một process được sinh ra, bị thay thế, được giám sát và được dọn dẹp
+(reap). Nó cũng giải thích vì sao hành vi của proxy phụ thuộc vào việc nó là con của shell,
+của systemd hay của container runtime. File dựa trên
+[`03-processes-and-threads.md`](03-processes-and-threads.md).
 
 ## What to learn
 
-### fork: nhân bản process
-`fork()` tạo một **child** gần như là bản sao y hệt của caller: cùng code, cùng nội dung
-bộ nhớ (copy-on-write, nên việc copy là lười và rẻ — [`16-memory.md`](16-memory.md)), cùng **file
-descriptor đang mở** (cả hai process giờ cùng trỏ vào *cùng* các kernel object;
-[`05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md)). Nó trả về **hai lần**: PID của child ở parent, và `0` ở
-child. Từ đó chúng rẽ nhánh. Chi tiết chia sẻ fd rất quan trọng: một listening socket
-được thừa kế qua `fork` là cách cổ nhất để chạy nhiều worker trên một port, và là lý do
-một socket "đã đóng" có thể vẫn mở nếu một child bị quên vẫn giữ nó.
+### fork: nhân bản một process
+`fork()` tạo ra một **child** gần như giống hệt caller:
+
+- Cùng code.
+- Cùng nội dung bộ nhớ. Bộ nhớ được copy theo kiểu copy-on-write, nên việc copy diễn ra
+  lười và rất rẻ ([`16-memory.md`](16-memory.md)).
+- Cùng các **file descriptor đang mở**. Cả hai process giờ trỏ vào *cùng* các kernel object
+  ([`05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md)).
+
+`fork` trả về **hai lần**: ở parent nó trả về PID của child, ở child nó trả về `0`. Từ đó hai
+process đi hai hướng khác nhau.
+
+Chi tiết về việc chia sẻ fd rất quan trọng. Một listening socket được thừa kế qua `fork` là
+cách cổ điển nhất để chạy nhiều worker trên cùng một port. Nó cũng giải thích vì sao một
+socket "đã đóng" vẫn có thể còn mở: một child bị bỏ quên vẫn đang giữ nó.
 
 ```rust
 // hình dạng thô, qua libc (code scratch, không thuộc workspace)
@@ -24,94 +32,129 @@ match pid {
     _  => /* parent: pid là id của child */ {},
 }
 ```
-Code Rust trong một process đa luồng (mọi chương trình tokio) không được `fork` rồi tiếp
-tục chạy code Rust trong child: chỉ thread gọi fork sống sót ở đó, và các lock do thread
-khác giữ sẽ bị khóa vĩnh viễn. Vì thế mới có lời gọi tiếp theo.
+Trong một process multi-threaded (mọi chương trình tokio), bạn không được `fork` rồi tiếp tục
+chạy code Rust trong child. Ở child chỉ có thread gọi fork còn sống. Những lock mà thread
+khác đang giữ sẽ bị khóa vĩnh viễn. Vì vậy mới cần lời gọi tiếp theo.
 
-### exec: thay thế chương trình
-`execve(path, argv, envp)` **thay thế** process image hiện tại bằng một chương trình mới:
-cùng PID, cùng fd đang mở (trừ khi đánh dấu **close-on-exec**), bộ nhớ hoàn toàn mới.
-`fork` + `exec` là cách mọi shell chạy một lệnh và cách `std::process::Command` spawn một
-child (Rust dùng `posix_spawn`/`fork+exec` bên trong, một cách an toàn). Các đối số
-(`argv`) và **environment** (`envp`) được thừa kế hoặc đặt tại thời điểm này; environment
-là cách cấu hình như `RUST_LOG` đến được một process.
+### exec: thay chương trình
+`execve(path, argv, envp)` **thay thế** process image hiện tại bằng một chương trình mới. PID
+giữ nguyên, các fd đang mở cũng giữ nguyên (trừ fd được đánh dấu **close-on-exec**), còn bộ
+nhớ thì hoàn toàn mới.
 
-**Gotcha: fd rò rỉ qua exec.** Một fd được child exec thừa kế mà bạn không định chia sẻ
-(một file bí mật, một listening socket) là bug kinh điển. std của Rust mở file và socket với
-`O_CLOEXEC` theo mặc định; các lời gọi `libc::socket` thô cần cờ này (`SOCK_CLOEXEC`) một
-cách tường minh — trừ khi bạn *muốn* thừa kế, như trong một hot restart trao listening socket
-cho binary mới ([`09-architecture/05-rolling-restart.md`](../09-architecture/05-rolling-restart.md)).
+`fork` + `exec` là cách mọi shell chạy một lệnh, và là cách `std::process::Command` tạo một
+child. (Bên trong, Rust dùng `posix_spawn` hoặc `fork+exec` theo cách an toàn.) Các đối số
+(`argv`) và **environment** (`envp`) được thừa kế hoặc đặt ở bước này. Environment là cách
+các cấu hình như `RUST_LOG` đến được process.
+
+**Gotcha: fd bị rò rỉ qua exec.** Nếu child sau `exec` thừa kế một fd mà bạn không định chia
+sẻ (một file bí mật, một listening socket), đó là một bug kinh điển. Thư viện chuẩn của Rust
+mở file và socket với `O_CLOEXEC` theo mặc định. Với các lời gọi `libc::socket` thô, bạn phải
+tự thêm cờ này (`SOCK_CLOEXEC`). Ngoại lệ là khi bạn *muốn* thừa kế, ví dụ trong hot restart,
+khi bạn trao listening socket cho binary mới
+([`09-architecture/05-rolling-restart.md`](../09-architecture/05-rolling-restart.md)).
 
 ### exit và wait: zombie
-Một process kết thúc qua `exit(code)`, return từ `main`, hoặc một signal gây chết
-([`09-blocking-io-and-signals.md`](09-blocking-io-and-signals.md)). Kernel giải phóng bộ nhớ và đóng các fd của nó — nhưng giữ
-lại một **entry nhỏ trong process table** chứa exit status cho tới khi parent thu nó bằng
-`wait()`/`waitpid()`. Một process đã xong nhưng chưa được wait là **zombie** (`Z` trong
-`ps`): nó không dùng CPU hay bộ nhớ, chỉ một PID. Một parent không bao giờ wait sẽ làm rò
-PID cho tới khi `fork` fail với `EAGAIN`. Exit status mã hóa hoặc exit code (0 = thành công
-theo quy ước) hoặc "bị giết bởi signal N" — `128+N` trong shell, nên exit code 137 nghĩa là
-`SIGKILL` (thường là OOM killer, [`16-memory.md`](16-memory.md)) và 143 nghĩa là `SIGTERM`.
+Một process kết thúc bằng `exit(code)`, bằng cách return từ `main`, hoặc bằng một signal gây
+chết ([`09-blocking-io-and-signals.md`](09-blocking-io-and-signals.md)). Kernel giải phóng bộ
+nhớ và đóng các fd của nó. Nhưng kernel vẫn giữ lại một **entry nhỏ trong process table**
+chứa exit status, cho đến khi parent lấy nó bằng `wait()`/`waitpid()`.
+
+Một process đã kết thúc mà chưa được wait gọi là **zombie** (hiện `Z` trong `ps`). Nó không
+dùng CPU hay bộ nhớ, chỉ chiếm một PID. Nếu parent không bao giờ wait, PID sẽ bị rò rỉ cho
+đến khi `fork` fail với `EAGAIN`.
+
+Exit status mã hóa một trong hai thứ: exit code (theo quy ước, 0 là thành công), hoặc "bị
+giết bởi signal N". Trong shell, trường hợp sau hiện thành `128+N`. Vì vậy exit code 137 nghĩa
+là `SIGKILL` (thường do OOM killer, [`16-memory.md`](16-memory.md)), còn 143 nghĩa là
+`SIGTERM`.
 
 ```rust
 let mut child = std::process::Command::new("sleep").arg("1").spawn()?;
-let status = child.wait()?;           // thu dọn zombie; status.code() / .signal()
+let status = child.wait()?;           // reap zombie; status.code() / .signal()
 ```
 
 ### Orphan và PID 1
 Nếu parent chết trước, các child của nó trở thành **orphan** và được **reparent** cho PID 1
-(hoặc "subreaper" gần nhất), cái mà phải `wait()` chúng. Trên một host bình thường PID 1 là
-`init`/`systemd`, và nó làm vậy. Trong container, **PID 1 là process của bạn** (process đầu
-tiên trong PID namespace, [`13-containers.md`](13-containers.md)) — và kernel đối xử đặc biệt với nó: nó
-**bỏ qua các signal mà nó không có handler** (nên `SIGTERM` không làm gì trừ khi bạn xử lý —
-[`17-signals.md`](17-signals.md)), và nó chịu trách nhiệm thu dọn các child mồ côi. Một proxy là PID 1 và
-spawn helper có thể tích lũy zombie, và một proxy không cài `SIGTERM` handler thì không thể
-dừng một cách graceful. Các cách sửa chuẩn: cài handler (dù sao cũng cần cho graceful
-shutdown, [`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md)), hoặc chạy một init nhỏ (`tini`, `docker
-run --init`) làm PID 1.
+(hoặc "subreaper" gần nhất). Process nhận nuôi này phải `wait()` chúng. Trên một host bình
+thường, PID 1 là `init`/`systemd` và nó làm đúng việc này.
 
-### Process group, session, và controlling terminal
-Process thuộc về một **process group**, và group thuộc về một **session**; một session có thể
-có một **controlling terminal**. Shell làm mỗi pipeline thành group riêng để Ctrl-C
-(`SIGINT`) chỉ đến **foreground group**. Một **daemon** trước đây tách khỏi terminal
-(`fork`, `setsid`) để việc đóng terminal (`SIGHUP`) không giết nó; ngày nay một supervisor
-(systemd, container runtime) làm việc đó và daemon chỉ ở foreground, log ra stdout/stderr
-([`21-systemd-and-services.md`](21-systemd-and-services.md)). `kill -TERM -<pgid>` gửi signal cho cả group — cách một supervisor
-dừng một process và các child nó đã spawn.
+Trong container, **PID 1 chính là process của bạn** (process đầu tiên trong PID namespace,
+[`13-containers.md`](13-containers.md)). Kernel đối xử đặc biệt với PID 1:
 
-### Thread là process chia sẻ các thứ
-Trên Linux một thread được tạo bằng `clone()` với các cờ nói *chia sẻ gì* (bộ nhớ, fd, signal
-handler). `fork` là `clone` không chia sẻ gì; `pthread_create` là `clone` chia sẻ gần như mọi
-thứ. Mỗi thread có **TID** riêng; TID của thread-group leader là PID của process. Đó là lý do
-`ps -eLf` hiện thread thành các hàng, vì sao `/proc/<pid>/task/<tid>` tồn tại, và vì sao một
-signal gửi tới process được giao cho *một thread tùy ý* không block nó
-([`17-signals.md`](17-signals.md)).
+- Nó **bỏ qua các signal mà process không có handler**. Nghĩa là `SIGTERM` sẽ không có tác
+  dụng gì, trừ khi bạn tự xử lý nó ([`17-signals.md`](17-signals.md)).
+- Nó chịu trách nhiệm reap các child orphan.
 
-### Gotcha: process bạn nghĩ đã khởi động không phải cái đang chạy
-`sh -c "./proxy"` có thể để lại một shell giữa supervisor và binary của bạn, nên signal gửi
-tới PID trúng shell, không phải proxy; `exec ./proxy` trong script thay thế shell để proxy
-*chính là* PID. `CMD` của container ở dạng shell (`CMD ./proxy`) bọc trong `sh -c`; dạng exec
-(`CMD ["./proxy"]`) thì không. Chi tiết này nằm đằng sau nhiều báo cáo "container của tôi bỏ
-qua SIGTERM và mất 10 giây mới dừng".
+Hệ quả: một proxy làm PID 1 và có spawn helper có thể tích lũy zombie. Một proxy không cài
+`SIGTERM` handler thì không thể dừng một cách graceful.
+
+Có hai cách sửa chuẩn:
+- Cài handler. Dù sao bạn cũng cần nó cho graceful shutdown
+  ([`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md)).
+- Chạy một init nhỏ (`tini`, `docker run --init`) làm PID 1.
+
+### Process group, session và controlling terminal
+Mỗi process thuộc về một **process group**, và mỗi group thuộc về một **session**. Một session
+có thể có một **controlling terminal**. Shell tạo mỗi pipeline thành một group riêng, để
+Ctrl-C (`SIGINT`) chỉ đến **foreground group**.
+
+Ngày xưa, một **daemon** tự tách khỏi terminal (`fork`, `setsid`) để việc đóng terminal
+(`SIGHUP`) không giết nó. Ngày nay việc đó do supervisor (systemd, container runtime) làm.
+Daemon chỉ cần chạy ở foreground và log ra stdout/stderr
+([`21-systemd-and-services.md`](21-systemd-and-services.md)).
+
+`kill -TERM -<pgid>` gửi signal cho cả group. Đó là cách supervisor dừng một process cùng các
+child mà nó đã spawn.
+
+### Thread là process chia sẻ một số thứ
+Trên Linux, một thread được tạo bằng `clone()` với các cờ cho biết *chia sẻ gì* (bộ nhớ, fd,
+signal handler). `fork` là `clone` mà không chia sẻ gì. `pthread_create` là `clone` mà chia sẻ
+gần như mọi thứ.
+
+Mỗi thread có **TID** riêng. TID của thread đầu tiên trong nhóm (thread-group leader) chính là
+PID của process. Từ đó suy ra:
+- `ps -eLf` hiện các thread thành từng dòng.
+- `/proc/<pid>/task/<tid>` tồn tại.
+- Một signal gửi tới process sẽ được giao cho *một thread bất kỳ* không chặn signal đó
+  ([`17-signals.md`](17-signals.md)).
+
+### Gotcha: process bạn nghĩ đã khởi động không phải process đang chạy
+`sh -c "./proxy"` có thể để lại một shell nằm giữa supervisor và binary của bạn. Khi đó signal
+gửi tới PID sẽ trúng shell chứ không trúng proxy. Dùng `exec ./proxy` trong script thì shell bị
+thay thế, và proxy *chính là* PID đó.
+
+Với `CMD` của container:
+- Dạng shell (`CMD ./proxy`) được bọc trong `sh -c`.
+- Dạng exec (`CMD ["./proxy"]`) thì không.
+
+Chi tiết này đứng sau rất nhiều báo cáo kiểu "container của tôi bỏ qua SIGTERM và mất 10 giây
+mới dừng".
 
 ## Practice
 
-1. Trong shell, chạy `sleep 100 &`, rồi `ps -o pid,ppid,pgid,sid,stat,cmd` cho nó và shell;
-   xác định parent PID, process group và session, và đọc state `S` (sleeping). `kill %1` và
-   ghi lại exit status hiện bởi `wait`.
-2. Cố tình tạo một zombie: một chương trình Rust scratch `Command::spawn` lệnh `true` rồi
-   `sleep` 60 s mà không gọi `wait()`; cho thấy entry `Z` bằng
-   `ps -o pid,ppid,stat,cmd --ppid <parent>` và xác nhận nó biến mất khi parent gọi `wait()`
+1. Trong shell, chạy `sleep 100 &`, rồi chạy `ps -o pid,ppid,pgid,sid,stat,cmd` cho nó và cho
+   shell. Xác định parent PID, process group và session, và đọc state `S` (sleeping). Chạy
+   `kill %1` và ghi lại exit status do `wait` hiện ra.
+2. Cố tình tạo một zombie. Viết một chương trình Rust scratch gọi `Command::spawn` lệnh `true`
+   rồi `sleep` 60 giây mà không gọi `wait()`. Cho thấy entry `Z` bằng
+   `ps -o pid,ppid,stat,cmd --ppid <parent>`, và xác nhận nó biến mất khi parent gọi `wait()`
    hoặc thoát.
-3. Làm mồ côi một child: spawn `sleep 300` từ một shell rồi shell đó thoát
-   (`sh -c 'sleep 300 &'`), và dùng `ps -o pid,ppid,cmd -C sleep` để xem `PPID` của nó đổi
-   thành 1 (hoặc một subreaper).
-4. Làm một shell script `exec` một binary và một cái không, chạy mỗi cái dưới
-   `ps -ef --forest`, cho thấy `sh` thừa trong cây; rồi gửi `SIGTERM` tới PID đã ghi trong cả
-   hai trường hợp và mô tả sự khác biệt.
-5. Chạy proxy của bạn ([`labs/05-reverse-proxy`](../../labs/05-reverse-proxy)) làm PID 1 trong một container
-   (`docker run --rm` một image tối giản, hoặc `unshare --pid --fork --mount-proc`), thử
-   `docker stop`/`kill -TERM 1` có và không có `tokio::signal` handler được cài, và ghi lại
-   việc shutdown mất bao lâu và exit code (`echo $?`: 143 vs 137).
-6. Xem `/proc/<pid>/status` (`PPid`, `Threads`, `State`), `/proc/<pid>/fd`, và
-   `ls /proc/<pid>/task` của một chương trình tokio đa luồng đang chạy; khớp số thread với
-   các worker thread của runtime cộng blocking pool của nó.
+3. Tạo một orphan: spawn `sleep 300` từ một shell, rồi cho shell đó thoát
+   (`sh -c 'sleep 300 &'`). Dùng `ps -o pid,ppid,cmd -C sleep` để xem `PPID` của nó đổi thành 1
+   (hoặc một subreaper).
+4. Viết hai shell script, một cái `exec` một binary và một cái không. Chạy từng cái dưới
+   `ps -ef --forest` và cho thấy `sh` thừa trong cây process. Sau đó gửi `SIGTERM` tới PID đã
+   ghi lại trong cả hai trường hợp và mô tả sự khác biệt.
+5. Chạy proxy của bạn ([`labs/05-reverse-proxy`](../../labs/05-reverse-proxy)) làm PID 1 trong
+   một container (`docker run --rm` với một image tối giản, hoặc
+   `unshare --pid --fork --mount-proc`). Thử `docker stop` hoặc `kill -TERM 1` khi có và khi
+   không có `tokio::signal` handler, và ghi lại việc shutdown mất bao lâu cùng exit code
+   (`echo $?`: 143 so với 137).
+6. Xem `/proc/<pid>/status` (`PPid`, `Threads`, `State`), `/proc/<pid>/fd` và
+   `ls /proc/<pid>/task` của một chương trình tokio multi-threaded đang chạy. Đối chiếu số
+   thread với số worker thread của runtime cộng với blocking pool của nó.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/03-processes-and-threads.md`](03-processes-and-threads.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md) →

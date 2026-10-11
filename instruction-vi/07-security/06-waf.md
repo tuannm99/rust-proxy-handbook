@@ -97,7 +97,7 @@ Quyết định mà điều này buộc bạn đưa ra là **khi nào chuyển t
 lên upstream**. Nếu bạn chuyển chunk 1 ngay khi quét xong và match hoàn tất
 ở chunk 2, thì một phần của cuộc tấn công đã tới upstream. Bạn có thể giữ
 lại `max_pattern_len - 1` byte cuối của mỗi chunk cho tới khi chunk kế đến
-(độ trễ có giới hạn, memory có giới hạn), đảm bảo không bao giờ có thứ gì
+(latency có giới hạn, memory có giới hạn), đảm bảo không bao giờ có thứ gì
 khớp bị chuyển tiếp. Hoặc bạn chấp nhận chuyển tiếp một phần, và khi có
 match thì hủy request lên upstream và bỏ connection upstream đó (framing
 của nó giờ không còn xác định, xem [`07-security/05-request-smuggling.md`](05-request-smuggling.md)),
@@ -123,12 +123,12 @@ hiện nó phá vỡ traffic hợp lệ nào trong production.
 
 Gotcha: luôn log các rule ID và điểm số góp phần khi block. Một quyết định
 block mà bạn không thể giải thích sau đó là một quyết định bạn không thể
-tune, và "WAF chặn một khách hàng và không ai nói được vì sao" là cách WAF
+tune, và "WAF block một khách hàng và không ai nói được vì sao" là cách WAF
 bị tắt vĩnh viễn.
 
 ### False positive mới là rủi ro thật sự
 Threat model mà mọi người mang tới WAF là "kẻ tấn công lọt qua". Outage mà
-nó thực sự gây ra là "WAF chặn traffic hợp lệ" — một rule quá rộng khớp với
+nó thực sự gây ra là "WAF block traffic hợp lệ" — một rule quá rộng khớp với
 dữ liệu bình thường của khách hàng (một cái tên có dấu nháy đơn, một đoạn
 code trong ticket support, một blob base64 tình cờ chứa [`../`](../..)) âm thầm phá
 vỡ một tính năng, và vì việc block xảy ra ở edge, application log không
@@ -175,27 +175,30 @@ traffic tấn công thực tế.
 Làm lần lượt theo thứ tự sau.
 
 1. Trong [`labs/12-waf`](../../labs/12-waf), implement `Rule`/`RuleTarget` với 5-10 signature
-   viết cứng (SQLi, XSS, path traversal). **Xong khi** một payload rõ ràng
+   viết cứng (SQLi, XSS, path traversal). **Done when** một payload rõ ràng
    trong query string bị block và traffic bình thường đi qua.
 2. Làm qua các bài tập của [`07-security/04-normalization.md`](04-normalization.md) với rule
-   engine này. **Xong khi** các cách bypass mixed-case, double-encoded, và
+   engine này. **Done when** các cách bypass mixed-case, double-encoded, và
    tham số trùng lặp đều bị bắt, và router cùng WAF đọc chung một dạng
    canonical.
 3. Thêm anomaly scoring với trọng số theo từng rule và một ngưỡng; log các
-   rule ID góp phần khi block. **Xong khi** một match trọng số trung bình
+   rule ID góp phần khi block. **Done when** một match trọng số trung bình
    đơn lẻ được cho qua và hai cái cộng lại thì block, với cả hai rule ID
    trong dòng log.
-4. Thêm chế độ chỉ phát hiện như một flag trên cùng code path. **Xong khi**
+4. Thêm chế độ chỉ phát hiện như một flag trên cùng code path. **Done when**
    một request đáng lẽ bị block được log kèm điểm số và chuyển tiếp nguyên
    vẹn, và đổi một giá trị config sẽ enforce nó.
 5. Thêm body inspection với một giới hạn buffer dùng chung và hành vi
-   fail-closed. **Xong khi** một payload trong giới hạn bị bắt, một body
+   fail-closed. **Done when** một payload trong giới hạn bị bắt, một body
    quá khổ nhận 413 thay vì đi qua mà không kiểm tra, và trường hợp quá
    khổ tăng metric riêng của nó.
-6. Thêm một Aho-Corasick literal prefilter trước một `RegexSet`. **Xong
-   khi** bạn có thể báo cáo tỷ lệ request vô hại không bao giờ chạm regex,
+6. Thêm một Aho-Corasick literal prefilter trước một `RegexSet`. **Done when** bạn có thể báo cáo tỷ lệ request vô hại không bao giờ chạm regex,
    và một benchmark ở 10 / 100 / 1000 rule cho thấy latency gần như phẳng
    thay vì linear theo số rule.
-7. Benchmark tầng WAF bật so với tắt dưới tải, như một metric riêng. **Xong
-   khi** bạn có số liệu p50 và p99 cho riêng tầng này, cả với body nhỏ lẫn
+7. Benchmark tầng WAF bật so với tắt dưới tải, như một metric riêng. **Done when** bạn có số liệu p50 và p99 cho riêng tầng này, cả với body nhỏ lẫn
    lớn, và có thể chỉ ra rule nào chiếm ưu thế.
+
+---
+
+<!-- nav -->
+← Trước: [`07-security/05-request-smuggling.md`](05-request-smuggling.md) · [Mục lục](00-README.md) · Tiếp theo: [`07-security/07-ratelimit.md`](07-ratelimit.md) →

@@ -21,3 +21,8 @@ the above exist to avoid.
 - [`02-arena.md`](02-arena.md) — bump allocation for request-scoped data, freed in bulk
 - [`03-object-pool.md`](03-object-pool.md) — reusing heap-allocated objects (buffers, connection structs) instead of alloc/free per request
 - [`04-buffer-pool.md`](04-buffer-pool.md) — pooling byte buffers specifically for I/O, size-classed tiers, ties into [`02-linux/18-zerocopy.md`](../02-linux/18-zerocopy.md)
+
+---
+
+<!-- nav -->
+Next: [`14-memory/01-allocator.md`](01-allocator.md) →

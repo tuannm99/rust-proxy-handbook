@@ -187,3 +187,8 @@ Build these in order.
    recovered from the binary header and a connection *without* the
    expected header on a PROXY-protocol listener is rejected rather than
    parsed as HTTP.
+
+---
+
+<!-- nav -->
+← Previous: [`07-security/07-ratelimit.md`](07-ratelimit.md) · [Index](00-README.md) · Next: [`07-security/09-ddos.md`](09-ddos.md) →

@@ -182,3 +182,8 @@ Build these in order.
    throughput improves on a hot working set, and you have measured the
    *cold* case too — if p99 gets worse when the working set exceeds RAM,
    you've found the gotcha above and should say so in your notes.
+
+---
+
+<!-- nav -->
+← Previous: [`05-http-stack/05-keepalive.md`](05-keepalive.md) · [Index](00-README.md) · Next: [`05-http-stack/07-compression.md`](07-compression.md) →

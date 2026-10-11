@@ -279,3 +279,30 @@ written stays plain inline code until it does.
 When adding a new topic, place it in the most relevant numbered directory
 (or propose a new numbered directory for a genuinely new phase, as
 [`instruction/12-testing/`](instruction/12-testing) was) and follow the same template.
+
+### Navigation footer
+
+Every file in a directory with a reading order (all `NN-`-prefixed files,
+including `00-README.md`; so not [`13-algorithms/`](instruction/13-algorithms),
+[`19-reading-source/`](instruction/19-reading-source), [`20-reference/`](instruction/20-reference),
+[`21-reading-list/`](instruction/21-reading-list)) ends with a navigation footer, so
+a reader on GitHub never has to hunt for the next file:
+
+```markdown
+---
+
+<!-- nav -->
+← Previous: [`01-network/01-fundamentals.md`](01-fundamentals.md) · [Index](00-README.md) · Next: [`01-network/03-byte-streams.md`](03-byte-streams.md) →
+```
+
+- The order is the `NN-` prefix order within the directory. `00-README.md`
+  has only "Next" (no "Index" link to itself); the last file has no "Next".
+  The footer never links across directories.
+- The `<!-- nav -->` line is the marker: keep it directly under the `---`
+  rule, and keep the footer as the very last thing in the file.
+- The Vietnamese mirror carries the identical footer with the words
+  translated (`Trước` / `Tiếp theo` / `Mục lục`); link labels and targets
+  stay the same.
+- Adding, renaming, or removing a file in such a directory means
+  regenerating the footers of its neighbours (and the `00-README.md`
+  index) in both `instruction/` and `instruction-vi/` in the same change.

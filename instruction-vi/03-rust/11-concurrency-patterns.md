@@ -11,8 +11,8 @@ ownership của Rust khiến message passing dễ suy luận một cách bất t
 gửi một giá trị vào một channel là một move thật sự, nên sender mất khả
 năng chạm vào nó sau đó do cấu trúc, không phải do quy ước.
 
-### Vườn thú channel của tokio, và khi nào nên dùng cái nào
-- `mpsc` — nhiều sender, một receiver; hàng đợi công việc mặc định (nhiều
+### Các loại channel của tokio, và khi nào nên dùng cái nào
+- `mpsc` — nhiều sender, một receiver; queue công việc mặc định (nhiều
   connection handler đổ vào một task tổng hợp).
 - `oneshot` — đúng một giá trị, đúng một lần; cách chuẩn để lấy một
   *phản hồi* từ một task bạn đã spawn (gửi một `oneshot::Sender` bên
@@ -94,3 +94,8 @@ codebase proxy thật dùng cả hai, tùy theo từng component.
 5. Chọn một component thật của [`proxy`](../../proxy) (rate limiter, connection pool,
    hoặc config store) và viết ra bạn sẽ chọn pattern nào và vì sao, trích
    dẫn đúng file handbook cho component đó.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/10-smart-pointers-and-interior-mutability.md`](10-smart-pointers-and-interior-mutability.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/12-macros.md`](12-macros.md) →

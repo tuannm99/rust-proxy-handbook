@@ -214,3 +214,8 @@ Build these in order.
    rises — then restart it and confirm export resumes.
 9. Wire exporter flush into shutdown. **Done when** spans from requests
    completed just before `SIGTERM` still arrive at the collector.
+
+---
+
+<!-- nav -->
+← Previous: [`08-observability/02-metrics.md`](02-metrics.md) · [Index](00-README.md) · Next: [`08-observability/04-profiling.md`](04-profiling.md) →

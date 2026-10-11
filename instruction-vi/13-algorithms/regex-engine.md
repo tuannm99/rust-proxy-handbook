@@ -19,7 +19,7 @@ thay vì đi từng đường một. Đảm bảo O(n × m) — tuyến tính th
 năng khiến matching thời gian tuyến tính trở nên bất khả thi.
 
 Với bất cứ thứ gì match input do attacker kiểm soát, đây không phải là sở
-thích. Đây là ranh giới giữa một chi phí bị chặn trên và một vụ crash từ xa.
+thích. Đây là ranh giới giữa một chi phí bounded và một vụ crash từ xa.
 
 ### ReDoS: kiểu thất bại
 Một backtracking engine chạy `(a+)+b` trên `"aaaaaaaaaaaaaaaaaaaaaaaaX"` sẽ
@@ -58,7 +58,7 @@ ngây thơ có thể làm nổ bộ nhớ với một pattern độc hại.
 RE2 và crate `regex` giải quyết bằng **lazy DFA**: xây state theo nhu cầu
 khi input được tiêu thụ, cache lại, và evict cache khi chạm giới hạn kích
 thước, fallback về mô phỏng NFA. Bạn có tốc độ DFA với pattern thực tế và
-bộ nhớ bị chặn trên với pattern bệnh hoạn. Chính vì fallback đó mà `regex`
+bộ nhớ bounded với pattern bệnh hoạn. Chính vì fallback đó mà `regex`
 expose `size_limit` và `dfa_size_limit` — hãy set chúng tường minh khi bộ
 pattern được load từ config thay vì do chính bạn viết.
 

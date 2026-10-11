@@ -94,3 +94,8 @@ before.
 5. Compare your hand-written scanner against [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md)'s
    inline HTTP scanning and articulate why HTTP does *not* use a separate
    token type — when the split helps and when it is ceremony.
+
+---
+
+<!-- nav -->
+← Previous: [`15-parser/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`15-parser/02-parser.md`](02-parser.md) →

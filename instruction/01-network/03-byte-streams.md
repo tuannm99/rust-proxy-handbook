@@ -114,3 +114,8 @@ somewhere shared, not on one instance.
 4. Read [`01-network/12-tcp.md`](12-tcp.md)'s 3-way handshake section and
    [`01-network/19-tls.md`](19-tls.md)'s handshake section back to back; list what
    each one is agreeing on, using the framing from this file.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/02-addressing.md`](02-addressing.md) · [Index](00-README.md) · Next: [`01-network/04-latency-throughput.md`](04-latency-throughput.md) →

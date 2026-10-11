@@ -10,19 +10,18 @@ hỏi về xử lý interrupt, chứ không chỉ là code ứng dụng — và 
 Khi NIC có một packet sẵn sàng, nó phát ra một hardware interrupt. Handler
 chạy cho nó (ngữ cảnh "hard IRQ") chạy với interrupt bị tắt trên core đó
 và phải cực kỳ nhanh — nó chỉ làm mức tối thiểu (acknowledge thiết bị,
-xếp hàng công việc tiếp theo) rồi trả về ngay. Bất cứ thứ gì chậm hơn sẽ
-chặn *toàn bộ* việc xử lý interrupt trên core đó, kể cả timer interrupt mà
+queue công việc tiếp theo) rồi trả về ngay. Bất cứ thứ gì chậm hơn sẽ
+block *toàn bộ* việc xử lý interrupt trên core đó, kể cả timer interrupt mà
 scheduler phụ thuộc vào.
 
-### Softirq: nửa còn lại, hoãn lại và có thể lập lịch
+### Softirq: nửa còn lại, hoãn lại và có thể được schedule
 Việc xử lý packet thực sự — đi ngược lên network stack, demux socket,
 cuối cùng chạm tới đường wakeup của epoll
-([`16-kernel/01-epoll-internals.md`](01-epoll-internals.md)) — xảy ra trong một **softirq**, được
-lập lịch chạy ngay sau khi hard IRQ handler trả về, nhưng trong một ngữ
-cảnh có thể bị ngắt và chịu áp lực lập lịch bình thường. `NET_RX` là
+([`16-kernel/01-epoll-internals.md`](01-epoll-internals.md)) — xảy ra trong một **softirq**, được schedule chạy ngay sau khi hard IRQ handler trả về, nhưng trong một ngữ
+cảnh có thể bị interrupt và chịu áp lực scheduling bình thường. `NET_RX` là
 softirq chịu trách nhiệm cụ thể cho việc xử lý packet đến. Dưới tốc độ
 packet cao kéo dài, chính công việc softirq `NET_RX` có thể tiêu tốn đủ
-nhiều một core khiến việc lập lịch process bình thường trên core đó bị đói
+nhiều một core khiến việc scheduling process bình thường trên core đó bị đói
 — thể hiện qua `%si` (softirq time) cao trong `top`/`mpstat`, và qua
 latency ở bất cứ thứ gì khác đang cố chạy trên core đó.
 
@@ -56,3 +55,8 @@ công — hai cái không được thiết kế để cùng tồn tại.
 4. Kiểm tra xem `irqbalance` có đang chạy trên hệ thống test của bạn
    không; dừng nó, chạy lại thí nghiệm affinity, và so sánh độ ổn định của
    phép đo khi nó chạy so với khi nó dừng.
+
+---
+
+<!-- nav -->
+← Trước: [`16-kernel/03-tcp-stack.md`](03-tcp-stack.md) · [Mục lục](00-README.md) · Tiếp theo: [`16-kernel/05-rss.md`](05-rss.md) →

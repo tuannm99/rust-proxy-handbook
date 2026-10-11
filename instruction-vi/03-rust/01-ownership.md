@@ -19,11 +19,11 @@ Gotcha: move một giá trị *ra khỏi* một field của struct trong khi m�
 borrow `&mut` của toàn bộ struct đang sống thì không compile được — đây
 chính xác là hình dạng bạn gặp khi cố lấy ownership của read buffer của
 một connection trong lúc vẫn đang giữ một mutable reference tới connection
-đó để bookkeeping. Tách struct ra hoặc dùng `Option::take`.
+đó để ghi chép trạng thái. Tách struct ra hoặc dùng `Option::take`.
 
 ### Copy vs Clone
-Các type `Copy` (integer, bool, dữ liệu kích thước cố định nhỏ) được nhân
-bản bitwise ngầm định khi gán — không có move nào xảy ra, cả hai binding
+Các type `Copy` (integer, bool, dữ liệu kích thước cố định nhỏ) được copy
+từng bit một cách ngầm định khi gán — không có move nào xảy ra, cả hai binding
 đều còn hợp lệ. `Clone` là một deep copy tường minh, có thể tốn kém, bạn
 chủ động chọn dùng qua `.clone()`. Trên một hot request path, một
 `.clone()` vô tình trên một header map nhiều kilobyte là một bug hiệu năng
@@ -61,8 +61,8 @@ async fn. Xem [`03-rust/02-lifetimes.md`](02-lifetimes.md) và [`03-rust/05-asyn
 Các giá trị được drop theo thứ tự khai báo ngược lại khi ra khỏi scope;
 các field của struct drop theo thứ tự khai báo. Bọc một resource thô
 (socket fd, vùng mmap, lock guard) trong một type có `Drop` giải phóng nó
-nghĩa là "quên dọn dẹp" trở thành một việc không-thể-xảy-ra tại compile
-time thay vì một memory leak tại runtime — đây chính là mẹo mà
+nghĩa là việc "quên dọn dẹp" không thể xảy ra (compiler đảm bảo ngay lúc compile),
+thay vì trở thành memory leak lúc chạy — đây chính là mẹo mà
 `MutexGuard` và `TcpListener` dùng.
 
 ```rust
@@ -93,3 +93,8 @@ Rust để đóng nó.
 5. Viết một type nhỏ với một `Drop` impl tự viết in ra khi nó chạy; xác
    nhận thứ tự qua các struct lồng nhau và `Vec<T>` khớp với dự đoán của
    bạn.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/02-lifetimes.md`](02-lifetimes.md) →

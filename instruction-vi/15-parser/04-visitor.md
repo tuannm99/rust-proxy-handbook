@@ -38,7 +38,7 @@ Hai hình dạng, và chúng thực sự khác nhau trong Rust:
 - **Duyệt `&self`** cho các pass chỉ đọc — validation, gom tên, tính một
   metric. Nhiều pass loại này thậm chí có thể chạy mà không xung đột.
 - **Duyệt `&mut self`** cho biến đổi — constant folding, áp dụng default,
-  viết lại. Ở đây quy tắc aliasing của Rust "cắn": bạn không thể giữ một
+  viết lại. Ở đây quy tắc aliasing của Rust bắt đầu gây khó: bạn không thể giữ một
   mutable borrow của cả cây trong khi cũng mutate một node bên trong nó.
   Lối thoát thường thấy là dạng arena từ [`15-parser/03-ast.md`](03-ast.md) — duyệt
   theo index và index ngược lại vào `&mut nodes[i]`, để borrow chỉ diễn ra
@@ -79,3 +79,8 @@ là các visitor tách biệt nghĩa là một config không hợp lệ bị t�
 5. Với một AST đồ chơi hai node, viết cùng phép lowering đó dưới dạng một
    `match` đệ quy thuần túy và so sánh; quyết định ở số lượng loại node và
    pass nào thì visitor thôi là over-engineering.
+
+---
+
+<!-- nav -->
+← Trước: [`15-parser/03-ast.md`](03-ast.md) · [Mục lục](00-README.md) · Tiếp theo: [`15-parser/05-config-parser.md`](05-config-parser.md) →

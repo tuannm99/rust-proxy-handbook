@@ -1,6 +1,6 @@
 # Input Normalization & Parser Differentials
 
-Hai component parse cùng một chuỗi byte theo hai cách khác nhau, và kẻ tấn
+Hai component parse cùng một byte sequence theo hai cách khác nhau, và kẻ tấn
 công sống trong khoảng cách đó. Đây là điểm yếu cấu trúc đứng sau các cách
 bypass WAF ([`07-security/06-waf.md`](06-waf.md)), bypass access-control dựa trên path
 ([`05-http-stack/04-router.md`](../05-http-stack/04-router.md)), và — ở dạng thuần túy nhất của nó — request
@@ -59,8 +59,7 @@ Lowercase xử lý được `<ScRiPt>`. Nó không xử lý được:
 
 Áp dụng Unicode normalization (NFKC) trước khi match nếu bất kỳ upstream
 nào trong hạ tầng của bạn làm vậy, và từ chối input không phải UTF-8 hợp lệ
-thay vì lossy-convert nó — `String::from_utf8_lossy` thay thế các chuỗi
-byte không hợp lệ bằng U+FFFD, việc này thay đổi các byte và có thể khiến
+thay vì lossy-convert nó — `String::from_utf8_lossy` thay thế các byte sequence không hợp lệ bằng U+FFFD, việc này thay đổi các byte và có thể khiến
 một payload độc hại trông vô hại.
 
 ### Charset và content-type
@@ -124,20 +123,25 @@ Làm lần lượt theo thứ tự sau.
    normalization nào: mixed case, double URL-encoding, một overlong UTF-8
    encoding của `/`, một payload nằm ở tham số *thứ hai* trong hai tham số
    trùng tên, và một body có charset khai báo khác với encoding thực tế.
-   **Xong khi** tất cả đều lọt qua — đây là baseline.
+   **Done when** tất cả đều lọt qua — đây là baseline.
 2. Thêm một tầng normalization duy nhất: URL-decode tới một độ sâu đã ghi
-   lại, lowercase, NFKC, từ chối UTF-8 không hợp lệ. **Xong khi** ba bài
+   lại, lowercase, NFKC, từ chối UTF-8 không hợp lệ. **Done when** ba bài
    test đầu bị bắt và bạn có thể nói rõ decode depth của mình và vì sao.
 3. Kiểm tra mọi lần xuất hiện của mọi tham số cộng với raw query string.
-   **Xong khi** bài test tham số trùng lặp bị bắt bất kể payload nằm ở vị
+   **Done when** bài test tham số trùng lặp bị bắt bất kể payload nằm ở vị
    trí nào.
-4. Xác định bằng thực nghiệm upstream của bạn làm gì. **Xong khi** bạn đã
+4. Xác định bằng thực nghiệm upstream của bạn làm gì. **Done when** bạn đã
    test — không phải giả định — nó decode bao nhiêu lần và lấy tham số
    trùng lặp nào, và normalization của bạn khớp với điều đó.
-5. Làm cho normalization có nguồn duy nhất. **Xong khi** router, WAF, và bộ
+5. Làm cho normalization có nguồn duy nhất. **Done when** router, WAF, và bộ
    chuyển tiếp upstream đều đọc cùng một dạng canonical, và một bài test
    chứng minh request được chuyển tiếp mang path đã normalize thay vì byte
    gốc.
-6. Chỉ giữ bản gốc cho log. **Xong khi** dòng log của một request bị chặn
+6. Chỉ giữ bản gốc cho log. **Done when** dòng log của một request bị block
    cho thấy input thô như đã gửi, trong khi không có decision path nào có
    thể đọc nó.
+
+---
+
+<!-- nav -->
+← Trước: [`07-security/03-mtls.md`](03-mtls.md) · [Mục lục](00-README.md) · Tiếp theo: [`07-security/05-request-smuggling.md`](05-request-smuggling.md) →

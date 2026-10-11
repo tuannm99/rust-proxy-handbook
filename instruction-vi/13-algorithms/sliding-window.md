@@ -55,9 +55,9 @@ fn sliding_count(prev_count: u32, curr_count: u32, elapsed_into_curr: f64, windo
 
 Đây là cách rate limiter của Cloudflare và Kong implement: bộ nhớ O(1) cho
 mỗi key (hai số nguyên, không phải một log), và nó loại bỏ vấn đề burst ở
-biên trong một sai số xấp xỉ bị chặn trên — giả định rằng request rải đều
+biên trong một sai số xấp xỉ bounded — giả định rằng request rải đều
 trong window trước, đủ gần với thực tế và có thể chứng minh worst case chỉ
-bị chặn ở `2x` trong đúng kiểu mẫu bệnh hoạn dồn hết vào các biên, và ngay
+bị cap ở `2x` trong đúng kiểu mẫu bệnh hoạn dồn hết vào các biên, và ngay
 cả khi đó cũng bị hạ trọng số chứ không đếm đầy đủ.
 
 Gotcha: phiên bản hai counter cần cả hai counter được đọc và lăn qua
@@ -88,7 +88,7 @@ downstream.
    reject đúng, rồi đo bộ nhớ của nó ở một `limit` lớn và nhiều key để
    thấy vì sao nó không scale nếu không sửa đổi.
 3. Implement sliding window counter và chạy lại test biên lần thứ ba; xác
-   nhận overshoot quan sát được bị chặn trên và nhỏ hơn nhiều so với `2x`
+   nhận overshoot quan sát được bounded và nhỏ hơn nhiều so với `2x`
    của phiên bản fixed-window.
 4. Cố tình tái hiện bug atomic-rollover (lăn `curr`→`prev` và reset thành
    hai bước riêng biệt, không atomic, dưới truy cập đồng thời), quan sát

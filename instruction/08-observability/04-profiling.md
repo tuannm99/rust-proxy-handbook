@@ -137,3 +137,8 @@ Build these in order.
    profiles continuously during a chaos test ([`12-testing/03-chaos.md`](../12-testing/03-chaos.md)).
    **Done when** you can retrieve the profile from the exact minute a
    fault was injected, after the fact.
+
+---
+
+<!-- nav -->
+← Previous: [`08-observability/03-tracing.md`](03-tracing.md) · [Index](00-README.md) · Next: [`08-observability/05-slo.md`](05-slo.md) →

@@ -58,8 +58,8 @@ luận mà mọi phần "vì sao thiết kế này" trong handbook đòi hỏi �
 quen đó chuyển thẳng sang được.
 
 ## Practice
-1. Chọn một crate mà proxy của bạn phụ thuộc và đọc `CONTRIBUTING.md` của nó. **Xong khi** bạn chạy được toàn bộ test suite và clippy của nó ở local mà không có lỗi.
-2. Tìm một bug report đang mở, chưa được xác nhận trong crate đó và thử tái hiện nó. **Xong khi** bạn đã post một comment kèm bản tái hiện tối thiểu, hoặc ghi chú rằng nó không tái hiện trên version hiện tại và bạn đã thử những gì.
+1. Chọn một crate mà proxy của bạn phụ thuộc và đọc `CONTRIBUTING.md` của nó. **Done when** bạn chạy được toàn bộ test suite và clippy của nó ở local mà không có lỗi.
+2. Tìm một bug report đang mở, chưa được xác nhận trong crate đó và thử tái hiện nó. **Done when** bạn đã post một comment kèm bản tái hiện tối thiểu, hoặc ghi chú rằng nó không tái hiện trên version hiện tại và bạn đã thử những gì.
 3. Tìm một phần documentation trong crate đó từng làm bạn bối rối khi làm lab, và mở một PR cải thiện nó.
-4. Nhận một `good first issue`, comment hướng làm trước khi code, và đưa nó qua review. **Xong khi** nó được merge — hoặc bị đóng kèm một giải thích mà bạn hiểu.
+4. Nhận một `good first issue`, comment hướng làm trước khi code, và đưa nó qua review. **Done when** nó được merge — hoặc bị đóng kèm một giải thích mà bạn hiểu.
 5. Sau khi xong [`proxy/`](../../proxy), viết một ghi chú thiết kế ngắn về một điều bạn muốn thay đổi ở một API của pingora hoặc hyper, theo cấu trúc vấn đề/phương án/đánh đổi ở trên. Bạn không cần gửi nó; viết nó ra chính là bài tập.

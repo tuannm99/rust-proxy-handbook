@@ -87,3 +87,8 @@ lặp scan byte là một hot spot hàng đầu dưới tải thật
    lúc runtime, và xác nhận nó khớp với phiên bản scalar trên input mọi
    độ dài modulo độ rộng lane — rồi suy ngẫm xem con đường dùng crate có
    lẽ ra đã đủ hay không.
+
+---
+
+<!-- nav -->
+← Trước: [`17-performance/05-branch-prediction.md`](05-branch-prediction.md) · [Mục lục](00-README.md)

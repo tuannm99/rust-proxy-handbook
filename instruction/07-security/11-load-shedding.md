@@ -147,3 +147,8 @@ Build these in order.
    **Done when** the adaptive limit finds a threshold close to your
    measured capacity without being told it, and re-finds it after you
    inject a 3x upstream slowdown.
+
+---
+
+<!-- nav -->
+← Previous: [`07-security/10-slowloris.md`](10-slowloris.md) · [Index](00-README.md)

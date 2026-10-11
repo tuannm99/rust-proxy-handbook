@@ -137,3 +137,8 @@ Build these in order.
    parameter next to a secret, compressed. **Done when** you can recover
    the secret from response lengths alone — then add per-route
    compression disabling and confirm the signal disappears.
+
+---
+
+<!-- nav -->
+← Previous: [`05-http-stack/06-static.md`](06-static.md) · [Index](00-README.md) · Next: [`05-http-stack/08-cache.md`](08-cache.md) →

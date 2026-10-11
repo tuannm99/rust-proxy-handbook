@@ -154,3 +154,8 @@ Build these in order.
 9. Add graceful shutdown at the ConnMgr layer
    ([`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)). **Done when** in-flight
    requests complete before exit.
+
+---
+
+<!-- nav -->
+← Previous: [`09-architecture/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`09-architecture/02-plugin.md`](02-plugin.md) →

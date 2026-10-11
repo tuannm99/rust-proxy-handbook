@@ -113,3 +113,8 @@ blocking call; see [`09-blocking-io-and-signals.md`](09-blocking-io-and-signals.
    (`504`, [`01-network/15-http.md`](../01-network/15-http.md)) is returned and the connection is closed, and with a slow-drip client
    that only a total deadline stops it.
 6. Use `tokio::time::pause()`/`advance` to unit-test a TTL cache's expiry and a retry backoff without real sleeping.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/10-ipc.md`](10-ipc.md) · [Index](00-README.md) · Next: [`02-linux/12-cpu-scheduling.md`](12-cpu-scheduling.md) →

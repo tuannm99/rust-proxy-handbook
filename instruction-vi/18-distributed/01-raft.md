@@ -85,3 +85,8 @@ history có thứ tự.
 5. Chỉ khi bạn mở rộng [`proxy/`](../../proxy) thành một control plane đa node: dựng một
    cluster 3 node với `openraft` lưu routing config, và kill leader dưới
    load để xem election và tính liên tục — không tự viết tay algorithm.
+
+---
+
+<!-- nav -->
+← Trước: [`18-distributed/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`18-distributed/02-gossip.md`](02-gossip.md) →

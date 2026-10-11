@@ -64,3 +64,8 @@ protocols (gRPC gets a passing mention where it affects HTTP/2 handling but
 isn't its own topic), and cloud/infra concerns (Kubernetes Ingress
 controllers, service meshes) beyond the "what would plug in here" pointers
 in [`09-architecture/`](../09-architecture).
+
+---
+
+<!-- nav -->
+Next: [`00-introduction/01-learning-roadmap.md`](01-learning-roadmap.md) →

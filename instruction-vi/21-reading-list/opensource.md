@@ -5,7 +5,7 @@
   [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md) và chuỗi filter L7 của nó (tương ứng
   với [`09-architecture/02-plugin.md`](../09-architecture/02-plugin.md)).
 - HAProxy — C. Đọc để hiểu các thuật toán load-balancing
-  ([`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md)) và giao thức PROXY mà nó khởi xướng
+  ([`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md)) và protocol PROXY mà nó khởi xướng
   ([`01-network/20-proxy-protocol.md`](../01-network/20-proxy-protocol.md)).
 - Pingora — Rust (Cloudflare). Tương đương Rust thực tế gần nhất với
   [`proxy/README.md`](../../proxy/README.md); đọc code connection pooling và graceful-restart của

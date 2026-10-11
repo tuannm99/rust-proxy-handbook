@@ -116,3 +116,8 @@ container ignores SIGTERM and takes 10 seconds to stop" reports.
 6. Inspect `/proc/<pid>/status` (`PPid`, `Threads`, `State`), `/proc/<pid>/fd`, and
    `ls /proc/<pid>/task` for a running multi-threaded tokio program; match the thread
    count to the runtime's worker threads plus its blocking pool.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/03-processes-and-threads.md`](03-processes-and-threads.md) · [Index](00-README.md) · Next: [`02-linux/05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md) →

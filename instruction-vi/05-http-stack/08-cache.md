@@ -93,7 +93,7 @@ Gotcha: một request mang `Authorization` không được lưu response của n
 vào một *shared* cache trừ khi response cho phép tường minh
 (`public`, `s-maxage`, hoặc `must-revalidate`). Bỏ qua kiểm tra này là con
 đường trực tiếp tới việc serve response của một user đã authenticate cho
-một user khác — bug nghiêm trọng nhất mà file này có thể ngăn chặn.
+một user khác — bug nghiêm trọng nhất mà file này có thể ngăn.
 
 ### Thiết kế cache key
 Cache key ngây thơ là URL, nhưng để đúng đắn cần bao gồm các header được liệt kê trong `Vary` (ví dụ `Vary: Accept-Encoding` nghĩa là response gzip và không nén phải được cache riêng) và thường cả ngữ cảnh auth/session nếu response khác nhau theo từng người dùng — nếu không bạn serve response của user A cho user B.
@@ -107,12 +107,12 @@ struct CacheKey {
 }
 ```
 
-Gotcha: `Vary` là kẻ hủy diệt hit-rate khi tuân theo nghĩa đen. `Vary:
+Gotcha: `Vary` có thể làm hit rate tụt mạnh nếu tuân theo nghĩa đen. `Vary:
 User-Agent` nghĩa là mỗi phiên bản browser có entry riêng và hit rate của
 bạn sụp đổ về gần zero; `Vary: *` nghĩa là không bao giờ tái sử dụng.
 Và giá trị `Accept-Encoding` ngoài đời là những chuỗi rất đa dạng nhưng
 đều mang cùng vài nghĩa — normalize chúng thành một tập bucket nhỏ
-(`gzip` / `br` / `identity`) trước khi keying, nếu không bạn phân mảnh
+(`gzip` / `br` / `identity`) trước khi keying, nếu không bạn chia nhỏ
 cache thành hàng chục entry tương đương nhau.
 
 Gotcha: query string là một phần của key, và *thứ tự* của nó thường không
@@ -136,12 +136,12 @@ hay không, và bất cứ gì chính proxy của bạn thêm vào trước khi 
 Cách hệ thống để tìm chúng là thay đổi từng input một và diff response.
 
 ### Cache stampede
-Khi một entry phổ biến hết hạn, mọi request đồng thời cho nó miss cùng lúc và tất cả đi tới origin — cache gây thiệt hại tối đa đúng lúc nó ngừng giúp ích. Request coalescing (single-flight) cộng `stale-while-revalidate` loại bỏ hoàn toàn vấn đề này, và một cold start sau một lần restart là cùng vấn đề đó cho mọi key cùng một lúc.
+Khi một entry phổ biến expire, mọi request đồng thời cho nó miss cùng lúc và tất cả đi tới origin — cache gây thiệt hại tối đa đúng lúc nó ngừng giúp ích. Request coalescing (single-flight) cộng `stale-while-revalidate` loại bỏ hoàn toàn vấn đề này, và một cold start sau một lần restart là cùng vấn đề đó cho mọi key cùng một lúc.
 
 Xem [`05-http-stack/09-cache-stampede.md`](09-cache-stampede.md).
 
 ### Invalidation
-Hết hạn theo thời gian (`max-age`) là trường hợp dễ. Invalidation tường minh (origin đẩy một lần purge, hoặc một lần ghi làm invalidate một lần đọc liên quan) là trường hợp khó mà mọi cache thật cuối cùng đều cần — lên kế hoạch cho một cơ chế purge-theo-key hoặc purge-theo-prefix ngay từ đầu thay vì gắn thêm sau.
+Expire theo thời gian (`max-age`) là trường hợp dễ. Invalidation tường minh (origin đẩy một lần purge, hoặc một lần ghi làm invalidate một lần đọc liên quan) là trường hợp khó mà mọi cache thật cuối cùng đều cần — lên kế hoạch cho một cơ chế purge-theo-key hoặc purge-theo-prefix ngay từ đầu thay vì gắn thêm sau.
 
 Gotcha: với N instance proxy, mỗi cái giữ cache riêng, nên một lần purge
 phải tới được tất cả chúng — và một purge endpoint mà bất kỳ client nào
@@ -162,29 +162,34 @@ Một CDN cache ở edge, gần người dùng, trên nhiều origin. Cache củ
 Làm theo thứ tự này.
 
 1. Trong [`labs/10-cache`](../../labs/10-cache), thêm một cache trong memory key theo
-   method+URI chỉ cho `GET`. **Xong khi** một request giống hệt lần hai
+   method+URI chỉ cho `GET`. **Done when** một request giống hệt lần hai
    được serve từ cache mà không chạm origin (chứng minh bằng một counter
    phía origin).
 2. Thêm các kiểm tra điều kiện: method, status code cacheable,
-   `no-store`, `private`, và quy tắc `Authorization`. **Xong khi** một
+   `no-store`, `private`, và quy tắc `Authorization`. **Done when** một
    response đã authenticate không bao giờ được serve cho user thứ hai —
    viết một test fail với implementation bước 1 của bạn.
 3. Thêm hỗ trợ `Vary` với normalization `Accept-Encoding` và sắp xếp
-   query parameter. **Xong khi** hai client với `Accept-Encoding` khác
+   query parameter. **Done when** hai client với `Accept-Encoding` khác
    nhau nhận hai entry riêng, và `?a=1&b=2` / `?b=2&a=1` dùng chung một.
 4. Thêm freshness (`max-age`/`s-maxage`), header `Age`, và revalidation
-   qua conditional request. **Xong khi** một entry stale kích hoạt đúng
+   qua conditional request. **Done when** một entry stale kích hoạt đúng
    một conditional request và một `304` làm mới nó mà không truyền body.
-5. Làm các bài tập của [`05-http-stack/09-cache-stampede.md`](09-cache-stampede.md). **Xong khi**
-   500 request đồng thời cho một key vừa hết hạn tạo ra đúng một lần chạm
+5. Làm các bài tập của [`05-http-stack/09-cache-stampede.md`](09-cache-stampede.md). **Done when**
+   500 request đồng thời cho một key vừa expire tạo ra đúng một lần chạm
    origin, và `stale-while-revalidate` nghĩa là không cái nào phải chờ.
-6. Thêm `stale-if-error`. **Xong khi** đưa origin hoàn toàn offline vẫn
+6. Thêm `stale-if-error`. **Done when** đưa origin hoàn toàn offline vẫn
    serve nội dung đã cache thay vì 5xx.
 7. Dàn dựng một cuộc tấn công cache-poisoning: làm origin phản chiếu một
    header bạn forward nhưng không keying, đầu độc một entry, rồi lấy nó
-   như một client khác. **Xong khi** cuộc tấn công thành công, và rồi
-   **xong lần nữa khi** strip/keying header đó chặn được nó.
-8. Thêm purge có authenticate, theo key và theo tag. **Xong khi** một lần
+   như một client khác. **Done when** cuộc tấn công thành công, và rồi
+   và **Done when** lại đúng khi strip/keying header đó ngăn được nó.
+8. Thêm purge có authenticate, theo key và theo tag. **Done when** một lần
    purge theo tag evict mọi entry liên quan, một lần purge không
    authenticate bị reject, và chạy hai instance proxy cho thấy cả hai
    hội tụ sau một lần purge.
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/07-compression.md`](07-compression.md) · [Mục lục](00-README.md) · Tiếp theo: [`05-http-stack/09-cache-stampede.md`](09-cache-stampede.md) →

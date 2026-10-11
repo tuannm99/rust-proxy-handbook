@@ -157,3 +157,8 @@ Build these in order.
    swap the table atomically on reload. **Done when** a route table
    reload under concurrent load produces zero dropped or misrouted
    requests.
+
+---
+
+<!-- nav -->
+← Previous: [`05-http-stack/03-hop-by-hop-headers.md`](03-hop-by-hop-headers.md) · [Index](00-README.md) · Next: [`05-http-stack/05-keepalive.md`](05-keepalive.md) →

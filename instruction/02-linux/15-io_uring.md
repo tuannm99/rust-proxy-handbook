@@ -59,3 +59,8 @@ overhead is actually your bottleneck, not a default.
 3. Port the raw-epoll echo server from [`02-linux/14-epoll.md`](14-epoll.md)'s exercise from epoll to `tokio-uring` and compare code complexity and behavior under connection churn.
 4. Check `uname -r` on your dev machine and any target deployment environment; confirm whether io_uring is even available/enabled there.
 5. Write down, in your own words, why [`proxy`](../../proxy) should default to tokio's epoll-based reactor rather than io_uring.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/14-epoll.md`](14-epoll.md) · [Index](00-README.md) · Next: [`02-linux/16-memory.md`](16-memory.md) →

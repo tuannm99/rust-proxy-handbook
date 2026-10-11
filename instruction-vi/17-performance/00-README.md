@@ -28,3 +28,8 @@ bottleneck. Điểm kích hoạt tự nhiên là [`proxy`](../../proxy) dưới 
 
 I/O zero-copy (`sendfile`/`splice`/`mmap`) được nói ở
 [`02-linux/18-zerocopy.md`](../02-linux/18-zerocopy.md), không lặp lại ở đây.
+
+---
+
+<!-- nav -->
+Tiếp theo: [`17-performance/01-cpu-cache.md`](01-cpu-cache.md) →

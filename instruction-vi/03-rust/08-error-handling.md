@@ -98,3 +98,8 @@ khắp nơi.
 5. Tìm một `.unwrap()` trong code [`labs/01-http-parser`](../../labs/01-http-parser) của chính bạn
    chạy trên input do attacker kiểm soát, và chuyển nó thành một đường
    `Result` trả về một lỗi parse thay vì panic.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/07-traits-and-generics.md`](07-traits-and-generics.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/09-iterators-and-closures.md`](09-iterators-and-closures.md) →

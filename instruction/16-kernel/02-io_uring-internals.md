@@ -67,3 +67,8 @@ optimization with a fallback, not a foundation.
    specific cloud VM type) allows the `io_uring` syscalls at all —
    `docker run --security-opt seccomp=... ` or the platform's own docs —
    before assuming it's available in production.
+
+---
+
+<!-- nav -->
+← Previous: [`16-kernel/01-epoll-internals.md`](01-epoll-internals.md) · [Index](00-README.md) · Next: [`16-kernel/03-tcp-stack.md`](03-tcp-stack.md) →

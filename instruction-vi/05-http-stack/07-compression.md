@@ -66,7 +66,7 @@ streaming; đừng làm vậy với download hàng loạt.
 ### Chi phí CPU dưới tải
 Compression tốn CPU; ở tốc độ request cao, encode mỗi request có thể trở thành bottleneck trước cả network. Hai cách giảm nhẹ phổ biến: cache byte đã nén cho các response cacheable (nén một lần, serve nhiều lần) và bỏ qua compression dưới một kích thước body tối thiểu (nén một response JSON 50 byte thường không đáng CPU).
 
-Gotcha: compression cũng là cách kinh điển vô tình chặn một async
+Gotcha: compression cũng là cách kinh điển vô tình block một async
 runtime. Nén một buffer lớn đồng bộ bên trong một task giữ worker thread
 cho toàn bộ phép toán (cooperative scheduling của
 [`03-rust/05-async.md`](../03-rust/05-async.md)), làm đứng mọi connection khác trên nó. Hoặc dùng
@@ -94,7 +94,7 @@ Nếu upstream đã nén body rồi (nó gửi `Content-Encoding: gzip`), proxy 
 
 Gotcha: khi bạn *thực sự* giải nén một response upstream, bạn đã nhận lấy
 rủi ro decompression-bomb từ [`07-security/09-ddos.md`](../07-security/09-ddos.md) — giới hạn kích
-thước đã giải nén và tỉ lệ giãn nở, và streaming thay vì vật chất hóa toàn
+thước đã giải nén và tỉ lệ giãn nở, và streaming thay vì materialize toàn
 bộ. Điều tương tự áp dụng cho body *request* đã nén mà bạn giải nén để
 kiểm tra WAF ([`07-security/06-waf.md`](../07-security/06-waf.md)).
 
@@ -102,31 +102,35 @@ kiểm tra WAF ([`07-security/06-waf.md`](../07-security/06-waf.md)).
 Làm theo thứ tự này.
 
 1. Trong [`labs/02-http-server`](../../labs/02-http-server), thêm nén response gzip có điều kiện theo
-   `Accept-Encoding`, set `Content-Encoding` và `Vary`. **Xong khi** một
+   `Accept-Encoding`, set `Content-Encoding` và `Vary`. **Done when** một
    client gửi `Accept-Encoding: gzip` nhận một body đã nén mà
    `curl --compressed` decode đúng, và một client gửi không có gì nhận
    plaintext.
-2. Làm nó streaming và bỏ `Content-Length` để chuyển sang chunked. **Xong
-   khi** memory phẳng khi serve một body 1 GB, và response không mang
+2. Làm nó streaming và bỏ `Content-Length` để chuyển sang chunked. **Done when** memory phẳng khi serve một body 1 GB, và response không mang
    `Content-Length` đã cũ — kiểm tra raw byte bằng `curl --raw` để xác
    nhận, vì đây là nơi smuggling vô tình bắt nguồn.
-3. Thêm gate theo content-type và kích thước tối thiểu. **Xong khi** một
+3. Thêm gate theo content-type và kích thước tối thiểu. **Done when** một
    response JSON 50 byte và một JPEG đều trả về không nén trong khi HTML
    thì có, và bạn đã đo được rằng nén JPEG chỉ lợi dưới 1%.
 4. Thêm brotli và zstd với negotiation q-value đầy đủ, bao gồm `q=0` và
-   `*`. **Xong khi** `gzip;q=0, br` chọn brotli, `*;q=0` được xử lý có chủ
+   `*`. **Done when** `gzip;q=0, br` chọn brotli, `*;q=0` được xử lý có chủ
    đích, và logic chọn của bạn có một test cho mỗi trường hợp biên.
-5. Đo chi phí CPU. **Xong khi** bạn có số throughput ở brotli quality 4 so
+5. Đo chi phí CPU. **Done when** bạn có số throughput ở brotli quality 4 so
    với 11 dưới tải ([`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md)) và có thể nói rõ tỉ
    lệ đạt được so với CPU bỏ ra.
 6. Cache byte đã nén cho response cacheable
-   ([`05-http-stack/08-cache.md`](08-cache.md)). **Xong khi** request lặp lại cho cùng
+   ([`05-http-stack/08-cache.md`](08-cache.md)). **Done when** request lặp lại cho cùng
    resource nén zero lần.
 7. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), xử lý một response upstream đã nén sẵn.
-   **Xong khi** một body upstream gzip được pass qua nguyên vẹn cho một
+   **Done when** một body upstream gzip được pass qua nguyên vẹn cho một
    client chấp nhận gzip, và được transcode đúng một lần cho một client
    chỉ chấp nhận brotli — với một bước giải nén có giới hạn.
 8. (Stretch) Chứng minh BREACH trên một endpoint đồ chơi phản chiếu một
-   query parameter cạnh một bí mật, đã nén. **Xong khi** bạn có thể khôi
+   query parameter cạnh một bí mật, đã nén. **Done when** bạn có thể khôi
    phục bí mật chỉ từ độ dài response — rồi thêm việc tắt compression
    theo route và xác nhận tín hiệu biến mất.
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/06-static.md`](06-static.md) · [Mục lục](00-README.md) · Tiếp theo: [`05-http-stack/08-cache.md`](08-cache.md) →

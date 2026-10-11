@@ -83,3 +83,8 @@ hoạt động được nhưng có đặc tính performance hoặc fairness sai 
    [`labs/`](../../labs)), gọi tên nó thực sự là bài toán kinh điển nào — bounded
    buffer, readers-writers, hay N-permit — và xác nhận primitive bạn dùng
    khớp với nó.
+
+---
+
+<!-- nav -->
+← Trước: [`22-theory/01-deadlock.md`](01-deadlock.md) · [Mục lục](00-README.md) · Tiếp theo: [`22-theory/03-page-replacement.md`](03-page-replacement.md) →

@@ -19,7 +19,7 @@ nêu tên *thêm* các header để strip, và vì sao việc strip phải xảy
 khi các header đáng tin của chính bạn được áp vào.
 
 ### Pipelining (và vì sao nó gần như đã chết)
-Pipelining nghĩa là gửi nhiều request trên một connection mà không chờ từng response — được spec cho phép nhưng response vẫn phải quay về đúng thứ tự (head-of-line blocking), và một intermediary hành xử sai trên đường đi có thể làm hỏng cả luồng. Gần như không còn client HTTP/1.1 production nào pipeline nữa; các stream đa hợp của HTTP/2 ([`01-network/17-http2.md`](../01-network/17-http2.md)) giải quyết đúng cùng bài toán đó thay thế.
+Pipelining nghĩa là gửi nhiều request trên một connection mà không chờ từng response — được spec cho phép nhưng response vẫn phải quay về đúng thứ tự (head-of-line blocking), và một intermediary hành xử sai trên đường đi có thể làm hỏng cả luồng. Gần như không còn client HTTP/1.1 production nào pipeline nữa; các stream multiplex của HTTP/2 ([`01-network/17-http2.md`](../01-network/17-http2.md)) giải quyết đúng cùng bài toán đó thay thế.
 
 Gotcha: "không client nào pipeline" không phải lý do để phía *server* của
 bạn xử lý sai nó. Nếu byte của một request thứ hai đến trong khi bạn vẫn
@@ -66,7 +66,7 @@ sống lâu và im lặng theo thiết kế — một WebSocket rảnh
 ([`05-http-stack/10-websocket.md`](10-websocket.md)), một cuộc gọi gRPC server-streaming
 ([`05-http-stack/11-grpc.md`](11-grpc.md)), một stream SSE. Áp một timeout "không request
 mới trong 60 giây" lên chúng giết các connection đang hoạt động theo một
-cái đồng hồ, và các báo cáo bug kết quả ("nó ngắt kết nối mỗi phút") là
+cái đồng hồ, và các báo cáo bug kết quả ("nó disconnect mỗi phút") là
 một thể loại quen thuộc. Timeout phải theo từng *chế độ* connection, không
 phải toàn cục.
 
@@ -80,7 +80,7 @@ max-lifetime cố ý:
   connection mới. Một giới hạn lifetime là thứ cuối cùng phân phối lại
   tải.
 - **State theo connection tích tụ.** Buffer lớn dần tới kích thước request
-  lớn nhất từng thấy trên connection đó, allocator arena bị phân mảnh
+  lớn nhất từng thấy trên connection đó, allocator arena bị fragmentation
   ([`14-memory/06-fragmentation.md`](../14-memory/06-fragmentation.md)). Recycle connection định kỳ giới hạn
   điều này.
 
@@ -121,30 +121,34 @@ Làm theo thứ tự này.
 
 1. Trong [`labs/02-http-server`](../../labs/02-http-server), xác minh bằng `tcpdump` hoặc connection
    logging rằng hai request tuần tự từ một client tái sử dụng một
-   connection TCP. **Xong khi** bạn thấy một handshake cho hai request, và
+   connection TCP. **Done when** bạn thấy một handshake cho hai request, và
    `Connection: close` tạo ra một `FIN` sau response.
-2. Làm các bài tập của [`05-http-stack/03-hop-by-hop-headers.md`](03-hop-by-hop-headers.md). **Xong
-   khi** header hop-by-hop bị strip trong một stage sớm và header framing
+2. Làm các bài tập của [`05-http-stack/03-hop-by-hop-headers.md`](03-hop-by-hop-headers.md). **Done when** header hop-by-hop bị strip trong một stage sớm và header framing
    được sinh lại từ body bạn thực sự gửi.
 3. Thêm timeout theo từng chế độ: một idle timeout cho connection
    keep-alive thông thường mà *không* áp lên các connection đã upgrade
-   hoặc streaming. **Xong khi** một connection keep-alive rảnh bị đóng
+   hoặc streaming. **Done when** một connection keep-alive rảnh bị đóng
    đúng lịch và một WebSocket rảnh trên cùng server sống vô thời hạn.
 4. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), xây pool theo từng upstream với idle
-   eviction. **Xong khi** các connection trong pool cũ hơn ngưỡng bị đóng,
+   eviction. **Done when** các connection trong pool cũ hơn ngưỡng bị đóng,
    và pool không bao giờ vượt quá giới hạn cấu hình dưới tải.
 5. Mô phỏng upstream âm thầm đóng một connection idle trong pool (đóng nó
-   ngoài băng, rồi gửi một request). **Xong khi** proxy phát hiện lần viết
+   ngoài luồng (out of band), rồi gửi một request). **Done when** proxy phát hiện lần viết
    fail và retry trên một connection mới thay vì trả lỗi ra client.
 6. Thêm giới hạn `max_requests` và max-lifetime lên connection trong pool.
-   **Xong khi** thêm một upstream mới giữa lúc load-test khiến traffic
+   **Done when** thêm một upstream mới giữa lúc load-test khiến traffic
    dịch sang nó trong cửa sổ lifetime, thay vì chỉ connection mới tìm ra
    nó.
 7. Thêm `Connection: close` trên response cuối cùng trước một lần đóng có
-   kế hoạch. **Xong khi** một test lặp đi lặp lại việc idle-out connection
+   kế hoạch. **Done when** một test lặp đi lặp lại việc idle-out connection
    dưới tải đồng thời tạo ra zero lỗi client thấy được — chạy nó trước khi
    không có thông báo và đếm số lỗi, để biết cuộc đua đó là có thật.
 8. Đo tác động của việc reuse: so sánh pooled với một-connection-mỗi-request
-   dưới [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md). **Xong khi** bạn có số p50/p99 cho
+   dưới [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md). **Done when** bạn có số p50/p99 cho
    cả hai, trên plain HTTP và TLS riêng biệt (khoảng cách ở TLS mới là nơi
    lợi ích thật sự nằm ở đó).
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/04-router.md`](04-router.md) · [Mục lục](00-README.md) · Tiếp theo: [`05-http-stack/06-static.md`](06-static.md) →

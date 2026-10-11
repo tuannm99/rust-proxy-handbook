@@ -184,3 +184,8 @@ that a parser has to cope with a message split at any byte boundary
 6. Shrink `net.ipv4.ip_local_port_range` to a few hundred ports, open and
    close connections in a loop without reuse, and capture the
    `EADDRNOTAVAIL` that results; restore the setting afterward.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/11-socket.md`](11-socket.md) · [Index](00-README.md) · Next: [`01-network/13-tcp-reliability.md`](13-tcp-reliability.md) →

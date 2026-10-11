@@ -14,8 +14,7 @@ hoạt động không.
 
 ### toxiproxy
 `toxiproxy` (Shopify) nằm giữa proxy của bạn và các upstream của nó như
-một TCP proxy có thể lập trình: bạn có thể tiêm latency, giới hạn băng
-thông, và reset connection trên một connection đang sống qua HTTP API của
+một TCP proxy có thể lập trình: bạn có thể tiêm latency, giới hạn bandwidth, và reset connection trên một connection đang sống qua HTTP API của
 nó, và bật/tắt chúng giữa lúc test. Đây là cách dễ nhất để test circuit
 breaker của [`06-proxy/05-retry.md`](../06-proxy/05-retry.md) mà không cần đụng tới công cụ ở mức
 kernel — trỏ config upstream của [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) vào một instance
@@ -54,3 +53,8 @@ chỉ "chạy chaos và xem chuyện gì xảy ra."
 5. Gửi `SIGTERM` cho [`proxy`](../../proxy) giữa lúc chaos test và xác nhận graceful
    shutdown ([`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md)) vẫn drain đúng các
    request đang xử lý dở ngay cả khi các upstream đang không healthy.
+
+---
+
+<!-- nav -->
+← Trước: [`12-testing/02-fuzzing.md`](02-fuzzing.md) · [Mục lục](00-README.md) · Tiếp theo: [`12-testing/04-ci-tooling.md`](04-ci-tooling.md) →

@@ -56,3 +56,8 @@ allocation-size histograms.
 4. Identify which of [`proxy`](../../proxy)'s I/O paths are true zero-copy
    ([`02-linux/18-zerocopy.md`](../02-linux/18-zerocopy.md)) and confirm pooling has no effect on those,
    versus which paths copy through userspace and do benefit.
+
+---
+
+<!-- nav -->
+← Previous: [`14-memory/03-object-pool.md`](03-object-pool.md) · [Index](00-README.md) · Next: [`14-memory/05-slab-allocator.md`](05-slab-allocator.md) →

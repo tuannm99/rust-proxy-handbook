@@ -30,3 +30,8 @@ For most HTTP/1.1 or HTTP/2 proxy workloads bottlenecked on TLS handshakes, head
 3. Explain, in your own words, why `SO_REUSEPORT` ([`01-network/11-socket.md`](../01-network/11-socket.md)) is load-bearing for a thread-per-core design in a way it isn't for tokio's work-stealing one.
 4. Read [`16-kernel/05-rss.md`](../16-kernel/05-rss.md) and [`16-kernel/06-rps.md`](../16-kernel/06-rps.md), and connect NIC-level packet steering to why a thread-per-core proxy cares which core a connection's packets land on, while a work-stealing one mostly doesn't.
 5. Write one paragraph defending [`proxy`](../../proxy)'s choice of tokio over a thread-per-core runtime, specific to what [`proxy`](../../proxy) actually does (L7 HTTP termination and proxying) rather than a generic "tokio is popular" argument.
+
+---
+
+<!-- nav -->
+← Previous: [`04-runtime/04-structured-concurrency.md`](04-structured-concurrency.md) · [Index](00-README.md)

@@ -7,16 +7,16 @@ single-flight là một yêu cầu chứ không phải một tối ưu.
 
 ## What to learn
 ### Hình dạng của sự cố
-Một entry phổ biến hết hạn. Trong mili giây tiếp theo, 1.000 request đồng
+Một entry phổ biến expire. Trong mili giây tiếp theo, 1.000 request đồng
 thời đều thấy một miss, và cả 1.000 cùng đi tới origin — chính điều mà
-cache tồn tại để ngăn chặn, xảy ra vào thời điểm tệ nhất có thể.
+cache tồn tại để ngăn, xảy ra vào thời điểm tệ nhất có thể.
 
 Nó tự khuếch đại: origin chậm lại dưới tải đó, nên lần fetch mất lâu hơn,
 nên cửa sổ miss mở lâu hơn, nên nhiều request chồng vào hơn. Key càng phổ
 biến, spike càng tệ — nên các entry mà cache của bạn bảo vệ tốt nhất lại
-là những cái gây đau nhất khi hết hạn.
+là những cái gây đau nhất khi expire.
 
-Gotcha: đây không chỉ là vấn đề hết hạn. Một cold start
+Gotcha: đây không chỉ là vấn đề expire. Một cold start
 ([`09-architecture/05-rolling-restart.md`](../09-architecture/05-rolling-restart.md) — mỗi lần restart làm rỗng một
 cache trong memory), một lần purge, hay một lần eviction dưới áp lực
 memory đều tạo ra cùng điều kiện miss-đồng-thời, cho mọi key cùng lúc
@@ -48,9 +48,9 @@ Gotcha: bên chờ cần một **timeout**. Một lần fetch origin bị treo k
 theo deadline riêng (request timeout của [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)) và tự
 quyết định fail hay thử tự fetch.
 
-Gotcha: khi fetch **thất bại**, mọi bên chờ phải được đánh thức kèm lỗi.
+Gotcha: khi fetch **thất bại**, mọi bên chờ phải được wake up kèm lỗi.
 Một leader trả về sớm — một panic, một nhánh chưa xử lý, một future bị
-drop do client hủy — để lại các bên chờ bị chặn trên một kết quả sẽ không
+drop do client hủy — để các bên chờ phải đợi mãi một kết quả sẽ không
 bao giờ đến. Cấu trúc leader sao cho việc thông báo xảy ra trong một
 `Drop` guard, cùng kỷ luật với connection counter của
 [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md).
@@ -75,20 +75,20 @@ Gotcha: một lần refresh nền mà không ai chờ vẫn cần một timeout,
 lần origin sập để lại một đống task refresh ngày càng lớn, mỗi cái giữ
 một connection ([`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)), tất cả đều vô ích.
 
-### Dàn trải hết hạn để không đồng bộ hóa
-Các key được điền cùng lúc sẽ hết hạn cùng lúc. Điền một cache từ cold
-start và mọi thứ bạn nạp trong giây đầu tiên hết hạn trong cùng giây đó,
+### Dàn trải expire để không bị synchronize
+Các key được điền cùng lúc sẽ expire cùng lúc. Điền một cache từ cold
+start và mọi thứ bạn load trong giây đầu tiên expire trong cùng giây đó,
 một giờ sau — một stampede tự gây ra, lặp lại với chu kỳ bằng TTL của
 bạn.
 
-Thêm jitter vào TTL lúc lưu (±10% là đủ) để việc hết hạn dàn trải ra trên
-một cửa sổ thay vì rơi đồng loạt. Đây là cùng vấn đề đồng bộ hóa như chu
+Thêm jitter vào TTL lúc lưu (±10% là đủ) để việc expire dàn trải ra trên
+một cửa sổ thay vì rơi đồng loạt. Đây là cùng vấn đề đồng bộ (synchronization) như chu
 kỳ probe ([`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)) và retry storm
 ([`06-proxy/05-retry.md`](../06-proxy/05-retry.md)), với cùng cách sửa.
 
 ### Negative caching
 Một origin trả về 404 hoặc 500 cho một key nóng, không được cache, nhận
-mọi request cho nó mãi mãi — một stampede mà không cần cả hết hạn để kích
+mọi request cho nó mãi mãi — một stampede mà không cần cả expire để kích
 hoạt. Cache cả response âm tính, trong thời gian ngắn (vài giây), để một
 miss nóng chỉ tốn một request origin mỗi khoảng thay vì tất cả.
 
@@ -101,28 +101,33 @@ dung.
 Làm theo thứ tự này.
 
 1. Trong [`labs/10-cache`](../../labs/10-cache), tái tạo stampede: cache một response origin cố
-   tình chậm, làm nó hết hạn, và bắn 500 request đồng thời. **Xong khi**
+   tình chậm, làm nó expire, và bắn 500 request đồng thời. **Done when**
    bạn có thể chỉ ra khoảng 500 lần chạm origin bằng một counter phía
    origin.
 2. Thêm single-flight coalescing với một phép check-and-insert atomic.
-   **Xong khi** cùng test đó tạo ra đúng một lần chạm origin và cả 500
+   **Done when** cùng test đó tạo ra đúng một lần chạm origin và cả 500
    client nhận một response đúng.
-3. Thêm timeout cho bên chờ và lan truyền lỗi. **Xong khi** một origin bị
-   treo mãi mãi để các bên chờ fail theo deadline riêng thay vì bị chặn
-   vô thời hạn, và một origin trả lỗi đánh thức mọi bên chờ kèm lỗi đó.
-4. Giết leader giữa lúc fetch (hủy future của nó, mô phỏng client ngắt
-   kết nối). **Xong khi** các bên chờ vẫn nhận được một kết quả hoặc một
+3. Thêm timeout cho bên chờ và lan truyền lỗi. **Done when** một origin bị
+   treo mãi mãi để các bên chờ fail theo deadline riêng thay vì bị block
+   vô thời hạn, và một origin trả lỗi wake up mọi bên chờ kèm lỗi đó.
+4. Giết leader giữa lúc fetch (hủy future của nó, mô phỏng client disconnect
+   connection). **Done when** các bên chờ vẫn nhận được một kết quả hoặc một
    lỗi sạch, thay vì bị treo — viết nó trước khi có `Drop` guard và xem
    chúng bị treo.
-5. Thêm `stale-while-revalidate` lên trên. **Xong khi** cùng test 500
+5. Thêm `stale-while-revalidate` lên trên. **Done when** cùng test 500
    request đó trả về ngay từ cache stale với một lần refresh nền, và chỉ
    một key thực sự nguội mới khiến ai đó phải chờ.
-6. Giới hạn số lần refresh nền đồng thời. **Xong khi** một lần origin sập
+6. Giới hạn số lần refresh nền đồng thời. **Done when** một lần origin sập
    tạo ra một số lượng task refresh in-flight có giới hạn thay vì một
    đống ngày càng lớn.
-7. Thêm jitter cho TTL. **Xong khi** một cache được điền trong một đợt
-   cho thấy việc hết hạn dàn trải trên một cửa sổ thay vì một đợt spike —
+7. Thêm jitter cho TTL. **Done when** một cache được điền trong một đợt
+   cho thấy việc expire dàn trải trên một cửa sổ thay vì một đợt spike —
    vẽ biểu đồ tốc độ request origin qua một chu kỳ TTL đầy đủ để thấy nó.
-8. Thêm negative caching ngắn. **Xong khi** một 404 nóng chỉ tốn một
+8. Thêm negative caching ngắn. **Done when** một 404 nóng chỉ tốn một
    request origin mỗi khoảng negative-TTL, và một resource được tạo ngay
    sau một 404 đã cache trở nên thấy được trong vài giây.
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/08-cache.md`](08-cache.md) · [Mục lục](00-README.md) · Tiếp theo: [`05-http-stack/10-websocket.md`](10-websocket.md) →

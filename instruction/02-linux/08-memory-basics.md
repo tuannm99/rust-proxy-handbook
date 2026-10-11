@@ -81,3 +81,8 @@ hierarchy as you can, for as long as you can."
 4. Read [`14-memory/02-arena.md`](../14-memory/02-arena.md)'s opening section now that stack-vs-heap
    is fresh, and explain in one sentence why bump allocation is closer in
    spirit to stack allocation than to a general-purpose heap allocator.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/07-users-permissions-capabilities.md`](07-users-permissions-capabilities.md) · [Index](00-README.md) · Next: [`02-linux/09-blocking-io-and-signals.md`](09-blocking-io-and-signals.md) →

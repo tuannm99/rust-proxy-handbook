@@ -201,3 +201,8 @@ Build these in order.
    traffic with local enforcement still active — neither unlimited nor
    rejecting everything — and a metric records that it is running
    degraded.
+
+---
+
+<!-- nav -->
+← Previous: [`07-security/06-waf.md`](06-waf.md) · [Index](00-README.md) · Next: [`07-security/08-ip-filtering.md`](08-ip-filtering.md) →

@@ -43,9 +43,9 @@ fn poll(self: std::pin::Pin<&mut Self>, cx: &mut std::task::Context<'_>) -> std:
 
 ### `Pin<Box<dyn Future<Output = T>>>`
 Boxing một future rồi pin cái box đó là cách chuẩn để lưu một future được
-cấp phát trên heap, dynamic-dispatch — ví dụ task queue của một executor
+allocate trên heap, dynamic-dispatch — ví dụ task queue của một executor
 tự viết, hoặc một hàm trả về "một future nào đó, không quan tâm type cụ
-thể" mà không dùng `async fn` trong trait. `Box::pin` cấp phát trên heap
+thể" mà không dùng `async fn` trong trait. `Box::pin` allocate trên heap
 và pin nó ngay lập tức, tránh luôn câu hỏi về việc giá trị di chuyển trên
 stack sau đó.
 
@@ -78,3 +78,8 @@ trait object, không phải do bản thân `Pin`.
 4. Đọc docs của thư viện chuẩn cho `Pin::get_mut` và `Pin::new_unchecked`
    và viết ra, chính xác, invariant nào mà `new_unchecked` yêu cầu bạn tự
    tay giữ đúng (đây là unsafe — xem [`03-rust/03-unsafe.md`](03-unsafe.md)).
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/05-async.md`](05-async.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/07-traits-and-generics.md`](07-traits-and-generics.md) →

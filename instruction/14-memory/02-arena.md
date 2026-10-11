@@ -75,3 +75,8 @@ way you'd cap any other per-request resource ([`07-security/09-ddos.md`](../07-s
 4. Add a maximum arena size per request and confirm a request whose
    headers would exceed it is rejected cleanly rather than growing the
    arena unbounded.
+
+---
+
+<!-- nav -->
+← Previous: [`14-memory/01-allocator.md`](01-allocator.md) · [Index](00-README.md) · Next: [`14-memory/03-object-pool.md`](03-object-pool.md) →

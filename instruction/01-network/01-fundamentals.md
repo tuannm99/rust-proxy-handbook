@@ -93,7 +93,7 @@ A `403` is never a routing problem and a timeout is rarely an HTTP-header
 problem. [`10-packet-capture-and-tools.md`](10-packet-capture-and-tools.md) teaches the tools and
 [`21-life-of-a-request.md`](21-life-of-a-request.md) ends with a symptom-to-layer table.
 
-### The six pieces, and where each lives
+### The five pieces, and where each lives
 The next layer of this primer is split into short files rather than one
 long one, because each piece is a genuinely separate idea and you'll want
 to jump back to individual ones later rather than re-reading a wall of
@@ -120,7 +120,7 @@ text:
 Read them in that order once; after that, treat each as a standalone
 lookup.
 
-These six explain *what* a connection and a packet are. The next group
+These five explain *what* a connection and a packet are. The next group
 ([`07-link-layer.md`](07-link-layer.md) through [`10-packet-capture-and-tools.md`](10-packet-capture-and-tools.md)) goes one level down —
 how a packet physically moves, and how to look at it — and
 [`21-life-of-a-request.md`](21-life-of-a-request.md) at the end of the directory retells the whole
@@ -146,3 +146,8 @@ stack as one request.
    port 80` ([`10-packet-capture-and-tools.md`](10-packet-capture-and-tools.md) explains the flags) and point at the
    Ethernet, IP and TCP headers and the HTTP text in the hex dump, naming the
    layer of each.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`01-network/02-addressing.md`](02-addressing.md) →

@@ -1,7 +1,7 @@
 # SLI, SLO, và Error Budget
 
 Định nghĩa "hoạt động tốt" nghĩa là gì, bằng con số, trước khi quyết định
-cái gì nên đánh thức một con người. [`08-observability/06-alerting.md`](06-alerting.md) xây
+cái gì nên wake up một con người. [`08-observability/06-alerting.md`](06-alerting.md) xây
 trên nền này — một alert không có SLO đứng sau chỉ là một ngưỡng ai đó
 đoán ra.
 
@@ -100,26 +100,30 @@ Xây dựng theo thứ tự sau.
 
 1. Định nghĩa hai SLI cho [`proxy`](../../proxy) — thất bại do proxy gây ra và thất bại
    end-to-end — dưới dạng recording rule trên các counter từ
-   [`08-observability/02-metrics.md`](02-metrics.md). **Xong khi** mỗi cái có xử lý tường
+   [`08-observability/02-metrics.md`](02-metrics.md). **Done when** mỗi cái có xử lý tường
    minh cho 4xx, cho 429-do-quá-tải, và cho traffic health-check bị loại
    trừ, và bạn có thể nêu tên team sở hữu mỗi cái.
-2. Viết quy tắc quy kết cho mã 504. **Xong khi** một timeout được gán cho
+2. Viết quy tắc quy kết cho mã 504. **Done when** một timeout được gán cho
    một phía một cách có chủ đích và lý do nằm trong một comment ngay cạnh
    rule.
-3. Thêm một SLI latency có ngưỡng khớp một cạnh bucket histogram. **Xong
-   khi** "tỉ lệ dưới ngưỡng" là một tỉ lệ bucket chính xác thay vì một
+3. Thêm một SLI latency có ngưỡng khớp một cạnh bucket histogram. **Done when** "tỉ lệ dưới ngưỡng" là một tỉ lệ bucket chính xác thay vì một
    phép nội suy `histogram_quantile` — điều chỉnh bucket của bạn nếu
    chúng không khớp.
-4. Chọn target và window, và tính ngân sách. **Xong khi** bạn có thể nói,
+4. Chọn target và window, và tính ngân sách. **Done when** bạn có thể nói,
    bằng phút, mỗi SLO cho phép bao nhiêu downtime mỗi window, và đã kiểm
    tra tính hợp lý của nó so với độ tin cậy của chính upstream.
-5. Publish ngân sách còn lại như một gauge. **Xong khi** một dashboard cho
+5. Publish ngân sách còn lại như một gauge. **Done when** một dashboard cho
    thấy còn lại bao nhiêu trong window hiện tại mà không cần ai chạy một
    câu query bằng tay.
-6. Đặt target vào đúng một recording rule duy nhất. **Xong khi** thay đổi
+6. Đặt target vào đúng một recording rule duy nhất. **Done when** thay đổi
    nó ở một chỗ đó di chuyển mọi tín hiệu dẫn xuất — kiểm chứng bằng cách
    thay đổi nó và xem tất cả di chuyển.
-7. Kiểm chứng với thực tế. **Xong khi** bạn replay lại một sự cố trong quá
+7. Kiểm chứng với thực tế. **Done when** bạn replay lại một sự cố trong quá
    khứ (hoặc tiêm một cái mới bằng [`12-testing/03-chaos.md`](../12-testing/03-chaos.md)) và xác nhận
    ngân sách bị tiêu khớp với thời lượng và mức độ nghiêm trọng thực tế
    của sự cố.
+
+---
+
+<!-- nav -->
+← Trước: [`08-observability/04-profiling.md`](04-profiling.md) · [Mục lục](00-README.md) · Tiếp theo: [`08-observability/06-alerting.md`](06-alerting.md) →

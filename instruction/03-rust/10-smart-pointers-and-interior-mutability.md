@@ -45,3 +45,8 @@ fn normalize_header(v: &str) -> std::borrow::Cow<str> {
 3. Deliberately hold a `RefCell` borrow across an `.await` in a small async example to reproduce the "already borrowed" panic, then explain why the equivalent `Mutex` version would have deadlocked instead — and why that isn't actually better. Connect to [`03-rust/04-sync.md`](04-sync.md).
 4. Write a header-normalization function returning `Cow<str>` (in [`labs/01-http-parser`](../../labs/01-http-parser) or the [`07-security`](../07-security) normalization exercise), and assert the already-normalized path never allocates (e.g. `matches!(result, Cow::Borrowed(_))`).
 5. Read `Arc::get_mut`'s docs and explain when it succeeds (it needs exclusive access) — connect this to why it's rare to use in a proxy holding `Arc`s shared across many tasks.
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/09-iterators-and-closures.md`](09-iterators-and-closures.md) · [Index](00-README.md) · Next: [`03-rust/11-concurrency-patterns.md`](11-concurrency-patterns.md) →

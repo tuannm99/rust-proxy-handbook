@@ -94,3 +94,8 @@ burst shows up as your p99 jumping with no change in your code. You can't fix it
    difference using run-queue wait.
 6. Move a CPU-heavy step (e.g. gzip of a large body) from inline in a handler to `spawn_blocking`, and show with a concurrent
    tiny-request latency probe that the tiny requests no longer stall.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/11-time-and-timers.md`](11-time-and-timers.md) · [Index](00-README.md) · Next: [`02-linux/13-containers.md`](13-containers.md) →

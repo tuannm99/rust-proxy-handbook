@@ -1,26 +1,31 @@
-# File và Filesystem: Inode, VFS, Page Cache, và Durability
+# File và Filesystem: Inode, VFS, Page Cache và Durability
 
-Một "file" thực sự là gì trên Linux, một path resolve ra cái gì, và `write()` hứa và không
-hứa những gì. Cần cho log file, static serving, config reload, và để hiểu vì sao "mọi thứ
-là file" cho phép một `epoll` theo dõi socket và pipe như nhau
-([`05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md)).
+File này giải thích: một "file" thực sự là gì trên Linux, một path được resolve ra cái gì, và
+`write()` hứa gì và không hứa gì. Bạn cần nó cho log file, static serving, config reload. Nó
+cũng giúp hiểu vì sao "mọi thứ là file" cho phép một `epoll` theo dõi socket và pipe theo cùng
+một cách ([`05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md)).
 
 ## What to learn
 
-### Inode: file không phải là tên của nó
-Filesystem lưu mỗi file dưới dạng một **inode**: một record giữ loại file, kích thước, chủ
-sở hữu, permission ([`07-users-permissions-capabilities.md`](07-users-permissions-capabilities.md)), timestamp và vị trí các data block của
-nó — nhưng **không giữ tên**. Tên nằm trong **directory**, vốn chỉ là các file ánh xạ
-`tên -> inode number`. Một tên là một **hard link** tới một inode; một inode có thể có nhiều
-tên, và inode (cùng data) chỉ được giải phóng khi **link count** về 0 *và* không process nào
-còn mở nó. Những hệ quả bạn sẽ gặp:
+### Inode: file không phải là cái tên của nó
+Filesystem lưu mỗi file dưới dạng một **inode**. Đó là một record chứa: loại file, kích thước,
+chủ sở hữu, permission ([`07-users-permissions-capabilities.md`](07-users-permissions-capabilities.md)),
+timestamp, và vị trí các data block. Inode **không chứa tên**.
 
-- `rm` một file mà một process vẫn đang mở sẽ gỡ tên, nhưng data vẫn sống và tiếp tục chiếm
-  đĩa cho tới khi fd cuối đóng (`df` bảo đầy, `du` bảo không — `lsof +L1` tìm ra các file như
-  vậy; kinh điển sau khi rotate log mà không báo cho process).
-- **Symlink** là thứ khác: một file nhỏ có nội dung là một path, được resolve lúc dùng (nó có
-  thể dangle, và có thể trỏ tới bất cứ đâu).
-- Rename trong cùng một filesystem chỉ là sửa directory — atomic, và không có data di chuyển.
+Tên nằm trong **directory**. Directory chỉ là một file ánh xạ `tên -> inode number`. Một tên là
+một **hard link** tới một inode. Một inode có thể có nhiều tên. Inode (cùng dữ liệu của nó) chỉ
+được giải phóng khi **link count** về 0 *và* không còn process nào đang mở nó.
+
+Những hệ quả bạn sẽ gặp:
+
+- `rm` một file mà một process vẫn đang mở chỉ gỡ cái tên. Dữ liệu vẫn sống và vẫn chiếm đĩa
+  cho đến khi fd cuối cùng được đóng. Khi đó `df` báo đĩa đầy còn `du` báo không. `lsof +L1`
+  tìm ra những file như vậy. Đây là tình huống kinh điển sau khi rotate log mà không báo cho
+  process.
+- **Symlink** là thứ khác hẳn: một file nhỏ có nội dung là một path, và được resolve lúc dùng.
+  Nó có thể trỏ vào hư không (dangle), và có thể trỏ tới bất cứ đâu.
+- Rename trong cùng một filesystem chỉ là sửa directory. Nó atomic, và không có dữ liệu nào bị
+  di chuyển.
 
 ```text
 $ ls -li file hardlink symlink      # -i in inode number
@@ -30,95 +35,135 @@ $ ls -li file hardlink symlink      # -i in inode number
 ```
 
 ### Path resolution và VFS
-Mở `/var/log/proxy/access.log` khiến kernel đi dọc path: bắt đầu từ root directory, tra
-`var` trong đó, rồi `log`, `proxy`, `access.log`, kiểm tra permission trên mỗi directory dọc
-đường (cần quyền **execute/search** trên directory, không chỉ read). Kernel cache các lần tra
-đó trong **dentry cache**. **VFS** (virtual filesystem) là layer làm mọi thứ đồng nhất: lời
-gọi `open`/`read`/`write` của bạn đi tới VFS, cái này chuyển cho filesystem cụ thể — ext4,
-xfs, tmpfs (RAM), overlayfs (container, [`13-containers.md`](13-containers.md)), NFS (mạng), `/proc` (state
-của kernel được phơi ra dưới dạng file). **Mount** ghép một filesystem vào một directory của
-filesystem khác; một path băng qua mount point mà không thấy. Đó cũng là lý do một path chỉ
-là một *yêu cầu*: giữa `stat` và `open` của bạn, ai đó có thể tráo một symlink — race
-**TOCTOU** (time-of-check to time-of-use) đằng sau nhiều lỗ hổng file-serving
-([`05-http-stack/06-static.md`](../05-http-stack/06-static.md), [`07-security/04-normalization.md`](../07-security/04-normalization.md)). Phòng thủ bằng cách mở trước, rồi
-kiểm tra *fd đã mở* (`fstat`), không bao giờ kiểm tra path.
+Khi bạn mở `/var/log/proxy/access.log`, kernel đi dọc theo path: bắt đầu từ root directory, tìm
+`var` trong đó, rồi `log`, `proxy`, `access.log`. Ở mỗi directory trên đường đi, kernel kiểm tra
+permission. Bạn cần quyền **execute/search** trên directory, không chỉ quyền read. Kernel cache
+kết quả các lần tra này trong **dentry cache**.
 
-### File descriptor vs open file description
-`open()` trả về một fd — một index trong bảng của process — trỏ tới một **open file
-description** trong kernel giữ **offset hiện tại** và các flag, cái này trỏ tới inode.
-`dup()`/`fork()` copy *fd*, không phải description, nên các bản sao **chia sẻ một offset**:
-parent và child cùng write vào một fd thừa kế sẽ xen kẽ đúng, và hai `read` trên các fd được
-dup sẽ tiêu thụ dữ liệu nối tiếp nhau. Mở cùng một path hai lần tạo hai description độc lập
-với offset riêng. `O_APPEND` làm mỗi `write` seek về cuối một cách atomic, đó là lý do nhiều
-process có thể append an toàn các dòng nguyên vẹn vào một file log. `pread`/`pwrite` nhận
-offset tường minh và không đụng offset chung — thứ mà thread pool và các helper file của tokio
-dùng.
+**VFS** (virtual filesystem) là layer làm cho mọi thứ đồng nhất. Lời gọi `open`/`read`/`write`
+của bạn đi vào VFS, và VFS chuyển cho filesystem cụ thể:
+- ext4, xfs: filesystem trên đĩa.
+- tmpfs: nằm trong RAM.
+- overlayfs: dùng cho container ([`13-containers.md`](13-containers.md)).
+- NFS: qua mạng.
+- `/proc`: trạng thái của kernel được trình bày dưới dạng file.
 
-### Buffered, cached, và durable là ba thứ khác nhau
-Một `write()` vào file thường trả về ngay khi data được copy vào **page cache** của kernel
-([`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md)); kernel ghi nó xuống đĩa sau (**write-back**, trong vòng vài
-giây). Vì thế một `write` thành công nghĩa là "process khác đọc được nó" nhưng **không** phải
-"nó đã nằm trên đĩa": mất điện hay kernel crash có thể làm mất nó. `fsync(fd)` block cho tới
-khi data (và metadata) của file đó tới được bộ lưu trữ ổn định — chậm (mili giây trên SSD) và
-là giá của durability. Có một buffer thứ hai ở trên nữa trong user space (`BufWriter` của
-Rust, `stdio` của libc): data ở đó thậm chí chưa vào kernel, nên crash hoặc `process::exit` làm
-mất nó trừ khi flush.
+**Mount** gắn một filesystem vào một directory của filesystem khác. Một path băng qua mount
+point mà bạn không hề thấy.
 
-Read chạm page cache trước, đó là lý do lần đọc thứ hai của một file nóng nhanh như bộ nhớ và
-vì sao `sendfile` có thể stream static asset mà không đụng userspace
-([`18-zerocopy.md`](18-zerocopy.md), [`16-memory.md`](16-memory.md)). Đọc file nguội thì block ở đĩa — không như socket, file
-thường **luôn "ready"** với `epoll`, nên bạn không thể làm disk I/O non-blocking bằng `epoll`.
-tokio chạy các thao tác file trên một blocking thread pool chính vì lý do này (`tokio::fs`);
-io_uring là câu trả lời async-file thật sự ([`15-io_uring.md`](15-io_uring.md)).
+Điều này cũng có nghĩa là path chỉ là một *yêu cầu*. Giữa lúc bạn `stat` và lúc bạn `open`, ai
+đó có thể tráo một symlink. Đó là race **TOCTOU** (time-of-check to time-of-use), nguyên nhân
+của nhiều lỗ hổng file-serving ([`05-http-stack/06-static.md`](../05-http-stack/06-static.md),
+[`07-security/04-normalization.md`](../07-security/04-normalization.md)). Cách phòng thủ: mở file
+trước, rồi kiểm tra *fd đã mở* (`fstat`). Không bao giờ kiểm tra bằng path.
 
-### Atomic replace: write-temp, fsync, rename
-Để cập nhật một file mà reader có thể thấy giữa chừng khi đang ghi (config, certificate, cache
-file), đừng bao giờ ghi đè tại chỗ. Pattern: ghi một file tạm **trong cùng directory** (cùng
-filesystem), `fsync` nó, `rename(tmp, final)` — reader thấy file cũ hoặc file mới, không bao
-giờ là một mớ rách, vì rename là atomic. Config reload
-([`09-architecture/03-config.md`](../09-architecture/03-config.md)) và xoay certificate dựa vào điều này. Process sau đó có thể được báo
-reload bằng một signal ([`17-signals.md`](17-signals.md)) hoặc tự nhận ra qua **inotify** — một cơ chế của
-kernel giao các sự kiện "path này đã đổi" dưới dạng fd đọc được (crate `notify`). Hãy watch
-*directory*: editor lưu bằng rename, nên inode đang watch biến mất.
+### File descriptor và open file description
+`open()` trả về một fd, tức một chỉ số trong bảng fd của process. fd này trỏ tới một **open file
+description** trong kernel. Description giữ **offset hiện tại** và các flag, và nó trỏ tới inode.
 
-### Filesystem đặc biệt: /proc, /sys, /dev
-`/proc` và `/sys` không nằm trên đĩa: chúng là state của kernel được trình bày dưới dạng file.
-`/proc/<pid>/fd`, `/proc/<pid>/status`, `/proc/meminfo`, `/proc/net/tcp` và `/sys/class/net/`
-cho phép bạn soi một hệ thống đang chạy bằng `cat` ([`20-limits-and-proc.md`](20-limits-and-proc.md)). `/dev` chứa các
-device node (`/dev/null`, `/dev/urandom`, `/dev/tty`). `tmpfs` (`/tmp` hoặc `/dev/shm` trên nhiều
-hệ thống) nằm trong RAM — nhanh, nhưng tính vào bộ nhớ, và biến mất khi reboot.
+`dup()` và `fork()` copy *fd*, không copy description. Vì vậy các bản sao **dùng chung một
+offset**:
+- Parent và child cùng write vào một fd thừa kế sẽ ghi nối tiếp nhau đúng thứ tự.
+- Hai lần `read` trên các fd đã dup sẽ lấy dữ liệu nối tiếp nhau.
 
-### Giới hạn, lỗi, và đĩa đầy
-Một filesystem có thể "đầy" theo hai cách: hết **block** (`df -h`) hoặc hết **inode** (`df -i`;
-hàng triệu cache file nhỏ sẽ làm vậy) — cả hai đều cho `ENOSPC`. Một proxy ghi access log vào
-đĩa đầy sẽ gặp lỗi write ngay trên request path; hãy quyết định có chủ đích rằng việc đó làm
-fail request hay bỏ log ([`08-observability/01-logging.md`](../08-observability/01-logging.md)). `EMFILE`/`ENFILE` nghĩa là giới hạn
-fd theo process/hệ thống ([`20-limits-and-proc.md`](20-limits-and-proc.md)).
+Nếu bạn mở cùng một path hai lần, bạn có hai description độc lập, mỗi cái có offset riêng.
 
-### Gotcha: log rotation và file đã bị chuyển
-`logrotate` đổi tên `access.log` thành `access.log.1` và tạo file mới — nhưng process của bạn
-vẫn giữ fd tới *inode cũ* và tiếp tục ghi vào `access.log.1`. Sửa bằng cách mở lại khi nhận
-signal (`SIGHUP`, [`17-signals.md`](17-signals.md)), hoặc `copytruncate` (dễ race), hoặc log ra stdout và để
-supervisor lo việc file.
+`O_APPEND` làm mỗi lần `write` tự seek về cuối file một cách atomic. Nhờ vậy nhiều process có
+thể append nguyên vẹn từng dòng vào một file log. `pread`/`pwrite` nhận offset tường minh và
+không đụng đến offset dùng chung. Thread pool và các helper file của tokio dùng chúng.
+
+### Buffered, cached và durable là ba thứ khác nhau
+`write()` vào một file thường trả về ngay khi dữ liệu đã được copy vào **page cache** của kernel
+([`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md)). Kernel ghi nó xuống đĩa sau đó
+(**write-back**, trong vòng vài giây).
+
+Vì vậy một `write` thành công nghĩa là "process khác đọc được nó". Nó **không** nghĩa là "nó đã
+nằm trên đĩa". Mất điện hoặc kernel crash có thể làm mất dữ liệu.
+
+`fsync(fd)` block cho đến khi dữ liệu (và metadata) của file đó thực sự đến được bộ lưu trữ
+ổn định. Nó chậm (mili giây trên SSD), và đó là cái giá của durability.
+
+Còn có một lớp buffer nữa ở trên, trong user space (`BufWriter` của Rust, `stdio` của libc).
+Dữ liệu ở đó thậm chí chưa vào kernel. Nếu crash hoặc gọi `process::exit` mà chưa flush, dữ liệu
+bị mất.
+
+Read thì chạm page cache trước. Vì vậy lần đọc thứ hai của một file nóng nhanh như đọc bộ nhớ.
+Đó cũng là lý do `sendfile` có thể stream static asset mà không đi qua userspace
+([`18-zerocopy.md`](18-zerocopy.md), [`16-memory.md`](16-memory.md)).
+
+Đọc file nguội thì bị block ở đĩa. Khác với socket, file thường **luôn "ready"** với `epoll`,
+nên bạn không thể làm disk I/O non-blocking bằng `epoll`. Vì vậy tokio chạy các thao tác file
+trên một blocking thread pool (`tokio::fs`). io_uring mới là câu trả lời async-file thực sự
+([`15-io_uring.md`](15-io_uring.md)).
+
+### Atomic replace: ghi file tạm, fsync, rename
+Giả sử có một file mà reader có thể đọc giữa chừng khi bạn đang cập nhật (config, certificate,
+cache file). Đừng bao giờ ghi đè tại chỗ. Hãy làm theo pattern sau:
+
+1. Ghi một file tạm **trong cùng directory** (cùng filesystem).
+2. `fsync` nó.
+3. `rename(tmp, final)`.
+
+Reader thấy file cũ hoặc file mới, không bao giờ thấy một file dở dang, vì rename là atomic.
+Config reload ([`09-architecture/03-config.md`](../09-architecture/03-config.md)) và xoay
+certificate dựa vào điều này.
+
+Sau đó process có thể được báo reload bằng một signal ([`17-signals.md`](17-signals.md)), hoặc
+tự nhận ra qua **inotify**. Đây là cơ chế kernel báo "path này đã đổi" dưới dạng một fd đọc được
+(crate `notify`). Hãy watch *directory*, vì editor lưu file bằng rename nên inode bạn đang watch
+sẽ biến mất.
+
+### Các filesystem đặc biệt: /proc, /sys, /dev
+`/proc` và `/sys` không nằm trên đĩa. Chúng là trạng thái của kernel được trình bày dưới dạng
+file. `/proc/<pid>/fd`, `/proc/<pid>/status`, `/proc/meminfo`, `/proc/net/tcp` và
+`/sys/class/net/` cho phép bạn soi một hệ thống đang chạy bằng `cat`
+([`20-limits-and-proc.md`](20-limits-and-proc.md)).
+
+`/dev` chứa các device node (`/dev/null`, `/dev/urandom`, `/dev/tty`). `tmpfs` (`/tmp`, hoặc
+`/dev/shm` trên nhiều hệ thống) nằm trong RAM. Nó nhanh, nhưng tính vào bộ nhớ, và mất khi
+reboot.
+
+### Giới hạn, lỗi và đĩa đầy
+Một filesystem có thể "đầy" theo hai cách: hết **block** (`df -h`), hoặc hết **inode**
+(`df -i`; hàng triệu cache file nhỏ sẽ gây ra chuyện này). Cả hai đều trả `ENOSPC`.
+
+Một proxy ghi access log vào đĩa đầy sẽ gặp lỗi write ngay trên đường xử lý request. Hãy quyết
+định có chủ đích: lỗi đó làm request fail, hay chỉ bỏ log
+([`08-observability/01-logging.md`](../08-observability/01-logging.md)).
+
+`EMFILE`/`ENFILE` nghĩa là chạm giới hạn fd của process hoặc của cả hệ thống
+([`20-limits-and-proc.md`](20-limits-and-proc.md)).
+
+### Gotcha: log rotation và file đã bị đổi tên
+`logrotate` đổi tên `access.log` thành `access.log.1` rồi tạo file mới. Nhưng process của bạn vẫn
+giữ fd tới *inode cũ*, nên nó tiếp tục ghi vào `access.log.1`. Có ba cách xử lý:
+- Mở lại file khi nhận signal (`SIGHUP`, [`17-signals.md`](17-signals.md)).
+- Dùng `copytruncate` (dễ gây race).
+- Log ra stdout và để supervisor lo việc ghi file.
 
 ## Practice
 
-1. Chạy `stat file` và `ls -li`, tạo một hard link (`ln`) và một symlink (`ln -s`), và cho thấy
-   inode number và link count. Xóa bản gốc và cho thấy cái nào còn sống, cái nào dangle.
-2. Tạo một file 100 MB, mở nó bằng `tail -f` (hoặc một chương trình scratch giữ fd), `rm` nó, và
-   cho thấy bằng `df`, `lsof +L1` và `ls -l /proc/<pid>/fd` rằng dung lượng vẫn đang bị dùng; rồi
-   kết thúc process và xem `df` giảm.
-3. Cho thấy một log `O_APPEND` được hai process ghi cùng lúc
-   (`for i in $(seq 1000); do echo a >> f; done & ...`) ra nguyên vẹn, và đối chiếu với hai
-   process ghi ở các offset tường minh (`pwrite`) ghi đè lên nhau.
-4. Ghi 1 GiB có và không có `fsync` trong một chương trình Rust scratch (`File::sync_all`), đo
-   thời gian cả hai, và giải thích khoảng cách; kiểm tra `grep -E 'Dirty|Writeback' /proc/meminfo`
-   trong lúc ghi không sync.
-5. Implement pattern write-temp-fsync-rename cho một config file trong một chương trình scratch,
-   chạy một vòng reader (`while true; do cat cfg; done`) song song, và xác nhận nó không bao giờ
-   thấy file dở dang; rồi cố tình phá nó (ghi tại chỗ) và bắt một lần đọc bị rách. Đây là cơ chế
-   dưới [`labs/13-hot-reload`](../../labs/13-hot-reload); trace nó bằng
-   `strace -f -e trace=openat,read,write,fsync,rename` và xác định từng syscall.
-6. Trong [`labs/04-static-server`](../../labs/04-static-server), phục vụ một symlink trỏ ra ngoài root được
-   phục vụ và xác nhận server của bạn từ chối nó, rồi giải thích race TOCTOU mà việc mở theo path
-   rồi mới kiểm tra sẽ để lại.
+1. Chạy `stat file` và `ls -li`. Tạo một hard link (`ln`) và một symlink (`ln -s`), và cho thấy
+   inode number cùng link count. Xóa bản gốc và cho thấy cái nào còn sống, cái nào bị dangle.
+2. Tạo một file 100 MB, mở nó bằng `tail -f` (hoặc một chương trình scratch giữ fd), rồi `rm`
+   nó. Dùng `df`, `lsof +L1` và `ls -l /proc/<pid>/fd` để cho thấy dung lượng vẫn đang bị dùng.
+   Sau đó kết thúc process và xem `df` giảm xuống.
+3. Cho hai process cùng ghi vào một log mở bằng `O_APPEND`
+   (`for i in $(seq 1000); do echo a >> f; done & ...`) và cho thấy các dòng ra nguyên vẹn. Đối
+   chiếu với trường hợp hai process ghi ở các offset tường minh (`pwrite`) và ghi đè lên nhau.
+4. Trong một chương trình Rust scratch, ghi 1 GiB có và không có `fsync` (`File::sync_all`). Đo
+   thời gian của cả hai và giải thích khoảng cách. Trong lúc ghi không sync, kiểm tra
+   `grep -E 'Dirty|Writeback' /proc/meminfo`.
+5. Implement pattern ghi-file-tạm-fsync-rename cho một config file trong một chương trình
+   scratch. Chạy song song một vòng lặp reader (`while true; do cat cfg; done`) và xác nhận nó
+   không bao giờ thấy file dở dang. Sau đó cố tình phá nó (ghi tại chỗ) và bắt một lần đọc bị
+   rách. Đây là cơ chế bên dưới [`labs/13-hot-reload`](../../labs/13-hot-reload). Trace nó bằng
+   `strace -f -e trace=openat,read,write,fsync,rename` và chỉ ra từng syscall.
+6. Trong [`labs/04-static-server`](../../labs/04-static-server), thử phục vụ một symlink trỏ ra
+   ngoài thư mục root được phục vụ, và xác nhận server của bạn từ chối nó. Sau đó giải thích race
+   TOCTOU còn lại nếu bạn mở theo path rồi mới kiểm tra.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/07-users-permissions-capabilities.md`](07-users-permissions-capabilities.md) →

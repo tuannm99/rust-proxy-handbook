@@ -29,7 +29,7 @@ use std::mem::size_of;
 #[repr(C)] struct Good { b: u64, a: u8, c: u8 } // both u8s pack together after the u64
 assert!(size_of::<Good>() < size_of::<Bad>());
 ```
-Với một struct được cấp phát trên mỗi connection ở quy mô lớn — hàng chục
+Với một struct được allocate trên mỗi connection ở quy mô lớn — hàng chục
 nghìn connection còn sống trong một proxy — kiểu khác biệt padding này là
 bộ nhớ thật, không phải một micro-optimization. Xem
 [`17-performance/01-cpu-cache.md`](../17-performance/01-cpu-cache.md) và [`17-performance/04-memory-layout.md`](../17-performance/04-memory-layout.md)
@@ -39,9 +39,9 @@ tiên quyết.
 ### Niche optimization: vì sao `Option<&T>` cùng kích thước với `&T`
 Compiler tận dụng các bit pattern không hợp lệ của một type — một
 reference không bao giờ có thể null — để biểu diễn `None` bằng chính bit
-pattern-không-thể-có đó, nên `Option<&T>`, `Option<Box<T>>`, và
+pattern không thể có đó, nên `Option<&T>`, `Option<Box<T>>`, và
 `Option<NonZeroU32>` đều không tốn thêm byte nào so với type không-Option.
-Đây là một tối ưu hóa có tính load-bearing, không phải một điều thú vị:
+Đây là một tối ưu hóa có tác dụng thật, không phải chuyện vặt:
 đó là lý do cụ thể vì sao Rust idiomatic dùng `Option<NonZeroU32>` thay vì
 `Option<u32>` cho một id không bao giờ hợp lệ là số không.
 
@@ -85,3 +85,8 @@ không biết chính xác mỗi slot cần lớn bao nhiêu, đó chính là `si
 5. Thêm `#[repr(C)]` vào một struct hiện đang là `repr(Rust)` và dùng
    `size_of` (hoặc `std::mem::offset_of!` nếu toolchain của bạn có) để
    kiểm tra xem layout có thực sự thay đổi hay không.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/14-ffi-and-abi.md`](14-ffi-and-abi.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/16-testing-idioms.md`](16-testing-idioms.md) →

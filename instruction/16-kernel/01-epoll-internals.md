@@ -66,3 +66,8 @@ multiple listening sockets) on the same address.
 4. Trace (with `strace -e epoll_wait,epoll_ctl` or similar) a running
    `tokio` program under [`labs/00-tcp-server`](../../labs/00-tcp-server) and match what you see
    against the tree/ready-list model above.
+
+---
+
+<!-- nav -->
+← Previous: [`16-kernel/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`16-kernel/02-io_uring-internals.md`](02-io_uring-internals.md) →

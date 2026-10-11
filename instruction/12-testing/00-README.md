@@ -25,3 +25,8 @@ The ordering that matters: load-test *before* optimizing
 ([`17-performance/`](../17-performance) is explicit that profiling comes after a measurement
 pointing somewhere), and fuzz anything that parses attacker-controlled
 bytes before shipping it.
+
+---
+
+<!-- nav -->
+Next: [`12-testing/01-load-testing.md`](01-load-testing.md) →

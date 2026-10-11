@@ -66,3 +66,8 @@ nút thắt từ "một core làm mọi thứ" sang "mọi core đều tốn cyc
 4. Nếu bạn có quyền truy cập một NIC multi-queue từ bài tập
    [`16-kernel/05-rss.md`](05-rss.md), so sánh phân bố core mà RPS đạt được và overhead
    của nó với kết quả dựa-trên-hardware của RSS trên cùng một workload.
+
+---
+
+<!-- nav -->
+← Trước: [`16-kernel/05-rss.md`](05-rss.md) · [Mục lục](00-README.md) · Tiếp theo: [`16-kernel/07-scheduler.md`](07-scheduler.md) →

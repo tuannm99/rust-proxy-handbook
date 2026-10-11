@@ -160,3 +160,8 @@ TLS 1.1. Then a failure proves the server said no.
 5. Simulate a cert rotation (swap the cert file, trigger reload per
    [`09-architecture/03-config.md`](../09-architecture/03-config.md)) and confirm existing connections aren't
    dropped mid-request.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/18-http3.md`](18-http3.md) · [Index](00-README.md) · Next: [`01-network/20-proxy-protocol.md`](20-proxy-protocol.md) →

@@ -58,7 +58,7 @@ retry quan trọng nhất cần làm đúng.
 Gotcha: kế toán budget phải theo-từng-upstream-pool, không phải toàn cục.
 Một backend cư xử tồi làm cạn một budget toàn cục sẽ tắt retry cho mọi
 route khác trong proxy, biến một failure cục bộ thành một suy giảm toàn
-hạm đội.
+fleet.
 
 ### Retry khuếch đại qua các lớp
 Retry nhân lên. Một client retry 3x đứng trước một proxy retry 3x đứng
@@ -68,7 +68,7 @@ mình đang khiêm tốn. Đây là một nguyên nhân lặp lại của các o
 phần trong lúc suy giảm một phần, vì hệ số nhân traffic đạt đỉnh đúng lúc
 hệ thống ít khả năng hấp thụ nó nhất.
 
-Hai kỷ luật giữ nó bị chặn: **chỉ retry ở một lớp** (thường là lớp gần
+Hai kỷ luật giữ nó bounded: **chỉ retry ở một lớp** (thường là lớp gần
 failure nhất, với nhiều context nhất), và lan truyền trạng thái
 "đã-retry-rồi" để các lớp downstream không thêm retry riêng của chúng —
 cụ thể, một header mà proxy đặt và hop tiếp theo tôn trọng. Nếu bạn chỉ
@@ -76,7 +76,7 @@ kiểm soát lớp của riêng mình, ít nhất hãy biết các lớp trên v
 được cấu hình làm gì, và ghi nó xuống cạnh config retry của bạn.
 
 ### Exponential backoff với jitter
-Retry với delay cố định từ nhiều client đồng bộ hóa thành retry storm.
+Retry với delay cố định từ nhiều client bị synchronize thành retry storm.
 Exponential backoff với jitter ngẫu nhiên dàn trải các retry ra theo thời
 gian.
 
@@ -133,7 +133,7 @@ một failure khác để retry vượt qua. Xem [`06-proxy/06-circuit-breaker.m
 Retry bắn khi failure. **Hedging** bắn khi *chậm*: nếu một request chưa
 phản hồi trong, ví dụ, p95 latency của pool, gửi một bản sao thứ hai tới
 một upstream khác và lấy cái nào trả lời trước, hủy cái thua. Vì trường
-hợp xấu trong một hạm đội lớn thường là một host chậm chứ không phải một
+hợp xấu trong một fleet lớn thường là một host chậm chứ không phải một
 host hỏng, hedging cắt giảm p99 latency đáng kể với một mức tăng nhỏ tổng
 load — đây là kỹ thuật lõi từ "The Tail at Scale" của Google.
 
@@ -142,7 +142,7 @@ bản sao đang bay đồng thời, nên một hedge không idempotent còn tệ
 một retry không idempotent (cả hai bản sao đều có thể thành công). Chỉ
 hedge các request idempotent, hedge ở một ngưỡng suy ra từ latency đo được
 ([`08-observability/02-metrics.md`](../08-observability/02-metrics.md)), và tính hedge vào retry budget — nếu
-không một regression latency trên toàn hạm đội sẽ biến thành mọi request
+không một regression latency trên toàn fleet sẽ biến thành mọi request
 được gửi hai lần, đúng lúc capacity đang thiếu.
 
 ## Practice
@@ -150,27 +150,31 @@ Xây theo thứ tự.
 
 1. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), thêm một retry wrapper chỉ retry
    GET/HEAD, dùng hàm backoff ở trên giới hạn 3 lần thử, và gửi mỗi retry
-   tới một upstream *khác*. **Xong khi** kill một upstream giữa lúc load
+   tới một upstream *khác*. **Done when** kill một upstream giữa lúc load
    test tạo ra zero lỗi thấy được ở client, và log cho thấy retry rơi vào
    các upstream còn lại.
-2. Chuyển jitter sang full jitter và đo. **Xong khi** bạn có thể chỉ ra,
+2. Chuyển jitter sang full jitter và đo. **Done when** bạn có thể chỉ ra,
    từ timestamp của 1000 client retry đồng bộ, rằng các lần retry đến dàn
    trải khắp cửa sổ backoff thay vì dồn cục — so sánh với phiên bản
    equal-jitter trên cùng một test.
-3. Giới hạn tổng thời gian retry theo một deadline mỗi request. **Xong
-   khi** một request với 200ms budget còn lại ngừng retry thay vì chạy ba
+3. Giới hạn tổng thời gian retry theo một deadline mỗi request. **Done when** một request với 200ms budget còn lại ngừng retry thay vì chạy ba
    lần exponential backoff mà client đã bỏ cuộc từ lâu.
-4. Thêm giới hạn buffer cho request body. **Xong khi** một POST nhỏ
+4. Thêm giới hạn buffer cho request body. **Done when** một POST nhỏ
    retry-được và một upload 100 MB stream qua mà không bị buffer — và cái
    lớn được đánh dấu đúng là không-retry-được thay vì fail hoặc OOM.
 5. Thêm một retry budget theo phần trăm trượt, theo từng upstream pool.
-   **Xong khi** ép 100% upstream fail khiến retry ngừng trong vòng một
+   **Done when** ép 100% upstream fail khiến retry ngừng trong vòng một
    cửa sổ (thay vì nhân ba load), và traffic tới một pool khỏe mạnh khác
    vẫn retry bình thường.
 6. Đi qua các bài tập của [`06-proxy/06-circuit-breaker.md`](06-circuit-breaker.md), rồi làm cho
-   retry nhận biết circuit. **Xong khi** một retry bỏ qua một host có
+   retry nhận biết circuit. **Done when** một retry bỏ qua một host có
    circuit mở thay vì tiêu tốn một lần thử vào nó.
-7. (Stretch) Thêm hedging trên GET ở p95 đo được. **Xong khi** p99 latency
+7. (Stretch) Thêm hedging trên GET ở p95 đo được. **Done when** p99 latency
    dưới một load test với một upstream cố ý chậm giảm đo được, và tổng số
    request tới upstream chỉ tăng vài phần trăm — nếu nó tăng 50%, ngưỡng
    của bạn sai.
+
+---
+
+<!-- nav -->
+← Trước: [`06-proxy/04-outlier-detection.md`](04-outlier-detection.md) · [Mục lục](00-README.md) · Tiếp theo: [`06-proxy/06-circuit-breaker.md`](06-circuit-breaker.md) →

@@ -104,3 +104,8 @@ Build these in order.
    load and identified, with `ss -tn state close-wait` and `ls -l /proc/<pid>/fd`, what leaked.
 7. Enable core dumps (`ulimit -c unlimited`; check `cat /proc/sys/kernel/core_pattern`), crash a scratch program with `kill -SEGV`, and open the core with
    `rust-gdb`. **Done when** `bt` prints a backtrace and you can state what sensitive data a core of your proxy would contain.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/19-netfilter-and-linux-networking.md`](19-netfilter-and-linux-networking.md) · [Index](00-README.md) · Next: [`02-linux/21-systemd-and-services.md`](21-systemd-and-services.md) →

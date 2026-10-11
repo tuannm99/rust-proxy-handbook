@@ -99,3 +99,8 @@ on: tokio, hyper, h2, rustls, quinn, pingora. Rough milestones:
 3. For [`labs/00-tcp-server`](../../labs/00-tcp-server), run the full loop including step 5 review. **Done when** the review finds nothing you disagree with and you've fixed everything else.
 4. Every quarter, re-read this file's timeline and adjust it to your actual pace instead of abandoning the plan when it slips.
 5. After finishing each file in [`01-network/`](../01-network) or [`02-linux/`](../02-linux), schedule its review questions from `22-recall-and-review.md` at +1, +3, +7 and +21 days in your learning log. **Done when** the log has dated review entries and a score for each.
+
+---
+
+<!-- nav -->
+← Previous: [`00-introduction/02-prerequisites.md`](02-prerequisites.md) · [Index](00-README.md)
