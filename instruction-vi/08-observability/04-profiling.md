@@ -164,3 +164,8 @@ Xây dựng theo thứ tự sau.
    tục trong một chaos test ([`12-testing/03-chaos.md`](../12-testing/03-chaos.md)). **Done when** bạn
    có thể lấy lại profile từ đúng phút một fault được tiêm vào, sau khi
    sự việc đã xảy ra.
+
+---
+
+<!-- nav -->
+← Trước: [`08-observability/03-tracing.md`](03-tracing.md) · [Mục lục](00-README.md) · Tiếp theo: [`08-observability/05-slo.md`](05-slo.md) →

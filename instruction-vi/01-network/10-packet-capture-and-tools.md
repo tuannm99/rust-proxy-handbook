@@ -180,3 +180,8 @@ gọi một server virtual-host, bạn sẽ nhận sai certificate (bug SNI mism
    certificate trả về. Cuối cùng, đặt `SSLKEYLOGFILE=$PWD/keys.log`, chạy
    `curl https://example.com/` dưới `tcpdump -w`, và đọc HTTP đã giải mã trong
    Wireshark.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/09-udp.md`](09-udp.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/11-socket.md`](11-socket.md) →

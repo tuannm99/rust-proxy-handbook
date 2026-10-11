@@ -85,3 +85,8 @@ Làm lần lượt theo thứ tự sau.
    cert.
 5. (Mở rộng) Phát hành cert sống ngắn (1 giờ) với renew tự động và xác nhận
    việc xoay vòng diễn ra mà không có handshake nào thất bại.
+
+---
+
+<!-- nav -->
+← Trước: [`07-security/02-jwt.md`](02-jwt.md) · [Mục lục](00-README.md) · Tiếp theo: [`07-security/04-normalization.md`](04-normalization.md) →

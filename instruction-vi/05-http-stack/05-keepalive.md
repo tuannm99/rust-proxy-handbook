@@ -147,3 +147,8 @@ Làm theo thứ tự này.
    dưới [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md). **Done when** bạn có số p50/p99 cho
    cả hai, trên plain HTTP và TLS riêng biệt (khoảng cách ở TLS mới là nơi
    lợi ích thật sự nằm ở đó).
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/04-router.md`](04-router.md) · [Mục lục](00-README.md) · Tiếp theo: [`05-http-stack/06-static.md`](06-static.md) →

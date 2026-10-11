@@ -63,3 +63,8 @@ zero-copy khi có TLS là bug.
    trong một syscall, thay vì gộp buffer.
 5. Đọc thêm về hỗ trợ kTLS trong `rustls`/crate `ktls`, và viết một ghi chú ngắn về việc có đáng theo đuổi cho [`proxy`](../../proxy)
    hay không.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/17-signals.md`](17-signals.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/19-netfilter-and-linux-networking.md`](19-netfilter-and-linux-networking.md) →

@@ -93,3 +93,8 @@ Rust để đóng nó.
 5. Viết một type nhỏ với một `Drop` impl tự viết in ra khi nó chạy; xác
    nhận thứ tự qua các struct lồng nhau và `Vec<T>` khớp với dự đoán của
    bạn.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/02-lifetimes.md`](02-lifetimes.md) →

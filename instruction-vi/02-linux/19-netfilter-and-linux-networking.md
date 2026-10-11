@@ -183,3 +183,8 @@ Hãy làm theo thứ tự.
 7. Dùng `iptables -t nat -A OUTPUT -p tcp --dport 80 -j REDIRECT --to-ports <port>` cùng một chương trình scratch đọc
    `SO_ORIGINAL_DST` qua `getsockopt` (`libc`/`nix`). **Done when** nó in ra đích thật của một lệnh `curl` bị
    redirect, và bạn đã miễn UID của chính proxy khỏi rule để nó không redirect về chính mình.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/18-zerocopy.md`](18-zerocopy.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/20-limits-and-proc.md`](20-limits-and-proc.md) →

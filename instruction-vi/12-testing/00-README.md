@@ -24,3 +24,8 @@ tiêm chaos để kích hoạt một alert ([`08-observability/06-alerting.md`](
 Thứ tự quan trọng cần nhớ: load-test *trước khi* tối ưu ([`17-performance/`](../17-performance)
 nói rõ profiling chỉ đến sau khi một phép đo chỉ ra một hướng cụ thể), và
 fuzz bất cứ thứ gì parse byte do kẻ tấn công kiểm soát trước khi ship nó.
+
+---
+
+<!-- nav -->
+Tiếp theo: [`12-testing/01-load-testing.md`](01-load-testing.md) →

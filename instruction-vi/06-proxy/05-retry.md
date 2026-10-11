@@ -173,3 +173,8 @@ Xây theo thứ tự.
    dưới một load test với một upstream cố ý chậm giảm đo được, và tổng số
    request tới upstream chỉ tăng vài phần trăm — nếu nó tăng 50%, ngưỡng
    của bạn sai.
+
+---
+
+<!-- nav -->
+← Trước: [`06-proxy/04-outlier-detection.md`](04-outlier-detection.md) · [Mục lục](00-README.md) · Tiếp theo: [`06-proxy/06-circuit-breaker.md`](06-circuit-breaker.md) →

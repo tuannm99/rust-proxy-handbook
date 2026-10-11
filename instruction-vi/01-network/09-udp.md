@@ -115,3 +115,8 @@ balancer phải gắn một 4-tuple (hoặc một QUIC connection ID) vào một
    (một socket, một vòng lặp `recv_from`, và state của từng peer lưu trong một map
    với key là source address). Ghi vào notes những gì phải đổi. Đây chính là bước
    chuyển cấu trúc mà [`labs/09-http3`](../../labs/09-http3) yêu cầu.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/08-ip-and-icmp.md`](08-ip-and-icmp.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/10-packet-capture-and-tools.md`](10-packet-capture-and-tools.md) →

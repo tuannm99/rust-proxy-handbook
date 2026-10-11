@@ -177,3 +177,8 @@ Xây theo thứ tự.
    thấp hơn của DNS poller, *và* kill connection watch giữa lúc test kích
    hoạt một reconnect-và-relist đối chiếu đúng thay vì nhân đôi hoặc xóa
    mất upstream.
+
+---
+
+<!-- nav -->
+← Trước: [`06-proxy/06-circuit-breaker.md`](06-circuit-breaker.md) · [Mục lục](00-README.md)

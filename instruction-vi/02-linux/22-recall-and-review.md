@@ -202,3 +202,8 @@ vậy mà không cần ghi chú, các sự thật sẽ ở lại trong đầu b�
    động của scheduler, đồng thời vẽ các hình số 1, 2 và 4 ở trên.
 4. Chạy ba thí nghiệm trong mục "Dự đoán, rồi chạy" và ghi lại mỗi thí nghiệm dạy bạn điều gì mà việc chỉ đọc không dạy
    được.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/21-systemd-and-services.md`](21-systemd-and-services.md) · [Mục lục](00-README.md)

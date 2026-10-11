@@ -129,3 +129,8 @@ Xây theo thứ tự.
    ([`06-proxy/07-service-discovery.md`](07-service-discovery.md)). **Done when** thêm một instance
    giữa lúc load test cho nó một ramp thay vì một phần đầy đủ ngay lập
    tức.
+
+---
+
+<!-- nav -->
+← Trước: [`06-proxy/03-healthcheck.md`](03-healthcheck.md) · [Mục lục](00-README.md) · Tiếp theo: [`06-proxy/05-retry.md`](05-retry.md) →

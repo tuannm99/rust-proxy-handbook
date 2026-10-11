@@ -142,3 +142,8 @@ khỏi mất công đuổi theo một lỗi không có thật trong code.
 6. Chuyển một bước nặng CPU (ví dụ gzip một body lớn) từ chạy trực tiếp trong handler sang
    `spawn_blocking`. Dùng một probe latency gửi các request nhỏ chạy đồng thời để cho thấy chúng không còn
    bị đứng.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/11-time-and-timers.md`](11-time-and-timers.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/13-containers.md`](13-containers.md) →

@@ -192,3 +192,8 @@ Xây theo thứ tự — mỗi bước cần các phép đo của bước trư�
 8. Thêm bounded loads vào ring. **Done when** một test nơi 90% request chia
    sẻ một key phân tán traffic đó ra nhiều upstream thay vì làm tan chảy
    một cái, trong khi các key ít lưu lượng vẫn giữ affinity hoàn hảo.
+
+---
+
+<!-- nav -->
+← Trước: [`06-proxy/01-upstream.md`](01-upstream.md) · [Mục lục](00-README.md) · Tiếp theo: [`06-proxy/03-healthcheck.md`](03-healthcheck.md) →

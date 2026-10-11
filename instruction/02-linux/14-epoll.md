@@ -70,3 +70,8 @@ that silently reverts you to blocking I/O per-connection.
 4. Add a second registered fd (e.g. a pipe used as a shutdown signal) and dispatch on it inside the same loop.
 5. Compare `strace -c` syscall counts between your epoll version and a naive `select`-based version under 1000 idle connections.
 6. Once done, read tokio's reactor source (`tokio::runtime::io`) and identify where it calls the same three syscalls you just used by hand.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/13-containers.md`](13-containers.md) · [Index](00-README.md) · Next: [`02-linux/15-io_uring.md`](15-io_uring.md) →

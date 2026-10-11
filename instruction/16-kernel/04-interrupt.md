@@ -59,3 +59,8 @@ meant to coexist.
 4. Check whether `irqbalance` is running on your test system; stop it,
    re-run your affinity experiment, and compare stability of the
    measurements with it running vs. stopped.
+
+---
+
+<!-- nav -->
+← Previous: [`16-kernel/03-tcp-stack.md`](03-tcp-stack.md) · [Index](00-README.md) · Next: [`16-kernel/05-rss.md`](05-rss.md) →

@@ -134,3 +134,8 @@ Build these in order.
    is short enough that you can state the compromise window in minutes, or
    a `jti` denylist is enforced — and the choice is written down where the
    config lives.
+
+---
+
+<!-- nav -->
+← Previous: [`07-security/01-auth.md`](01-auth.md) · [Index](00-README.md) · Next: [`07-security/03-mtls.md`](03-mtls.md) →

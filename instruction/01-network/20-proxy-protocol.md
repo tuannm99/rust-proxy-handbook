@@ -70,3 +70,8 @@ is expected at all; don't accept it unconditionally on a public listener.
    peer's IP is in an allowed list (tie to [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)).
 5. Explain why a client should never be able to send a PROXY protocol
    header directly and have it trusted.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/19-tls.md`](19-tls.md) · [Index](00-README.md) · Next: [`01-network/21-life-of-a-request.md`](21-life-of-a-request.md) →

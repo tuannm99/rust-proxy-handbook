@@ -185,3 +185,8 @@ theo có ý nghĩa.
    nó unhealthy và không thread request nào bị block trên nó — đo p99
    latency trong lúc kill và xác nhận nó không tăng vọt quá connect
    timeout của bạn.
+
+---
+
+<!-- nav -->
+← Trước: [`06-proxy/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`06-proxy/02-load-balancer.md`](02-load-balancer.md) →

@@ -55,3 +55,8 @@ công — hai cái không được thiết kế để cùng tồn tại.
 4. Kiểm tra xem `irqbalance` có đang chạy trên hệ thống test của bạn
    không; dừng nó, chạy lại thí nghiệm affinity, và so sánh độ ổn định của
    phép đo khi nó chạy so với khi nó dừng.
+
+---
+
+<!-- nav -->
+← Trước: [`16-kernel/03-tcp-stack.md`](03-tcp-stack.md) · [Mục lục](00-README.md) · Tiếp theo: [`16-kernel/05-rss.md`](05-rss.md) →

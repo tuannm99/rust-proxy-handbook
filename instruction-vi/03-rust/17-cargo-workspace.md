@@ -116,3 +116,8 @@ dependency ra feature API của crate bạn.
 5. Đo thời gian clean build trước và sau khi thêm bước compile schema vào
    `build.rs`, và quyết định check in code được sinh có đáng cho kích
    thước workspace này không.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/16-testing-idioms.md`](16-testing-idioms.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/18-async-traits.md`](18-async-traits.md) →

@@ -143,3 +143,8 @@ Làm lần lượt theo thứ tự sau.
    `exp` đủ ngắn để bạn có thể nói rõ cửa sổ bị lộ tính bằng phút, hoặc một
    denylist `jti` được thực thi — và lựa chọn đó được ghi lại ở nơi config
    sống.
+
+---
+
+<!-- nav -->
+← Trước: [`07-security/01-auth.md`](01-auth.md) · [Mục lục](00-README.md) · Tiếp theo: [`07-security/03-mtls.md`](03-mtls.md) →

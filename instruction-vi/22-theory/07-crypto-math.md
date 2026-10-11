@@ -94,3 +94,8 @@ tự viết một cái.
 5. Đọc danh sách cipher suite mặc định của `rustls` và, cho mỗi entry,
    xác định giải thuật key-exchange, bulk cipher, và mode — nối mỗi cái
    lại với một phần trong file này.
+
+---
+
+<!-- nav -->
+← Trước: [`22-theory/06-queueing-theory.md`](06-queueing-theory.md) · [Mục lục](00-README.md) · Tiếp theo: [`22-theory/08-amdahls-law.md`](08-amdahls-law.md) →

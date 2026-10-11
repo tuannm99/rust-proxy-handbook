@@ -144,3 +144,8 @@ Build these in order.
    under [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md). **Done when** you have p50/p99
    numbers for both, over plain HTTP and TLS separately (the TLS gap is
    where the real win is).
+
+---
+
+<!-- nav -->
+← Previous: [`05-http-stack/04-router.md`](04-router.md) · [Index](00-README.md) · Next: [`05-http-stack/06-static.md`](06-static.md) →

@@ -96,3 +96,8 @@ tự, không phải trước đó.
    [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) và diễn giải vì sao HTTP *không* dùng một
    kiểu token riêng — khi nào việc tách ra có ích và khi nào nó chỉ là
    nghi thức.
+
+---
+
+<!-- nav -->
+← Trước: [`15-parser/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`15-parser/02-parser.md`](02-parser.md) →

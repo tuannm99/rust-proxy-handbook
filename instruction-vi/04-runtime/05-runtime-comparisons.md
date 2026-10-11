@@ -82,3 +82,8 @@ công cụ đúng.
    thread-per-core của [`proxy`](../../proxy), cụ thể theo những gì [`proxy`](../../proxy) thực sự làm
    (terminate và proxy HTTP L7) thay vì một lập luận chung chung "tokio
    phổ biến hơn."
+
+---
+
+<!-- nav -->
+← Trước: [`04-runtime/04-structured-concurrency.md`](04-structured-concurrency.md) · [Mục lục](00-README.md)

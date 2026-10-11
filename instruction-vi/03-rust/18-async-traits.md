@@ -94,3 +94,8 @@ không đồng nhất) — cùng quyết định static-vs-dynamic-dispatch như
    sự cần `dyn LoadBalancer` (cấu hình được lúc runtime) hay sẽ đúng
    tương tự, và nhanh hơn, như một enum lúc compile-time — giải thích câu
    trả lời của bạn bằng những gì format config thực sự cho phép.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/17-cargo-workspace.md`](17-cargo-workspace.md) · [Mục lục](00-README.md)

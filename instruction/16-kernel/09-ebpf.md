@@ -180,3 +180,8 @@ cheap first filter, with the proxy handling everything that survives.
 6. Use `bpftrace` (no code) to histogram the latency of `tcp_sendmsg` while
    your proxy serves load, and reconcile it with the metrics from
    [`08-observability/02-metrics.md`](../08-observability/02-metrics.md).
+
+---
+
+<!-- nav -->
+← Previous: [`16-kernel/08-page-cache.md`](08-page-cache.md) · [Index](00-README.md) · Next: [`16-kernel/10-xdp.md`](10-xdp.md) →

@@ -128,3 +128,8 @@ Xây theo thứ tự.
    flap damping, và slow start. **Done when** một upstream fail các request
    thật bị loại bỏ trước khi probe tiếp theo bắn, và một upstream đã hồi
    phục ramp trở lại thay vì bị stampede.
+
+---
+
+<!-- nav -->
+← Trước: [`06-proxy/02-load-balancer.md`](02-load-balancer.md) · [Mục lục](00-README.md) · Tiếp theo: [`06-proxy/04-outlier-detection.md`](04-outlier-detection.md) →

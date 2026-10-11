@@ -127,3 +127,8 @@ Build these in order.
 6. Add a pipeline-ordering test. **Done when** it proves an invalid JWT is
    rejected before upstream selection *and* before WAF body inspection
    runs.
+
+---
+
+<!-- nav -->
+← Previous: [`07-security/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`07-security/02-jwt.md`](02-jwt.md) →

@@ -168,3 +168,8 @@ Build these in order.
 9. Keep the last N valid configs with a rollback path. **Done when** an
    operator command reverts to the previous version without a restart and
    without dropping in-flight requests.
+
+---
+
+<!-- nav -->
+← Previous: [`09-architecture/02-plugin.md`](02-plugin.md) · [Index](00-README.md) · Next: [`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md) →

@@ -56,3 +56,8 @@ REQUEST_ID.scope(request_id, async move {
 3. Replace a manual `Vec<JoinHandle>` in [`06-proxy/03-healthcheck.md`](../06-proxy/03-healthcheck.md)'s exercise with a `JoinSet`, then prove the structured-cancellation property: return early from the owning function and confirm (via a per-task log line on drop) that in-flight checks are aborted.
 4. Write a hand-rolled two-`.await`-point "protocol" (send header, then body, each behind a `tokio::time::sleep` standing in for real I/O), race it against a short timeout with `select!`, and demonstrate the peer ends up with a half-sent message.
 5. Wire `tokio::task_local!` for a request ID into [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), and confirm every log line anywhere in that request's call graph can read it without it being passed as a parameter.
+
+---
+
+<!-- nav -->
+← Previous: [`04-runtime/03-runtime-config.md`](03-runtime-config.md) · [Index](00-README.md) · Next: [`04-runtime/05-runtime-comparisons.md`](05-runtime-comparisons.md) →

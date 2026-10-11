@@ -65,3 +65,8 @@ Hãy đọc nhóm Fundamentals trước nếu bạn cần, vì mọi thứ khác
 [`16-kernel/01-epoll-internals.md`](../16-kernel/01-epoll-internals.md),
 [`16-kernel/02-io_uring-internals.md`](../16-kernel/02-io_uring-internals.md) và
 [`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md).
+
+---
+
+<!-- nav -->
+Tiếp theo: [`02-linux/01-fundamentals.md`](01-fundamentals.md) →

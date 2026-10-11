@@ -100,3 +100,8 @@ discarding unsent data ([`12-tcp.md`](12-tcp.md)) — occasionally used to shed 
 6. Bind to port `0`, print `local_addr()`, then compare `ss -ltn` for
    `listen(5)` vs `listen(65535)` against `sysctl net.core.somaxconn`, and
    confirm the effective `Send-Q` is the clamped value.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/10-packet-capture-and-tools.md`](10-packet-capture-and-tools.md) · [Index](00-README.md) · Next: [`01-network/12-tcp.md`](12-tcp.md) →

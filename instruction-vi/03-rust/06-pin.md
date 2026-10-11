@@ -78,3 +78,8 @@ trait object, không phải do bản thân `Pin`.
 4. Đọc docs của thư viện chuẩn cho `Pin::get_mut` và `Pin::new_unchecked`
    và viết ra, chính xác, invariant nào mà `new_unchecked` yêu cầu bạn tự
    tay giữ đúng (đây là unsafe — xem [`03-rust/03-unsafe.md`](03-unsafe.md)).
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/05-async.md`](05-async.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/07-traits-and-generics.md`](07-traits-and-generics.md) →

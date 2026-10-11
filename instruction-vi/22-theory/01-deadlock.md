@@ -86,3 +86,8 @@ phải mặc định.
    [`proxy`](../../proxy) (nếu nó có nhiều hơn một) và thêm nó như một comment code ở
    nơi định nghĩa mỗi lock — đây là cách "prevention bằng quy ước" trong
    thực tế.
+
+---
+
+<!-- nav -->
+← Trước: [`22-theory/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`22-theory/02-sync-classics.md`](02-sync-classics.md) →

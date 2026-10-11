@@ -25,3 +25,8 @@ tiên quyết cho [`05-rolling-restart.md`](05-rolling-restart.md). [`02-plugin.
 
 Đây là phase mà [`proxy/`](../../proxy) ngừng là một tập hợp các lab và trở thành một thứ
 bạn có thể chạy thật.
+
+---
+
+<!-- nav -->
+Tiếp theo: [`09-architecture/01-components.md`](01-components.md) →

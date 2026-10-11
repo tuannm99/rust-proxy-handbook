@@ -65,3 +65,8 @@ không phải một nền tảng.
    image, một loại cloud VM cụ thể) có cho phép syscall `io_uring` hay
    không — `docker run --security-opt seccomp=...` hoặc docs của nền tảng
    — trước khi giả định nó khả dụng trong production.
+
+---
+
+<!-- nav -->
+← Trước: [`16-kernel/01-epoll-internals.md`](01-epoll-internals.md) · [Mục lục](00-README.md) · Tiếp theo: [`16-kernel/03-tcp-stack.md`](03-tcp-stack.md) →

@@ -153,3 +153,8 @@ mới dừng".
 6. Xem `/proc/<pid>/status` (`PPid`, `Threads`, `State`), `/proc/<pid>/fd` và
    `ls /proc/<pid>/task` của một chương trình tokio multi-threaded đang chạy. Đối chiếu số
    thread với số worker thread của runtime cộng với blocking pool của nó.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/03-processes-and-threads.md`](03-processes-and-threads.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md) →

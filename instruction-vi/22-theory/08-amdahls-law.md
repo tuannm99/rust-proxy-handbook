@@ -86,3 +86,8 @@ và cap nó quanh 17x — tệ hơn nhiều so với bất kỳ cái nào khi đ
    sao thêm core vào một host proxy được kỳ vọng nâng số connection đồng
    thời bền vững đáng tin cậy hơn là hạ latency của bất kỳ request đơn lẻ
    nào.
+
+---
+
+<!-- nav -->
+← Trước: [`22-theory/07-crypto-math.md`](07-crypto-math.md) · [Mục lục](00-README.md) · Tiếp theo: [`22-theory/09-cap-flp.md`](09-cap-flp.md) →

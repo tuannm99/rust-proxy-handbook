@@ -84,3 +84,8 @@ khả thi.
    ([`18-distributed/02-gossip.md`](02-gossip.md)); suy luận rõ ràng về khoảng staleness
    và vì sao eventual consistency là lựa chọn đúng cho một proxy cache so
    với [`18-distributed/01-raft.md`](01-raft.md).
+
+---
+
+<!-- nav -->
+← Trước: [`18-distributed/03-leader-election.md`](03-leader-election.md) · [Mục lục](00-README.md)

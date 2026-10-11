@@ -126,3 +126,8 @@ Build these in order.
    instead. **Done when** the deployment runbook names a hold duration at
    a meaningful percentage and a post-rollout watch period, with the
    reasoning attached.
+
+---
+
+<!-- nav -->
+← Previous: [`09-architecture/05-rolling-restart.md`](05-rolling-restart.md) · [Index](00-README.md)

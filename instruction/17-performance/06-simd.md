@@ -84,3 +84,8 @@ try the `memchr`/`aho-corasick` route before writing a single intrinsic.
    search with a scalar tail and a runtime feature check, and verify it
    matches the scalar version on inputs of every length mod the lane
    width — then reflect on whether the crate route would have sufficed.
+
+---
+
+<!-- nav -->
+← Previous: [`17-performance/05-branch-prediction.md`](05-branch-prediction.md) · [Index](00-README.md)

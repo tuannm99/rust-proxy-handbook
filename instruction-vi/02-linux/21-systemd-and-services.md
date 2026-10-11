@@ -188,3 +188,8 @@ Hãy làm theo thứ tự.
 7. Thêm `Type=notify` (crate `sd-notify`) và gửi `READY=1` sau khi listener đã bind. **Done when** `systemctl start`
    chặn lại cho đến khi port thực sự đang listen, và một unit phụ thuộc với `After=proxy.service` có thể tin cậy vào
    điều đó.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/20-limits-and-proc.md`](20-limits-and-proc.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/22-recall-and-review.md`](22-recall-and-review.md) →

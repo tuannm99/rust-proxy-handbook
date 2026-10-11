@@ -90,3 +90,8 @@ một signal trong cùng một biểu thức, mà bên dưới không có gì đ
 4. Đọc danh sách các hàm async-signal-safe (`man 7 signal-safety`) và xác định ít nhất hai thao tác trông rất bình thường (ví dụ
    `malloc`, `printf`) mà *không* nằm trong danh sách. Dựa trên ví dụ mutex ở trên, giải thích vì sao gọi một trong hai từ raw
    handler là nguy hiểm.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/08-memory-basics.md`](08-memory-basics.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/10-ipc.md`](10-ipc.md) →

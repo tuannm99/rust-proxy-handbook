@@ -202,3 +202,8 @@ Làm lần lượt theo thứ tự sau.
    với thực thi cục bộ vẫn hoạt động — không phải vô hạn cũng không phải
    từ chối tất cả — và một metric ghi lại rằng nó đang chạy ở chế độ suy
    giảm.
+
+---
+
+<!-- nav -->
+← Trước: [`07-security/06-waf.md`](06-waf.md) · [Mục lục](00-README.md) · Tiếp theo: [`07-security/08-ip-filtering.md`](08-ip-filtering.md) →

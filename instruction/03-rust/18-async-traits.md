@@ -45,3 +45,8 @@ If every implementor of a trait is known at compile time (a fixed set of load-ba
 3. Redo the same trait with `#[async_trait]` instead, and use `cargo expand` (from [`03-rust/12-macros.md`](12-macros.md)) to compare the macro's generated signature against what you wrote by hand.
 4. In [`labs/14-plugin`](../../labs/14-plugin), design the middleware trait both ways — as `Vec<Box<dyn Middleware>>` with boxed futures, and as a fixed enum of known middlewares dispatched via `match` — and benchmark ([`03-rust/16-testing-idioms.md`](16-testing-idioms.md)'s `criterion` section) one allocation-heavy call path against the other.
 5. Decide, and write down, whether [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md)'s strategy selection in [`labs/06-load-balancer`](../../labs/06-load-balancer) actually needs `dyn LoadBalancer` (runtime-configurable) or would be just as correct, and faster, as a compile-time enum — justify your answer with what the config format actually allows.
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/17-cargo-workspace.md`](17-cargo-workspace.md) · [Index](00-README.md)

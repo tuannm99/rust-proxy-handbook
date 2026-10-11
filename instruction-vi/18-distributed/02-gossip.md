@@ -85,3 +85,8 @@ polling tập trung — mà với một fleet proxy nhỏ, thường là không.
 5. Chỉ nếu bạn chạy một fleet đa instance: nối một library SWIM vào
    [`proxy`](../../proxy) cho membership của instance và quan sát một instance bị kill
    được phát hiện và loại bỏ — không tự implement protocol.
+
+---
+
+<!-- nav -->
+← Trước: [`18-distributed/01-raft.md`](01-raft.md) · [Mục lục](00-README.md) · Tiếp theo: [`18-distributed/03-leader-election.md`](03-leader-election.md) →

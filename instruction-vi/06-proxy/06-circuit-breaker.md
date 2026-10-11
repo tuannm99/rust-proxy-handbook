@@ -131,3 +131,8 @@ Xây theo thứ tự.
 7. Quyết định và cài đặt chính sách tất-cả-circuit-mở. **Done when** kill
    mọi upstream tạo ra hành vi bạn đã chọn có chủ đích — fail fast, hoặc
    cứ thử dù sao — thay vì bất cứ điều gì rơi ra tình cờ.
+
+---
+
+<!-- nav -->
+← Trước: [`06-proxy/05-retry.md`](05-retry.md) · [Mục lục](00-README.md) · Tiếp theo: [`06-proxy/07-service-discovery.md`](07-service-discovery.md) →

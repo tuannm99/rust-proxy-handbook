@@ -133,3 +133,8 @@ quanh một loop quá nhiễu để tin được ngoài một sanity check thô.
 6. Cài `criterion` cho một hàm hot-path (một lượt tra routing, một lần
    parse header) và ghi lại baseline trước khi thực hiện một thay đổi
    performance, để bạn có thể chứng minh thay đổi đó thực sự có hiệu quả.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/15-memory-layout.md`](15-memory-layout.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/17-cargo-workspace.md`](17-cargo-workspace.md) →

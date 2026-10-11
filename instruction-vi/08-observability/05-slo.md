@@ -122,3 +122,8 @@ Xây dựng theo thứ tự sau.
    khứ (hoặc tiêm một cái mới bằng [`12-testing/03-chaos.md`](../12-testing/03-chaos.md)) và xác nhận
    ngân sách bị tiêu khớp với thời lượng và mức độ nghiêm trọng thực tế
    của sự cố.
+
+---
+
+<!-- nav -->
+← Trước: [`08-observability/04-profiling.md`](04-profiling.md) · [Mục lục](00-README.md) · Tiếp theo: [`08-observability/06-alerting.md`](06-alerting.md) →

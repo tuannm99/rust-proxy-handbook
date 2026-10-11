@@ -103,3 +103,8 @@ production, where the working set is larger than memory.
 6. Run the proxy in a container with a memory limit, stream files totaling
    more than the limit, and watch the cgroup's `memory.current` and page
    cache accounting.
+
+---
+
+<!-- nav -->
+← Previous: [`16-kernel/07-scheduler.md`](07-scheduler.md) · [Index](00-README.md) · Next: [`16-kernel/09-ebpf.md`](09-ebpf.md) →

@@ -122,3 +122,8 @@ means a noisy neighbor. Look at the split before optimizing anything.
    ([`12-testing/05-debugging.md`](../12-testing/05-debugging.md)).
 6. Time sequential vs random access on a 1 GiB array in a scratch Rust program and
    explain the gap in terms of the cache/TLB hierarchy above.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/01-fundamentals.md`](01-fundamentals.md) · [Index](00-README.md) · Next: [`02-linux/03-processes-and-threads.md`](03-processes-and-threads.md) →

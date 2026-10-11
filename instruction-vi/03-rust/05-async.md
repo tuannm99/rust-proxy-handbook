@@ -95,3 +95,8 @@ retry (idempotency).
    run-queue duy nhất chỉ poll một task khi waker của nó được gọi — đây là
    cơ chế mà cả [`04-runtime/02-waker.md`](../04-runtime/02-waker.md) lẫn reactor của tokio đều xây
    dựng trên đó.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/04-sync.md`](04-sync.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/06-pin.md`](06-pin.md) →

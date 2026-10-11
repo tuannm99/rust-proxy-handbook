@@ -81,3 +81,8 @@ hết các commit.
    và một job riêng theo lịch/thủ công cho bất cứ thứ gì từ
    [`12-testing/01-load-testing.md`](01-load-testing.md) hoặc [`12-testing/02-fuzzing.md`](02-fuzzing.md) mất
    hơn một hai phút để chạy.
+
+---
+
+<!-- nav -->
+← Trước: [`12-testing/03-chaos.md`](03-chaos.md) · [Mục lục](00-README.md) · Tiếp theo: [`12-testing/05-debugging.md`](05-debugging.md) →

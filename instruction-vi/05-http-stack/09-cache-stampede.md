@@ -126,3 +126,8 @@ Làm theo thứ tự này.
 8. Thêm negative caching ngắn. **Done when** một 404 nóng chỉ tốn một
    request origin mỗi khoảng negative-TTL, và một resource được tạo ngay
    sau một 404 đã cache trở nên thấy được trong vài giây.
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/08-cache.md`](08-cache.md) · [Mục lục](00-README.md) · Tiếp theo: [`05-http-stack/10-websocket.md`](10-websocket.md) →

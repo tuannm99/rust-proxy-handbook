@@ -83,3 +83,8 @@ hai mảnh tại bất kỳ offset nào phải cho cùng kết quả. Fuzzer ch�
    `Transfer-Encoding: chunked`) và xác nhận nó chọn một cách xác định và
    từ chối sự mập mờ thay vì đoán — nối lại với
    [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md).
+
+---
+
+<!-- nav -->
+← Trước: [`12-testing/01-load-testing.md`](01-load-testing.md) · [Mục lục](00-README.md) · Tiếp theo: [`12-testing/03-chaos.md`](03-chaos.md) →

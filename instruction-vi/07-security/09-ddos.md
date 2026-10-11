@@ -197,3 +197,8 @@ Làm theo thứ tự này.
    giảm thiểu so với những nhóm cần hạ tầng đứng trước nó. **Done when**
    ranh giới đó rõ ràng — đây là quyết định thiết kế thật sự, không phải
    một chi tiết để bỏ qua.
+
+---
+
+<!-- nav -->
+← Trước: [`07-security/08-ip-filtering.md`](08-ip-filtering.md) · [Mục lục](00-README.md) · Tiếp theo: [`07-security/10-slowloris.md`](10-slowloris.md) →

@@ -186,3 +186,8 @@ Xây theo thứ tự.
 9. Nếu bạn đã xây service discovery ([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)),
    hủy đăng ký như bước drain đầu tiên. **Done when** metrics cho thấy tỷ
    lệ request vào giảm về không *trước khi* listener đóng.
+
+---
+
+<!-- nav -->
+← Trước: [`09-architecture/03-config.md`](03-config.md) · [Mục lục](00-README.md) · Tiếp theo: [`09-architecture/05-rolling-restart.md`](05-rolling-restart.md) →

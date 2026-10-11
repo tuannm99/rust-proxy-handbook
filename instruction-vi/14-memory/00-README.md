@@ -21,3 +21,8 @@ tất cả các phần trên tồn tại để tránh.
 - [`02-arena.md`](02-arena.md) — bump allocation cho dữ liệu theo phạm vi request, giải phóng hàng loạt
 - [`03-object-pool.md`](03-object-pool.md) — tái sử dụng object đã allocate trên heap (buffer, connection struct) thay vì alloc/free mỗi request
 - [`04-buffer-pool.md`](04-buffer-pool.md) — pooling byte buffer riêng cho I/O, các tier theo size-class, liên kết với [`02-linux/18-zerocopy.md`](../02-linux/18-zerocopy.md)
+
+---
+
+<!-- nav -->
+Tiếp theo: [`14-memory/01-allocator.md`](01-allocator.md) →

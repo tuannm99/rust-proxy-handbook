@@ -83,3 +83,8 @@ chooses both the bytes and the offset.
    inputs (e.g. both a `Content-Length` and a `Transfer-Encoding: chunked`
    header) and confirm it picks one deterministically and rejects the
    ambiguity rather than guessing — tie back to [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md).
+
+---
+
+<!-- nav -->
+← Previous: [`12-testing/01-load-testing.md`](01-load-testing.md) · [Index](00-README.md) · Next: [`12-testing/03-chaos.md`](03-chaos.md) →

@@ -47,3 +47,8 @@ If the critical section is short and contention is low, `Arc<Mutex<_>>` is simpl
 3. Use `tokio::sync::watch` to fan out a config-reload signal to several running "handler" tasks; confirm a handler spawned *after* the last update still immediately sees the current value rather than waiting for the next change.
 4. Reproduce the bounded-`mpsc`-backpressure gotcha: make the receiver artificially slow, send from multiple tasks, observe senders stall on `.send().await`, then race a send against a `tokio::time::timeout` to bound how long a caller waits.
 5. Pick one real [`proxy`](../../proxy) component (rate limiter, connection pool, or config store) and write down which pattern you'd choose and why, citing the specific handbook file for that component.
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/10-smart-pointers-and-interior-mutability.md`](10-smart-pointers-and-interior-mutability.md) · [Index](00-README.md) · Next: [`03-rust/12-macros.md`](12-macros.md) →

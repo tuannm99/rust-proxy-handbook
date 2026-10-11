@@ -146,3 +146,8 @@ stack as one request.
    port 80` ([`10-packet-capture-and-tools.md`](10-packet-capture-and-tools.md) explains the flags) and point at the
    Ethernet, IP and TCP headers and the HTTP text in the hex dump, naming the
    layer of each.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`01-network/02-addressing.md`](02-addressing.md) →

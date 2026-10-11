@@ -151,3 +151,8 @@ one-page; các file topic mới là curriculum thật sự.
   cần.
 - Khi [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) hoặc [`proxy/`](../../proxy) đã chạy được, làm các bài tập
   trong [`12-testing/`](../12-testing) nhắm vào nó.
+
+---
+
+<!-- nav -->
+← Trước: [`00-introduction/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`00-introduction/02-prerequisites.md`](02-prerequisites.md) →

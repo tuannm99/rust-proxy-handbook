@@ -29,3 +29,8 @@ Since FLP's asynchronous, fully-adversarial model is unsolvable in general, ever
 3. Simulate FLP's core problem directly: build a toy 3-node "leader election" with no timeouts at all (pure message-passing, no clock), and demonstrate it can hang forever if one node's messages are merely delayed rather than lost — confirm no fixed protocol logic alone can distinguish "slow" from "dead" without a timing assumption.
 4. Add randomized election timeouts to the same toy system (as real Raft does) and show it now reliably terminates — but construct a pathological message-delay pattern that still causes a false "dead" verdict on a live node, and connect this back to the TTL trade-off in [`18-distributed/03-leader-election.md`](../18-distributed/03-leader-election.md).
 5. Pick one real or hypothetical feature that would require [`proxy`](../../proxy) to run as more than one coordinating instance (a shared rate limiter, a cluster-wide cache) and write one paragraph on which side of CAP would be chosen and why, citing the specific [`18-distributed/`](../18-distributed) file that already made this call for a similar problem.
+
+---
+
+<!-- nav -->
+← Previous: [`22-theory/08-amdahls-law.md`](08-amdahls-law.md) · [Index](00-README.md)

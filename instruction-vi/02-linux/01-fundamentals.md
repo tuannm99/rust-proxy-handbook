@@ -159,3 +159,8 @@ như một service ([`21-systemd-and-services.md`](21-systemd-and-services.md)).
 5. Không nhìn ghi chú, kể lại câu chuyện của `./proxy` từ lúc bấm phím đến lúc exit
    trong sáu bước. Mỗi bước gọi tên syscall hoặc cơ chế kernel liên quan. Sau đó đối
    chiếu với file này.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/02-hardware-basics.md`](02-hardware-basics.md) →

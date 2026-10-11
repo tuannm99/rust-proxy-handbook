@@ -148,3 +148,8 @@ Làm theo thứ tự này.
    trích SNI, forward byte thô bao gồm cả những gì bạn đã buffer. **Done when** một connection TLS terminate ở đúng backend mà proxy không bao
    giờ giữ private key của nó, và một client bị treo giữa ClientHello bị
    timeout thay vì bị giữ mãi.
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/11-grpc.md`](11-grpc.md) · [Mục lục](00-README.md)

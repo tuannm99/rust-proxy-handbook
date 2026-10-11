@@ -27,3 +27,8 @@ Các file này hỗ trợ [`labs/15-prometheus`](../../labs/15-prometheus) và [
 cần mang theo vào [`proxy/`](../../proxy): đo latency ở cả hai đầu, vì phần chênh lệch
 giữa thời gian client quan sát được và thời gian upstream quan sát được là
 con số duy nhất nói cho bạn biết việc chậm lại là do bạn hay không.
+
+---
+
+<!-- nav -->
+Tiếp theo: [`08-observability/01-logging.md`](01-logging.md) →

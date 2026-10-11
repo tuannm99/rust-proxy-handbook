@@ -68,3 +68,8 @@ việc phát hiện một số loại traffic scanning/tấn công.
 4. Kích hoạt cả một lần đóng sạch lẫn một `RST` trên một connection code bạn
    đang giữ mở, và xác nhận bạn có thể phân biệt hai loại `io::Error` đó
    trong code xử lý của mình.
+
+---
+
+<!-- nav -->
+← Trước: [`16-kernel/02-io_uring-internals.md`](02-io_uring-internals.md) · [Mục lục](00-README.md) · Tiếp theo: [`16-kernel/04-interrupt.md`](04-interrupt.md) →

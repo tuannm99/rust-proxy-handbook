@@ -26,3 +26,8 @@ assumed was fixed.
 Together these back [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) and [`labs/06-load-balancer`](../../labs/06-load-balancer).
 The algorithms behind the balancer — smooth WRR, Maglev, rendezvous
 hashing — have their own deep dives in [`13-algorithms/`](../13-algorithms).
+
+---
+
+<!-- nav -->
+Next: [`06-proxy/01-upstream.md`](01-upstream.md) →

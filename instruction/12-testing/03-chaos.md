@@ -52,3 +52,8 @@ and see what happens."
 5. Send `SIGTERM` to [`proxy`](../../proxy) mid-chaos-test and
    confirm graceful shutdown ([`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md)) still
    drains in-flight requests correctly even while upstreams are unhealthy.
+
+---
+
+<!-- nav -->
+← Previous: [`12-testing/02-fuzzing.md`](02-fuzzing.md) · [Index](00-README.md) · Next: [`12-testing/04-ci-tooling.md`](04-ci-tooling.md) →

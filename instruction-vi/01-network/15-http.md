@@ -231,3 +231,8 @@ xong request rồi mới ghi response".
    ngoài. Đọc [`05-http-stack/01-parser.md`](../05-http-stack/01-parser.md) và
    [`07-security/05-request-smuggling.md`](../07-security/05-request-smuggling.md) để nối
    phần thảo luận về framing với cách một parser phải thực thi nó.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/14-dns.md`](14-dns.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/16-http1-wire-format.md`](16-http1-wire-format.md) →

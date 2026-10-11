@@ -70,3 +70,8 @@ detecting certain classes of scanning/attack traffic.
 4. Trigger both a clean close and a `RST` against a connection your code
    holds open, and confirm you can distinguish the two `io::Error` kinds
    in your handling code.
+
+---
+
+<!-- nav -->
+← Previous: [`16-kernel/02-io_uring-internals.md`](02-io_uring-internals.md) · [Index](00-README.md) · Next: [`16-kernel/04-interrupt.md`](04-interrupt.md) →

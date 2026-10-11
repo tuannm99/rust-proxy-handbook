@@ -75,3 +75,8 @@ vẫn compile và "chạy được" dưới `cargo test` bình thường.
 4. Tìm (qua docs.rs hoặc source) một `unsafe impl Send` thật trong một
    crate bạn đang phụ thuộc (tokio hoặc hyper) và giải thích bằng lời của
    bạn vì sao nó sound.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/02-lifetimes.md`](02-lifetimes.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/04-sync.md`](04-sync.md) →

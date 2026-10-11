@@ -85,3 +85,8 @@ hẳn.
    của hot path có dày đặc hơn không, và xác nhận bằng một benchmark rằng
    bạn không làm mọi thứ tệ hơn — rồi quyết định xem bước tiếp theo có
    phải là [`17-performance/06-simd.md`](06-simd.md) không.
+
+---
+
+<!-- nav -->
+← Trước: [`17-performance/04-memory-layout.md`](04-memory-layout.md) · [Mục lục](00-README.md) · Tiếp theo: [`17-performance/06-simd.md`](06-simd.md) →

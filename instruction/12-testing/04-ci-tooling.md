@@ -38,3 +38,8 @@ Fast checks (fmt, clippy, unit tests, miri on the small unsafe crates) belong on
 2. Add a `miri` job scoped to [`labs/01-http-parser`](../../labs/01-http-parser) specifically (not the whole workspace); confirm it passes on the stub code and re-run it as you implement the unsafe parsing logic.
 3. Add `cargo-deny` with a `deny.toml` that at minimum denies known-vulnerable advisories; run it once against the current dependency set and fix anything it flags.
 4. Split the workflow into a fast job (fmt/clippy/miri, on every push) and a separate scheduled/manual job for anything from [`12-testing/01-load-testing.md`](01-load-testing.md) or [`12-testing/02-fuzzing.md`](02-fuzzing.md) that takes more than a minute or two to run.
+
+---
+
+<!-- nav -->
+← Previous: [`12-testing/03-chaos.md`](03-chaos.md) · [Index](00-README.md) · Next: [`12-testing/05-debugging.md`](05-debugging.md) →

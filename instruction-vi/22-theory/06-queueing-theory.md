@@ -80,3 +80,8 @@ nhiễm.
    [`07-security/11-load-shedding.md`](../07-security/11-load-shedding.md) và giải thích, dùng công thức của
    file này, vì sao nhắm một set-point utilization cố định (thay vì một
    số lượng request cố định) là lựa chọn có nền tảng lý thuyết.
+
+---
+
+<!-- nav -->
+← Trước: [`22-theory/05-congestion-control-math.md`](05-congestion-control-math.md) · [Mục lục](00-README.md) · Tiếp theo: [`22-theory/07-crypto-math.md`](07-crypto-math.md) →

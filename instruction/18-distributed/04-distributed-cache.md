@@ -81,3 +81,8 @@ fetches" possible.
    ([`18-distributed/02-gossip.md`](02-gossip.md)); reason explicitly about the staleness
    window and why eventual consistency is the right call for a proxy cache
    versus [`18-distributed/01-raft.md`](01-raft.md).
+
+---
+
+<!-- nav -->
+← Previous: [`18-distributed/03-leader-election.md`](03-leader-election.md) · [Index](00-README.md)

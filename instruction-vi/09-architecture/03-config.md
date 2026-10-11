@@ -189,3 +189,8 @@ Xây theo thứ tự.
 9. Giữ N config hợp lệ gần nhất với một đường rollback. **Done when** một
    lệnh operator revert về phiên bản trước mà không cần restart và không
    rớt request in-flight.
+
+---
+
+<!-- nav -->
+← Trước: [`09-architecture/02-plugin.md`](02-plugin.md) · [Mục lục](00-README.md) · Tiếp theo: [`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md) →

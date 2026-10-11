@@ -149,3 +149,8 @@ certificate management section) that issues and renews them.
    sign a small file with the private key, and verify the signature with
    the public key — then try verifying with a *different* keypair's
    public key and confirm it fails.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/05-proxy-taxonomy.md`](05-proxy-taxonomy.md) · [Index](00-README.md) · Next: [`01-network/07-link-layer.md`](07-link-layer.md) →

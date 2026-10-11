@@ -115,3 +115,8 @@ before it gets to parse anything).
    passes through a home NAT router, a CDN, and finally this repo's
    [`proxy/`](../../proxy) before reaching an application server — label each hop as L4
    or L7.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/04-latency-throughput.md`](04-latency-throughput.md) · [Index](00-README.md) · Next: [`01-network/06-crypto-basics.md`](06-crypto-basics.md) →

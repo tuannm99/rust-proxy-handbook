@@ -24,3 +24,8 @@ fix rather than just a conceptual warning. [`09-architecture/04-graceful-shutdow
 leans directly on [`04-structured-concurrency.md`](04-structured-concurrency.md)'s cancellation
 machinery, and [`05-runtime-comparisons.md`](05-runtime-comparisons.md) is the pointer to reach for if
 a specific hot path ever seems to outgrow tokio's default model.
+
+---
+
+<!-- nav -->
+Next: [`04-runtime/01-tokio.md`](01-tokio.md) →

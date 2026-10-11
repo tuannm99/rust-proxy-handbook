@@ -80,3 +80,8 @@ for the concurrent version of this problem.
 5. Read `L1-dcache-load-misses` before and after one layout change and
    write down whether the change was worth its complexity — practice
    rejecting changes that do not move the number.
+
+---
+
+<!-- nav -->
+← Previous: [`17-performance/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`17-performance/02-false-sharing.md`](02-false-sharing.md) →

@@ -140,3 +140,8 @@ Làm lần lượt theo thứ tự sau.
 6. Chỉ giữ bản gốc cho log. **Done when** dòng log của một request bị block
    cho thấy input thô như đã gửi, trong khi không có decision path nào có
    thể đọc nó.
+
+---
+
+<!-- nav -->
+← Trước: [`07-security/03-mtls.md`](03-mtls.md) · [Mục lục](00-README.md) · Tiếp theo: [`07-security/05-request-smuggling.md`](05-request-smuggling.md) →

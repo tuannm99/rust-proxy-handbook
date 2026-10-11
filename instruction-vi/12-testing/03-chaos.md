@@ -53,3 +53,8 @@ chỉ "chạy chaos và xem chuyện gì xảy ra."
 5. Gửi `SIGTERM` cho [`proxy`](../../proxy) giữa lúc chaos test và xác nhận graceful
    shutdown ([`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md)) vẫn drain đúng các
    request đang xử lý dở ngay cả khi các upstream đang không healthy.
+
+---
+
+<!-- nav -->
+← Trước: [`12-testing/02-fuzzing.md`](02-fuzzing.md) · [Mục lục](00-README.md) · Tiếp theo: [`12-testing/04-ci-tooling.md`](04-ci-tooling.md) →

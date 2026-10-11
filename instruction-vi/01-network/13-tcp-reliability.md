@@ -175,3 +175,8 @@ Cơ chế bên trong kernel (autotuning, queue) nằm ở
    `modprobe tcp_bbr` chạy được trên kernel của bạn) trên loopback `netem` có delay và
    loss. Ghi lại throughput của từng thuật toán và giải thích sự khác biệt dựa trên tín
    hiệu congestion mà mỗi thuật toán sử dụng.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/12-tcp.md`](12-tcp.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/14-dns.md`](14-dns.md) →

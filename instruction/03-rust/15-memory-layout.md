@@ -46,3 +46,8 @@ enum Mixed { A, B([u8; 256]) }       // sized for the 256-byte variant even when
 3. Build a `Result<T, E>` where `E` is a large struct, measure `size_of::<Result<T, E>>()`, then box `E` and measure again.
 4. Read [`14-memory/05-slab-allocator.md`](../14-memory/05-slab-allocator.md) and connect its slot-sizing logic back to this file's `size_of`/`align_of` discussion, in your own words.
 5. Add `#[repr(C)]` to a struct that's currently `repr(Rust)` and use `size_of` (or `std::mem::offset_of!` if your toolchain has it) to check whether the layout actually changed.
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/14-ffi-and-abi.md`](14-ffi-and-abi.md) · [Index](00-README.md) · Next: [`03-rust/16-testing-idioms.md`](16-testing-idioms.md) →

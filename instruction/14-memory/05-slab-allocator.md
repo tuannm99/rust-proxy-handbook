@@ -102,3 +102,8 @@ correctness), and export the pool's size and hit rate as metrics
 6. Build a bounded, typed buffer pool for [`proxy`](../../proxy)'s per-connection read
    buffers with reset-on-release, and export size/hit-rate metrics. Compare
    allocation counts under load with and without it.
+
+---
+
+<!-- nav -->
+← Previous: [`14-memory/04-buffer-pool.md`](04-buffer-pool.md) · [Index](00-README.md) · Next: [`14-memory/06-fragmentation.md`](06-fragmentation.md) →

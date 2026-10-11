@@ -27,3 +27,8 @@ fine to read on their own whenever that lab comes up).
 - [`04-interrupt.md`](04-interrupt.md) — hardware interrupts vs softirqs, why they matter for network-heavy workloads
 - [`05-rss.md`](05-rss.md) — Receive Side Scaling, spreading NIC interrupts across cores in hardware
 - [`06-rps.md`](06-rps.md) — Receive Packet Steering, the software fallback when hardware queues aren't enough
+
+---
+
+<!-- nav -->
+Next: [`16-kernel/01-epoll-internals.md`](01-epoll-internals.md) →

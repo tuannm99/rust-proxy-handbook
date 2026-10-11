@@ -184,3 +184,8 @@ Xây dựng theo thứ tự sau.
 8. Thêm sampling xác định cùng các quy tắc luôn-log cho mã 5xx và request
    chậm. **Done when** cùng một request hoặc được log ở mọi hop hoặc không
    ở đâu cả, và mọi lỗi trong một load test đều xuất hiện đầy đủ.
+
+---
+
+<!-- nav -->
+← Trước: [`08-observability/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`08-observability/02-metrics.md`](02-metrics.md) →

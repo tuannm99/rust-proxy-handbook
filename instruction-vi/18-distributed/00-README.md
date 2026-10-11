@@ -39,3 +39,8 @@ và discovery cho single-service-instance trong
 Với lý thuyết hình thức đằng sau vì sao mỗi file ở trên chọn eventual
 consistency, hay một lease TTL, hay một quorum, theo đúng cách nó chọn —
 CAP theorem và kết quả bất khả thi FLP — xem [`22-theory/09-cap-flp.md`](../22-theory/09-cap-flp.md).
+
+---
+
+<!-- nav -->
+Tiếp theo: [`18-distributed/01-raft.md`](01-raft.md) →

@@ -85,3 +85,8 @@ Build these in order.
    cert-derived value.
 5. (Stretch) Issue short-lived certs (1 hour) with automated renewal and
    confirm a rotation happens with zero failed handshakes.
+
+---
+
+<!-- nav -->
+← Previous: [`07-security/02-jwt.md`](02-jwt.md) · [Index](00-README.md) · Next: [`07-security/04-normalization.md`](04-normalization.md) →

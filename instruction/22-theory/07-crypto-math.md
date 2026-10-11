@@ -39,3 +39,8 @@ A cryptographic hash function must be practically impossible to invert (given `H
 3. Capture a real TLS 1.3 handshake (`openssl s_client -connect ... -tls1_3` or Wireshark) and identify the key-exchange group in use (e.g. `x25519`) — confirm it's elliptic-curve Diffie-Hellman, not RSA key exchange.
 4. Encrypt the same repeated block pattern with AES in ECB mode and again in GCM mode (using a crypto library, not hand-rolled AES) and visually compare the ciphertext patterns — confirm ECB leaks the repetition and GCM doesn't.
 5. Read `rustls`'s default cipher suite list and, for each entry, identify the key-exchange algorithm, the bulk cipher, and the mode — connect each back to a section in this file.
+
+---
+
+<!-- nav -->
+← Previous: [`22-theory/06-queueing-theory.md`](06-queueing-theory.md) · [Index](00-README.md) · Next: [`22-theory/08-amdahls-law.md`](08-amdahls-law.md) →

@@ -186,3 +186,8 @@ Làm lần lượt theo thứ tự sau.
    payload downgrade nơi `content-length` HTTP/2 bất đồng với các DATA
    frame. **Done when** nó bị từ chối ngay ở tầng h2 thay vì bị dịch thành
    một request HTTP/1.1 sai định dạng.
+
+---
+
+<!-- nav -->
+← Trước: [`07-security/04-normalization.md`](04-normalization.md) · [Mục lục](00-README.md) · Tiếp theo: [`07-security/06-waf.md`](06-waf.md) →

@@ -67,3 +67,8 @@ spending cycles on IPIs."
 4. If you have access to a multi-queue NIC from [`16-kernel/05-rss.md`](05-rss.md)'s
    exercise, compare RPS's achieved core distribution and overhead
    against RSS's hardware-based result on the same workload.
+
+---
+
+<!-- nav -->
+← Previous: [`16-kernel/05-rss.md`](05-rss.md) · [Index](00-README.md) · Next: [`16-kernel/07-scheduler.md`](07-scheduler.md) →

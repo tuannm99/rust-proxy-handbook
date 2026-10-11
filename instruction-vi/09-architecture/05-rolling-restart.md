@@ -174,3 +174,8 @@ Xây theo thứ tự.
    **Done when** `systemctl restart` đạt cùng kết quả zero-dropped mà
    không cần bất kỳ code nào ở trên — và bạn đã đo thời gian khởi động
    của mình so với độ sâu backlog để biết giới hạn của cách tiếp cận đó.
+
+---
+
+<!-- nav -->
+← Trước: [`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md) · [Mục lục](00-README.md) · Tiếp theo: [`09-architecture/06-canary-deploy.md`](06-canary-deploy.md) →

@@ -82,3 +82,8 @@ Nightly-only `#[bench]` isn't the practical default; `criterion` runs a benchmar
 4. Define a `Clock` trait (or similar non-deterministic dependency) in [`labs/11-rate-limit`](../../labs/11-rate-limit), inject a `FixedClock` in tests, and write a test that would be flaky without it.
 5. Write a `proptest` round-trip test for one encode/decode pair in your workspace (a header value normalizer, a varint encoder) and let it find an edge case you didn't think of by hand.
 6. Set up `criterion` for one hot-path function (a routing lookup, a header parse) and record a baseline before making a performance change, so you can prove the change actually helped.
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/15-memory-layout.md`](15-memory-layout.md) · [Index](00-README.md) · Next: [`03-rust/17-cargo-workspace.md`](17-cargo-workspace.md) →

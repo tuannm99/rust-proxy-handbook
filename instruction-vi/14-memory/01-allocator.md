@@ -75,3 +75,8 @@ lặp single-threaded tổng hợp, trước khi chọn.
    xem docs của allocator bạn chọn có nói đây là một slow path hay không.
 4. Chạy lại thí nghiệm RSS-theo-thời-gian của [`14-memory/06-fragmentation.md`](06-fragmentation.md)
    với allocator bạn chọn và so sánh mức plateau với system allocator.
+
+---
+
+<!-- nav -->
+← Trước: [`14-memory/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`14-memory/02-arena.md`](02-arena.md) →

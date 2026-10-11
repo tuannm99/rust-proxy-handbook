@@ -40,3 +40,8 @@ Rust's borrow checker prevents data races (two threads mutating the same memory 
 3. Draw the resource allocation graph, by hand, for a two-lock scenario in [`06-proxy/01-upstream.md`](../06-proxy/01-upstream.md)'s connection pool where two code paths acquire a free-list lock and a stats lock in opposite order; identify the cycle.
 4. Enable `parking_lot`'s `deadlock_detection` feature in a small example, deliberately deadlock two threads, and observe it report the cycle.
 5. Write down your own lock-ordering rule for [`proxy`](../../proxy)'s actual locks (if it has more than one) and add it as a code comment at each lock's definition site — this is "prevention by convention" in practice.
+
+---
+
+<!-- nav -->
+← Previous: [`22-theory/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`22-theory/02-sync-classics.md`](02-sync-classics.md) →

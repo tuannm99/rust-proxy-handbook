@@ -138,3 +138,8 @@ why the `sum by (le)` is required).
 2. Run `oha -z 10s -c 20` against [`labs/02-http-server`](../../labs/02-http-server), then `h2load -n 2000 -c 1 -m 50` against the same server, and use `ss -tn` during each to count connections. **Done when** you can say how many TCP connections each test used and why.
 3. Generate `targets.txt` with the Zipf script, and count how often the top 10 keys appear (`sort | uniq -c | sort -rn | head`). **Done when** you can state what share of requests hit the top 1% of keys.
 4. Start Prometheus with the config above against any `/metrics` endpoint and get the target to `UP`. **Done when** a query for one of your metrics returns data.
+
+---
+
+<!-- nav -->
+← Previous: [`12-testing/05-debugging.md`](05-debugging.md) · [Index](00-README.md)

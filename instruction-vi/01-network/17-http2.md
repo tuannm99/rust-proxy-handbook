@@ -122,3 +122,8 @@ Cấu hình nào của hyper tương ứng với khái niệm nào trong file n�
    Tái hiện Rapid Reset bằng cách mở rồi reset stream ngay trong một vòng lặp, và xác nhận riêng giới hạn concurrency
    *không* chặn được bạn. Sau đó kích hoạt `GOAWAY` bằng cách tắt server giữa chừng một request, và xác nhận các stream
    đang xử lý dở dưới last-stream-ID hoàn tất thay vì báo lỗi.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/16-http1-wire-format.md`](16-http1-wire-format.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/18-http3.md`](18-http3.md) →

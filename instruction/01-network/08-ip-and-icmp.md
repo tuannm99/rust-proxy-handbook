@@ -141,3 +141,8 @@ like "timeouts".
    [`labs/00-tcp-server`](../../labs/00-tcp-server) after making it listen on `[::]`; confirm whether
    an IPv4 client (`curl -4 http://127.0.0.1:8080/`) also connects, and
    explain from `IPV6_V6ONLY` why or why not.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/07-link-layer.md`](07-link-layer.md) · [Index](00-README.md) · Next: [`01-network/09-udp.md`](09-udp.md) →

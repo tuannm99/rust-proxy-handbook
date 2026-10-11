@@ -188,3 +188,8 @@ Làm theo thứ tự này.
    purge theo tag evict mọi entry liên quan, một lần purge không
    authenticate bị reject, và chạy hai instance proxy cho thấy cả hai
    hội tụ sau một lần purge.
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/07-compression.md`](07-compression.md) · [Mục lục](00-README.md) · Tiếp theo: [`05-http-stack/09-cache-stampede.md`](09-cache-stampede.md) →

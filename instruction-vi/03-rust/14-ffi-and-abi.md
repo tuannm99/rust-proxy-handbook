@@ -95,3 +95,8 @@ một yêu cầu vận hành mong manh.
    sinh thái ổn định ABI như C khiến plugin kiểu `dlopen` khả thi trong
    khi việc Rust thiếu ABI ổn định đẩy bạn về hướng compile plugin vào
    cùng một binary thay vào đó.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/13-api-design-and-modules.md`](13-api-design-and-modules.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/15-memory-layout.md`](15-memory-layout.md) →

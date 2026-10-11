@@ -200,3 +200,8 @@ Build these in order.
 8. Add authenticated purge, by key and by tag. **Done when** a tagged
    purge evicts every related entry, an unauthenticated purge is rejected,
    and running two proxy instances shows both converging after a purge.
+
+---
+
+<!-- nav -->
+← Previous: [`05-http-stack/07-compression.md`](07-compression.md) · [Index](00-README.md) · Next: [`05-http-stack/09-cache-stampede.md`](09-cache-stampede.md) →

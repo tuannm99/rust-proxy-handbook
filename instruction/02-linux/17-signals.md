@@ -59,3 +59,8 @@ default.
 3. Implement SIGHUP-triggered config reload in [`proxy`](../../proxy) per [`09-architecture/03-config.md`](../09-architecture/03-config.md) — verify existing connections are unaffected by a reload.
 4. Implement SIGTERM-triggered graceful shutdown per [`09-architecture/04-graceful-shutdown.md`](../09-architecture/04-graceful-shutdown.md): stop the listener, let in-flight requests finish, then exit.
 5. Simulate the Kubernetes grace-period scenario: hold a slow request open, send SIGTERM, and confirm your shutdown either finishes in time or is cleanly killed rather than corrupting state.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/16-memory.md`](16-memory.md) · [Index](00-README.md) · Next: [`02-linux/18-zerocopy.md`](18-zerocopy.md) →

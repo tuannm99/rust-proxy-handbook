@@ -178,3 +178,8 @@ Build these in order.
    lower than the DNS poller's, *and* killing the watch connection
    mid-test triggers a reconnect-and-relist that reconciles correctly
    rather than duplicating or dropping upstreams.
+
+---
+
+<!-- nav -->
+← Previous: [`06-proxy/06-circuit-breaker.md`](06-circuit-breaker.md) · [Index](00-README.md)

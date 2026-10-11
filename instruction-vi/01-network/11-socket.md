@@ -142,3 +142,8 @@ rồi thực hiện FIN đúng trình tự.
 6. Bind vào port `0` và in `local_addr()`. Sau đó so sánh `ss -ltn` giữa `listen(5)` và
    `listen(65535)` với `sysctl net.core.somaxconn`, và xác nhận `Send-Q` thực tế chính
    là giá trị đã bị giới hạn.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/10-packet-capture-and-tools.md`](10-packet-capture-and-tools.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/12-tcp.md`](12-tcp.md) →

@@ -159,3 +159,8 @@ Làm theo thứ tự này.
    tường minh, và swap bảng atomic khi reload. **Done when** một lần reload
    bảng route dưới tải đồng thời tạo ra zero request bị rớt hoặc route
    sai.
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/03-hop-by-hop-headers.md`](03-hop-by-hop-headers.md) · [Mục lục](00-README.md) · Tiếp theo: [`05-http-stack/05-keepalive.md`](05-keepalive.md) →

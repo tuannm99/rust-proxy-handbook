@@ -66,3 +66,8 @@ socket) trên cùng một địa chỉ.
 4. Trace (bằng `strace -e epoll_wait,epoll_ctl` hoặc tương tự) một chương
    trình `tokio` đang chạy trong [`labs/00-tcp-server`](../../labs/00-tcp-server) và đối chiếu những gì
    bạn thấy với mô hình tree/ready-list ở trên.
+
+---
+
+<!-- nav -->
+← Trước: [`16-kernel/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`16-kernel/02-io_uring-internals.md`](02-io_uring-internals.md) →

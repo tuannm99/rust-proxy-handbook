@@ -95,3 +95,8 @@ của kernel và router, không phải của application.
 5. Trong [`labs/00-tcp-server`](../../labs/00-tcp-server), connect hai client khác nhau cùng lúc và log đầy đủ 4-tuple
    của mỗi connection (`local_addr()` + `peer_addr()`). Xác nhận chúng chỉ khác nhau ở source port, nếu cả hai client
    nằm trên cùng một máy.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/01-fundamentals.md`](01-fundamentals.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/03-byte-streams.md`](03-byte-streams.md) →

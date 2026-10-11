@@ -240,3 +240,8 @@ Xây dựng theo thứ tự sau.
    lên — rồi khởi động lại nó và xác nhận việc export tiếp tục.
 9. Nối flush của exporter vào shutdown. **Done when** các span từ những
    request hoàn tất ngay trước `SIGTERM` vẫn tới được collector.
+
+---
+
+<!-- nav -->
+← Trước: [`08-observability/02-metrics.md`](02-metrics.md) · [Mục lục](00-README.md) · Tiếp theo: [`08-observability/04-profiling.md`](04-profiling.md) →

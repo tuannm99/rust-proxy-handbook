@@ -36,3 +36,8 @@ và [`11-load-shedding.md`](11-load-shedding.md), hai sub-topic lớn nhất c�
 Các file này backing cho [`labs/11-rate-limit`](../../labs/11-rate-limit), [`labs/12-waf`](../../labs/12-waf), và
 [`labs/17-ebpf`](../../labs/17-ebpf), và [`proxy/README.md`](../../proxy/README.md) liệt kê phần lớn thư mục này là
 tài liệu bắt buộc đọc cho bản build cuối cùng.
+
+---
+
+<!-- nav -->
+Tiếp theo: [`07-security/01-auth.md`](01-auth.md) →

@@ -87,3 +87,8 @@ gom hết lỗi hiển thị cùng lúc.
 5. Viết lại một rule bằng `nom` hoặc `winnow` và so sánh với phiên bản
    viết tay của bạn về độ dễ đọc và chất lượng error message; quyết định
    idiom nào phù hợp với config parsing so với binary framing.
+
+---
+
+<!-- nav -->
+← Trước: [`15-parser/01-lexer.md`](01-lexer.md) · [Mục lục](00-README.md) · Tiếp theo: [`15-parser/03-ast.md`](03-ast.md) →

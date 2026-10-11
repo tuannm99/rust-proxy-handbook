@@ -69,3 +69,8 @@ chậm.
    riêng steal count cần `RUSTFLAGS="--cfg tokio_unstable"`, tập con
    stable chỉ có số worker, số task còn sống, và độ sâu global queue) và in
    steal count dưới tải đồng thời.
+
+---
+
+<!-- nav -->
+← Trước: [`04-runtime/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`04-runtime/02-waker.md`](02-waker.md) →

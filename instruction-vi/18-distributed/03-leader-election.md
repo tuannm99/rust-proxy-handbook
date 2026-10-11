@@ -73,3 +73,8 @@ loại bỏ nó. Ưu tiên cách đó khi công việc cho phép.
    chọn một leader hay làm nó idempotent/sharded
    ([`13-algorithms/consistent-hash.md`](../13-algorithms/consistent-hash.md)) thay vào đó, và giải thích cái nào
    đơn giản hơn cho nhu cầu thật của [`proxy`](../../proxy).
+
+---
+
+<!-- nav -->
+← Trước: [`18-distributed/02-gossip.md`](02-gossip.md) · [Mục lục](00-README.md) · Tiếp theo: [`18-distributed/04-distributed-cache.md`](04-distributed-cache.md) →

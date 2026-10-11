@@ -129,3 +129,8 @@ Làm theo thứ tự này.
    query parameter cạnh một bí mật, đã nén. **Done when** bạn có thể khôi
    phục bí mật chỉ từ độ dài response — rồi thêm việc tắt compression
    theo route và xác nhận tín hiệu biến mất.
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/06-static.md`](06-static.md) · [Mục lục](00-README.md) · Tiếp theo: [`05-http-stack/08-cache.md`](08-cache.md) →

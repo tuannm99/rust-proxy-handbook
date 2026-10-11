@@ -118,3 +118,8 @@ makes full sense without this namespace/cgroup picture underneath it.
    one CPU's worth of time; explain why a tokio runtime that sizes its
    worker pool from `nproc` could over-provision threads inside such a
    container.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/12-cpu-scheduling.md`](12-cpu-scheduling.md) · [Index](00-README.md) · Next: [`02-linux/14-epoll.md`](14-epoll.md) →

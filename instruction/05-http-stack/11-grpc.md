@@ -131,3 +131,8 @@ Build these in order.
    metric dimension labelled by `/package.Service/Method`. **Done when** a
    dashboard shows an upstream returning all-INTERNAL as unhealthy, even
    though every HTTP status is 200.
+
+---
+
+<!-- nav -->
+← Previous: [`05-http-stack/10-websocket.md`](10-websocket.md) · [Index](00-README.md) · Next: [`05-http-stack/12-vhost-routing.md`](12-vhost-routing.md) →

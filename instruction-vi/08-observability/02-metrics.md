@@ -190,3 +190,8 @@ Xây dựng theo thứ tự sau.
 8. Theo dõi thời gian render `/metrics` như một metric riêng của nó.
    **Done when** bạn biết một lần scrape mất bao lâu ở số lượng series hiện
    tại và điều đó so với chu kỳ scrape của bạn thế nào.
+
+---
+
+<!-- nav -->
+← Trước: [`08-observability/01-logging.md`](01-logging.md) · [Mục lục](00-README.md) · Tiếp theo: [`08-observability/03-tracing.md`](03-tracing.md) →

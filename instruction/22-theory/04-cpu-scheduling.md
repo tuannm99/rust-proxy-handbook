@@ -31,3 +31,8 @@ A tokio runtime's work-stealing scheduler ([`04-runtime/01-tokio.md`](../04-runt
 3. Implement round-robin over the same job set at two different quantum sizes (very small, very large) and plot context-switch count vs. completion time for each.
 4. Implement a minimal 3-level MLFQ (rule: full quantum used → demote; yields early → stay) over a mixed CPU-bound/IO-bound synthetic workload, and compare average waiting time against plain round-robin.
 5. Read [`16-kernel/07-scheduler.md`](../16-kernel/07-scheduler.md) and [`04-runtime/01-tokio.md`](../04-runtime/01-tokio.md) back to back and write one paragraph mapping MLFQ's core idea (behavior-based priority, not foreknowledge) onto tokio's cooperative scheduling budget.
+
+---
+
+<!-- nav -->
+← Previous: [`22-theory/03-page-replacement.md`](03-page-replacement.md) · [Index](00-README.md) · Next: [`22-theory/05-congestion-control-math.md`](05-congestion-control-math.md) →

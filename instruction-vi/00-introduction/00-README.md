@@ -67,3 +67,8 @@ phải HTTP (gRPC được nhắc qua ở chỗ nó ảnh hưởng đến xử l
 không phải một topic riêng), và các vấn đề cloud/infra (Kubernetes Ingress
 controller, service mesh) ngoài các pointer kiểu "chỗ này sẽ cắm vào đâu"
 trong [`09-architecture/`](../09-architecture).
+
+---
+
+<!-- nav -->
+Tiếp theo: [`00-introduction/01-learning-roadmap.md`](01-learning-roadmap.md) →

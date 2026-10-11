@@ -146,3 +146,8 @@ Làm theo thứ tự này.
 8. Giới hạn số connection đã upgrade đồng thời, cả toàn cục lẫn theo từng
    client. **Done when** một client mở connection trong vòng lặp bị từ
    chối khi vượt giới hạn và traffic HTTP bình thường không bị ảnh hưởng.
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/09-cache-stampede.md`](09-cache-stampede.md) · [Mục lục](00-README.md) · Tiếp theo: [`05-http-stack/11-grpc.md`](11-grpc.md) →

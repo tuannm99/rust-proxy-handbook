@@ -88,3 +88,8 @@ consensus only when nodes must *never* disagree on an ordered history.
    up a 3-node cluster with `openraft` storing the routing config, and kill
    the leader under load to watch election and continuity — do not
    hand-roll the algorithm.
+
+---
+
+<!-- nav -->
+← Previous: [`18-distributed/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`18-distributed/02-gossip.md`](02-gossip.md) →

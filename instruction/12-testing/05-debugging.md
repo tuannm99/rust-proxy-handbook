@@ -91,3 +91,8 @@ Build these in order.
 4. Add `tracing` with an environment filter to [`labs/00-tcp-server`](../../labs/00-tcp-server). **Done when** you can switch per-connection debug logging on and off with `RUST_LOG` without recompiling.
 5. Introduce a `std::thread::sleep` inside a connection handler and find it with `tokio-console`. **Done when** the console shows you the offending task by its poll time.
 6. Generate a flamegraph of [`labs/00-tcp-server`](../../labs/00-tcp-server) under load. **Done when** you can name the function where most CPU time goes and say whether that's expected.
+
+---
+
+<!-- nav -->
+← Previous: [`12-testing/04-ci-tooling.md`](04-ci-tooling.md) · [Index](00-README.md) · Next: [`12-testing/06-lab-environment.md`](06-lab-environment.md) →

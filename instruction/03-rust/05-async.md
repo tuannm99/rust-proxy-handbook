@@ -89,3 +89,8 @@ this means for retry safety (idempotency).
    or `RawWakerVTable`) and a single run-queue executor that polls a task
    only when its waker is called — this is the mechanism [`04-runtime/02-waker.md`](../04-runtime/02-waker.md)
    and tokio's reactor both build on.
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/04-sync.md`](04-sync.md) · [Index](00-README.md) · Next: [`03-rust/06-pin.md`](06-pin.md) →

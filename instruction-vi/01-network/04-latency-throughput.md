@@ -71,3 +71,8 @@ handshake-RTT ở trên: congestion window của một connection được reuse
 4. Tính bandwidth-delay product, theo byte, cho đường truyền 100 Mbps với RTT 150 ms (một con số xuyên lục địa khả dĩ).
    So sánh với initial congestion window mặc định của TCP (~10 segment, ~14 KB), và giải thích vì sao một connection mới
    trên đường truyền này lúc đầu chỉ dùng một phần nhỏ bandwidth khả dụng.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/03-byte-streams.md`](03-byte-streams.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/05-proxy-taxonomy.md`](05-proxy-taxonomy.md) →

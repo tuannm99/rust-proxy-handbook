@@ -71,3 +71,8 @@ vì mặc định tăng trưởng vô hạn.
 4. Giới hạn kích thước pool và thêm một load test đẩy nhiều checkout đồng
    thời hơn giới hạn; xác nhận hành vi overflow bạn chọn (block, fallback
    về allocation mới, hoặc từ chối) thực sự xảy ra.
+
+---
+
+<!-- nav -->
+← Trước: [`14-memory/02-arena.md`](02-arena.md) · [Mục lục](00-README.md) · Tiếp theo: [`14-memory/04-buffer-pool.md`](04-buffer-pool.md) →

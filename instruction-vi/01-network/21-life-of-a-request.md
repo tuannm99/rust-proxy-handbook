@@ -172,3 +172,8 @@ sinh ra để nối các đoạn rời này lại thành một câu chuyện li�
 5. Không nhìn lại file này, viết bằng lời của bạn chuỗi sự kiện cho request đầu
    tiên tới một site HTTPS mới, đi qua một reverse proxy (bước 1–10). Sau đó đối
    chiếu với file và ghi lại những gì bạn đã bỏ sót.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/20-proxy-protocol.md`](20-proxy-protocol.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/22-recall-and-review.md`](22-recall-and-review.md) →

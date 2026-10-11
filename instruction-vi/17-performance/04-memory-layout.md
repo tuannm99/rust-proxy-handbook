@@ -92,3 +92,8 @@ Dùng sắp xếp field và niche `NonZero`, không phải `packed`.
    trước và sau khi thu nhỏ nó qua một ranh giới size-class và so sánh
    RSS, nối điều này lại với số object-trên-mỗi-page của
    [`13-algorithms/slab.md`](../13-algorithms/slab.md).
+
+---
+
+<!-- nav -->
+← Trước: [`17-performance/03-numa.md`](03-numa.md) · [Mục lục](00-README.md) · Tiếp theo: [`17-performance/05-branch-prediction.md`](05-branch-prediction.md) →

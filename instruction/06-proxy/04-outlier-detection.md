@@ -126,3 +126,8 @@ Build these in order.
 7. Apply the ramp to newly discovered upstreams too
    ([`06-proxy/07-service-discovery.md`](07-service-discovery.md)). **Done when** adding an instance
    mid-load-test gives it a ramp rather than an immediate full share.
+
+---
+
+<!-- nav -->
+← Previous: [`06-proxy/03-healthcheck.md`](03-healthcheck.md) · [Index](00-README.md) · Next: [`06-proxy/05-retry.md`](05-retry.md) →

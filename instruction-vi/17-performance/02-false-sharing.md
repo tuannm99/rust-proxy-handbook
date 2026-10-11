@@ -88,3 +88,8 @@ linh cảm — xem [`08-observability/04-profiling.md`](../08-observability/04-p
 5. Chứng minh trường hợp không-phải-vấn-đề: đóng gói chặt dữ liệu routing
    chủ yếu đọc, cho thấy các reader đồng thời không gặp vấn đề gì, và diễn
    giải vì sao pad nó chỉ lãng phí bộ nhớ.
+
+---
+
+<!-- nav -->
+← Trước: [`17-performance/01-cpu-cache.md`](01-cpu-cache.md) · [Mục lục](00-README.md) · Tiếp theo: [`17-performance/03-numa.md`](03-numa.md) →

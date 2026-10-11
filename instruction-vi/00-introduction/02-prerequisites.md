@@ -93,3 +93,8 @@ tháng với người bắt đầu từ số 0; track người mới của [`01-
 3. Làm xong Rustlings. **Done when** mọi bài pass và bạn giải thích được cách sửa của bất kỳ mười bài nào cho người khác.
 4. Hoàn thành mini-Redis của Tokio tutorial. **Done when** hai client set và get key đồng thời được trên server của bạn.
 5. Đọc [`01-network/01-fundamentals.md`](../01-network/01-fundamentals.md) và [`02-linux/01-fundamentals.md`](../02-linux/01-fundamentals.md), làm phần Practice của chúng, rồi làm lại phần tự kiểm tra. **Done when** mọi câu trả lời đều là "có".
+
+---
+
+<!-- nav -->
+← Trước: [`00-introduction/01-learning-roadmap.md`](01-learning-roadmap.md) · [Mục lục](00-README.md) · Tiếp theo: [`00-introduction/03-study-loop.md`](03-study-loop.md) →

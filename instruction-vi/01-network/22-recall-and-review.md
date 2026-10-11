@@ -219,3 +219,8 @@ trước khi nhìn đáp án, hãy tính là bạn đã sai.
    [`labs/00-tcp-server`](../../labs/00-tcp-server) hoặc
    [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy). Ghi lại mỗi thí nghiệm dạy bạn
    điều gì mà việc chỉ đọc không dạy được.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/21-life-of-a-request.md`](21-life-of-a-request.md) · [Mục lục](00-README.md)

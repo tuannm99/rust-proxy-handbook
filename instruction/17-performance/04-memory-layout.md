@@ -87,3 +87,8 @@ undefined behavior, so it turns a size win into a soundness hazard
 5. Verify the fragmentation link: allocate 100k of the struct before and
    after shrinking it under a size-class boundary and compare RSS, tying
    this back to [`13-algorithms/slab.md`](../13-algorithms/slab.md)'s objects-per-page.
+
+---
+
+<!-- nav -->
+← Previous: [`17-performance/03-numa.md`](03-numa.md) · [Index](00-README.md) · Next: [`17-performance/05-branch-prediction.md`](05-branch-prediction.md) →

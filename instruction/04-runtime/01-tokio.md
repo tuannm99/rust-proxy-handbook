@@ -31,3 +31,8 @@ A reverse proxy is fundamentally "read from one socket, write to another, repeat
 2. In [`labs/00-tcp-server`](../../labs/00-tcp-server), log which OS thread ID handles each connection (`std::thread::current().id()`) and confirm connections are spread across workers.
 3. Deliberately call a blocking `std::thread::sleep` inside an async handler in `tcp-server` and observe other connections stall; fix it with `tokio::time::sleep` and again with `spawn_blocking`, and compare.
 4. Read the tokio worker metrics (`tokio::runtime::Handle::metrics()`; steal counts specifically need `RUSTFLAGS="--cfg tokio_unstable"`, the stable subset only covers worker count, alive tasks, and global queue depth) and print steal counts under concurrent load.
+
+---
+
+<!-- nav -->
+← Previous: [`04-runtime/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`04-runtime/02-waker.md`](02-waker.md) →

@@ -60,3 +60,8 @@ overhead syscall thực sự là nút thắt, không phải mặc định.
 4. Kiểm tra `uname -r` trên máy dev của bạn và trên mọi môi trường triển khai đích. Xác nhận io_uring có sẵn và được bật ở đó
    không.
 5. Viết ra bằng lời của bạn vì sao [`proxy`](../../proxy) nên mặc định dùng reactor dựa trên epoll của tokio thay vì io_uring.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/14-epoll.md`](14-epoll.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/16-memory.md`](16-memory.md) →

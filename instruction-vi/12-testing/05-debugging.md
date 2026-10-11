@@ -93,3 +93,8 @@ Làm theo thứ tự này.
 4. Thêm `tracing` với environment filter vào [`labs/00-tcp-server`](../../labs/00-tcp-server). **Done when** bạn bật tắt được debug log theo từng connection bằng `RUST_LOG` mà không cần compile lại.
 5. Chèn một `std::thread::sleep` vào một connection handler và tìm ra nó bằng `tokio-console`. **Done when** console chỉ ra task gây lỗi qua poll time của nó.
 6. Tạo flamegraph của [`labs/00-tcp-server`](../../labs/00-tcp-server) dưới tải. **Done when** bạn gọi tên được hàm chiếm nhiều thời gian CPU nhất và nói được điều đó có hợp lý không.
+
+---
+
+<!-- nav -->
+← Trước: [`12-testing/04-ci-tooling.md`](04-ci-tooling.md) · [Mục lục](00-README.md) · Tiếp theo: [`12-testing/06-lab-environment.md`](06-lab-environment.md) →

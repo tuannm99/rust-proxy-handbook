@@ -161,3 +161,8 @@ Build these in order.
 9. Compare the plumbing. **Done when** you can state how many lines of
    host functions and serialization the WASM version needed versus the
    compiled `Module`, for identical behavior.
+
+---
+
+<!-- nav -->
+← Previous: [`09-architecture/01-components.md`](01-components.md) · [Index](00-README.md) · Next: [`09-architecture/03-config.md`](03-config.md) →

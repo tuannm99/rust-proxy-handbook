@@ -157,3 +157,8 @@ Xây dựng theo thứ tự sau.
 8. Viết runbook cho mỗi page: nó nghĩa là gì, ba bước kiểm tra đầu tiên,
    và cách giảm nhẹ. **Done when** link runbook nằm ngay trong định nghĩa
    alert và một người không quen hệ thống có thể làm theo nó.
+
+---
+
+<!-- nav -->
+← Trước: [`08-observability/05-slo.md`](05-slo.md) · [Mục lục](00-README.md)

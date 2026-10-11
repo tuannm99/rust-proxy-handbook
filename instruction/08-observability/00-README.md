@@ -26,3 +26,8 @@ These back [`labs/15-prometheus`](../../labs/15-prometheus) and [`labs/16-opente
 carry into [`proxy/`](../../proxy): measure latency at both ends, because the difference
 between client-observed and upstream-observed time is the only number that
 says whether a slowdown is yours.
+
+---
+
+<!-- nav -->
+Next: [`08-observability/01-logging.md`](01-logging.md) →

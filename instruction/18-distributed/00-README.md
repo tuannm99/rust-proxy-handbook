@@ -33,3 +33,8 @@ duplicated here.
 For the formal theory behind why every file above chooses eventual
 consistency, or a lease TTL, or a quorum, the way it does — CAP theorem
 and the FLP impossibility result — see [`22-theory/09-cap-flp.md`](../22-theory/09-cap-flp.md).
+
+---
+
+<!-- nav -->
+Next: [`18-distributed/01-raft.md`](01-raft.md) →

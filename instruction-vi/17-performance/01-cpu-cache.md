@@ -82,3 +82,8 @@ này.
 5. Đọc `L1-dcache-load-misses` trước và sau một thay đổi layout và ghi lại
    xem thay đổi đó có đáng với độ phức tạp của nó không — luyện tập việc
    từ chối những thay đổi không làm dịch chuyển con số.
+
+---
+
+<!-- nav -->
+← Trước: [`17-performance/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`17-performance/02-false-sharing.md`](02-false-sharing.md) →

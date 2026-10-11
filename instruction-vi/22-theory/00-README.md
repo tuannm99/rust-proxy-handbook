@@ -36,3 +36,8 @@ bạn đã tune bằng cảm tính.
 
 Mỗi file thực dụng ở trên chỉ trỏ về đây cho người đọc muốn có lý thuyết;
 không file nào giả định bạn đã đọc thư mục này trước.
+
+---
+
+<!-- nav -->
+Tiếp theo: [`22-theory/01-deadlock.md`](01-deadlock.md) →

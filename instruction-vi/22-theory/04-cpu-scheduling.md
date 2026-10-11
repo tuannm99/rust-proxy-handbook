@@ -74,3 +74,8 @@ chính thiết kế scheduling của tokio.
    và viết một đoạn ánh xạ ý tưởng cốt lõi của MLFQ (priority dựa trên
    hành vi, không cần biết trước) lên budget scheduling cooperative của
    tokio.
+
+---
+
+<!-- nav -->
+← Trước: [`22-theory/03-page-replacement.md`](03-page-replacement.md) · [Mục lục](00-README.md) · Tiếp theo: [`22-theory/05-congestion-control-math.md`](05-congestion-control-math.md) →

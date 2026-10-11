@@ -314,3 +314,8 @@ sau start line (field, dòng trống, độ dài body) dùng các luật ở tr�
 4. Gửi các request sai ở bài 2 tới hai server thật khác nhau (ví dụ nginx và một server dựa trên hyper) bằng `printf ... | nc`, và ghi lại chỗ câu trả lời của chúng khác nhau. Mỗi khác biệt là một chỗ mà proxy đứng trước một trong hai server có thể bị smuggle qua.
 5. Trong [`labs/01-http-parser`](../../labs/01-http-parser), biến bài 2 và 3 thành một bảng test: byte đầu vào → kết quả parse mong đợi hoặc status code mong đợi. Viết bảng này *trước* khi viết parser.
 6. Ghi quyết định của bạn về obs-fold và bare LF vào README của [`labs/01-http-parser`](../../labs/01-http-parser), mỗi cái kèm luật từ file này và rủi ro smuggling mà nó tránh được hoặc chấp nhận.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/15-http.md`](15-http.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/17-http2.md`](17-http2.md) →

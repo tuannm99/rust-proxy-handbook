@@ -136,3 +136,8 @@ từ chối.
 5. Mô phỏng một lần xoay cert (đổi file cert, kích hoạt reload theo
    [`09-architecture/03-config.md`](../09-architecture/03-config.md)) và xác nhận các connection hiện có không bị rớt giữa
    chừng một request.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/18-http3.md`](18-http3.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/20-proxy-protocol.md`](20-proxy-protocol.md) →

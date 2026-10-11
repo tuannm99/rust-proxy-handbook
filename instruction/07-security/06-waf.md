@@ -197,3 +197,8 @@ Build these in order.
 7. Benchmark the WAF stage on vs off under load, as its own metric. **Done
    when** you have p50 and p99 numbers for the stage alone, on both small
    and large bodies, and can point at which rules dominate.
+
+---
+
+<!-- nav -->
+← Previous: [`07-security/05-request-smuggling.md`](05-request-smuggling.md) · [Index](00-README.md) · Next: [`07-security/07-ratelimit.md`](07-ratelimit.md) →

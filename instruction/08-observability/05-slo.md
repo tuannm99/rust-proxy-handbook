@@ -117,3 +117,8 @@ Build these in order.
 7. Validate against reality. **Done when** you replay a past incident (or
    inject one with [`12-testing/03-chaos.md`](../12-testing/03-chaos.md)) and confirm the budget consumed
    matches the incident's actual duration and severity.
+
+---
+
+<!-- nav -->
+← Previous: [`08-observability/04-profiling.md`](04-profiling.md) · [Index](00-README.md) · Next: [`08-observability/06-alerting.md`](06-alerting.md) →

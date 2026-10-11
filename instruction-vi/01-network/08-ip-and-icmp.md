@@ -153,3 +153,8 @@ Vì mỗi packet chỉ sống được một số hop giới hạn, routing loop
    [`labs/00-tcp-server`](../../labs/00-tcp-server) sau khi cho nó listen trên `[::]`.
    Kiểm tra xem một IPv4 client (`curl -4 http://127.0.0.1:8080/`) có connect được
    không, và dùng `IPV6_V6ONLY` để giải thích vì sao được hoặc không.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/07-link-layer.md`](07-link-layer.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/09-udp.md`](09-udp.md) →

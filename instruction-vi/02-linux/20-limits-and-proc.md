@@ -139,3 +139,8 @@ Hãy làm theo thứ tự.
 7. Bật core dump (`ulimit -c unlimited`; kiểm tra `cat /proc/sys/kernel/core_pattern`), làm crash một chương trình
    scratch bằng `kill -SEGV`, rồi mở core bằng `rust-gdb`. **Done when** `bt` in ra một backtrace, và bạn nêu được dữ
    liệu nhạy cảm nào mà một core của proxy sẽ chứa.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/19-netfilter-and-linux-networking.md`](19-netfilter-and-linux-networking.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/21-systemd-and-services.md`](21-systemd-and-services.md) →

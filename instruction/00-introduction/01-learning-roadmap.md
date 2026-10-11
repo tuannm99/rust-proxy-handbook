@@ -150,3 +150,8 @@ one-page map; the topic files are the actual curriculum.
   [`proxy/`](../../proxy) — each crate's README points back at the handbook topics it needs.
 - Once [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) or [`proxy/`](../../proxy) is running, do the exercises in
   [`12-testing/`](../12-testing) against it.
+
+---
+
+<!-- nav -->
+← Previous: [`00-introduction/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`00-introduction/02-prerequisites.md`](02-prerequisites.md) →

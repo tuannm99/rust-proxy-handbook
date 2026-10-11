@@ -183,3 +183,8 @@ Làm theo thứ tự này.
    trúc cho XFF. **Done when** IP client thật được lấy lại từ header binary
    và một connection *không có* header mong đợi trên một listener PROXY
    protocol bị reject thay vì bị parse như HTTP.
+
+---
+
+<!-- nav -->
+← Trước: [`07-security/07-ratelimit.md`](07-ratelimit.md) · [Mục lục](00-README.md) · Tiếp theo: [`07-security/09-ddos.md`](09-ddos.md) →

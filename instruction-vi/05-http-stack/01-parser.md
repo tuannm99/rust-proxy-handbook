@@ -127,3 +127,8 @@ Codec HTTP/1 (`h1`) của `hyper` đã hấp thụ nhiều năm sửa lỗi tư�
 6. Feed parser của bạn các input do kẻ tấn công tạo ra (`Content-Length` trùng với giá trị khác nhau, header bị fold, một bare LF (`\n` đứng riêng), chunk size `0x` theo sau bởi rác, tên header có khoảng trắng thừa cuối) và xác nhận nó reject từng cái thay vì parse "ra được gì đó".
 7. Fuzz [`labs/01-http-parser`](../../labs/01-http-parser) (xem [`12-testing/02-fuzzing.md`](../12-testing/02-fuzzing.md)) với một corpus các bản capture traffic HTTP/1.1 thật và fix mọi panic.
 8. Sau khi tự tay làm xong, đọc API của `httparse` và codec `h1` của `hyper` cho cùng các trường hợp, và ghi lại chúng làm khác implementation của bạn ở điểm nào.
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`05-http-stack/02-hyper.md`](02-hyper.md) →

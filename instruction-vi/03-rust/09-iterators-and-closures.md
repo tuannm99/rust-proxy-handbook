@@ -80,3 +80,8 @@ một bước nữa.
    tay làm cùng công việc bằng cách xem codegen `--release` (`cargo asm`,
    hoặc đơn giản là đo thời gian cả hai dưới tải) và xác nhận chúng gần
    bằng nhau.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/08-error-handling.md`](08-error-handling.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/10-smart-pointers-and-interior-mutability.md`](10-smart-pointers-and-interior-mutability.md) →

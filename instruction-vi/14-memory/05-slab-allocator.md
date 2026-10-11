@@ -107,3 +107,8 @@ và export kích thước cùng hit rate của pool dưới dạng metric
 6. Xây một buffer pool có giới hạn, có type, cho các buffer đọc theo từng
    connection của [`proxy`](../../proxy), với reset-on-release, và export metric
    size/hit-rate. So sánh số lượng allocation dưới tải có và không có nó.
+
+---
+
+<!-- nav -->
+← Trước: [`14-memory/04-buffer-pool.md`](04-buffer-pool.md) · [Mục lục](00-README.md) · Tiếp theo: [`14-memory/06-fragmentation.md`](06-fragmentation.md) →

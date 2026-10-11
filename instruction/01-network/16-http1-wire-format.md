@@ -317,3 +317,8 @@ the rules above.
 4. Send the malformed requests from exercise 2 to two different real servers (for example nginx and a hyper-based one) with `printf ... | nc`, and record where their answers differ. Every difference is a place a proxy in front of one of them could be smuggled past.
 5. In [`labs/01-http-parser`](../../labs/01-http-parser), turn exercises 2 and 3 into a test table: input bytes → expected parse result or expected status code. Write the table *before* the parser.
 6. Write down your decisions for obs-fold and bare LF in [`labs/01-http-parser`](../../labs/01-http-parser)'s README, each with the rule from this file and the smuggling risk it avoids or accepts.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/15-http.md`](15-http.md) · [Index](00-README.md) · Next: [`01-network/17-http2.md`](17-http2.md) →

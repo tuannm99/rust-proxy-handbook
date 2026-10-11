@@ -83,3 +83,8 @@ việc này đều lãng phí công sức.
 5. Căn chỉnh NIC IRQ affinity khớp với các socket của worker và đo xem chi
    phí remote-per-packet có giảm không — hãy nối điều này với RSS/RPS
    trong [`16-kernel/`](../16-kernel).
+
+---
+
+<!-- nav -->
+← Trước: [`17-performance/02-false-sharing.md`](02-false-sharing.md) · [Mục lục](00-README.md) · Tiếp theo: [`17-performance/04-memory-layout.md`](04-memory-layout.md) →

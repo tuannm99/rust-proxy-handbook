@@ -80,3 +80,8 @@ Phần OS của cùng câu chuyện nằm ở [`02-linux/`](../02-linux): proces
 file, và Linux networking stack (netfilter, namespace). Cơ chế TCP phía kernel nằm ở
 [`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md). Phần toán cổ điển đằng sau
 congestion control và queueing nằm ở [`22-theory/`](../22-theory).
+
+---
+
+<!-- nav -->
+Tiếp theo: [`01-network/01-fundamentals.md`](01-fundamentals.md) →

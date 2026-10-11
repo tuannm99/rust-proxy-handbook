@@ -55,3 +55,8 @@ kích thước allocation thực tế.
 4. Xác định đường I/O nào của [`proxy`](../../proxy) là zero-copy thật sự
    ([`02-linux/18-zerocopy.md`](../02-linux/18-zerocopy.md)) và xác nhận pooling không có tác dụng gì
    trên chúng, so với các đường copy qua userspace thì được hưởng lợi.
+
+---
+
+<!-- nav -->
+← Trước: [`14-memory/03-object-pool.md`](03-object-pool.md) · [Mục lục](00-README.md) · Tiếp theo: [`14-memory/05-slab-allocator.md`](05-slab-allocator.md) →

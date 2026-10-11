@@ -197,3 +197,8 @@ Làm lần lượt theo thứ tự sau.
    thay vì linear theo số rule.
 7. Benchmark tầng WAF bật so với tắt dưới tải, như một metric riêng. **Done when** bạn có số liệu p50 và p99 cho riêng tầng này, cả với body nhỏ lẫn
    lớn, và có thể chỉ ra rule nào chiếm ưu thế.
+
+---
+
+<!-- nav -->
+← Trước: [`07-security/05-request-smuggling.md`](05-request-smuggling.md) · [Mục lục](00-README.md) · Tiếp theo: [`07-security/07-ratelimit.md`](07-ratelimit.md) →

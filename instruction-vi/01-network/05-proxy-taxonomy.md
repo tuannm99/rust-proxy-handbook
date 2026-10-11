@@ -93,3 +93,8 @@ phải sống sót ở mức connection trước khi kịp parse bất cứ th�
    nào (L4 hay L7), và vì sao. Gắn câu trả lời của bạn với ý "kết thúc connection" trong file này.
 4. Vẽ (trên giấy, không phải code) topology connection cho một request đi qua một NAT router gia đình, một CDN, và cuối
    cùng là [`proxy/`](../../proxy) của repo này, trước khi tới application server. Gắn nhãn mỗi hop là L4 hay L7.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/04-latency-throughput.md`](04-latency-throughput.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/06-crypto-basics.md`](06-crypto-basics.md) →

@@ -25,3 +25,8 @@ trên `JoinSet` thay vì chỉ là một lời cảnh báo mang tính khái ni�
 cancellation của [`04-structured-concurrency.md`](04-structured-concurrency.md), và
 [`05-runtime-comparisons.md`](05-runtime-comparisons.md) là điểm để quay lại nếu một hot path cụ thể
 có vẻ vượt quá mô hình mặc định của tokio.
+
+---
+
+<!-- nav -->
+Tiếp theo: [`04-runtime/01-tokio.md`](01-tokio.md) →

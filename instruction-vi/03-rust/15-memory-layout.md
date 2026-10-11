@@ -85,3 +85,8 @@ không biết chính xác mỗi slot cần lớn bao nhiêu, đó chính là `si
 5. Thêm `#[repr(C)]` vào một struct hiện đang là `repr(Rust)` và dùng
    `size_of` (hoặc `std::mem::offset_of!` nếu toolchain của bạn có) để
    kiểm tra xem layout có thực sự thay đổi hay không.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/14-ffi-and-abi.md`](14-ffi-and-abi.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/16-testing-idioms.md`](16-testing-idioms.md) →

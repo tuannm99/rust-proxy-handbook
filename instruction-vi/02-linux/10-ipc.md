@@ -154,3 +154,8 @@ host khác cũng là IPC, và đó là chủ đề của phần còn lại của
    và quan sát việc mất cập nhật. Riêng ra, chạy `strace -f -e trace=futex` trên một chương trình
    tokio multi-threaded, một lần có một `Mutex` bị tranh chấp nhiều và một lần không. Giải thích sự
    khác nhau về số lời gọi `futex`.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/09-blocking-io-and-signals.md`](09-blocking-io-and-signals.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/11-time-and-timers.md`](11-time-and-timers.md) →

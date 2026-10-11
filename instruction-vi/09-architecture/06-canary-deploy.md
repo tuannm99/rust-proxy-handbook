@@ -152,3 +152,8 @@ Xây theo thứ tự.
    làm gì thay vào đó. **Done when** runbook triển khai nêu tên một
    khoảng thời gian giữ ở một phần trăm có ý nghĩa và một khoảng theo
    dõi sau-rollout, kèm lý luận đi cùng.
+
+---
+
+<!-- nav -->
+← Trước: [`09-architecture/05-rolling-restart.md`](05-rolling-restart.md) · [Mục lục](00-README.md)

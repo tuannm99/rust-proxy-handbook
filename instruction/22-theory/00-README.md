@@ -36,3 +36,8 @@ already tuned by feel.
 
 Each practical file above only points here for the reader who wants the
 theory; it never assumes you've read this directory first.
+
+---
+
+<!-- nav -->
+Next: [`22-theory/01-deadlock.md`](01-deadlock.md) →

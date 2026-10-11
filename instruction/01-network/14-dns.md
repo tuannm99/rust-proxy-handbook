@@ -156,3 +156,8 @@ you *validate* and a private one when you *connect*. Defend by validating the
    whether any requests failed during the switch.
 6. Read [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md) and note which parts of it your
    DNS-based approach in step 5 already satisfies and which it still needs.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/13-tcp-reliability.md`](13-tcp-reliability.md) · [Index](00-README.md) · Next: [`01-network/15-http.md`](15-http.md) →

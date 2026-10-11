@@ -75,3 +75,8 @@ missing bounds on the trait object, not about `Pin` itself.
 4. Read the standard library docs for `Pin::get_mut` and `Pin::new_unchecked`
    and write down, precisely, what invariant `new_unchecked` requires you to
    uphold manually (this is unsafe — see [`03-rust/03-unsafe.md`](03-unsafe.md)).
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/05-async.md`](05-async.md) · [Index](00-README.md) · Next: [`03-rust/07-traits-and-generics.md`](07-traits-and-generics.md) →

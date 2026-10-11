@@ -115,3 +115,8 @@ of this handbook is about.
    the total is exact, then replace the atomic with a plain read-modify-write and observe lost updates. Separately,
    `strace -f -e trace=futex` a multi-threaded tokio program with a hot `Mutex` and without one, and explain the
    difference in `futex` call counts.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/09-blocking-io-and-signals.md`](09-blocking-io-and-signals.md) · [Index](00-README.md) · Next: [`02-linux/11-time-and-timers.md`](11-time-and-timers.md) →

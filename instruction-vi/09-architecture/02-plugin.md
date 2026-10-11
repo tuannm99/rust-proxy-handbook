@@ -189,3 +189,8 @@ Xây theo thứ tự.
 9. So sánh phần plumbing. **Done when** bạn có thể nói ra bao nhiêu dòng
    host function và serialization phiên bản WASM cần so với `Module` đã
    compile, cho cùng một hành vi.
+
+---
+
+<!-- nav -->
+← Trước: [`09-architecture/01-components.md`](01-components.md) · [Mục lục](00-README.md) · Tiếp theo: [`09-architecture/03-config.md`](03-config.md) →

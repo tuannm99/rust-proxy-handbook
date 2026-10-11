@@ -99,3 +99,8 @@ compile time, không phải một sở thích về style.
    implement trực tiếp một trait ngoại lai lên nó thay vào đó.
 5. Thêm một generic method vào một trait và thử dùng nó như `dyn Trait`;
    đọc lỗi object-safety và xác định chính xác nó vi phạm quy tắc nào.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/06-pin.md`](06-pin.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/08-error-handling.md`](08-error-handling.md) →

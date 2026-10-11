@@ -73,3 +73,8 @@ request ([`07-security/09-ddos.md`](../07-security/09-ddos.md)).
 4. Thêm kích thước arena tối đa cho mỗi request và xác nhận một request có
    header vượt quá giới hạn bị từ chối gọn gàng thay vì làm arena tăng
    trưởng vô hạn.
+
+---
+
+<!-- nav -->
+← Trước: [`14-memory/01-allocator.md`](01-allocator.md) · [Mục lục](00-README.md) · Tiếp theo: [`14-memory/03-object-pool.md`](03-object-pool.md) →

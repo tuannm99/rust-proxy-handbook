@@ -94,3 +94,8 @@ codebase proxy thật dùng cả hai, tùy theo từng component.
 5. Chọn một component thật của [`proxy`](../../proxy) (rate limiter, connection pool,
    hoặc config store) và viết ra bạn sẽ chọn pattern nào và vì sao, trích
    dẫn đúng file handbook cho component đó.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/10-smart-pointers-and-interior-mutability.md`](10-smart-pointers-and-interior-mutability.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/12-macros.md`](12-macros.md) →

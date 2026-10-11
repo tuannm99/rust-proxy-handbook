@@ -97,3 +97,8 @@ toàn bộ vấn đề là nó phát triển qua nhiều ngày.
    dõi tỷ lệ theo thời gian thay vì tại một thời điểm duy nhất.
 5. Thêm một buffer pool cho buffer I/O của request, chạy lại bước 4, và so
    sánh độ trôi của tỷ lệ có và không có pooling.
+
+---
+
+<!-- nav -->
+← Trước: [`14-memory/05-slab-allocator.md`](05-slab-allocator.md) · [Mục lục](00-README.md)

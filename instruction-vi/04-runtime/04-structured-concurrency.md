@@ -106,3 +106,8 @@ thành.
    [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), và xác nhận mọi dòng log ở bất cứ đâu trong
    call graph của request đó có thể đọc nó mà không cần truyền như một
    tham số.
+
+---
+
+<!-- nav -->
+← Trước: [`04-runtime/03-runtime-config.md`](03-runtime-config.md) · [Mục lục](00-README.md) · Tiếp theo: [`04-runtime/05-runtime-comparisons.md`](05-runtime-comparisons.md) →

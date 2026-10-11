@@ -51,3 +51,8 @@ req/s" thay vì "cái này có thể nhanh tới đâu end to end."
 5. Theo dõi `top`/`htop` trên chính load generator trong một lần chạy tốc
    độ cao và xác nhận nó không bị bão hòa CPU (điều này sẽ làm vô hiệu kết
    quả).
+
+---
+
+<!-- nav -->
+← Trước: [`12-testing/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`12-testing/02-fuzzing.md`](02-fuzzing.md) →

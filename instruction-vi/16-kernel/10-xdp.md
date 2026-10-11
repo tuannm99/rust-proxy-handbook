@@ -119,3 +119,8 @@ thay vì tồn tại cho tới khi ai đó nhận ra.
 6. Đóng vòng feedback: cho [`proxy`](../../proxy) phát hiện một nguồn lạm dụng qua
    [`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) và đẩy nó vào map XDP với một TTL; xác
    nhận traffic ngừng chạm tới user space, và entry đó tự expire.
+
+---
+
+<!-- nav -->
+← Trước: [`16-kernel/09-ebpf.md`](09-ebpf.md) · [Mục lục](00-README.md)

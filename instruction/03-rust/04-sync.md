@@ -93,3 +93,8 @@ the first two escape hatches to reach for.
    for the formal theory behind why this works (and the classical
    producer-consumer/readers-writers problems `Mutex`/`RwLock`/channels are
    solving), see [`22-theory/01-deadlock.md`](../22-theory/01-deadlock.md) and [`22-theory/02-sync-classics.md`](../22-theory/02-sync-classics.md).
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/03-unsafe.md`](03-unsafe.md) · [Index](00-README.md) · Next: [`03-rust/05-async.md`](05-async.md) →

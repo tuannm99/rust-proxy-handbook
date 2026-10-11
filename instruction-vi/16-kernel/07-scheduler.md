@@ -80,3 +80,8 @@ latency là vấn đề của tokio hay của ứng dụng.
 4. So sánh việc tăng priority bằng `nice` với việc pin core cho cùng kịch
    bản oversubscribed, và viết ra cái nào thực sự giải quyết vấn đề
    tail-latency và vì sao.
+
+---
+
+<!-- nav -->
+← Trước: [`16-kernel/06-rps.md`](06-rps.md) · [Mục lục](00-README.md) · Tiếp theo: [`16-kernel/08-page-cache.md`](08-page-cache.md) →

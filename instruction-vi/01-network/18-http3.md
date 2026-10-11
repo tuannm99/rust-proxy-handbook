@@ -129,3 +129,8 @@ Gotcha: `netstat` (từ `net-tools`) không được cài sẵn trên nhiều di
 6. Kiểm tra `net.core.rmem_max` trên máy bạn. Sau đó dồn tải vào endpoint đủ mạnh để thấy drop trong `netstat -su`. Tăng
    buffer và xác nhận bộ đếm drop ngừng tăng. Rồi so sánh CPU trên mỗi megabyte truyền giữa endpoint QUIC của bạn và một
    lần truyền TCP+TLS thuần cùng lượng dữ liệu. Hãy tự đo khoảng cách đó thay vì tin suông.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/17-http2.md`](17-http2.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/19-tls.md`](19-tls.md) →

@@ -147,3 +147,8 @@ multiplexed load (`nghttp`, `h2load`) are in [`12-testing/06-lab-environment.md`
    concurrency limit alone does *not* stop you; then trigger `GOAWAY` by
    shutting the server down mid-request and confirm in-flight streams below
    the last-stream-ID complete rather than erroring.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/16-http1-wire-format.md`](16-http1-wire-format.md) · [Index](00-README.md) · Next: [`01-network/18-http3.md`](18-http3.md) →

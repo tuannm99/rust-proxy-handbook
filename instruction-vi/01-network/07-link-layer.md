@@ -128,3 +128,8 @@ host đang chịu tải nặng mà mất packet, các counter của `ip -s link`
    ping xuyên qua, và xem neighbor table trong mỗi namespace. Đây là cơ chế mà container
    networking dùng. Sau đó chạy [`labs/00-tcp-server`](../../labs/00-tcp-server) trong
    một namespace và connect tới nó từ namespace còn lại bằng `nc`.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/06-crypto-basics.md`](06-crypto-basics.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/08-ip-and-icmp.md`](08-ip-and-icmp.md) →

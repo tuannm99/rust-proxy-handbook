@@ -145,3 +145,8 @@ Làm theo thứ tự này.
 9. (Stretch) Thay giới hạn tĩnh bằng giới hạn thích ứng và so sánh. **Done when** giới hạn thích ứng tìm ra một threshold gần capacity đo được của
    bạn mà không cần ai nói cho nó biết, và tìm lại được nó sau khi bạn
    inject một cú chậm 3x ở upstream.
+
+---
+
+<!-- nav -->
+← Trước: [`07-security/10-slowloris.md`](10-slowloris.md) · [Mục lục](00-README.md)

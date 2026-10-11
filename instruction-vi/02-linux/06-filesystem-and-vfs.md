@@ -162,3 +162,8 @@ giữ fd tới *inode cũ*, nên nó tiếp tục ghi vào `access.log.1`. Có b
 6. Trong [`labs/04-static-server`](../../labs/04-static-server), thử phục vụ một symlink trỏ ra
    ngoài thư mục root được phục vụ, và xác nhận server của bạn từ chối nó. Sau đó giải thích race
    TOCTOU còn lại nếu bạn mở theo path rồi mới kiểm tra.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/05-kernel-and-syscalls.md`](05-kernel-and-syscalls.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/07-users-permissions-capabilities.md`](07-users-permissions-capabilities.md) →

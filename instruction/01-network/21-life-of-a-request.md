@@ -144,3 +144,8 @@ stitch the segments back into one story.
 5. Write, in your own words and without looking back, the sequence of events
    for a first-ever request to a new HTTPS site through a reverse proxy
    (steps 1–10), then diff it against this file and note what you missed.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/20-proxy-protocol.md`](20-proxy-protocol.md) · [Index](00-README.md) · Next: [`01-network/22-recall-and-review.md`](22-recall-and-review.md) →

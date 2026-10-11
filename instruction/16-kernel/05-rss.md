@@ -61,3 +61,8 @@ configured RSS means evenly *achieved* balance.
 4. Correlate per-core CPU usage (`mpstat -P ALL`) with per-queue packet
    counts during a load test to confirm RSS's queue-to-core mapping is
    actually being reflected in application-level throughput scaling.
+
+---
+
+<!-- nav -->
+← Previous: [`16-kernel/04-interrupt.md`](04-interrupt.md) · [Index](00-README.md) · Next: [`16-kernel/06-rps.md`](06-rps.md) →

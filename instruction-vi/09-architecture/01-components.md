@@ -180,3 +180,8 @@ Xây theo thứ tự.
 9. Thêm graceful shutdown ở lớp ConnMgr
    ([`09-architecture/04-graceful-shutdown.md`](04-graceful-shutdown.md)). **Done when** các request
    in-flight hoàn thành trước khi thoát.
+
+---
+
+<!-- nav -->
+← Trước: [`09-architecture/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`09-architecture/02-plugin.md`](02-plugin.md) →

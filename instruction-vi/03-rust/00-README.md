@@ -81,3 +81,8 @@ này và là nền cho bước codegen `build.rs` của
 trait middleware của [`09-architecture/02-plugin.md`](../09-architecture/02-plugin.md) và trait strategy của
 [`06-proxy/02-load-balancer.md`](../06-proxy/02-load-balancer.md) ngay khi một trong hai cần vừa async vừa
 `dyn`-dispatch.
+
+---
+
+<!-- nav -->
+Tiếp theo: [`03-rust/01-ownership.md`](01-ownership.md) →

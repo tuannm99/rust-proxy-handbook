@@ -201,3 +201,8 @@ Cách phòng thủ: validate **IP đã resolve**, rồi connect đúng IP đó, 
 6. Đọc [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md). Ghi
    lại những phần cách làm dựa trên DNS ở mục 5 đã đáp ứng được, và những phần còn
    thiếu.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/13-tcp-reliability.md`](13-tcp-reliability.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/15-http.md`](15-http.md) →

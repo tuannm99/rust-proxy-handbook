@@ -111,3 +111,8 @@ anything special going on underneath.
    and identify at least two very ordinary-looking operations (e.g.
    `malloc`, `printf`) that are *not* on it — explain, from the mutex
    example above, why calling either from a raw handler is dangerous.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/08-memory-basics.md`](08-memory-basics.md) · [Index](00-README.md) · Next: [`02-linux/10-ipc.md`](10-ipc.md) →

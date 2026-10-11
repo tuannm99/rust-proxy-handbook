@@ -70,3 +70,8 @@ Cả ba đều là các biến thể của cùng một nguyên tắc: giữ dữ
    cứng máy bạn. Ghi lại ba con số đó và tỷ lệ giữa chúng.
 4. Đọc phần mở đầu của [`14-memory/02-arena.md`](../14-memory/02-arena.md) ngay khi khái niệm stack và heap còn mới. Giải thích
    trong một câu vì sao bump allocation gần với tinh thần của stack allocation hơn là một heap allocator đa dụng.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/07-users-permissions-capabilities.md`](07-users-permissions-capabilities.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/09-blocking-io-and-signals.md`](09-blocking-io-and-signals.md) →

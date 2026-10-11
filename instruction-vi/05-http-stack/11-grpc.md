@@ -120,3 +120,8 @@ Làm theo thứ tự này.
    một chiều metric gắn nhãn theo `/package.Service/Method`. **Done when**
    một dashboard cho thấy một upstream trả toàn INTERNAL là không khỏe
    mạnh, dù mọi HTTP status đều là 200.
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/10-websocket.md`](10-websocket.md) · [Mục lục](00-README.md) · Tiếp theo: [`05-http-stack/12-vhost-routing.md`](12-vhost-routing.md) →

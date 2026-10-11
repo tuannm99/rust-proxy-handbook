@@ -118,3 +118,8 @@ Build these in order.
 6. Fuzz the `Connection` header ([`12-testing/02-fuzzing.md`](../12-testing/02-fuzzing.md)) with many
    entries, empty entries, and malformed names. **Done when** none of it
    panics or causes unbounded work.
+
+---
+
+<!-- nav -->
+← Previous: [`05-http-stack/02-hyper.md`](02-hyper.md) · [Index](00-README.md) · Next: [`05-http-stack/04-router.md`](04-router.md) →

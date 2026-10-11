@@ -152,3 +152,8 @@ Hãy dùng `tokio::time::sleep`. Điều tương tự áp dụng cho mọi lời
    client slow-drip, kiểm chứng rằng chỉ có total deadline mới dừng được nó.
 6. Dùng `tokio::time::pause()`/`advance` để unit-test việc hết hạn của một TTL cache và một retry
    backoff mà không phải sleep thật.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/10-ipc.md`](10-ipc.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/12-cpu-scheduling.md`](12-cpu-scheduling.md) →

@@ -114,3 +114,8 @@ user and root. Prefer files with tight permissions, or a secret mount. And remem
    `setgid`, `setuid`, via `nix`/`libc`), proves with `id`/`/proc/self/status` that it can no longer
    regain root (`setuid(0)` returns an error), and still accepts connections on the pre-opened
    listener.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/06-filesystem-and-vfs.md`](06-filesystem-and-vfs.md) · [Index](00-README.md) · Next: [`02-linux/08-memory-basics.md`](08-memory-basics.md) →

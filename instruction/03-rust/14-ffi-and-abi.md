@@ -45,3 +45,8 @@ Rust has no stable ABI across compiler versions — a `dylib` built with one rus
 3. Write a `Drop`-based wrapper around a C-allocated resource (a stand-in "C" function is fine) and confirm double-free/use-after-free is prevented by construction.
 4. Read the `libc` crate's source for one syscall binding you've already used by hand (`epoll_ctl`, from [`02-linux/14-epoll.md`](../02-linux/14-epoll.md)'s exercise) and identify its `#[repr(C)]` struct definitions.
 5. Explain, referencing [`09-architecture/02-plugin.md`](../09-architecture/02-plugin.md), why an ABI-stable ecosystem like C makes `dlopen`-style plugins practical while Rust's lack of a stable ABI pushes toward compiling plugins into the same binary instead.
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/13-api-design-and-modules.md`](13-api-design-and-modules.md) · [Index](00-README.md) · Next: [`03-rust/15-memory-layout.md`](15-memory-layout.md) →

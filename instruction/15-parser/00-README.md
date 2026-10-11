@@ -22,3 +22,8 @@ explicitly). Otherwise treat it as background that deepens the HTTP parser.
 - [`03-ast.md`](03-ast.md) — representing parsed structure as a tree, and why you'd want one vs parsing straight into your target type
 - [`04-visitor.md`](04-visitor.md) — the visitor pattern for walking/transforming an AST
 - [`05-config-parser.md`](05-config-parser.md) — applying the above to a proxy's own config format, feeds [`09-architecture/03-config.md`](../09-architecture/03-config.md)
+
+---
+
+<!-- nav -->
+Next: [`15-parser/01-lexer.md`](01-lexer.md) →

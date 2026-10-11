@@ -195,3 +195,8 @@ hoặc một TLS connector bọc nó. Những gì một proxy cần biết:
 4. Tạo một handler trả về body lớn dạng stream, đọc nó bằng `curl --limit-rate 100k`, và quan sát RSS của server giữ phẳng. Sau đó đổi sang `collect()` body trước và quan sát RSS tăng. **Done when** bạn giải thích được sự khác biệt từ `poll_frame`.
 5. Trong [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), chuyển tiếp một request bằng legacy client, lần đầu với URI origin-form gốc (quan sát lỗi), rồi với URI absolute đã dựng lại. Tắt upstream và xác nhận lỗi báo `is_connect()`.
 6. Gọi `graceful_shutdown()` khi một response chậm đang chạy và xác nhận response hoàn thành rồi connection mới đóng.
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/01-parser.md`](01-parser.md) · [Mục lục](00-README.md) · Tiếp theo: [`05-http-stack/03-hop-by-hop-headers.md`](03-hop-by-hop-headers.md) →

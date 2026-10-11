@@ -81,3 +81,8 @@ nhưng hãy nhận ra cú pháp này khi một lỗi compiler nhắc tới
 4. Viết một struct cố tình không compile được vì nó cố giữ một buffer và
    một slice `&[u8]` của chính nó như hai sibling field; đọc lỗi và liên
    hệ nó với [`03-rust/06-pin.md`](06-pin.md).
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/01-ownership.md`](01-ownership.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/03-unsafe.md`](03-unsafe.md) →

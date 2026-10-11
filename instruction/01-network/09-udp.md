@@ -106,3 +106,8 @@ one backend because there is no connection to anchor it.
    `recv_from` loop, per-peer state in a map keyed by source address), and
    write down in your own notes what would have to change — this is the
    structural jump [`labs/09-http3`](../../labs/09-http3) makes.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/08-ip-and-icmp.md`](08-ip-and-icmp.md) · [Index](00-README.md) · Next: [`01-network/10-packet-capture-and-tools.md`](10-packet-capture-and-tools.md) →

@@ -91,3 +91,8 @@ fn normalize_header(v: &str) -> std::borrow::Cow<str> {
    cần quyền truy cập độc quyền) — liên hệ điều này với việc vì sao nó
    hiếm khi được dùng trong một proxy giữ các `Arc` được chia sẻ qua nhiều
    task.
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/09-iterators-and-closures.md`](09-iterators-and-closures.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/11-concurrency-patterns.md`](11-concurrency-patterns.md) →

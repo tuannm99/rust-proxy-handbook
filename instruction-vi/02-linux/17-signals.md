@@ -54,3 +54,8 @@ giết cứng. Hãy chỉnh grace period theo p99 request duration thực tế c
    hoàn tất, rồi thoát.
 5. Mô phỏng kịch bản grace period của Kubernetes: giữ một request chậm đang mở, gửi SIGTERM, và xác nhận shutdown của bạn hoặc
    hoàn tất kịp thời, hoặc bị giết một cách sạch sẽ mà không làm hỏng state.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/16-memory.md`](16-memory.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/18-zerocopy.md`](18-zerocopy.md) →

@@ -137,3 +137,8 @@ thích vì sao `sum by (le)` là bắt buộc).
 2. Chạy `oha -z 10s -c 20` nhắm vào [`labs/02-http-server`](../../labs/02-http-server), rồi `h2load -n 2000 -c 1 -m 50` nhắm vào cùng server, và dùng `ss -tn` trong lúc chạy mỗi cái để đếm connection. **Done when** bạn nói được mỗi bài test đã dùng bao nhiêu TCP connection và vì sao.
 3. Tạo `targets.txt` bằng script Zipf, và đếm số lần 10 key đầu xuất hiện (`sort | uniq -c | sort -rn | head`). **Done when** bạn nêu được bao nhiêu phần request rơi vào 1% key hàng đầu.
 4. Khởi động Prometheus với config ở trên nhắm vào một endpoint `/metrics` bất kỳ và đưa target lên `UP`. **Done when** một query cho một metric của bạn trả về dữ liệu.
+
+---
+
+<!-- nav -->
+← Trước: [`12-testing/05-debugging.md`](05-debugging.md) · [Mục lục](00-README.md)

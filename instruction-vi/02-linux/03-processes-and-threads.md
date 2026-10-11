@@ -81,3 +81,8 @@ không thấy gì bất thường: OS thread trông vẫn bận hoàn toàn bìn
 4. Viết một chương trình nhỏ chạy một vòng lặp CPU liên tục trong 2 giây bên trong một task `tokio::spawn`, trên một runtime
    single-threaded (`#[tokio::main(flavor = "current_thread")]`). Đồng thời một task khác cố `tokio::time::sleep` 100 ms. Đo
    xem sleep thực sự bị trễ bao lâu, và giải thích vì sao dựa trên mô hình hai scheduler chồng lên nhau ở trên.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/02-hardware-basics.md`](02-hardware-basics.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/04-process-lifecycle.md`](04-process-lifecycle.md) →

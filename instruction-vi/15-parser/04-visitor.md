@@ -79,3 +79,8 @@ là các visitor tách biệt nghĩa là một config không hợp lệ bị t�
 5. Với một AST đồ chơi hai node, viết cùng phép lowering đó dưới dạng một
    `match` đệ quy thuần túy và so sánh; quyết định ở số lượng loại node và
    pass nào thì visitor thôi là over-engineering.
+
+---
+
+<!-- nav -->
+← Trước: [`15-parser/03-ast.md`](03-ast.md) · [Mục lục](00-README.md) · Tiếp theo: [`15-parser/05-config-parser.md`](05-config-parser.md) →

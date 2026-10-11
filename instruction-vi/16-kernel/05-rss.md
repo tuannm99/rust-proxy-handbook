@@ -59,3 +59,8 @@ theo từng queue (`ethtool -S eth0 | grep rx_queue`) thay vì giả định RSS
 4. Đối chiếu CPU usage theo từng core (`mpstat -P ALL`) với số packet theo
    từng queue trong một bài load test để xác nhận ánh xạ queue-tới-core
    của RSS thực sự phản ánh vào việc scale throughput ở tầng ứng dụng.
+
+---
+
+<!-- nav -->
+← Trước: [`16-kernel/04-interrupt.md`](04-interrupt.md) · [Mục lục](00-README.md) · Tiếp theo: [`16-kernel/06-rps.md`](06-rps.md) →

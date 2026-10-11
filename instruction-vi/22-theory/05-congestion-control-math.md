@@ -85,3 +85,8 @@ không có gì phía chúng ta thay đổi" — thay vì chỉ suy luận địn
    [`01-network/12-tcp.md`](../01-network/12-tcp.md) rằng tái sử dụng connection quan trọng cho
    throughput "không chỉ latency" — chỉ ra lý do định lượng vì sao slow
    start của một connection mới thực sự tốn của bạn.
+
+---
+
+<!-- nav -->
+← Trước: [`22-theory/04-cpu-scheduling.md`](04-cpu-scheduling.md) · [Mục lục](00-README.md) · Tiếp theo: [`22-theory/06-queueing-theory.md`](06-queueing-theory.md) →

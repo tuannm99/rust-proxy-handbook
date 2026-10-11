@@ -176,3 +176,8 @@ Làm theo thứ tự này.
    throughput cải thiện trên một working set nóng, và bạn đã đo cả trường
    hợp *nguội* — nếu p99 tệ đi khi working set vượt RAM, bạn đã tìm ra
    gotcha ở trên và nên ghi lại điều đó trong ghi chú của mình.
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/05-keepalive.md`](05-keepalive.md) · [Mục lục](00-README.md) · Tiếp theo: [`05-http-stack/07-compression.md`](07-compression.md) →

@@ -110,3 +110,8 @@ Làm theo thứ tự này.
    không đổi và số connection vẫn bounded.
 7. Xác nhận các miễn trừ. **Done when** một WebSocket idle sống sót vô hạn
    trong khi một cái không phản hồi (không pong) bị đóng.
+
+---
+
+<!-- nav -->
+← Trước: [`07-security/09-ddos.md`](09-ddos.md) · [Mục lục](00-README.md) · Tiếp theo: [`07-security/11-load-shedding.md`](11-load-shedding.md) →

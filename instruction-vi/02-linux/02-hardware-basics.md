@@ -168,3 +168,8 @@ Hãy xem phép chia này trước khi tối ưu bất cứ thứ gì.
 6. Trong một chương trình Rust scratch, đo thời gian truy cập tuần tự và truy cập ngẫu nhiên
    trên một mảng 1 GiB. Giải thích khoảng cách giữa hai kết quả bằng hệ thống phân cấp
    cache/TLB ở trên.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/01-fundamentals.md`](01-fundamentals.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/03-processes-and-threads.md`](03-processes-and-threads.md) →

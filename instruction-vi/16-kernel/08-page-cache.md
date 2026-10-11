@@ -105,3 +105,8 @@ lớn hơn bộ nhớ.
 6. Chạy proxy trong một container có giới hạn bộ nhớ, stream các file có
    tổng dung lượng vượt giới hạn, và theo dõi `memory.current` của cgroup
    cùng cách nó tính page cache.
+
+---
+
+<!-- nav -->
+← Trước: [`16-kernel/07-scheduler.md`](07-scheduler.md) · [Mục lục](00-README.md) · Tiếp theo: [`16-kernel/09-ebpf.md`](09-ebpf.md) →

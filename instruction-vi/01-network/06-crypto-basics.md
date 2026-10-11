@@ -127,3 +127,8 @@ trust, và công cụ phát hành, gia hạn chúng (ACME/Let's Encrypt, đượ
    được HMAC" trong file này.
 5. Tạo một cặp key RSA hoặc Ed25519 (`openssl genpkey` hoặc `ssh-keygen`), ký một file nhỏ bằng private key, và xác minh
    chữ ký bằng public key. Sau đó thử xác minh bằng public key của một cặp key *khác* và xác nhận nó thất bại.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/05-proxy-taxonomy.md`](05-proxy-taxonomy.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/07-link-layer.md`](07-link-layer.md) →

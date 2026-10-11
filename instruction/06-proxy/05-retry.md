@@ -178,3 +178,8 @@ Build these in order.
    latency under a load test with one deliberately slow upstream drops
    measurably, and total request count to upstreams rises by only a few
    percent — if it rises by 50%, your threshold is wrong.
+
+---
+
+<!-- nav -->
+← Previous: [`06-proxy/04-outlier-detection.md`](04-outlier-detection.md) · [Index](00-README.md) · Next: [`06-proxy/06-circuit-breaker.md`](06-circuit-breaker.md) →

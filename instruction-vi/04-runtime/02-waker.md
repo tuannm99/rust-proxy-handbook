@@ -62,3 +62,8 @@ future tự viết tay.
 4. So sánh waker tự viết tay của bạn với waker thật của tokio bằng cách
    chạy cùng một future dưới `#[tokio::main]` và dưới executor của riêng
    bạn.
+
+---
+
+<!-- nav -->
+← Trước: [`04-runtime/01-tokio.md`](01-tokio.md) · [Mục lục](00-README.md) · Tiếp theo: [`04-runtime/03-runtime-config.md`](03-runtime-config.md) →

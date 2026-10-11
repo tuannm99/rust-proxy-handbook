@@ -165,3 +165,8 @@ biệt thật và đo được, không phải một micro-optimization.
    `/proc/<pid>/stat` (hoặc `perf stat -e minor-faults`). Sau đó chạy nó trong container với `--memory=256m` (và
    `--memory-swap=256m`), allocate cho đến khi bị giết. Xác nhận exit code 137, `dmesg -T | grep -i oom`, và bộ
    đếm `oom_kill` trong `memory.events` của cgroup.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/15-io_uring.md`](15-io_uring.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/17-signals.md`](17-signals.md) →

@@ -127,3 +127,8 @@ Làm lần lượt theo thứ tự sau.
 6. Thêm một test về thứ tự trong pipeline. **Done when** nó chứng minh một
    JWT không hợp lệ bị từ chối trước khi chọn upstream *và* trước khi WAF
    body inspection chạy.
+
+---
+
+<!-- nav -->
+← Trước: [`07-security/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`07-security/02-jwt.md`](02-jwt.md) →

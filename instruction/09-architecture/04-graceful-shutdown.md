@@ -165,3 +165,8 @@ Build these in order.
 9. If you built service discovery ([`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md)),
    deregister as the very first drain step. **Done when** metrics show
    inbound request rate falling to zero *before* the listener closes.
+
+---
+
+<!-- nav -->
+← Previous: [`09-architecture/03-config.md`](03-config.md) · [Index](00-README.md) · Next: [`09-architecture/05-rolling-restart.md`](05-rolling-restart.md) →

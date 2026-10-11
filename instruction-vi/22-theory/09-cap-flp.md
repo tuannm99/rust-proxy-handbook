@@ -86,3 +86,8 @@ khả thi, bất kể implementation tốt đến đâu.
    cluster-wide) và viết một đoạn về việc bạn sẽ chọn bên nào của CAP và
    vì sao, trích dẫn file [`18-distributed/`](../18-distributed) cụ thể đã đưa ra lựa chọn này
    cho một bài toán tương tự.
+
+---
+
+<!-- nav -->
+← Trước: [`22-theory/08-amdahls-law.md`](08-amdahls-law.md) · [Mục lục](00-README.md)

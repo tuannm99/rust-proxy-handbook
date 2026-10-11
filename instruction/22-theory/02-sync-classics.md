@@ -36,3 +36,8 @@ Every one of these classical problems is "solved" in the sense that a library pr
 3. Replace a `Mutex<usize>` used as a crude concurrency counter somewhere in your workspace with a `tokio::sync::Semaphore`, and explain in one sentence why the semaphore version is the more correct model.
 4. Implement a parallel cache-warming step across N simulated shards using `std::sync::Barrier` (or `tokio::sync::Barrier`), and confirm no shard starts serving until all N have finished warming.
 5. For one real synchronization point in [`proxy`](../../proxy) (or a [`labs/`](../../labs) crate), name which classical problem it actually is — bounded buffer, readers-writers, or N-permits — and confirm the primitive you used matches.
+
+---
+
+<!-- nav -->
+← Previous: [`22-theory/01-deadlock.md`](01-deadlock.md) · [Index](00-README.md) · Next: [`22-theory/03-page-replacement.md`](03-page-replacement.md) →

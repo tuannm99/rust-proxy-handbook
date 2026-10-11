@@ -70,3 +70,8 @@ problem.
 4. Compare `nice`-based priority boosting against core pinning for the
    same oversubscribed scenario, and describe in writing which one
    actually addresses the tail-latency problem and why.
+
+---
+
+<!-- nav -->
+← Previous: [`16-kernel/06-rps.md`](06-rps.md) · [Index](00-README.md) · Next: [`16-kernel/08-page-cache.md`](08-page-cache.md) →

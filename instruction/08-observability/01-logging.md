@@ -150,3 +150,8 @@ Build these in order.
 8. Add deterministic sampling plus always-log rules for 5xx and slow
    requests. **Done when** the same request is either logged at every hop
    or none, and every error in a load test appears in full.
+
+---
+
+<!-- nav -->
+← Previous: [`08-observability/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`08-observability/02-metrics.md`](02-metrics.md) →

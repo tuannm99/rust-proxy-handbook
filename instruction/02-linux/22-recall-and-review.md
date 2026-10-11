@@ -179,3 +179,8 @@ the skeleton. If you can tell three such stories without notes, the facts will s
    while one worker thread is blocked reading a file", naming the syscall, kernel mechanism
    and scheduler action at each step, while drawing items 1, 2 and 4 above.
 4. Run three "Predict, then run" experiments and write what each taught you that reading hadn't.
+
+---
+
+<!-- nav -->
+← Previous: [`02-linux/21-systemd-and-services.md`](21-systemd-and-services.md) · [Index](00-README.md)

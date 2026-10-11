@@ -97,3 +97,8 @@ whole point is that it develops over days.
    watch the ratio over time rather than at a single instant.
 5. Add a buffer pool for request I/O buffers, re-run step 4, and compare
    the ratio's drift with and without pooling.
+
+---
+
+<!-- nav -->
+← Previous: [`14-memory/05-slab-allocator.md`](05-slab-allocator.md) · [Index](00-README.md)

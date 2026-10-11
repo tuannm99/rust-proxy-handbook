@@ -100,3 +100,8 @@ riêng, và làm compiler (`rustc`) là một hướng hoàn toàn khác. Mục 
 5. Sau khi xong mỗi file trong [`01-network/`](../01-network) hoặc [`02-linux/`](../02-linux), hãy lên lịch ôn các câu hỏi
    trong `22-recall-and-review.md` ở +1, +3, +7 và +21 ngày trong learning log của bạn. **Done when** log có các mục ôn
    tập kèm ngày và một điểm số cho mỗi mục.
+
+---
+
+<!-- nav -->
+← Trước: [`00-introduction/02-prerequisites.md`](02-prerequisites.md) · [Mục lục](00-README.md)

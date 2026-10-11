@@ -194,3 +194,8 @@ produce the answer before looking, count it as missed.
 4. Run three of the "Predict, then run" experiments against
    [`labs/00-tcp-server`](../../labs/00-tcp-server) or [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) and write what each taught you
    that reading hadn't.
+
+---
+
+<!-- nav -->
+← Previous: [`01-network/21-life-of-a-request.md`](21-life-of-a-request.md) · [Index](00-README.md)

@@ -70,3 +70,8 @@ một listener công khai.
 4. Thêm kiểm tra trusted-source: chỉ chấp nhận PROXY header nếu IP của peer đang connect nằm trong một allow list (liên
    quan tới [`07-security/08-ip-filtering.md`](../07-security/08-ip-filtering.md)).
 5. Giải thích vì sao không bao giờ nên để một client gửi trực tiếp một PROXY protocol header mà vẫn được tin.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/19-tls.md`](19-tls.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/21-life-of-a-request.md`](21-life-of-a-request.md) →

@@ -69,3 +69,8 @@ blocking I/O cho từng connection.
 5. So sánh số syscall bằng `strace -c` giữa phiên bản epoll của bạn và một phiên bản dùng `select` ngây thơ, dưới 1000 connection
    idle.
 6. Xong rồi, đọc source reactor của tokio (`tokio::runtime::io`) và xác định nơi nó gọi cùng ba syscall mà bạn vừa dùng bằng tay.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/13-containers.md`](13-containers.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/15-io_uring.md`](15-io_uring.md) →

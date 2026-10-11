@@ -116,3 +116,8 @@ instead of persisting until someone notices.
    [`07-security/07-ratelimit.md`](../07-security/07-ratelimit.md) and push it into the XDP map with a TTL;
    confirm the traffic stops reaching user space, and that the entry
    expires on its own.
+
+---
+
+<!-- nav -->
+← Previous: [`16-kernel/09-ebpf.md`](09-ebpf.md) · [Index](00-README.md)

@@ -118,3 +118,8 @@ Làm theo thứ tự này.
 6. Fuzz header `Connection` ([`12-testing/02-fuzzing.md`](../12-testing/02-fuzzing.md)) với nhiều entry,
    entry rỗng, và tên dị dạng. **Done when** không có cái nào panic hay gây
    ra khối lượng công việc không giới hạn.
+
+---
+
+<!-- nav -->
+← Trước: [`05-http-stack/02-hyper.md`](02-hyper.md) · [Mục lục](00-README.md) · Tiếp theo: [`05-http-stack/04-router.md`](04-router.md) →

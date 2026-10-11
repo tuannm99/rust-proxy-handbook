@@ -183,3 +183,8 @@ qua đó.
 6. Dùng `bpftrace` (không cần viết code) để vẽ histogram latency của
    `tcp_sendmsg` trong khi proxy của bạn phục vụ tải, và đối chiếu nó với
    metric từ [`08-observability/02-metrics.md`](../08-observability/02-metrics.md).
+
+---
+
+<!-- nav -->
+← Trước: [`16-kernel/08-page-cache.md`](08-page-cache.md) · [Mục lục](00-README.md) · Tiếp theo: [`16-kernel/10-xdp.md`](10-xdp.md) →

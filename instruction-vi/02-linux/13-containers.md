@@ -90,3 +90,8 @@ Nội dung về triển khai trong [`09-architecture/`](../09-architecture) (rol
 5. Chạy `nproc` trên host, rồi chạy lại bên trong một container khởi động với `--cpus=1` trên cùng host đó. Ghi nhận container vẫn
    có thể báo đủ số core của host, dù cgroup của nó chỉ cho phép lượng CPU time bằng một CPU. Giải thích vì sao một tokio runtime
    tính kích thước worker pool từ `nproc` có thể tạo dư thread trong container như vậy.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/12-cpu-scheduling.md`](12-cpu-scheduling.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/14-epoll.md`](14-epoll.md) →

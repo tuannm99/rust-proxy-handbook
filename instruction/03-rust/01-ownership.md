@@ -88,3 +88,8 @@ skips `Drop` — relevant if you ever hand a raw fd to `libc` code (see
 5. Write a small type with a custom `Drop` impl that prints when it runs;
    confirm the order across nested structs and `Vec<T>` matches your
    prediction.
+
+---
+
+<!-- nav -->
+← Previous: [`03-rust/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`03-rust/02-lifetimes.md`](02-lifetimes.md) →

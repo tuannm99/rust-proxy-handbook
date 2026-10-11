@@ -127,3 +127,8 @@ slices of the input buffer, not own copies of every field.
 6. Feed your parser adversarial inputs (duplicate `Content-Length` with different values, folded headers, a bare `\n`, a chunk size of `0x` followed by garbage, a header name with a trailing space) and confirm it rejects each one rather than parsing "something."
 7. Fuzz [`labs/01-http-parser`](../../labs/01-http-parser) (see [`12-testing/02-fuzzing.md`](../12-testing/02-fuzzing.md)) against a corpus of real HTTP/1.1 traffic captures and fix any panics.
 8. Once you've done this by hand, read `httparse`'s API and `hyper`'s `h1` codec for the same cases, and note what they do differently from your implementation.
+
+---
+
+<!-- nav -->
+← Previous: [`05-http-stack/00-README.md`](00-README.md) · [Index](00-README.md) · Next: [`05-http-stack/02-hyper.md`](02-hyper.md) →

@@ -87,3 +87,8 @@ Cả hai đều được gọi là "privileged", nhưng cần tách bạch:
    Xác nhận file mới dùng lại số vừa được giải phóng.
 4. So sánh output `strace` giữa hai cách: một lần `write()` một `Vec<u8>` đã gộp sẵn từ 3 buffer, và một lần `writev`
    (vectored write, `IoSlice`) với cùng ba buffer chưa gộp. Xác nhận số syscall khác nhau đúng như đoạn văn ở trên dự đoán.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/04-process-lifecycle.md`](04-process-lifecycle.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/06-filesystem-and-vfs.md`](06-filesystem-and-vfs.md) →

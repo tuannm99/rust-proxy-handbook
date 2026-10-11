@@ -160,3 +160,8 @@ stack như hành trình của một request.
    ([`10-packet-capture-and-tools.md`](10-packet-capture-and-tools.md) giải thích các
    flag). Trong hex dump, chỉ ra Ethernet header, IP header, TCP header và phần text
    HTTP, và gọi tên layer của từng phần.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/00-README.md`](00-README.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/02-addressing.md`](02-addressing.md) →

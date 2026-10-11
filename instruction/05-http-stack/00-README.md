@@ -32,3 +32,8 @@ rest are independent and map to their own labs: [`06-static.md`](06-static.md) â
 Eviction algorithms live in [`13-algorithms/`](../13-algorithms); the normalization discipline
 that [`04-router.md`](04-router.md) and [`07-security/06-waf.md`](../07-security/06-waf.md) share lives in
 [`07-security/04-normalization.md`](../07-security/04-normalization.md).
+
+---
+
+<!-- nav -->
+Next: [`05-http-stack/01-parser.md`](01-parser.md) â†’

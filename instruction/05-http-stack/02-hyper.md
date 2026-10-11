@@ -202,3 +202,8 @@ or a TLS connector wrapping it. What a proxy needs to know:
 4. Make a handler that returns a large streamed body, read it with `curl --limit-rate 100k`, and watch the server's RSS stay flat. Then change it to `collect()` the body first and watch RSS grow. **Done when** you can explain the difference from `poll_frame`.
 5. In [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy), forward one request with the legacy client, first with the original origin-form URI (observe the error), then with a rebuilt absolute URI. Stop the upstream and confirm the error reports `is_connect()`.
 6. Call `graceful_shutdown()` while a slow response is in flight and confirm the response completes and the connection then closes.
+
+---
+
+<!-- nav -->
+← Previous: [`05-http-stack/01-parser.md`](01-parser.md) · [Index](00-README.md) · Next: [`05-http-stack/03-hop-by-hop-headers.md`](03-hop-by-hop-headers.md) →

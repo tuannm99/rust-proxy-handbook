@@ -207,3 +207,8 @@ chịu được việc một message bị cắt ở bất kỳ vị trí byte n�
 6. Thu hẹp `net.ipv4.ip_local_port_range` còn vài trăm port. Mở và đóng connection trong
    một vòng lặp mà không reuse, và bắt lấy lỗi `EADDRNOTAVAIL`. Sau đó khôi phục lại
    setting.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/11-socket.md`](11-socket.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/13-tcp-reliability.md`](13-tcp-reliability.md) →

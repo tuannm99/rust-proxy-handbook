@@ -93,3 +93,8 @@ affinity (consistent hashing), hoặc state phải nằm ở một nơi dùng ch
 4. Đọc mục 3-way handshake trong [`01-network/12-tcp.md`](12-tcp.md) và mục handshake trong
    [`01-network/19-tls.md`](19-tls.md) liền nhau. Liệt kê mỗi cái đang thống nhất điều gì, theo cách diễn giải của file
    này.
+
+---
+
+<!-- nav -->
+← Trước: [`01-network/02-addressing.md`](02-addressing.md) · [Mục lục](00-README.md) · Tiếp theo: [`01-network/04-latency-throughput.md`](04-latency-throughput.md) →

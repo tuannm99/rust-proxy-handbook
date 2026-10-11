@@ -164,3 +164,8 @@ Build these in order.
 8. Watch `/metrics` render time as its own metric. **Done when** you know
    how long a scrape takes at your current series count and how that
    compares to your scrape interval.
+
+---
+
+<!-- nav -->
+← Previous: [`08-observability/01-logging.md`](01-logging.md) · [Index](00-README.md) · Next: [`08-observability/03-tracing.md`](03-tracing.md) →

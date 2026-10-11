@@ -142,3 +142,8 @@ của nó.
    (`setgroups`, `setgid`, `setuid`, qua `nix` hoặc `libc`). Chứng minh bằng `id` hoặc
    `/proc/self/status` rằng nó không lấy lại được root (`setuid(0)` trả lỗi), và nó vẫn nhận được
    connection trên listener đã mở sẵn.
+
+---
+
+<!-- nav -->
+← Trước: [`02-linux/06-filesystem-and-vfs.md`](06-filesystem-and-vfs.md) · [Mục lục](00-README.md) · Tiếp theo: [`02-linux/08-memory-basics.md`](08-memory-basics.md) →

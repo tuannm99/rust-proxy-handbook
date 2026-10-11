@@ -94,3 +94,8 @@ hãy biết rằng `RwLock` và `watch` là hai lối thoát đầu tiên nên t
    đằng sau vì sao cách này hiệu quả (và các bài toán kinh điển producer-consumer, readers-writers
    mà `Mutex`/`RwLock`/channel đang giải), xem [`22-theory/01-deadlock.md`](../22-theory/01-deadlock.md)
    và [`22-theory/02-sync-classics.md`](../22-theory/02-sync-classics.md).
+
+---
+
+<!-- nav -->
+← Trước: [`03-rust/03-unsafe.md`](03-unsafe.md) · [Mục lục](00-README.md) · Tiếp theo: [`03-rust/05-async.md`](05-async.md) →

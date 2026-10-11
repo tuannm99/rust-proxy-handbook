@@ -61,3 +61,8 @@ underpins [`09-architecture/03-config.md`](../09-architecture/03-config.md) and 
 *inside* the kernel below these calls, see [`16-kernel/`](../16-kernel) — particularly
 [`16-kernel/01-epoll-internals.md`](../16-kernel/01-epoll-internals.md), [`16-kernel/02-io_uring-internals.md`](../16-kernel/02-io_uring-internals.md), and
 [`16-kernel/08-page-cache.md`](../16-kernel/08-page-cache.md).
+
+---
+
+<!-- nav -->
+Next: [`02-linux/01-fundamentals.md`](01-fundamentals.md) →

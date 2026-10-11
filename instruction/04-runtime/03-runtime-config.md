@@ -39,3 +39,8 @@ Fewer workers than cores under-utilizes hardware; more workers than cores adds s
 3. Install `tokio-console`, wire `console-subscriber` into a lab crate, and deliberately call a blocking function inside an async handler — find it in the console by its poll duration.
 4. Build with `RUSTFLAGS="--cfg tokio_unstable"` and print `tokio::runtime::Handle::metrics()`'s worker steal counts for [`labs/05-reverse-proxy`](../../labs/05-reverse-proxy) under load, and connect a spike in steals to uneven connection distribution across workers.
 5. Explain in your own words why setting `worker_threads` far above the core count would make [`proxy`](../../proxy) slower, not faster, under sustained load.
+
+---
+
+<!-- nav -->
+← Previous: [`04-runtime/02-waker.md`](02-waker.md) · [Index](00-README.md) · Next: [`04-runtime/04-structured-concurrency.md`](04-structured-concurrency.md) →

@@ -75,3 +75,8 @@ story — processes, the kernel, memory, files, and the Linux networking stack
 (netfilter, namespaces) — is [`02-linux/`](../02-linux); the kernel-side mechanics of TCP
 live in [`16-kernel/03-tcp-stack.md`](../16-kernel/03-tcp-stack.md), and the classical math behind congestion
 control and queueing in [`22-theory/`](../22-theory).
+
+---
+
+<!-- nav -->
+Next: [`01-network/01-fundamentals.md`](01-fundamentals.md) →

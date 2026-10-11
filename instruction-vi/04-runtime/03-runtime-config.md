@@ -87,3 +87,8 @@ gần chế độ của Gustafson hơn là của Amdahl — xem [`22-theory/08-a
    count với việc phân phối connection không đều giữa các worker.
 5. Giải thích bằng lời của bạn vì sao đặt `worker_threads` vượt xa số
    core sẽ làm [`proxy`](../../proxy) chậm hơn, không nhanh hơn, dưới tải bền vững.
+
+---
+
+<!-- nav -->
+← Trước: [`04-runtime/02-waker.md`](02-waker.md) · [Mục lục](00-README.md) · Tiếp theo: [`04-runtime/04-structured-concurrency.md`](04-structured-concurrency.md) →
