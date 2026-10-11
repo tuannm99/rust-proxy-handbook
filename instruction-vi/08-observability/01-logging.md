@@ -106,7 +106,7 @@ let _enter = span.enter(); // mọi log bên trong kế thừa request_id
 ```
 
 Gotcha: đoạn code trên đúng trong một hàm đồng bộ và **sai trong một hàm
-async**. — giữ một guard `Entered` xuyên qua một `.await` gắn span đó vào
+async**: giữ một guard `Entered` xuyên qua một `.await` gắn span đó vào
 bất kỳ task nào executor chạy tiếp theo trên thread đó. Hãy dùng
 `.instrument(span)` trên future thay vì thế;
 [`08-observability/03-tracing.md`](03-tracing.md) giải thích chi tiết vì sao. Đây là bug

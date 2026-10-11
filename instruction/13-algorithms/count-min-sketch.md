@@ -61,7 +61,7 @@ query the estimate, and if it exceeds a threshold, insert the key into a
 bounded min-heap of the worst offenders. The sketch handles unbounded
 cardinality in fixed memory; the heap holds only the keys that matter.
 
-This is also how TinyLFU ([`13-algorithms/lru.md`](lru.md)) estimates access
+This is also how TinyLFU ([`13-algorithms/tinylfu.md`](tinylfu.md)) estimates access
 frequency for cache admission in a few bits per key.
 
 ### Decay: counts must forget

@@ -76,8 +76,8 @@ một trong các cách:
 - **Đếm xấp xỉ kích thước cố định.** Hash key vào một mảng bucket kích
   thước cố định và chấp nhận va chạm gộp giới hạn của hai client — bộ nhớ
   bounded bằng cấu trúc, đổi lại là thỉnh thoảng từ chối nhầm. Một
-  count-min sketch ([`13-algorithms/count-min-sketch.md`](count-min-sketch.md)) là phiên bản bài
-  bản của cách này.
+  count-min sketch ([`13-algorithms/count-min-sketch.md`](count-min-sketch.md)) là phiên bản chặt chẽ hơn
+  của cách này.
 
 Gotcha: quét theo timer trong khi request đang chạm vào map đồng thời cần
 việc quét và việc chạm đồng thuận về ý nghĩa "rảnh", nếu không bạn xóa một

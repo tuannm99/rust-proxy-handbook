@@ -17,8 +17,7 @@ scheduler phụ thuộc vào.
 ### Softirq: nửa còn lại, hoãn lại và có thể được schedule
 Việc xử lý packet thực sự — đi ngược lên network stack, demux socket,
 cuối cùng chạm tới đường wakeup của epoll
-([`16-kernel/01-epoll-internals.md`](01-epoll-internals.md)) — xảy ra trong một **softirq**, được
-scheduling chạy ngay sau khi hard IRQ handler trả về, nhưng trong một ngữ
+([`16-kernel/01-epoll-internals.md`](01-epoll-internals.md)) — xảy ra trong một **softirq**, được schedule chạy ngay sau khi hard IRQ handler trả về, nhưng trong một ngữ
 cảnh có thể bị interrupt và chịu áp lực scheduling bình thường. `NET_RX` là
 softirq chịu trách nhiệm cụ thể cho việc xử lý packet đến. Dưới tốc độ
 packet cao kéo dài, chính công việc softirq `NET_RX` có thể tiêu tốn đủ

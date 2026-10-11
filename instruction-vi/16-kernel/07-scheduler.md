@@ -17,6 +17,7 @@ không còn là nhỏ nhất nữa, và thứ khác được chạy. Đây là s
 bằng", không phải "sẵn sàng trước, chạy trước" — không task nào được đảm
 bảo chạy trong một khoảng thời gian cụ thể, chỉ đảm bảo thời gian CPU được
 phân phối tỷ lệ theo trọng số theo thời gian.
+
 Về các thuật toán scheduling cổ điển (FCFS, SJF, round-robin, MLFQ) và các chỉ số dùng để đánh giá chúng, mà CFS là
 một họ hàng xa nhưng tinh vi hơn, xem [`22-theory/04-cpu-scheduling.md`](../22-theory/04-cpu-scheduling.md).
 
@@ -52,8 +53,7 @@ thi nhất quán, cache-nóng trên một tập cố định — một lợi íc
 thực sự, đổi lại mất khả năng tự động load balancing nếu tập được pin trở
 nên tải không đều.
 
-### Gotcha: scheduler của tokio là một tầng thứ hai, tách biệt, nằm trên
-tầng này
+### Gotcha: scheduler của tokio là một tầng thứ hai, nằm trên tầng này
 Work-stealing scheduler của tokio quyết định *task* nào (một async green
 thread) chạy trên *tokio worker thread* nào mà nó quản lý — đó hoàn toàn
 là sổ sách kế toán ở tầng userspace. OS scheduler, tách biệt, quyết định

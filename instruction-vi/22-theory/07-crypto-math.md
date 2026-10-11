@@ -16,13 +16,13 @@ round thật khiến nó an toàn.
 AES round (đơn giản hóa): SubBytes -> ShiftRows -> MixColumns -> AddRoundKey
 lặp lại N round, mỗi round trộn thêm key material vào block
 ```
-Gotcha: *mode* của block cipher quan trọng như chính cipher — encrypt mỗi
-block độc lập (mode ECB) lộ pattern (các block plaintext giống nhau ra
-block ciphertext giống nhau), đó là lý do TLS dùng các mode như GCM —
-encrypt một counter theo từng block (CTR mode) dưới một nonce duy nhất nên
-các block plaintext giống nhau không bao giờ ra ciphertext giống nhau — và
-thêm cả authentication (AEAD — authenticated encryption with associated
-data).
+Gotcha: *mode* của block cipher quan trọng như chính cipher. Encrypt mỗi
+block độc lập (mode ECB) lộ pattern: các block plaintext giống nhau ra
+block ciphertext giống nhau. Vì vậy TLS dùng các mode như GCM. GCM
+encrypt một counter theo từng block (CTR mode) dưới một nonce duy nhất,
+nên các block plaintext giống nhau không bao giờ ra ciphertext giống
+nhau, và nó còn thêm authentication (AEAD — authenticated encryption with
+associated data).
 
 ### Diffie-Hellman: shared secret qua một kênh công khai, từ một bài toán khó
 Hai bên mỗi bên chọn một số ngẫu nhiên private, trao đổi một giá trị công

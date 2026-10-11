@@ -1,8 +1,8 @@
 # Distributed Cache
 
 Trải một cache qua nhiều node khi một cache single-node
-([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md), [`13-algorithms/lru.md`](../13-algorithms/lru.md)) không còn đủ. Topic
-[`18-distributed/`](.) duy nhất connection trực tiếp nhất với một proxy — nhưng
+([`05-http-stack/08-cache.md`](../05-http-stack/08-cache.md), [`13-algorithms/lru.md`](../13-algorithms/lru.md)) không còn đủ. Đây là topic
+trong [`18-distributed/`](.) gần với công việc proxy nhất — nhưng
 vẫn vượt ngoài deliverable single-instance của [`proxy/`](../../proxy).
 
 ## What to learn

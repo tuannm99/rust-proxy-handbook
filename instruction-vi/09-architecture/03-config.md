@@ -124,8 +124,7 @@ suốt thời gian sống của nó, và truyền nó xuống pipeline (các ext
 
 Gotcha: giữ `Arc` đó cho suốt thời gian sống của request cũng là thứ giữ
 config cũ sống trong khi các request in-flight dùng nó — bộ nhớ được giải
-phóng khi request cuối cùng giữ nó hoàn thành, đó chính xác là drain dẫn
-dắt bởi refcount từ [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md). Một request
+phóng khi request cuối cùng giữ nó hoàn thành, đó chính xác là drain do refcount quyết định từ [`06-proxy/07-service-discovery.md`](../06-proxy/07-service-discovery.md). Một request
 streaming sống lâu pin một phiên bản config; điều đó đúng, và đáng biết
 khi bạn thắc mắc vì sao một config cũ chưa bị drop.
 

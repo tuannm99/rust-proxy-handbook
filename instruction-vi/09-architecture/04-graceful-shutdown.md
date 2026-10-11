@@ -50,8 +50,8 @@ tokio::select! {
 ```
 
 ### Tiếp tục accept một lúc sau SIGTERM — phần phản trực giác
-Chuỗi ở trên vẫn rớt traffic trong Kubernetes, và lý do đáng để khắc cốt
-ghi tâm vì nó đánh bại mọi cài đặt nếu không thì đúng.
+Chuỗi ở trên vẫn rớt traffic trong Kubernetes, và lý do đáng để ghi nhớ
+vì nó đánh bại mọi cài đặt nếu không thì đúng.
 
 Việc chấm dứt pod và xóa endpoint xảy ra **đồng thời, không theo thứ
 tự.** kubelet gửi `SIGTERM` cùng lúc control plane bắt đầu lan truyền

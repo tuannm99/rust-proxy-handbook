@@ -10,7 +10,7 @@ một máy một socket.
 ### NUMA là gì
 Trên một server nhiều socket, mỗi CPU socket có bộ điều khiển bộ nhớ riêng
 và một dải RAM riêng (một "NUMA node"). Một core có thể đọc bộ nhớ của bất
-kỳ node nào, nhưng đến một node *ở xa* phải đi qua đường connection liên
+kỳ node nào, nhưng đến một node *ở xa* phải đi qua đường interconnect liên
 socket (UPI/QPI) — thường có latency gấp 1.5–2× và bandwidth thấp hơn so
 với bộ nhớ local. Trên một máy một socket chỉ có một node và không điều
 gì trong này áp dụng, đây là phần lớn các deployment; điều này quan trọng
@@ -81,5 +81,5 @@ việc này đều lãng phí công sức.
    NUMA so với hai instance pin bằng `numactl` phía sau một balancer, dưới
    tải của [`12-testing/01-load-testing.md`](../12-testing/01-load-testing.md).
 5. Căn chỉnh NIC IRQ affinity khớp với các socket của worker và đo xem chi
-   phí remote-per-packet có giảm không — connection điều này với RSS/RPS
+   phí remote-per-packet có giảm không — hãy nối điều này với RSS/RPS
    trong [`16-kernel/`](../16-kernel).

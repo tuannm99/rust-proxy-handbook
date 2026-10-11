@@ -62,7 +62,7 @@ nếu nó vượt ngưỡng, insert key vào một min-heap có giới hạn ch�
 vi phạm tệ nhất. Sketch xử lý cardinality vô hạn trong bộ nhớ cố định;
 heap chỉ giữ những key thực sự quan trọng.
 
-Đây cũng là cách TinyLFU ([`13-algorithms/lru.md`](lru.md)) ước lượng tần suất truy
+Đây cũng là cách TinyLFU ([`13-algorithms/tinylfu.md`](tinylfu.md)) ước lượng tần suất truy
 cập cho việc admission vào cache chỉ với vài bit mỗi key.
 
 ### Decay: số đếm phải biết quên

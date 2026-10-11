@@ -156,7 +156,7 @@ Ba cách tiếp cận, nói thẳng về sự đánh đổi:
   một dependency cứng vào hot path của mọi request.
 - **Bucket cục bộ với đồng bộ bất đồng bộ định kỳ.** Mỗi replica thực thi
   cục bộ và đối soát bộ đếm của nó với shared store mỗi vài trăm mili giây.
-  Hơi thoáng trong cửa sổ đồng bộ, không tốn latency trên đường request, và
+  Hơi lỏng trong cửa sổ đồng bộ, không tốn latency trên đường request, và
   đây là những gì hầu hết hệ thống production thực sự làm.
 
 Gotcha: shared store giờ là một dependency có thể fail, và bạn phải quyết

@@ -38,7 +38,7 @@ Hai hình dạng, và chúng thực sự khác nhau trong Rust:
 - **Duyệt `&self`** cho các pass chỉ đọc — validation, gom tên, tính một
   metric. Nhiều pass loại này thậm chí có thể chạy mà không xung đột.
 - **Duyệt `&mut self`** cho biến đổi — constant folding, áp dụng default,
-  viết lại. Ở đây quy tắc aliasing của Rust "cắn": bạn không thể giữ một
+  viết lại. Ở đây quy tắc aliasing của Rust bắt đầu gây khó: bạn không thể giữ một
   mutable borrow của cả cây trong khi cũng mutate một node bên trong nó.
   Lối thoát thường thấy là dạng arena từ [`15-parser/03-ast.md`](03-ast.md) — duyệt
   theo index và index ngược lại vào `&mut nodes[i]`, để borrow chỉ diễn ra

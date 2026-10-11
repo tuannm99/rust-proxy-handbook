@@ -47,7 +47,7 @@ gì.
 
 ### Cây dạng arena: hình dạng idiomatic trong Rust
 Một cây gồm các node `Box` với con trỏ tới cha đánh nhau với borrow
-checker ([`03-rust/01-ownership.md`](../03-rust/01-ownership.md)) và làm fragmentation heap. Câu trả lời
+checker ([`03-rust/01-ownership.md`](../03-rust/01-ownership.md)) và làm heap bị phân mảnh (fragmentation). Câu trả lời
 idiomatic, giống hệt mẹo trong [`13-algorithms/lru.md`](../13-algorithms/lru.md), là lưu mọi node
 trong một `Vec` duy nhất và liên kết chúng bằng index `usize`:
 

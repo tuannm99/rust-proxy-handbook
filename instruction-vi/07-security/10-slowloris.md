@@ -99,10 +99,8 @@ Làm theo thứ tự này.
    hoạt động trước khi biện pháp phòng thủ có ý nghĩa.
 2. Thêm một deadline phase-header cùng một rate floor theo byte. **Done when** client slow-headers bị disconnect trong deadline và một client
    bình thường không bị ảnh hưởng.
-3. Mở rộng floor sang phase body. **Done when** client slow-body bị disconnect
-   connection, và một upload lớn hợp lệ ở vài trăm KB/s hoàn thành được.
-4. Thêm một deadline tiến độ write. **Done when** client slow-read bị disconnect
-   connection và một download streaming lớn tới một client bình thường vẫn
+3. Mở rộng floor sang phase body. **Done when** client slow-body bị ngắt connection, và một upload lớn hợp lệ ở vài trăm KB/s hoàn thành được.
+4. Thêm một deadline tiến độ write. **Done when** client slow-read bị ngắt connection và một download streaming lớn tới một client bình thường vẫn
    hoạt động.
 5. Xác minh với một client chậm-nhưng-hợp-lệ giả lập (throttle xuống vài
    KB/s bằng `tc` hoặc một proxy rate-limit). **Done when** nó *không* bị
